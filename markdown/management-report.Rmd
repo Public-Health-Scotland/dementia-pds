@@ -13,6 +13,15 @@ library(stringr)
 
 health_boards <- c("NHS Ayrshire & Arran",
                    "NHS Borders",
+                   "NHS Dumfries & Galloway",
+                   "NHS Fife",
+                   "NHS Grampian",
+                   "NHS Greater Glasgow & Clyde",
+                   "NHS Highland",
+                   "NHS Lanarkshire",
+                   "NHS Orkney",
+                   "NHS Shetland",
+                   "NHS Western Isles",
                    "NHS Lothian",
                    "NHS Tayside",
                    "NHS Forth Valley")
@@ -44,8 +53,8 @@ Column
 
 # Get all unique health boards and financial years for the subpages
 # TO DO: arrange alphabetically
-health_boards <- unique(data$health_board)
-years         <- unique(data$fy)
+health_boards <- sort(unique(data$health_board))
+years         <- sort(unique(data$fy))
 
 # Create variable which stores all subpages outputs
 out = NULL

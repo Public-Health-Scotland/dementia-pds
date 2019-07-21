@@ -1,12 +1,13 @@
 `r if_else(max_fy == fy, paste0(health_board, '{data-navmenu="Health Boards"}'), paste0(health_board, " ", str_replace(fy, "/", ""), '{.hidden}'))`
 =================================================
 
-`r shiny::tags$h1(paste0(health_board, " - ", fy), style="text-align:left")`
 
-Column
+Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
-### Links
+### `r paste(health_board, fy)`
+
+Select Financial Year
 
 `r paste0("[2019/20](#", str_replace(tolower(health_board), " ", "-"),")")`
 
@@ -16,6 +17,9 @@ Column
 
 `r paste0("[2016/17](#", str_replace(tolower(health_board), " ", "-"), "-", "201617)")`
 
+
+Column
+-----------------------------------------------------------------------
 
 ### Section 2
 
