@@ -7,7 +7,7 @@
 data/
 
 # Markdown output #
-.html
+markdown/management-report.html
 
 # Common text files that may contain data #
 *.[cC][sS][vV]
