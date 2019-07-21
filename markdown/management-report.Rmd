@@ -9,9 +9,19 @@ output:
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(dplyr)
+library(stringr)
 
 health_boards <- c("NHS Ayrshire & Arran",
                    "NHS Borders",
+                   "NHS Dumfries & Galloway",
+                   "NHS Fife",
+                   "NHS Grampian",
+                   "NHS Greater Glasgow & Clyde",
+                   "NHS Highland",
+                   "NHS Lanarkshire",
+                   "NHS Orkney",
+                   "NHS Shetland",
+                   "NHS Western Isles",
                    "NHS Lothian",
                    "NHS Tayside",
                    "NHS Forth Valley")
@@ -22,28 +32,85 @@ fy <- c("2016/17", "2017/18", "2018/19", "2019/20")
 
 max_fy <- "2019/20"
 
+nrows <- 1000
+
 data <- tibble(
-  health_board = sample(health_boards, 100, replace = TRUE),
-  ldp = sample(ldp, 100, replace = TRUE),
-  fy = sample(fy, 100, replace = TRUE),
-  referrals = sample(1:500, 100, replace = TRUE)
+  health_board = sample(health_boards, nrows, replace = TRUE),
+  ldp = sample(ldp, nrows, replace = TRUE),
+  fy = sample(fy, nrows, replace = TRUE),
+  referrals = sample(1:500, nrows, replace = TRUE)
 )
 ```
 
-Notes & Methodology
+Home
 =================================================
 
 Column
 -------------------------------------------------
 
-### Section 1
+### Notes
 
+Notes will be added here to describe the LDP standard, and methodology.
+
+### LDP Standard
+
+The LDP Standard is:
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+1. LDP Standard part 1
+2. LDS Standard part 2
+
+</div>
+
+<!-- Scotland -->
+
+```{r render subpages_scotland, include=FALSE}
+
+# Get all unique financial years for the subpages
+years         <- sort(unique(data$fy))
+
+# Create variable which stores all subpages outputs
+out = NULL
+
+# Set knitr options to allow duplicate labels (needed for the subpages)
+options(knitr.duplicate.label = 'allow')
+
+# Create temporary environment which we use for knitting subpages.RMD 
+subpage_env <- new.env()
+
+for(y in years){
+    
+  # Filter data for health board and financial year
+  subpage_data <- data %>% 
+    filter(fy == y)
+  
+  # Assign filtered data, health board and fy to subpage_env 
+  assign("subpage_data", subpage_data, subpage_env)
+  assign("health_board", "Scotland", subpage_env)
+  assign("fy", y, subpage_env)
+  assign("max_fy", max_fy, subpage_env) # To determine whether page is hidden
+  assign("years", setdiff(years, y), subpage_env) # To add links to all FY pages
+  
+  # Knit subpage.RMD using the subpage_env and add result to out vector
+  out = c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
+    
+}
+```
+
+`r paste(knitr::knit_child(text = out), collapse = '')`
+
+
+<!-- HEALTH BOARDS -->
 
 ```{r render subpages, include=FALSE}
+
 # Get all unique health boards and financial years for the subpages
-# TO DO: arrange alphabetically
-health_boards <- unique(data$health_board)
-years         <- unique(data$fy)
+health_boards <- sort(unique(data$health_board))
+years         <- sort(unique(data$fy))
 
 # Create variable which stores all subpages outputs
 out = NULL
@@ -55,22 +122,36 @@ options(knitr.duplicate.label = 'allow')
 subpage_env <- new.env()
 
 for (hb in health_boards) {
-  for(year in years){
+  for(y in years){
     
   # Filter data for health board and financial year
   subpage_data <- data %>% 
-    filter(health_board == hb & fy == year)
+    filter(health_board == hb & fy == y)
   
   # Assign filtered data, health board and fy to subpage_env 
   assign("subpage_data", subpage_data, subpage_env)
   assign("health_board", hb, subpage_env)
-  assign("fin_year", year, subpage_env)
+  assign("fy", y, subpage_env)
+  assign("max_fy", max_fy, subpage_env) # To determine whether page is hidden
+  assign("years", setdiff(years, y), subpage_env) # To add links to all FY pages
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
-  out = c(out, knitr::knit_child('subpage.RMD', envir = subpage_env))
+  out = c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
     
   }
 }
 ```
 
 `r paste(knitr::knit_child(text = out), collapse = '')`
+
+
+Methodology
+=================================================
+
+Column
+-------------------------------------------------
+
+### Methodology
+
+Notes will be added here to describe the methodology.
+Link to code on GitHub.
