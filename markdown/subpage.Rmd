@@ -8,9 +8,14 @@ Column
 
 ### Links
 
-`r paste0("[", fy, "](#", str_replace(tolower(health_board), " ", "-"),")")`
+`r paste0("[2019/20](#", str_replace(tolower(health_board), " ", "-"),")")`
 
-`r paste0("[", years[1], "](#", str_replace(tolower(health_board), " ", "-"), "-", str_replace(years[1], "/", ""), ")")`
+`r paste0("[2018/19](#", str_replace(tolower(health_board), " ", "-"), "-", "201819)")`
+
+`r paste0("[2017/18](#", str_replace(tolower(health_board), " ", "-"), "-", "201718)")`
+
+`r paste0("[2016/17](#", str_replace(tolower(health_board), " ", "-"), "-", "201617)")`
+
 
 ### Section 2
 
