@@ -5,17 +5,17 @@
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
-### `r paste(health_board, fy)`
+### `r health_board`
+#### Financial Year `r fy`
+
+***
 
 Select Financial Year
 
-`r paste0("[2019/20](#", str_replace(tolower(health_board), " ", "-"),")")`
-
-`r paste0("[2018/19](#", str_replace(tolower(health_board), " ", "-"), "-", "201819)")`
-
-`r paste0("[2017/18](#", str_replace(tolower(health_board), " ", "-"), "-", "201718)")`
-
-`r paste0("[2016/17](#", str_replace(tolower(health_board), " ", "-"), "-", "201617)")`
+|     `r paste0("[2019/20](#", str_replace(tolower(health_board), " ", "-"),")")`
+|     `r paste0("[2018/19](#", str_replace(tolower(health_board), " ", "-"), "-", "201819)")`
+|     `r paste0("[2017/18](#", str_replace(tolower(health_board), " ", "-"), "-", "201718)")`
+|     `r paste0("[2016/17](#", str_replace(tolower(health_board), " ", "-"), "-", "201617)")`
 
 
 Column
