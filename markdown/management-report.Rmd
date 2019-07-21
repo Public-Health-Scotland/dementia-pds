@@ -2,6 +2,7 @@
 title: "Dementia PDS Quarterly Management Reports"
 output: 
   flexdashboard::flex_dashboard:
+    logo: isdscotland.png
     orientation: columns
     vertical_layout: scroll
 ---
