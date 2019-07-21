@@ -68,7 +68,7 @@ for (hb in health_boards) {
   assign("fy", y, subpage_env)
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
-  out = c(out, knitr::knit_child("markdown/subpage.Rmd", envir = subpage_env))
+  out = c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
     
   }
 }
