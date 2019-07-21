@@ -6,6 +6,9 @@
 # 'data' folder #
 data/
 
+# Markdown output #
+.html
+
 # Common text files that may contain data #
 *.[cC][sS][vV]
 *.[tT][xX][tT]
