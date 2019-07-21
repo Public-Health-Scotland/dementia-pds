@@ -1,4 +1,4 @@
-`r if_else(max_fy == fy, paste0(health_board, '{data-navmenu="Health Boards"}'), paste0(health_board, " ", str_replace(fy, "/", ""), '{.hidden}'))`
+`r if_else(max_fy == fy, paste0(health_board, if_else(health_board == "Scotland", "", '{data-navmenu="Health Boards"}')), paste0(health_board, " ", str_replace(fy, "/", ""), '{.hidden}'))`
 =================================================
 
 
