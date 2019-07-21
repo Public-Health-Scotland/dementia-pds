@@ -32,11 +32,13 @@ fy <- c("2016/17", "2017/18", "2018/19", "2019/20")
 
 max_fy <- "2019/20"
 
+nrows <- 1000
+
 data <- tibble(
-  health_board = sample(health_boards, 100, replace = TRUE),
-  ldp = sample(ldp, 100, replace = TRUE),
-  fy = sample(fy, 100, replace = TRUE),
-  referrals = sample(1:500, 100, replace = TRUE)
+  health_board = sample(health_boards, nrows, replace = TRUE),
+  ldp = sample(ldp, nrows, replace = TRUE),
+  fy = sample(fy, nrows, replace = TRUE),
+  referrals = sample(1:500, nrows, replace = TRUE)
 )
 ```
 
