@@ -1,12 +1,18 @@
-`r paste0(health_board, '{data-navmenu="Health Boards"}')`
+`r if_else(max_fy == fy, paste0(health_board, '{data-navmenu="Health Boards"}'), paste0(health_board, " ", str_replace(fy, "/", ""), '{.hidden}'))`
 =================================================
 
-`r shiny::tags$h1(health_board, style="text-align:left")`
+`r shiny::tags$h1(paste0(health_board, " - ", fy), style="text-align:left")`
 
 Column
 -----------------------------------------------------------------------
 
-### Section 1
+### Links
+
+`r paste0("[", fy, "](#", str_replace(tolower(health_board), " ", "-"),")")`
+
+`r paste0("[", years[1], "](#", str_replace(tolower(health_board), " ", "-"), "-", str_replace(years[1], "/", ""), ")")`
+
+### Section 2
 
 ```{r}
 subpage_data %>% 
