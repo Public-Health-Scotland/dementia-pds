@@ -1,4 +1,4 @@
-`r if_else(max_fy == fy, paste0(health_board, if_else(health_board == "Scotland", "", '{data-navmenu="Health Boards"}')), paste0(health_board, " ", str_replace(fy, "/", ""), '{.hidden}'))`
+`r if_else(max_fy == fy, paste0(health_board, if_else(health_board == "Scotland", "", '{data-navmenu="Health Boards"}')), paste0(health_board, " ", str_replace(fy, "/", ""), ' {.hidden}'))`
 =================================================
 
 
@@ -12,7 +12,8 @@ Sidebar {.sidebar}
 
 Select Financial Year
 
-|     `r paste0("[2019/20](#", str_replace(tolower(health_board), " ", "-"),")")`
+<!-- For some reason need '-3' on end of 1920 links - check why this is -->
+|     `r paste0("[2019/20](#", str_replace(tolower(health_board), " ", "-"),"-3)")`
 |     `r paste0("[2018/19](#", str_replace(tolower(health_board), " ", "-"), "-", "201819)")`
 |     `r paste0("[2017/18](#", str_replace(tolower(health_board), " ", "-"), "-", "201718)")`
 |     `r paste0("[2016/17](#", str_replace(tolower(health_board), " ", "-"), "-", "201617)")`
@@ -31,3 +32,42 @@ subpage_data %>%
   knitr::kable()
 ```
 
+### Section 2
+
+```{r}
+subpage_data %>% 
+  group_by(ldp = ldp) %>% 
+  summarise(Referrals = sum(referrals)) %>% 
+  arrange(-Referrals) %>% 
+  knitr::kable()
+```
+
+### Section 2
+
+```{r}
+subpage_data %>% 
+  group_by(ldp = ldp) %>% 
+  summarise(Referrals = sum(referrals)) %>% 
+  arrange(-Referrals) %>% 
+  knitr::kable()
+```
+
+### Section 2
+
+```{r}
+subpage_data %>% 
+  group_by(ldp = ldp) %>% 
+  summarise(Referrals = sum(referrals)) %>% 
+  arrange(-Referrals) %>% 
+  knitr::kable()
+```
+
+### Section 2
+
+```{r}
+subpage_data %>% 
+  group_by(ldp = ldp) %>% 
+  summarise(Referrals = sum(referrals)) %>% 
+  arrange(-Referrals) %>% 
+  knitr::kable()
+```

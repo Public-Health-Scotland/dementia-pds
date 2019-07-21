@@ -154,4 +154,4 @@ Column
 ### Methodology
 
 Notes will be added here to describe the methodology.
-Link to code.
+Link to code on GitHub.
