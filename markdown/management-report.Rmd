@@ -8,6 +8,24 @@ output:
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(dplyr)
+
+health_boards <- c("NHS Ayrshire & Arran",
+                   "NHS Borders",
+                   "NHS Lothian",
+                   "NHS Tayside",
+                   "NHS Forth Valley")
+
+ldp <- c("success", "fail", "ongoing")
+
+fy <- c("2016/17", "2017/18", "2018/19", "2019/20")
+
+data <- tibble(
+  health_board = sample(health_boards, 100, replace = TRUE),
+  ldp = sample(ldp, 100, replace = TRUE),
+  fy = sample(fy, 100, replace = TRUE),
+  referrals = sample(1:500, 100, replace = TRUE)
+)
 ```
 
 Column
