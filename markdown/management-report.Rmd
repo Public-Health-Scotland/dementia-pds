@@ -52,6 +52,18 @@ Notes will be added here to describe the LDP standard, and methodology.
 
 ### LDP Standard
 
+The LDP Standard is:
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+1. LDP Standard part 1
+2. LDS Standard part 2
+
+</div>
+
 <!-- Scotland -->
 
 ```{r render subpages_scotland, include=FALSE}
