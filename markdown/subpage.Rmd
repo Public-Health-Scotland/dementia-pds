@@ -1,0 +1,18 @@
+`r paste0(health_board, '{data-navmenu="Health Boards"}')`
+=================================================
+
+`r shiny::tags$h1(health_board, style="text-align:left")`
+
+Column
+-----------------------------------------------------------------------
+
+### Section 1
+
+```{r}
+subpage_data %>% 
+  group_by(ldp = ldp) %>% 
+  summarise(Referrals = sum(referrals)) %>% 
+  arrange(-Referrals) %>% 
+  knitr::kable()
+```
+

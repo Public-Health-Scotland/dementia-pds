@@ -40,6 +40,7 @@ Column
 
 
 ```{r render subpages, include=FALSE}
+
 # Get all unique health boards and financial years for the subpages
 # TO DO: arrange alphabetically
 health_boards <- unique(data$health_board)
@@ -55,19 +56,19 @@ options(knitr.duplicate.label = 'allow')
 subpage_env <- new.env()
 
 for (hb in health_boards) {
-  for(year in years){
+  for(y in years){
     
   # Filter data for health board and financial year
   subpage_data <- data %>% 
-    filter(health_board == hb & fy == year)
+    filter(health_board == hb & fy == y)
   
   # Assign filtered data, health board and fy to subpage_env 
   assign("subpage_data", subpage_data, subpage_env)
   assign("health_board", hb, subpage_env)
-  assign("fin_year", year, subpage_env)
+  assign("fy", y, subpage_env)
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
-  out = c(out, knitr::knit_child('subpage.RMD', envir = subpage_env))
+  out = c(out, knitr::knit_child("markdown/subpage.Rmd", envir = subpage_env))
     
   }
 }
