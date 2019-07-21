@@ -20,6 +20,8 @@ ldp <- c("success", "fail", "ongoing")
 
 fy <- c("2016/17", "2017/18", "2018/19", "2019/20")
 
+max_fy <- "2019/20"
+
 data <- tibble(
   health_board = sample(health_boards, 100, replace = TRUE),
   ldp = sample(ldp, 100, replace = TRUE),
@@ -35,3 +37,40 @@ Column
 -------------------------------------------------
 
 ### Section 1
+
+
+```{r render subpages, include=FALSE}
+# Get all unique health boards and financial years for the subpages
+# TO DO: arrange alphabetically
+health_boards <- unique(data$health_board)
+years         <- unique(data$fy)
+
+# Create variable which stores all subpages outputs
+out = NULL
+
+# Set knitr options to allow duplicate labels (needed for the subpages)
+options(knitr.duplicate.label = 'allow')
+
+# Create temporary environment which we use for knitting subpages.RMD 
+subpage_env <- new.env()
+
+for (hb in health_boards) {
+  for(year in years){
+    
+  # Filter data for health board and financial year
+  subpage_data <- data %>% 
+    filter(health_board == hb & fy == year)
+  
+  # Assign filtered data, health board and fy to subpage_env 
+  assign("subpage_data", subpage_data, subpage_env)
+  assign("health_board", hb, subpage_env)
+  assign("fin_year", year, subpage_env)
+  
+  # Knit subpage.RMD using the subpage_env and add result to out vector
+  out = c(out, knitr::knit_child('subpage.RMD', envir = subpage_env))
+    
+  }
+}
+```
+
+`r paste(knitr::knit_child(text = out), collapse = '')`
