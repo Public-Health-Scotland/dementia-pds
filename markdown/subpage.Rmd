@@ -22,6 +22,16 @@ Select Financial Year
 Column
 -----------------------------------------------------------------------
 
+
+<!-- Management Information tagline -->
+<font size="3"> 
+<center> 
+<span style="color:red"> 
+MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION 
+</span> </center> </font> 
+<br>
+
+
 ### Section 2
 
 ```{r}
