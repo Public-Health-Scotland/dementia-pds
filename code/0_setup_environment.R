@@ -48,6 +48,15 @@ filepath <- dplyr::if_else(platform == "server",
 # Define the dates that the data are extracted from and to
 # Dates are in ddmmyyyy format
 
+# Start date of reporting period
+start_date <- lubridate::dmy(01042016)
+
+# End date of reporting period
+end_date   <- lubridate::dmy(31032019)
+
+# FY and Quarter of reporting period
+fy         <- "2018"
+qt         <- "4"       
 
 
 
