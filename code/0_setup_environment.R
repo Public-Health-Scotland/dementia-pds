@@ -1,6 +1,5 @@
-
 #########################################################################
-# Name of file - setup_environment.R
+# Name of file - 0_setup_environment.R
 # Data release - Quarterly Dementia PDS Management Reports
 # Original Authors - Alice Byers
 # Orginal Date - July 2019
@@ -17,6 +16,7 @@
 
 
 ### 1 - Load packages ----
+
 library(dplyr)         # For data manipulation in the "tidy" way
 library(readr)         # For reading in csv files
 library(janitor)       # For 'cleaning' variable names
