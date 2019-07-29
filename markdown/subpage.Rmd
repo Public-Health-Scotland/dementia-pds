@@ -18,6 +18,11 @@ Select Financial Year
 |     `r paste0("[2017/18](#", health_board %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201718)")`
 |     `r paste0("[2016/17](#", health_board %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201617)")`
 
+***
+
+<!-- Reword this and try and force to bottom of sidebar -->
+Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
+
 
 Column
 -----------------------------------------------------------------------
