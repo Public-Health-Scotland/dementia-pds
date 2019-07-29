@@ -1,5 +1,5 @@
 ---
-title: "Dementia PDS Quarterly Management Reports"
+title: "Dementia PDS Quarterly Management Report"
 output: 
   flexdashboard::flex_dashboard:
     logo: isdscotland.png
