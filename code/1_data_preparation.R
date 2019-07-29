@@ -22,7 +22,19 @@ source("code/0_setup_environment.R")
 ### 2 - Read in data ----
 
 pds <- read_csv(glue("{filepath}dementia/03-Outputs/zNational/",
-                     "National_DementiaPDS_{fy}_Q{qt}.csv")) %>%
-       clean_names()
+                     "National_DementiaPDS_{fy}_Q{qt}.csv"),
+                col_types = cols(.default = "c")) %>%
+
+  clean_names() %>%
+  
+  # Convert dates from character to date format
+  mutate_at(vars(contains("date")), funs(lubridate::dmy(.))) %>%
+  
+  # Pad CHI Number to 10 digits
+  mutate(chi_number = if_else(nchar(chi_number) == 9,
+                              paste0("0", chi_number),
+                              chi_number))
+  
+       
 
 
