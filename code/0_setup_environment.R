@@ -27,6 +27,8 @@ library(tidyr)         # For data manipulation in the "tidy" way
 library(stringr)       # For string manipulation and matching
 library(here)          # For the here() function
 library(glue)          # For working with strings
+library(ggplot2)       # For plotting
+library(flexdashboard) # For creating markdown outputs
 
 
 ### 2 - Define Whether Running on Server or Locally ----
