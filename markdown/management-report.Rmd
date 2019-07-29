@@ -167,4 +167,5 @@ Column
 ### Methodology
 
 Notes will be added here to describe the methodology.
-Link to code on GitHub.
+
+The code used to produce these reports is available on [GitHub](https://github.com/alicebyers5/dementia-management-reports).
