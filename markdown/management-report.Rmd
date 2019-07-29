@@ -3,7 +3,7 @@ title: "Dementia PDS Quarterly Management Reports"
 output: 
   flexdashboard::flex_dashboard:
     logo: isdscotland.png
-    orientation: columns
+    orientation: rows
     vertical_layout: scroll
 ---
 
@@ -11,6 +11,7 @@ output:
 library(flexdashboard)
 library(dplyr)
 library(stringr)
+library(ggplot2)
 
 health_boards <- c("NHS Ayrshire & Arran",
                    "NHS Borders",
@@ -47,7 +48,7 @@ data <- tibble(
 Home
 =================================================
 
-Column
+Row
 -------------------------------------------------
 
 ### About This Report
@@ -60,6 +61,9 @@ These reports are developed by the NSS Public Health and Intelligence National D
 
 We would welcome any comments or feedback you may have on these management reports. Please get in touch with the ISD Dementia PDS team at: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
 
+
+Row
+-------------------------------------------------
 
 ### LDP Standard
 
@@ -161,7 +165,7 @@ for (hb in health_boards) {
 Methodology
 =================================================
 
-Column
+Row
 -------------------------------------------------
 
 ### Methodology

@@ -24,9 +24,8 @@ Select Financial Year
 Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
 
 
-Column
+Row {data-height=30}
 -----------------------------------------------------------------------
-
 
 <!-- Management Information tagline -->
 <font size="3"> 
@@ -37,6 +36,35 @@ MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION
 <br>
 
 
+Row
+----------------------------------------------------------------------
+
+### Gauge 1
+
+```{r}
+# rate <- function()
+gauge(90, min = 0, max = 100, symbol = '%')
+```
+
+### Gauge 2 
+
+```{r}
+# rate <- function()
+gauge(40, min = 0, max = 100, symbol = '%')
+```
+
+### Gauge 3
+
+```{r}
+# rate <- function()
+gauge(65.9, min = 0, max = 100, symbol = '%')
+```
+
+
+
+Row {data-height=500}
+----------------------------------------------------------------------
+
 ### Section 2
 
 ```{r}
@@ -47,8 +75,6 @@ subpage_data %>%
   knitr::kable()
 ```
 
-### Section 2
-
 ```{r}
 subpage_data %>% 
   group_by(ldp = ldp) %>% 
@@ -57,32 +83,10 @@ subpage_data %>%
   knitr::kable()
 ```
 
-### Section 2
+### Section 2 {data-width=800}
 
-```{r}
-subpage_data %>% 
-  group_by(ldp = ldp) %>% 
-  summarise(Referrals = sum(referrals)) %>% 
-  arrange(-Referrals) %>% 
-  knitr::kable()
+```{r Chart1}
+ggplot(subpage_data, aes(x = ldp, y = referrals)) +
+  geom_bar(stat = "identity")
 ```
 
-### Section 2
-
-```{r}
-subpage_data %>% 
-  group_by(ldp = ldp) %>% 
-  summarise(Referrals = sum(referrals)) %>% 
-  arrange(-Referrals) %>% 
-  knitr::kable()
-```
-
-### Section 2
-
-```{r}
-subpage_data %>% 
-  group_by(ldp = ldp) %>% 
-  summarise(Referrals = sum(referrals)) %>% 
-  arrange(-Referrals) %>% 
-  knitr::kable()
-```
