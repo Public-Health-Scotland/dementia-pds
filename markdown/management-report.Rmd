@@ -41,6 +41,7 @@ data <- tibble(
   fy = sample(fy, nrows, replace = TRUE),
   referrals = sample(1:500, nrows, replace = TRUE)
 )
+
 ```
 
 Home
@@ -49,21 +50,32 @@ Home
 Column
 -------------------------------------------------
 
-### Notes
+### About This Report
 
-Notes will be added here to describe the LDP standard, and methodology.
+Bold text still to be automated.
+
+This report contains data for diagnoses of dementia between **start date** and **end date** and is based on board submissions as of **month of board submission**.
+
+These reports are developed by the NSS Public Health and Intelligence National Dementia PDS Team and contain performance-based analysis against the Scottish Government's LDP Standard on Dementia Post-Diagnostic Support whereby anyone newly diagnosed with dementia is entitled to a years worth of person-centred support.
+
+We would welcome any comments or feedback you may have on these management reports. Please get in touch with the ISD Dementia PDS team at: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
+
 
 ### LDP Standard
 
-The LDP Standard is:
+The Local Delivery Plan (LDP) standard is as follows:
+
+People newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by a named Link Worker.
+
+Performance against the LDP standard is reported in two parts:
 
 <style>
 div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 </style>
 <div class = "blue">
 
-1. LDP Standard part 1
-2. LDS Standard part 2
+1. The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support.
+2. The percentage of people referred who received a minimum of one year’s support.
 
 </div>
 
