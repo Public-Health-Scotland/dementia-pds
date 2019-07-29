@@ -15,4 +15,14 @@
 
 
 ### 1 - Load environment file ----
+
 source("code/0_setup_environment.R")
+
+
+### 2 - Read in data ----
+
+pds <- read_csv(glue("{filepath}dementia/03-Outputs/zNational/",
+                     "National_DementiaPDS_{fy}_Q{qt}.csv")) %>%
+       clean_names()
+
+
