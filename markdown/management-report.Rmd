@@ -172,4 +172,6 @@ Row
 
 Notes will be added here to describe the methodology.
 
+Include information on what is done with outstanding errors; e.g. missing PDS status recoded to active.
+
 The code used to produce these reports is available on [GitHub](https://github.com/alicebyers5/dementia-management-reports).
