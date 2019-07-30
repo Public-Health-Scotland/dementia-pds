@@ -16,7 +16,7 @@
 
 ### 1 - Load environment file and functions ----
 
-source("code/0_setup_environment.R")
+source(here("code", "0_setup_environment.R"))
 
 
 ### 2 - Read in data ----

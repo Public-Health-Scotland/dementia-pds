@@ -10,7 +10,9 @@ output:
 ```{r setup, include=FALSE}
 
 # Load environment file
-source("code/0_setup_environment.R")
+source(here("code", "0_setup_environment.R"))
+
+pds <- here("data", glue("{fy}Q{qt}_final_data.csv"))
 
 health_boards <- c("NHS Ayrshire & Arran",
                    "NHS Borders",
