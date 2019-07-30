@@ -40,6 +40,8 @@ Row
 
 ### Expected
 
+In `r sel_fy`, the expected number of dementia diagnoses in `r hb` was **`r exp`**. The actual number of referrals was **`r sum(subpage_data$referrals)`**. 
+
 ```{r}
 exp_rate <- (sum(subpage_data$referrals) / exp)* 100
 gauge(round_half_up(exp_rate, 1), min = 0, max = 100, symbol = '%')

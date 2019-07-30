@@ -62,5 +62,9 @@ fy         <- "2018"
 qt         <- "4"       
 
 
+### 4 - Disable scientific notation ----
+
+options(scipen=999)
+
 
 ### END OF SCRIPT ###
