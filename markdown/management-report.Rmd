@@ -8,10 +8,9 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-library(flexdashboard)
-library(dplyr)
-library(stringr)
-library(ggplot2)
+
+# Load environment file
+source("code/0_setup_environment.R")
 
 health_boards <- c("NHS Ayrshire & Arran",
                    "NHS Borders",
