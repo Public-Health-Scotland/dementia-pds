@@ -84,7 +84,7 @@ for(y in years){
   
   # Calculate expected diagnoses figure
   expected <- exp %>%
-    filter(fy == y) %>%
+    filter(health_board_label == "Scotland" & fy == y) %>%
     {.$diagnoses}
   
   # Assign filtered data, health board and fy to subpage_env 

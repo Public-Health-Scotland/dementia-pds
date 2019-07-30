@@ -38,11 +38,11 @@ MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION
 Row
 ----------------------------------------------------------------------
 
-### Gauge 1
+### Expected
 
 ```{r}
-# rate <- function()
-gauge(90, min = 0, max = 100, symbol = '%')
+exp_rate <- (sum(subpage_data$referrals) / exp)* 100
+gauge(round_half_up(exp_rate, 1), min = 0, max = 100, symbol = '%')
 ```
 
 ### Gauge 2 
