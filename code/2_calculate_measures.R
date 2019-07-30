@@ -64,7 +64,7 @@ pds %<>%
   )
 
 
-### 5 - Add LDP Standard Classification ----
+### 5 - Add LDP standard classification ----
 
 pds %<>%
   
@@ -120,7 +120,7 @@ pds %<>%
   ))
 
 
-### 6 - Add Old Methodology LDP Classification ----
+### 6 - Add old LDP standard classification ----
 
 pds %<>%
   
@@ -129,14 +129,14 @@ pds %<>%
   mutate(ldp_old = case_when(
     
     # Wait time longer than 12 months
-    timewaited > 12 ~ "fail",
+    time_to_start > 12 ~ "fail",
     
     # Still waiting after 12 months
-    is.na(initial_contact) &
-      !(substr(remove_reason, 1, 2) %in% c("03", "04")) &
+    is.na(date_of_initial_first_contact) &
+      !(substr(termination_or_transition_reason, 1, 2) %in% c("03", "04")) &
       #!is.na(remove_reason) &      # condition on remove reason not missing causing records 'still waiting' to be marked as complete
-      substr(status, 1, 2) != "02" &     
-      yr_diag < cur_date ~ "fail",
+      substr(pds_status, 1, 2) != "02" &     
+      diag_12 < end_date ~ "fail",
     
     # Removed from service before 12 months with no reason provided
     # TO DO: Impossible
@@ -144,26 +144,26 @@ pds %<>%
     #   is.na(remove_reason) ~ "fail",
     
     # Remove reason 12 months complete but removed before 12 months
-    substr(remove_reason, 1, 2) == "01" & remove_date < pds_end ~ "fail",
+    substr(termination_or_transition_reason, 1, 2) == "01" & termination_or_transition_date < pds_11 ~ "fail",
     
     # Removed for non-exempt reasons before 12 months
-    (remove_date < pds_end | is.na(remove_date)) &
-      substr(remove_reason, 1, 2) %in% c("02", "98", "99") ~ "fail"
+    (termination_or_transition_date < pds_11 | is.na(termination_or_transition_date)) &
+      substr(termination_or_transition_reason, 1, 2) %in% c("02", "98", "99") ~ "fail"
     
   )) %>%
   
   ## EXEMPT ##
   
   mutate(ldp_old = case_when(
-    is.na(ldp_old) & substr(remove_reason, 1, 2) %in% c("03", "04") ~ "exempt",
+    is.na(ldp_old) & substr(termination_or_transition_reason, 1, 2) %in% c("03", "04") ~ "exempt",
     TRUE ~ ldp_old
   )) %>%
   
   ## ONGOING ##
   
   mutate(ldp_old = case_when(
-    (is.na(ldp_old) & (pds_end > cur_date | is.na(initial_contact))) &
-      (!is.na(initial_contact) | (diag_date + months(12)) >= cur_date) ~ "ongoing",
+    (is.na(ldp_old) & (pds_11 > end_date | is.na(date_of_initial_first_contact))) &
+      (!is.na(date_of_initial_first_contact) | (dementia_diagnosis_confirmed_date + months(12)) >= end_date) ~ "ongoing",
     TRUE ~ ldp_old
   )) %>%
 
