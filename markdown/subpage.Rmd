@@ -38,20 +38,30 @@ MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION
 Row
 ----------------------------------------------------------------------
 
-### Expected
+### LDP 1: Expected vs Referrals
 
-In `r sel_fy`, the expected number of dementia diagnoses in `r hb` was **`r exp`**. The actual number of referrals was **`r sum(subpage_data$referrals)`**. 
+```{r include=FALSE}
+ref <- sum(subpage_data$referrals)
+```
+
+In `r sel_fy`, the expected number of dementia diagnoses in `r hb` was **`r exp`**. The actual number of referrals was **`r ref`**. 
 
 ```{r}
-exp_rate <- (sum(subpage_data$referrals) / exp)* 100
+exp_rate <- (ref / exp) * 100
 gauge(round_half_up(exp_rate, 1), min = 0, max = 100, symbol = '%')
 ```
 
-### Gauge 2 
+### LDP 2: 12 Months Support
 
 ```{r}
-# rate <- function()
-gauge(40, min = 0, max = 100, symbol = '%')
+num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$referrals)}
+den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
+```
+
+In `r sel_fy`, **`r num`** referrals completed 12 months of post-diagnostic support in `r hb`. This includes those who have completed PDS and those who are exempt. The total number of referrals (excluding those whose support is still ongoing) was **`r den`**.
+
+```{r}
+gauge(round_half_up((num / den) * 100, 1), min = 0, max = 100, symbol = '%')
 ```
 
 ### Gauge 3
