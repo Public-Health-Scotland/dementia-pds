@@ -56,7 +56,70 @@ pds %<>%
   )
 
 
-### * - Add FY and months labels
+### 4 - Add LDP Standard Classification ----
+
+pds %<>%
+  
+  mutate(ldp = case_when(
+    
+    ## COMPLETE ##
+    
+    # Started PDS within 12m of diagnosis AND PDS still ongoing after 12m
+    diag_12 > date_of_initial_first_contact & 
+      is.na(termination_or_transition_date) & pds_12 < end_date
+    ~ "complete",
+    
+    # Started PDS within 12m of diagnosis AND PDS ended after 11m
+    diag_12 > date_of_initial_first_contact &
+      pds_11 <= termination_or_transition_date
+    ~ "complete",
+    
+    ## EXEMPT ##
+    
+    # Exempt termination reason; SU died/moved to other HB/refused/can't engage
+    substr(termination_or_transition_reason, 1, 2) %in% 
+      c("03", "04", "05", "06")
+    ~ "exempt",
+    
+    ## ONGOING ##
+    
+    # Less than 12m since diagnosis and PDS not started
+    diag_12 > end_date & 
+      is.na(date_of_initial_first_contact) & is.na(termination_or_transition_reason)
+    ~ "ongoing",
+    
+    # PDS started within 12m of diagnosis but not yet ended
+    diag_12 > date_of_initial_first_contact &
+      pds_12 > end_date &
+      is.na(termination_or_transition_date)
+    ~ "ongoing",
+    
+    ## FAIL ##
+    
+    # More than 12m since diagnosis and PDS not started
+    diag_12 <= end_date &
+      is.na(termination_or_transition_date)
+    ~ "fail",
+    
+    # PDS started more than 12m after diagnosis
+    diag_12 <= date_of_initial_first_contact
+    ~ "fail",
+    
+    # PDS terminated before 11 months from start date
+    pds_11 > termination_or_transition_date
+    ~ "fail"
+    
+  ))
+
+
+### 5 - Add Old Methodology LDP Classification ----
+
+pds %<>%
+  
+  mutate(ldp_old = case_when())
+
+
+### * - Add FY and months labels ----
 
 pds %<>%
   
