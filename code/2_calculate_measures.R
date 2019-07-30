@@ -49,3 +49,10 @@ pds %<>%
     
   )
 
+
+### * - Add FY and months labels
+
+pds %<>%
+  
+  mutate(fy    = finyear(dementia_diagnosis_confirmed_date),
+         month = month(dementia_diagnosis_confirmed_date))
