@@ -81,5 +81,9 @@ pds %<>%
   distinct(chi_number, .keep_all = TRUE)
 
 
-### END OF SCRIPT ###
+### 6 - Save data ---
 
+write_csv(pds, here("data", glue("{fy}Q{qt}_clean_data.csv")))
+
+
+### END OF SCRIPT ###

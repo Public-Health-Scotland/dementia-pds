@@ -20,7 +20,12 @@ source("code/0_setup_environment.R")
 source("code/functions.R")
 
 
-### 2 - Add key dates for calculations ----
+### 2 - Load data ----
+
+pds <- read_csv(here("data", glue("{fy}Q{qt}_clean_data.csv")))
+
+
+### 3 - Add key dates for calculations ----
 
 pds %<>%
   
