@@ -28,6 +28,7 @@ library(stringr)       # For string manipulation and matching
 library(here)          # For the here() function
 library(glue)          # For working with strings
 library(ggplot2)       # For plotting
+library(plotly)        # For interactive plots
 library(flexdashboard) # For creating markdown outputs
 
 

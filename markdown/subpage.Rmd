@@ -84,8 +84,20 @@ subpage_data %>%
 
 ### Section 2 {data-width=800}
 
+```{r referrals, include=FALSE}
+ref <- subpage_data %>%
+  group_by(month) %>%
+  summarise(referrals = sum(referrals))  %>%
+  mutate(month = month(month, label = TRUE, abbr = FALSE))
+
+p <- 
+  ggplot(ref, aes(x = month, y = referrals, group = 1)) + 
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(limits = c(0, NA))
+```
+
 ```{r Chart1}
-ggplot(subpage_data, aes(x = ldp, y = referrals)) +
-  geom_bar(stat = "identity")
+ggplotly(p)
 ```
 
