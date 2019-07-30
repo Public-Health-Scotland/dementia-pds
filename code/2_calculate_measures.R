@@ -42,9 +42,9 @@ pds %<>%
     
     # Number of months between diagnosis and date of first PDS contact
     time_to_start = trunc(time_length(
-      interval(dementia_diagnosis_confirmed_date, 
-               date_of_initial_first_contact), 
-      "months"))
+                             interval(dementia_diagnosis_confirmed_date, 
+                                      date_of_initial_first_contact), 
+                          "months"))
     
   )
 
