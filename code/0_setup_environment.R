@@ -35,7 +35,7 @@ library(flexdashboard) # For creating markdown outputs
 
 # Comment out as appropriate
 # platform <- c("server")
-platform <- c("locally")
+platform <- c("local")
 
 
 # Define root directory for stats server based on whether script is running 
