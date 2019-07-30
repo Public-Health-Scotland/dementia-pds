@@ -64,7 +64,7 @@ gauge(65.9, min = 0, max = 100, symbol = '%')
 Row {data-height=500}
 ----------------------------------------------------------------------
 
-### Section 2
+### Tables
 
 ```{r}
 subpage_data %>% 
@@ -82,13 +82,14 @@ subpage_data %>%
   knitr::kable()
 ```
 
-### Section 2 {data-width=800}
+### Number of Referrals {data-width=800}
 
 ```{r referrals, include=FALSE}
 ref <- subpage_data %>%
   group_by(month) %>%
   summarise(referrals = sum(referrals))  %>%
-  mutate(month = month(month, label = TRUE, abbr = FALSE))
+  mutate(month = month(month, label = TRUE)) %>%
+  mutate(month = forcats::fct_relevel(month, "Jan", "Feb", "Mar", after = Inf))
 
 p <- 
   ggplot(ref, aes(x = month, y = referrals, group = 1)) + 
