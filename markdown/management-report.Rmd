@@ -59,7 +59,7 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 <!-- Scotland -->
 
-```{r render subpages_scotland, include=FALSE}
+```{r render scotland page, include=FALSE}
 
 # Get all unique financial years for the subpages
 years         <- sort(unique(pds$fy))
@@ -81,10 +81,10 @@ for(y in years){
   
   # Assign filtered data, health board and fy to subpage_env 
   assign("subpage_data", subpage_data, subpage_env)
-  assign("health_board", "Scotland", subpage_env)
-  assign("fy", y, subpage_env)
+  assign("hb", "Scotland", subpage_env)
+  assign("sel_fy", y, subpage_env)
   assign("max_fy", max(years), subpage_env) # To determine whether page is hidden
-  assign("years", setdiff(years, y), subpage_env) # To add links to all FY pages
+  assign("all_fy", setdiff(years, y), subpage_env) # To add links to all FY pages
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
   out = c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
@@ -97,7 +97,7 @@ for(y in years){
 
 <!-- HEALTH BOARDS -->
 
-```{r render subpages, include=FALSE}
+```{r render hb pages, include=FALSE}
 
 # Get all unique health boards and financial years for the subpages
 health_boards <- sort(unique(pds$health_board))
@@ -121,10 +121,10 @@ for (hb in health_boards) {
   
   # Assign filtered data, health board and fy to subpage_env 
   assign("subpage_data", subpage_data, subpage_env)
-  assign("health_board", hb, subpage_env)
-  assign("fy", y, subpage_env)
+  assign("hb", hb, subpage_env)
+  assign("sel_fy", y, subpage_env)
   assign("max_fy", max(years), subpage_env) # To determine whether page is hidden
-  assign("years", setdiff(years, y), subpage_env) # To add links to all FY pages
+  assign("all_fy", setdiff(years, y), subpage_env) # To add links to all FY pages
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
   out = c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))

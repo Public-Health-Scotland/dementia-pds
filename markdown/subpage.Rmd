@@ -1,21 +1,21 @@
-`r if_else(max_fy == fy, paste0(health_board, if_else(health_board == "Scotland", "", '{data-navmenu="Health Boards"}')), paste0(health_board, " ", str_replace(fy, "/", ""), ' {.hidden}'))`
+`r if_else(max_fy == sel_fy, paste0(hb, if_else(hb == "Scotland", "", '{data-navmenu="Health Boards"}')), paste0(hb, " ", str_replace(sel_fy, "/", ""), ' {.hidden}'))`
 =================================================
 
 
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
-### `r health_board`
-#### Financial Year `r fy`
+### `r hb`
+#### Financial Year `r sel_fy`
 
 ***
 
 Select Financial Year
 
 <!-- For some reason need '-2' on end of 1819 links - check why this is -->
-|     `r paste0("[2018/19](#", health_board %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-2)")`
-|     `r paste0("[2017/18](#", health_board %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201718)")`
-|     `r paste0("[2016/17](#", health_board %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201617)")`
+|     `r paste0("[2018/19](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-2)")`
+|     `r paste0("[2017/18](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201718)")`
+|     `r paste0("[2016/17](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201617)")`
 
 ***
 
@@ -69,16 +69,16 @@ Row {data-height=500}
 ```{r}
 subpage_data %>% 
   group_by(ldp = ldp) %>% 
-  summarise(Referrals = sum(referrals)) %>% 
-  arrange(-Referrals) %>% 
+  summarise(referrals = sum(referrals)) %>% 
+  arrange(-referrals) %>% 
   knitr::kable()
 ```
 
 ```{r}
 subpage_data %>% 
   group_by(ldp = ldp) %>% 
-  summarise(Referrals = sum(referrals)) %>% 
-  arrange(-Referrals) %>% 
+  summarise(referrals = sum(referrals)) %>% 
+  arrange(-referrals) %>% 
   knitr::kable()
 ```
 
