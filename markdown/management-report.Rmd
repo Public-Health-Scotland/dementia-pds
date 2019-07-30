@@ -12,7 +12,12 @@ output:
 # Load environment file
 source(here::here("code", "0_setup_environment.R"))
 
-pds <- read_csv(here("data", glue("{fy}Q{qt}_final_data.csv")))
+pds <- read_csv(here("data", glue("{fy}Q{qt}_final_data.csv"))) %>%
+  
+  # Remove codes from board and IJB
+  mutate(health_board = str_sub(health_board, 3, -1),
+         ijb          = str_sub(ijb, 10, -1))
+
 
 ```
 

@@ -13,8 +13,7 @@ Sidebar {.sidebar}
 Select Financial Year
 
 <!-- For some reason need '-3' on end of 1920 links - check why this is -->
-|     `r paste0("[2019/20](#", health_board %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"),"-3)")`
-|     `r paste0("[2018/19](#", health_board %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201819)")`
+|     `r paste0("[2018/19](#", health_board %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-2)")`
 |     `r paste0("[2017/18](#", health_board %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201718)")`
 |     `r paste0("[2016/17](#", health_board %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201617)")`
 
