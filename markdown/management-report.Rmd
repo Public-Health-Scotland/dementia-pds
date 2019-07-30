@@ -12,12 +12,15 @@ output:
 # Load environment file
 source(here::here("code", "0_setup_environment.R"))
 
+# Load PDS data
 pds <- read_csv(here("data", glue("{fy}Q{qt}_final_data.csv"))) %>%
   
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),
          ijb          = str_sub(ijb, 10, -1))
 
+# Load expected diagnoses reference file
+exp <- read_csv(here("expected_diagnoses.csv"))
 
 ```
 
@@ -79,12 +82,18 @@ for(y in years){
   subpage_data <- pds %>% 
     filter(fy == y)
   
+  # Calculate expected diagnoses figure
+  expected <- exp %>%
+    filter(fy == y) %>%
+    {.$diagnoses}
+  
   # Assign filtered data, health board and fy to subpage_env 
   assign("subpage_data", subpage_data, subpage_env)
   assign("hb", "Scotland", subpage_env)
   assign("sel_fy", y, subpage_env)
   assign("max_fy", max(years), subpage_env) # To determine whether page is hidden
   assign("all_fy", setdiff(years, y), subpage_env) # To add links to all FY pages
+  assign("exp", expected, subpage_env) # Expected number of diagnoses
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
   out = c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
@@ -119,12 +128,18 @@ for (hb in health_boards) {
   subpage_data <- pds %>% 
     filter(health_board == hb & fy == y)
   
+  # Calculate expected diagnoses figure
+  expected <- exp %>%
+    filter(health_board_label == hb & fy == y) %>%
+    {.$diagnoses}
+  
   # Assign filtered data, health board and fy to subpage_env 
   assign("subpage_data", subpage_data, subpage_env)
   assign("hb", hb, subpage_env)
   assign("sel_fy", y, subpage_env)
   assign("max_fy", max(years), subpage_env) # To determine whether page is hidden
   assign("all_fy", setdiff(years, y), subpage_env) # To add links to all FY pages
+  assign("exp", expected, subpage_env) # Expected number of diagnoses
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
   out = c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
