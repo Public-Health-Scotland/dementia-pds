@@ -26,13 +26,19 @@ pds %<>%
   mutate(
     
     # Date 12 months after diagnosis date
-    diag_12       = add_months(dementia_diagnosis_confirmed_date, 12),
+    diag_12       = add_with_rollback(dementia_diagnosis_confirmed_date, 
+                                      months(12),
+                                      roll_to_first = TRUE),
     
     # Date 11 months after date of first PDS contact     
-    pds_11        = add_months(date_of_initial_first_contact, 11),
+    pds_11        = add_with_rollback(date_of_initial_first_contact, 
+                                      months(11),
+                                      roll_to_first = TRUE),
     
     # Date 12 months after date of first PDS contact
-    pds_12        = add_months(date_of_initial_first_contact, 12),
+    pds_12        = add_with_rollback(date_of_initial_first_contact, 
+                                      months(12),
+                                      roll_to_first = TRUE),
     
     # Number of months between diagnosis and date of first PDS contact
     time_to_start = trunc(time_length(
