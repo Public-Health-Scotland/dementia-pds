@@ -21,7 +21,9 @@ source("code/0_setup_environment.R")
 
 ### 2 - Read in data ----
 
-pds <- read_csv(glue("{filepath}dementia/03-Outputs/zNational/",
+pds <- 
+  
+  read_csv(glue("{filepath}dementia/03-Outputs/zNational/",
                      "National_DementiaPDS_{fy}_Q{qt}.csv"),
                 col_types = cols(.default = "c")) %>%
 
@@ -49,7 +51,7 @@ pds %<>%
 
 
 ### 4 - Recode errors ----
-# TO DO - review this section once number of errors known
+# TO DO - review once number of errors known
 
 pds %<>%
   
@@ -70,7 +72,10 @@ pds %<>%
            interval(start_date, end_date))
 
 
-
+### 5 - Remove duplicates ----
+# TO DO - review once number of duplicates is known
        
-
+pds %<>%
+  
+  distinct(chi_number, .keep_all = TRUE)
 
