@@ -14,10 +14,9 @@
 #########################################################################
 
 
-### 1 - Load environment file and functions ----
+### 1 - Load environment file ----
 
 source("code/0_setup_environment.R")
-source("code/functions.R")
 
 
 ### 2 - Load data ----
@@ -29,7 +28,14 @@ pds <- read_csv(here("data", glue("{fy}Q{qt}_clean_data.csv")))
 
 pds %<>%
   
-  mutate(fy    = finyear(dementia_diagnosis_confirmed_date),
+  mutate(fy    = if_else(month(dementia_diagnosis_confirmed_date) >= 4,
+                 glue("{year(dementia_diagnosis_confirmed_date)}/",
+                      "{substr(year(dementia_diagnosis_confirmed_date) + 1, ",
+                      "3, 4)}"),
+                 glue("{year(dementia_diagnosis_confirmed_date) - 1}/",
+                      "{substr(year(dementia_diagnosis_confirmed_date), ",
+                      "3, 4)}")
+                 ),
          month = month(dementia_diagnosis_confirmed_date))
 
 
