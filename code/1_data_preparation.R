@@ -34,7 +34,25 @@ pds <- read_csv(glue("{filepath}dementia/03-Outputs/zNational/",
   mutate(chi_number = if_else(nchar(chi_number) == 9,
                               paste0("0", chi_number),
                               chi_number))
+
+
+### 3 - Recode Lanarkshire IJB records ----
+# TO DO - check if this recoding is built into DM process
+
+pds %<>%
   
+  mutate(health_board = 
+           case_when(
+             str_detect(ijb, "S37000035|S37000028") ~ "L NHS Lanarkshire",
+             TRUE                                   ~ health_board
+           ))
+
+
+### 4 - Recode errors ----
+# TO DO - 
+
+
+
        
 
 
