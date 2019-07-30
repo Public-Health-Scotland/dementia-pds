@@ -64,35 +64,20 @@ In `r sel_fy`, **`r num`** referrals completed 12 months of post-diagnostic supp
 gauge(round_half_up((num / den) * 100, 1), min = 0, max = 100, symbol = '%')
 ```
 
-### Gauge 3
+### Table
 
 ```{r}
-# rate <- function()
-gauge(65.9, min = 0, max = 100, symbol = '%')
+subpage_data %>% 
+  group_by(ldp = ldp) %>% 
+  summarise(referrals = sum(referrals)) %>% 
+  arrange(-referrals) %>% 
+  knitr::kable()
 ```
 
 
 
 Row {data-height=500}
 ----------------------------------------------------------------------
-
-### Tables
-
-```{r}
-subpage_data %>% 
-  group_by(ldp = ldp) %>% 
-  summarise(referrals = sum(referrals)) %>% 
-  arrange(-referrals) %>% 
-  knitr::kable()
-```
-
-```{r}
-subpage_data %>% 
-  group_by(ldp = ldp) %>% 
-  summarise(referrals = sum(referrals)) %>% 
-  arrange(-referrals) %>% 
-  knitr::kable()
-```
 
 ### Number of Referrals {data-width=800}
 
