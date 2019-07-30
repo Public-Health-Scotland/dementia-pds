@@ -179,3 +179,18 @@ pds %<>%
 # can we use inactive to remove people from waiting list or dates more reliable?
 
 
+### 8 - Add waiting time categories
+
+pds %<>%
+  
+  mutate(wait_length = case_when(
+    
+    is.na(time_to_start)           ~ "Still Waiting",
+    between(time_to_start, 0, 3)   ~ "3 Months or Less",
+    between(time_to_start, 4, 6)   ~ "4-6 Months",    
+    between(time_to_start, 7, 9)   ~ "7-9 Months",
+    between(time_to_start, 10, 12) ~ "10-12 Months",
+    time_to_start >= 13            ~ "Over 1 Year",
+    
+  ))
+
