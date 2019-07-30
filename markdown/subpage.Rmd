@@ -32,7 +32,6 @@ Row {data-height=30}
 <span style="color:red"> 
 MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION 
 </span> </center> </font> 
-<br>
 
 
 Row
