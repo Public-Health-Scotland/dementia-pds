@@ -14,9 +14,10 @@
 #########################################################################
 
 
-### 1 - Load environment file ----
+### 1 - Load environment file and functions ----
 
 source("code/0_setup_environment.R")
+source("code/functions.R")
 
 
 ### 2 - Read in data ----
