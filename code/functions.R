@@ -13,29 +13,16 @@
 #########################################################################
 
 
-## TO DO - add more comments
+### 1 - Financial Year in format 2017/18 ----
 
-
-## Add Financial Year Variable in format 17/18
-
-finyear <- function(date, start_month = 4){
+finyear <- function(date, fy_start = 4){
   
-  if_else(month(date) >= start_month,
-          paste0(substr(year(date), 3, 4), "/", substr(year(date) + 1, 3, 4)),
-          paste0(substr(year(date) - 1, 3, 4), "/", substr(year(date), 3, 4))
+  if_else(month(date) >= fy_start,
+          glue("{year(date)}/{substr(year(date) + 1, 3, 4)}"),
+          glue("{year(date) - 1}/{substr(year(date), 3, 4)}")
   )
   
 }
 
 
-## Add certain number of months to a given date
-## Using %m+% operator rolls back date e.g. 31/05/2019 + 1 month = 30/06/2019
-## This function defines this as 01/07/2019
-
-add_months <- function(date, no_months){
-  
-  if_else(is.na(date + months(no_months)),
-          date %m+% months(no_months) + days(1),
-          date + months(no_months))
-  
-}
+### END OF SCRIPT ###
