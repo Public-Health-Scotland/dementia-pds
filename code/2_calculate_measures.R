@@ -26,6 +26,7 @@ pds <- read_csv(here("data", glue("{fy}Q{qt}_clean_data.csv")))
 
 
 ### 3 - Add key dates for calculations ----
+# TO DO - Review whether we want to roll forward or back
 
 pds %<>%
   
