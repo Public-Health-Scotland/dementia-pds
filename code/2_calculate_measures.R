@@ -194,3 +194,14 @@ pds %<>%
     
   ))
 
+
+### 9 - Create final output file ----
+
+pds %<>%
+  group_by(health_board, ijb, fy, month, ldp, ldp_old, wait_length) %>%
+  summarise(referrals = n())
+
+write_csv(pds, here("data", glue("{fy}Q{qt}_final_data.csv")))
+
+
+### END OF SCRIPT ###
