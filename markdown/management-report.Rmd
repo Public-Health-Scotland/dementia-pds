@@ -10,7 +10,7 @@ output:
 ```{r setup, include=FALSE}
 
 # Load environment file
-source(here("code", "0_setup_environment.R"))
+source(here::here("code", "0_setup_environment.R"))
 
 pds <- here("data", glue("{fy}Q{qt}_final_data.csv"))
 
@@ -54,9 +54,7 @@ Row
 
 ### About This Report
 
-Bold text still to be automated.
-
-This report contains data for diagnoses of dementia between **start date** and **end date** and is based on board submissions as of **month of board submission**.
+This report contains data for diagnoses of dementia between `r glue("{day(start_date)} {month(start_date, label = TRUE, abbr = FALSE)} {year(start_date)}")` and `r glue("{day(end_date)} {month(end_date, label = TRUE, abbr = FALSE)} {year(end_date)}")` and is based on board submissions made in `r month(month(floor_date(end_date, "months")) + 1, label = TRUE, abbr = FALSE)` `r year(floor_date(end_date, "months") + 1)`.
 
 These reports are developed by the NSS Public Health and Intelligence National Dementia PDS Team and contain performance-based analysis against the Scottish Government's LDP Standard on Dementia Post-Diagnostic Support whereby anyone newly diagnosed with dementia is entitled to a years worth of person-centred support.
 
