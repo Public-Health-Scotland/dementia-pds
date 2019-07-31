@@ -10,6 +10,29 @@ Sidebar {.sidebar}
 
 ***
 
+Summary Figures
+
+```{r summary figures, include=FALSE}
+
+# Expected vs Referrals
+ref <- sum(subpage_data$referrals)
+exp_rate <- (ref / exp) * 100
+
+# 12 Months Complete
+num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$referrals)}
+den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
+pds_rate <- (num / den) * 100
+
+```
+
+```{r}
+tibble(measure = c("Total Number Referred", "Expected Rate"),
+       figure  = c(ref, exp_rate)) %>%
+  knitr::kable()
+```
+
+***
+
 Select Financial Year
 
 <!-- For some reason need '-2' on end of 1819 links - check why this is -->
@@ -39,28 +62,18 @@ Row
 
 ### LDP 1: Expected vs Referrals
 
-```{r include=FALSE}
-ref <- sum(subpage_data$referrals)
-```
-
 In `r sel_fy`, the expected number of dementia diagnoses in `r hb` was **`r exp`**. The actual number of referrals was **`r ref`**. 
 
 ```{r}
-exp_rate <- (ref / exp) * 100
 gauge(round_half_up(exp_rate, 1), min = 0, max = 100, symbol = '%')
 ```
 
 ### LDP 2: 12 Months Support
 
-```{r}
-num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$referrals)}
-den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
-```
-
 In `r sel_fy`, **`r num`** referrals completed 12 months of post-diagnostic support in `r hb`. This includes those who have completed PDS and those who are exempt. The total number of referrals (excluding those whose support is still ongoing) was **`r den`**.
 
 ```{r}
-gauge(round_half_up((num / den) * 100, 1), min = 0, max = 100, symbol = '%')
+gauge(round_half_up(pds_rate, 1), min = 0, max = 100, symbol = '%')
 ```
 
 ### Table
