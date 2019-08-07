@@ -16,12 +16,12 @@
 
 ### 1 - Load environment file ----
 
-source(here::here("code", "0_setup_environment.R"))
+source(here::here("code", "0-setup-environment.R"))
 
 
 ### 2 - Load data ----
 
-pds <- read_csv(here("data", glue("{fy}Q{qt}_clean_data.csv")))
+pds <- read_csv(here("data", glue("{fy}Q{qt}-clean-data.csv")))
 
 
 ### 3 - Add FY and months labels ----
@@ -207,7 +207,7 @@ pds %<>%
   group_by(health_board, ijb, fy, month, ldp, ldp_old, wait_length) %>%
   summarise(referrals = n())
 
-write_csv(pds, here("data", glue("{fy}Q{qt}_final_data.csv")))
+write_csv(pds, here("data", glue("{fy}Q{qt}-final-data.csv")))
 
 
 ### END OF SCRIPT ###
