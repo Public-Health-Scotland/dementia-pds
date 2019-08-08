@@ -21,7 +21,13 @@ source(here::here("code", "00_setup-environment.R"))
 
 ### 2 - Load data ----
 
-pds <- read_csv(here("data", glue("{fy}-{qt}_clean-data.csv")))
+pds <- 
+  
+  read_csv(here("data", glue("{fy}-{qt}_clean-data.csv")), 
+                col_types = cols(.default = "c")) %>%
+  
+  # Convert dates from character to date format
+  mutate_at(vars(contains("date")), ~lubridate::ymd(.))
 
 
 ### 3 - Add FY and months labels ----
