@@ -55,21 +55,20 @@ pds %<>%
 
 pds %<>%
   
+  # Remove records with missing CHI and missing diagnosis date
+  filter(!is.na(dementia_diagnosis_confirmed_date) & !is.na(chi_number)) %>%
+
+  # Select records within reporting period only
+  filter(dementia_diagnosis_confirmed_date %within% 
+           interval(start_date, end_date)) %>%
+  
   # Recode missing PDS Status
   mutate(pds_status = 
            case_when(
              str_detect(pds_status, "02") ~ "02 Inactive",
              is.na(pds_status)            ~ "01 Active",
              TRUE                         ~ pds_status
-           )) %>%
-
-  # Remove missing CHI and missing diagnosis date
-  filter(!is.na(dementia_diagnosis_confirmed_date) & !is.na(chi_number)) %>%
-
-
-  # Select records in reporting period only
-  filter(dementia_diagnosis_confirmed_date %within% 
-           interval(start_date, end_date))
+           ))
 
 
 ### 5 - Remove duplicates ----
