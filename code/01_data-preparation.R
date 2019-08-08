@@ -78,7 +78,7 @@ pds %<>%
 
   # Fix error dates
   # Only use diagnosis, first contact and termination date currently
-  tidylog::mutate(date_of_initial_first_contact = if_else(date_of_initial_first_contact < dementia_diagnosis_confirmed_date,
+  mutate(date_of_initial_first_contact = if_else(date_of_initial_first_contact < dementia_diagnosis_confirmed_date,
                                                           dementia_diagnosis_confirmed_date,
                                                           date_of_initial_first_contact),
                   termination_or_transition_date = if_else(termination_or_transition_date < date_of_initial_first_contact,
