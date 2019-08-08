@@ -49,12 +49,13 @@ filepath <- dplyr::if_else(platform == "server",
 ### 3 - Extract dates ----
 
 # Define the dates that the data are extracted from and to
-# Dates are in ddmmyyyy format
 
 # Start date of reporting period
+# Update annually when Q1 of new FY is submitted
 start_date <- lubridate::ymd(20160401)
 
 # End date of reporting period
+# Update quarterly to last day of new quarter
 end_date   <- lubridate::ymd(20190331)
 
 # FY and Quarter of reporting period
