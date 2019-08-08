@@ -68,7 +68,13 @@ pds %<>%
              str_detect(pds_status, "02") ~ "02 Inactive",
              is.na(pds_status)            ~ "01 Active",
              TRUE                         ~ pds_status
-           ))
+           )) %>%
+
+  # Recode NAs to 99 Not Known (for variables where this is an option)
+  mutate_at(vars("gender", "ethnic_group", "additional_disability",
+                 "living_alone", "accommodation_type", "pds_referral_source",
+                 "carers_support"), 
+            funs(replace_na(., "99 Not Known")))
 
 
 ### 5 - Remove duplicates ----
