@@ -1,5 +1,5 @@
 #########################################################################
-# Name of file - 0_setup_environment.R
+# Name of file - 00_setup-environment.R
 # Data release - Quarterly Dementia PDS Management Reports
 # Original Authors - Alice Byers
 # Orginal Date - July 2019
