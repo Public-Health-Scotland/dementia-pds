@@ -16,7 +16,7 @@
 
 ### 1 - Load environment file and functions ----
 
-source(here::here("code", "0-setup-environment.R"))
+source(here::here("code", "00_setup-environment.R"))
 
 
 ### 2 - Read in data ----
@@ -82,7 +82,7 @@ pds %<>%
 
 ### 6 - Save data ---
 
-write_csv(pds, here("data", glue("{fy}Q{qt}-clean-data.csv")))
+write_csv(pds, here("data", glue("{fy}-{qt}_clean-data.csv")))
 
 
 ### END OF SCRIPT ###
