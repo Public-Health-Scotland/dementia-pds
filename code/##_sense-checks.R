@@ -7,3 +7,10 @@
 
 # Data submitted for latest quarter
 
+# No dates in future
+
+# No first contact date before diagnosis date
+
+# All inactive records have remove date and reason
+
+# All active records have blank remove date and reason
