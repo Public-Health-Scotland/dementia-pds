@@ -7,4 +7,4 @@
 data/
 
 # Markdown output #
-markdown/management-report.html
+.html
