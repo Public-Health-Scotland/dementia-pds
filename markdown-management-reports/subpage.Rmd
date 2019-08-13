@@ -1,0 +1,99 @@
+`r if_else(max_fy == sel_fy, paste0(hb, if_else(hb == "Scotland", "", '{data-navmenu="Health Boards"}')), paste0(hb, " ", str_replace(sel_fy, "/", ""), ' {.hidden}'))`
+=================================================
+
+```{r summary figures, include=FALSE}
+# Expected vs Referrals
+ref <- sum(subpage_data$referrals)
+exp_rate <- (ref / exp) * 100
+# 12 Months Complete
+num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$referrals)}
+den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
+pds_rate <- (num / den) * 100
+```
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+### `r hb`
+#### Financial Year `r sel_fy`
+
+***
+
+Select Financial Year
+
+<!-- For some reason need '-2' on end of 1819 links - check why this is -->
+|     `r paste0("[2018/19](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-2)")`
+|     `r paste0("[2017/18](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201718)")`
+|     `r paste0("[2016/17](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201617)")`
+
+***
+
+<!-- Reword this and try and force to bottom of sidebar -->
+Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
+
+
+Row {data-height=30}
+-----------------------------------------------------------------------
+
+<!-- Management Information tagline -->
+<font size="3"> 
+<center> 
+<span style="color:red"> 
+MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION 
+</span> </center> </font> 
+
+
+Row
+----------------------------------------------------------------------
+
+### LDP 1: Expected vs Referrals
+
+In `r sel_fy`, the expected number of dementia diagnoses in `r hb` was **`r exp`**. The actual number of referrals was **`r ref`**. 
+
+```{r}
+gauge(round_half_up(exp_rate, 1), min = 0, max = 100, symbol = '%')
+```
+
+### LDP 2: 12 Months Support
+
+In `r sel_fy`, **`r num`** referrals completed 12 months of post-diagnostic support in `r hb`. This includes those who have completed PDS and those who are exempt. The total number of referrals (excluding those whose support is still ongoing) was **`r den`**.
+
+```{r}
+gauge(round_half_up(pds_rate, 1), min = 0, max = 100, symbol = '%')
+```
+
+### Table
+
+```{r}
+subpage_data %>% 
+  group_by(ldp = ldp) %>% 
+  summarise(referrals = sum(referrals)) %>% 
+  arrange(-referrals) %>% 
+  knitr::kable()
+```
+
+
+
+Row {data-height=500}
+----------------------------------------------------------------------
+
+### Number of Referrals {data-width=800}
+
+```{r referrals, include=FALSE}
+ref <- subpage_data %>%
+  group_by(month) %>%
+  summarise(referrals = sum(referrals))  %>%
+  mutate(month = month(month, label = TRUE)) %>%
+  mutate(month = forcats::fct_relevel(month, "Jan", "Feb", "Mar", after = Inf))
+
+p <- 
+  ggplot(ref, aes(x = month, y = referrals, group = 1)) + 
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(limits = c(0, NA))
+```
+
+```{r Chart1}
+ggplotly(p)
+```
+

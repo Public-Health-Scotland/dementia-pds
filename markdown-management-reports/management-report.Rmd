@@ -1,0 +1,168 @@
+---
+title: "Dementia PDS Quarterly Management Report"
+output: 
+  flexdashboard::flex_dashboard:
+    logo: isdscotland.png
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{r setup, include=FALSE}
+
+# Load environment file
+source(here::here("code", "00_setup-environment.R"))
+
+# Load PDS data
+pds <- read_csv(here("data", glue("{fy}-{qt}_final-data.csv"))) %>%
+  
+  # Remove codes from board and IJB
+  mutate(health_board = str_sub(health_board, 3, -1),
+         ijb          = str_sub(ijb, 10, -1))
+
+# Load expected diagnoses reference file
+exp <- read_csv(here("reference-files", "expected-diagnoses.csv"))
+
+```
+
+Home
+=================================================
+
+Row
+-------------------------------------------------
+
+### About This Report
+
+This report contains data for diagnoses of dementia between `r glue("{day(start_date)} {month(start_date, label = TRUE, abbr = FALSE)} {year(start_date)}")` and `r glue("{day(end_date)} {month(end_date, label = TRUE, abbr = FALSE)} {year(end_date)}")` and is based on board submissions made in `r month(month(floor_date(end_date, "months")) + 1, label = TRUE, abbr = FALSE)` `r year(floor_date(end_date, "months") + 1)`.
+
+These reports are developed by the NSS Public Health and Intelligence National Dementia PDS Team and contain performance-based analysis against the Scottish Government's LDP Standard on Dementia Post-Diagnostic Support whereby anyone newly diagnosed with dementia is entitled to a years worth of person-centred support.
+
+We would welcome any comments or feedback you may have on these management reports. Please get in touch with the ISD Dementia PDS team at: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
+
+
+Row
+-------------------------------------------------
+
+### LDP Standard
+
+The Local Delivery Plan (LDP) standard is as follows:
+
+People newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by a named Link Worker.
+
+Performance against the LDP standard is reported in two parts:
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+1. The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support.
+2. The percentage of people referred who received a minimum of one year’s support.
+
+</div>
+
+<!-- Scotland -->
+
+```{r render scotland page, include=FALSE}
+
+# Get all unique financial years for the subpages
+years         <- sort(unique(pds$fy))
+
+# Create variable which stores all subpages outputs
+out = NULL
+
+# Set knitr options to allow duplicate labels (needed for the subpages)
+options(knitr.duplicate.label = 'allow')
+
+# Create temporary environment which we use for knitting subpages.RMD 
+subpage_env <- new.env()
+
+for(y in years){
+    
+  # Filter data for health board and financial year
+  subpage_data <- pds %>% 
+    filter(fy == y)
+  
+  # Calculate expected diagnoses figure
+  expected <- exp %>%
+    filter(health_board_label == "Scotland" & fy == y) %>%
+    {.$diagnoses}
+  
+  # Assign filtered data, health board and fy to subpage_env 
+  assign("subpage_data", subpage_data, subpage_env)
+  assign("hb", "Scotland", subpage_env)
+  assign("sel_fy", y, subpage_env)
+  assign("max_fy", max(years), subpage_env) # To determine whether page is hidden
+  assign("all_fy", setdiff(years, y), subpage_env) # To add links to all FY pages
+  assign("exp", expected, subpage_env) # Expected number of diagnoses
+  
+  # Knit subpage.RMD using the subpage_env and add result to out vector
+  out = c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
+    
+}
+```
+
+`r paste(knitr::knit_child(text = out), collapse = '')`
+
+
+<!-- HEALTH BOARDS -->
+
+```{r render hb pages, include=FALSE}
+
+# Get all unique health boards and financial years for the subpages
+health_boards <- sort(unique(pds$health_board))
+years         <- sort(unique(pds$fy))
+
+# Create variable which stores all subpages outputs
+out = NULL
+
+# Set knitr options to allow duplicate labels (needed for the subpages)
+options(knitr.duplicate.label = 'allow')
+
+# Create temporary environment which we use for knitting subpages.RMD 
+subpage_env <- new.env()
+
+for (hb in health_boards) {
+  for(y in years){
+    
+  # Filter data for health board and financial year
+  subpage_data <- pds %>% 
+    filter(health_board == hb & fy == y)
+  
+  # Calculate expected diagnoses figure
+  expected <- exp %>%
+    filter(health_board_label == hb & fy == y) %>%
+    {.$diagnoses}
+  
+  # Assign filtered data, health board and fy to subpage_env 
+  assign("subpage_data", subpage_data, subpage_env)
+  assign("hb", hb, subpage_env)
+  assign("sel_fy", y, subpage_env)
+  assign("max_fy", max(years), subpage_env) # To determine whether page is hidden
+  assign("all_fy", setdiff(years, y), subpage_env) # To add links to all FY pages
+  assign("exp", expected, subpage_env) # Expected number of diagnoses
+  
+  # Knit subpage.RMD using the subpage_env and add result to out vector
+  out = c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
+    
+  }
+}
+```
+
+`r paste(knitr::knit_child(text = out), collapse = '')`
+
+
+Methodology
+=================================================
+
+Row
+-------------------------------------------------
+
+### Methodology
+
+Notes will be added here to describe the methodology.
+
+Include information on what is done with outstanding errors; e.g. missing PDS status recoded to active.
+
+Include note about what year of expected diagnoses is used for each financial year.
+
+The code used to produce these reports is available on [GitHub](https://github.com/alicebyers5/dementia-management-reports).
