@@ -1,35 +1,21 @@
 `r if_else(max_fy == sel_fy, paste0(hb, if_else(hb == "Scotland", "", '{data-navmenu="Health Boards"}')), paste0(hb, " ", str_replace(sel_fy, "/", ""), ' {.hidden}'))`
 =================================================
 
+```{r summary figures, include=FALSE}
+# Expected vs Referrals
+ref <- sum(subpage_data$referrals)
+exp_rate <- (ref / exp) * 100
+# 12 Months Complete
+num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$referrals)}
+den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
+pds_rate <- (num / den) * 100
+```
 
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
 ### `r hb`
 #### Financial Year `r sel_fy`
-
-***
-
-Summary Figures
-
-```{r summary figures, include=FALSE}
-
-# Expected vs Referrals
-ref <- sum(subpage_data$referrals)
-exp_rate <- (ref / exp) * 100
-
-# 12 Months Complete
-num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$referrals)}
-den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
-pds_rate <- (num / den) * 100
-
-```
-
-```{r}
-tibble(measure = c("Total Number Referred", "Expected Rate"),
-       figure  = c(ref, exp_rate)) %>%
-  knitr::kable()
-```
 
 ***
 
