@@ -43,11 +43,11 @@ pds <-
 
 pds %<>%
   
-  tidylog::mutate(health_board = 
-                    case_when(
-                      str_detect(ijb, "S37000035|S37000028") ~ "L NHS Lanarkshire",
-                      TRUE                                   ~ health_board
-                  ))
+  mutate(health_board = 
+            case_when(
+               str_detect(ijb, "S37000035|S37000028") ~ "L NHS Lanarkshire",
+                          TRUE                        ~ health_board
+            ))
 
 
 ### 4 - Recode errors ----
