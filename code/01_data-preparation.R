@@ -56,7 +56,7 @@ pds %<>%
 pds %<>%
   
   # Remove records with missing CHI and missing diagnosis date
-  filter(!is.na(dementia_diagnosis_confirmed_date) & !is.na(chi_number)) %>%
+  filter(!is.na(dementia_diagnosis_confirmed_date) | !is.na(chi_number)) %>%
 
   # Select records within reporting period only
   filter(dementia_diagnosis_confirmed_date %within% 
