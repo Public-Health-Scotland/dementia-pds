@@ -94,26 +94,6 @@ pds %<>%
       pds_11 <= termination_or_transition_date
     ~ "complete",
     
-    ## EXEMPT ##
-    
-    # Exempt termination reason; SU died/moved to other HB/refused/can't engage
-    substr(termination_or_transition_reason, 1, 2) %in% 
-      c("03", "04", "05", "06")
-    ~ "exempt",
-    
-    ## ONGOING ##
-    
-    # Less than 12m since diagnosis and PDS not started
-    diag_12 > end_date & 
-      is.na(date_of_initial_first_contact) & is.na(termination_or_transition_reason)
-    ~ "ongoing",
-    
-    # PDS started within 12m of diagnosis but not yet ended
-    diag_12 > date_of_initial_first_contact &
-      pds_12 > end_date &
-      is.na(termination_or_transition_date)
-    ~ "ongoing",
-    
     ## FAIL ##
     
     # More than 12m since diagnosis and PDS not started
@@ -132,7 +112,27 @@ pds %<>%
     # PDS terminated before first contact made
     is.na(date_of_initial_first_contact) & 
       !is.na(termination_or_transition_date)
-    ~ "fail"
+    ~ "fail",
+    
+    ## EXEMPT ##
+    
+    # Exempt termination reason; SU died/moved to other HB/refused/can't engage
+    substr(termination_or_transition_reason, 1, 2) %in% 
+      c("03", "04", "05", "06")
+    ~ "exempt",
+    
+    ## ONGOING ##
+    
+    # Less than 12m since diagnosis and PDS not started
+    diag_12 > end_date & 
+      is.na(date_of_initial_first_contact) & is.na(termination_or_transition_reason)
+    ~ "ongoing",
+    
+    # PDS started within 12m of diagnosis but not yet ended
+    diag_12 > date_of_initial_first_contact &
+      pds_12 > end_date &
+      is.na(termination_or_transition_date)
+    ~ "ongoing"
     
   ))
 
