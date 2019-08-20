@@ -125,7 +125,8 @@ pds %<>%
     
     # Less than 12m since diagnosis and PDS not started
     diag_12 > end_date & 
-      is.na(date_of_initial_first_contact) & is.na(termination_or_transition_reason)
+      is.na(date_of_initial_first_contact) & 
+      is.na(termination_or_transition_date)
     ~ "ongoing",
     
     # PDS started within 12m of diagnosis but not yet ended
