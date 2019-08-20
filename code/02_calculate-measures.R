@@ -98,7 +98,8 @@ pds %<>%
     
     # More than 12m since diagnosis and PDS not started
     diag_12 <= end_date &
-      is.na(date_of_initial_first_contact)
+      is.na(date_of_initial_first_contact) &
+         is.na(termination_or_transition_date)
     ~ "fail",
     
     # PDS started more than 12m after diagnosis
@@ -106,12 +107,14 @@ pds %<>%
     ~ "fail",
     
     # PDS terminated before 11 months from start date
-    pds_11 > termination_or_transition_date
+    pds_11 > termination_or_transition_date &
+      !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
     ~ "fail",
     
     # PDS terminated before first contact made
     is.na(date_of_initial_first_contact) & 
-      !is.na(termination_or_transition_date)
+      !is.na(termination_or_transition_date) & 
+         !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
     ~ "fail",
     
     ## EXEMPT ##
