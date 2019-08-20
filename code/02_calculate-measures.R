@@ -117,8 +117,7 @@ pds %<>%
     ## EXEMPT ##
     
     # Exempt termination reason; SU died/moved to other HB/refused/can't engage
-    substr(termination_or_transition_reason, 1, 2) %in% 
-      c("03", "04", "05", "06")
+    substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons
     ~ "exempt",
     
     ## ONGOING ##
