@@ -68,4 +68,9 @@ qt         <- "4"
 options(scipen=999)
 
 
+### 5 - Define exempt termination reason codes ----
+
+exempt_reasons <- c("03", "04", "05", "06")
+
+
 ### END OF SCRIPT ###
