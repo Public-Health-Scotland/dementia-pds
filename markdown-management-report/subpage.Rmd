@@ -49,15 +49,9 @@ Row
 ### Summary Table
 
 ```{r}
-subpage_data %>% 
-  group_by(ldp = ldp) %>% 
-  summarise(referrals = sum(referrals)) %>%
-  mutate(ldp = str_to_title(ldp)) %>%
-  ungroup() %>%
-  bind_rows(tibble(ldp = "Total", referrals = sum(.$referrals))) %>%
-  bind_rows(tibble(ldp = "Expected", referrals = exp)) %>%
-  arrange(match(ldp, c("Total", "Expected"))) %>%
-  knitr::kable(col.names = c("", "Number of Referrals"))
+valueBox(ref, 
+         icon = "fa-hashtag",
+         caption = glue("referrals were made for post-diagnostic support."))
 ```
 
 ### LDP 1: Expected vs Referral
@@ -65,9 +59,8 @@ subpage_data %>%
 ```{r}
 valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
          icon = "fa-percent",
-         caption = glue("In {sel_fy} the expected number of diagnoses in {hb} ",
-                        "was {exp}. The actual number of referrals was ",
-                        "{ref}."))
+         caption = glue("of the expected number of diagnoses were ",
+                        "referred for post diagnostic support."))
 ```
 
 ### LDP 2: 12 Months Support
@@ -75,10 +68,8 @@ valueBox(paste0(round_half_up(exp_rate, 1), "%"),
 ```{r}
 valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
          icon = "fa-percent",
-         caption = glue("In {sel_fy}, {num} referrals completed 12 months of ",
-                        "post-diagnostic support in {hb}. The total number of ",
-                        "referrals (excluding those whose support is still ",
-                        "ongoing was {den}."))
+         caption = glue("of those referred for post diagnostic support ",
+                        "received 12 months of support."))
 ```
 
 
