@@ -115,13 +115,17 @@ ref <- bind_rows(ref, ref_scot)
 }
 
 p <- 
-  ggplot(ref, aes(x = month, y = referrals, colour = area,
+  ggplot(ref, aes(x = month, y = referrals, 
+                  colour = area,
                   text = paste0(month_full, " ", year, "<br>",
                          area, "<br>",
                          "Referrals: ", referrals))) + 
   geom_point() +
   geom_line() +
-  scale_y_continuous(limits = c(0, NA))
+  scale_y_continuous(limits = c(0, NA)) +
+  labs(x = "",
+       y = "Number of Referrals",
+       colour = "")
 ```
 
 ```{r Chart1}
