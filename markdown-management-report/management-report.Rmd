@@ -16,7 +16,7 @@ source(here::here("code", "00_setup-environment.R"))
 pds <- read_csv(here("data", glue("{fy}-{qt}_final-data.csv"))) %>%
   
   # Filter HB for fasther knitting when testing
-  filter(substr(health_board, 1, 1) == c("A", "B")) %>%
+  # filter(substr(health_board, 1, 1) == c("A", "B")) %>%
   
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),
