@@ -96,15 +96,31 @@ ref <- subpage_data %>%
                         substr(sel_fy, 1, 4)),
          month_abbr = month(month, label = TRUE),
          month_full = month(month, label = TRUE, abbr = FALSE)) %>%
-  mutate(month = forcats::fct_relevel(month_abbr, "Jan", "Feb", "Mar", after = Inf))
+  mutate(month = forcats::fct_relevel(month_abbr, "Jan", "Feb", "Mar", after = Inf)) %>%
+  mutate(area = hb)
+
+if(hb != "Scotland"){
+ref_scot <- subpage_scot %>%
+  group_by(month) %>%
+  summarise(referrals = sum(referrals))  %>%
+  mutate(year = if_else(month %in% 1:3, 
+                        paste0(substr(sel_fy, 1, 2), substr(sel_fy, 6, 7)),
+                        substr(sel_fy, 1, 4)),
+         month_abbr = month(month, label = TRUE),
+         month_full = month(month, label = TRUE, abbr = FALSE)) %>%
+  mutate(month = forcats::fct_relevel(month_abbr, "Jan", "Feb", "Mar", after = Inf)) %>%
+  mutate(area = "Scotland")
+
+ref <- bind_rows(ref, ref_scot)
+}
 
 p <- 
-  ggplot(ref, 
-         aes(x = month, y = referrals, group = 1,
-             text = paste0(month_full, " ", year, "<br>",
-                          "Referrals: ", referrals))) + 
-  geom_line() +
+  ggplot(ref, aes(x = month, y = referrals, colour = area,
+                  text = paste0(month_full, " ", year, "<br>",
+                         area, "<br>",
+                         "Referrals: ", referrals))) + 
   geom_point() +
+  geom_line() +
   scale_y_continuous(limits = c(0, NA))
 ```
 
