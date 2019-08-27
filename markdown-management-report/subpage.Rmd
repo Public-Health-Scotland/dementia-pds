@@ -46,32 +46,40 @@ MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION
 Row
 ----------------------------------------------------------------------
 
-### LDP 1: Expected vs Referrals
-
-In `r sel_fy`, the expected number of dementia diagnoses in `r hb` was **`r exp`**. The actual number of referrals was **`r ref`**. 
-
-```{r}
-gauge(round_half_up(exp_rate, 1), min = 0, max = 100, symbol = '%')
-```
-
-### LDP 2: 12 Months Support
-
-In `r sel_fy`, **`r num`** referrals completed 12 months of post-diagnostic support in `r hb`. This includes those who have completed PDS and those who are exempt. The total number of referrals (excluding those whose support is still ongoing) was **`r den`**.
-
-```{r}
-gauge(round_half_up(pds_rate, 1), min = 0, max = 100, symbol = '%')
-```
-
-### Table
+### Summary Table
 
 ```{r}
 subpage_data %>% 
   group_by(ldp = ldp) %>% 
-  summarise(referrals = sum(referrals)) %>% 
-  arrange(-referrals) %>% 
-  knitr::kable()
+  summarise(referrals = sum(referrals)) %>%
+  mutate(ldp = str_to_title(ldp)) %>%
+  ungroup() %>%
+  bind_rows(tibble(ldp = "Total", referrals = sum(.$referrals))) %>%
+  bind_rows(tibble(ldp = "Expected", referrals = exp)) %>%
+  arrange(match(ldp, c("Total", "Expected"))) %>%
+  knitr::kable(col.names = c("", "Number of Referrals"))
 ```
 
+### LDP 1: Expected vs Referral
+
+```{r}
+valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
+         icon = "fa-percent",
+         caption = glue("In {sel_fy} the expected number of diagnoses in {hb} ",
+                        "was {exp}. The actual number of referrals was ",
+                        "{ref}."))
+```
+
+### LDP 2: 12 Months Support
+
+```{r}
+valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
+         icon = "fa-percent",
+         caption = glue("In {sel_fy}, {num} referrals completed 12 months of ",
+                        "post-diagnostic support in {hb}. The total number of ",
+                        "referrals (excluding those whose support is still ",
+                        "ongoing was {den}."))
+```
 
 
 Row {data-height=500}
