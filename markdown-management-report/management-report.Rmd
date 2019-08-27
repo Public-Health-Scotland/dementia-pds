@@ -165,4 +165,4 @@ Include information on what is done with outstanding errors; e.g. missing PDS st
 
 Include note about what year of expected diagnoses is used for each financial year.
 
-The code used to produce these reports is available on [GitHub](https://github.com/alicebyers5/dementia-management-reports).
+The code used to produce these reports is available on [GitHub](https://github.com/alicebyers5/dementia-pds).
