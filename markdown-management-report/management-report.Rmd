@@ -12,6 +12,9 @@ output:
 # Load environment file
 source(here::here("code", "00_setup-environment.R"))
 
+# Set knitr options to allow duplicate labels (needed for the subpages)
+options(knitr.duplicate.label = 'allow')
+
 # Load PDS data
 pds <- read_csv(here("data", glue("{fy}-{qt}_final-data.csv"))) %>%
   
@@ -74,9 +77,6 @@ years         <- sort(unique(pds$fy))
 # Create variable which stores all subpages outputs
 out <- NULL
 
-# Set knitr options to allow duplicate labels (needed for the subpages)
-options(knitr.duplicate.label = 'allow')
-
 # Create temporary environment which we use for knitting subpages.RMD 
 subpage_env <- new.env()
 
@@ -118,9 +118,6 @@ years         <- sort(unique(pds$fy))
 
 # Create variable which stores all subpages outputs
 out < NULL
-
-# Set knitr options to allow duplicate labels (needed for the subpages)
-options(knitr.duplicate.label = 'allow')
 
 # Create temporary environment which we use for knitting subpages.RMD 
 subpage_env <- new.env()
