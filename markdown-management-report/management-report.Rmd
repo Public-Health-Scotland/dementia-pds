@@ -117,7 +117,7 @@ health_boards <- sort(unique(pds$health_board))
 years         <- sort(unique(pds$fy))
 
 # Create variable which stores all subpages outputs
-out < NULL
+out <- NULL
 
 # Create temporary environment which we use for knitting subpages.RMD 
 subpage_env <- new.env()
@@ -148,7 +148,7 @@ for (hb in health_boards) {
   assign("exp", expected, subpage_env) # Expected number of diagnoses
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
-  out < c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
+  out <- c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
     
   }
 }
