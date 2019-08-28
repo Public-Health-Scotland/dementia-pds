@@ -90,7 +90,7 @@ ref <- subpage_data %>%
   mutate(month = forcats::fct_relevel(month_abbr, "Jan", "Feb", "Mar", after = Inf))
 
 p <- 
-  ggplot(ref, aes(x = month, y = referrals,
+  ggplot(ref, aes(x = month, y = referrals, group = 1,
                   text = paste0(month_full, " ", year, "<br>",
                                 "Referrals: ", referrals))) + 
   geom_point() +
