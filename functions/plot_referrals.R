@@ -1,6 +1,8 @@
 
 plot_referrals <- function(data, ijb_group = TRUE){
   
+  ijb_group <- ifelse(n_distinct(data$ijb) == 1, FALSE, ijb_group)
+  
   if(ijb_group == TRUE){
     
     data %<>% 
