@@ -1,4 +1,3 @@
-
 set_env <- function(data = pds, 
                     exp = exp, 
                     env = subpage_env, 
@@ -21,5 +20,5 @@ set_env <- function(data = pds,
   assign("max_fy", max(sort(unique(data$fy))), subpage_env)
   assign("all_fy", setdiff(unique(data$fy), year), subpage_env)
   assign("exp", subpage_exp, subpage_env)
-
+  
 }
