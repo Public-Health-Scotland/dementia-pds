@@ -2,13 +2,16 @@
 =================================================
 
 ```{r summary figures, include=FALSE}
+
 # Expected vs Referrals
 ref <- sum(subpage_data$referrals)
 exp_rate <- (ref / exp) * 100
+
 # 12 Months Complete
 num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$referrals)}
 den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
 pds_rate <- (num / den) * 100
+
 ```
 
 Sidebar {.sidebar}
@@ -105,11 +108,13 @@ p <-
 ggplotly(p, tooltip = "text") %>%
   config(displayModeBar = TRUE,
          modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
-                                             'zoomOut2d', 'autoScale2d', 
-                                             'toggleSpikelines', 
-                                             'hoverCompareCartesian', 
-                                             'hoverClosestCartesian'), 
-               displaylogo = F, collaborate = F, editable = F)
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian'), 
+         displaylogo = F, 
+         collaborate = F, 
+         editable = F)
 
 ```
 
