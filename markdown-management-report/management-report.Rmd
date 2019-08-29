@@ -89,9 +89,9 @@ scotland <- map(.x = sort(unique(pds$fy)),
 
 ```{r health-boards, include=FALSE}
 
-health_boards <- map(.x = sort(unique(pds$fy)),
-                     .y = sort(unique(pds$health_board)), 
-                     .f = ~ set_env(data = pds,
+health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
+                                  sort(unique(pds$health_board))), 
+                      .f = ~ set_env(data = pds,
                                     exp  = exp,
                                     hb   = .y,
                                     year = .x))
