@@ -1,4 +1,4 @@
-`r if_else(max_fy == sel_fy, paste0(hb, if_else(hb == "Scotland", "", '{data-navmenu="Health Boards"}')), paste0(hb, " ", str_replace(sel_fy, "/", ""), ' {.hidden}'))`
+`r if_else(max_fy == sel_fy, paste0(hb, '{data-navmenu="Health Boards"}'), paste0(hb, " ", str_replace(sel_fy, "/", ""), ' {.hidden}'))`
 =================================================
 
 ```{r summary figures, include=FALSE}

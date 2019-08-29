@@ -100,7 +100,7 @@ for(y in years){
   assign("exp", expected, subpage_env) # Expected number of diagnoses
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
-  out <- c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
+  out <- c(out, knitr::knit_child('subpage-scotland.Rmd', envir = subpage_env))
     
 }
 ```
@@ -148,7 +148,7 @@ for (hb in health_boards) {
   assign("exp", expected, subpage_env) # Expected number of diagnoses
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
-  out <- c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
+  out <- c(out, knitr::knit_child('subpage-hb.Rmd', envir = subpage_env))
     
   }
 }
