@@ -11,7 +11,7 @@ set_env <- function(data = pds,
   # Get expected diagnoses figure for selected Health Board and FY
   subpage_exp  <- exp %>%
     filter(health_board_label == hb & fy == year) %>%
-    {.$diagnoses}
+    pull(diagnoses)
   
   # Assign objects to subpage environment
   assign("subpage_data", subpage_data, subpage_env)
@@ -20,5 +20,11 @@ set_env <- function(data = pds,
   assign("max_fy", max(sort(unique(data$fy))), subpage_env)
   assign("all_fy", setdiff(unique(data$fy), year), subpage_env)
   assign("exp", subpage_exp, subpage_env)
+  
+  return(
+    if_else(hb == "Scotland",
+            knitr::knit_child("subpage-scotland.Rmd", envir = subpage_env),
+            knitr::knit_child("subpage-hb.Rmd", envir = subpage_env))
+  )
   
 }
