@@ -12,8 +12,14 @@ output:
 # Load environment file
 source(here::here("code", "00_setup-environment.R"))
 
+# Set knitr options to allow duplicate labels (needed for the subpages)
+options(knitr.duplicate.label = 'allow')
+
 # Load PDS data
 pds <- read_csv(here("data", glue("{fy}-{qt}_final-data.csv"))) %>%
+  
+  # Filter HB for fasther knitting when testing
+  # filter(substr(health_board, 1, 1) == c("A", "B")) %>%
   
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),
@@ -60,18 +66,16 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 </div>
 
+
 <!-- Scotland -->
 
-```{r render scotland page, include=FALSE}
+```{r scotland, include=FALSE}
 
 # Get all unique financial years for the subpages
 years         <- sort(unique(pds$fy))
 
 # Create variable which stores all subpages outputs
-out = NULL
-
-# Set knitr options to allow duplicate labels (needed for the subpages)
-options(knitr.duplicate.label = 'allow')
+out <- NULL
 
 # Create temporary environment which we use for knitting subpages.RMD 
 subpage_env <- new.env()
@@ -96,7 +100,7 @@ for(y in years){
   assign("exp", expected, subpage_env) # Expected number of diagnoses
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
-  out = c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
+  out <- c(out, knitr::knit_child('subpage-scotland.Rmd', envir = subpage_env))
     
 }
 ```
@@ -106,17 +110,14 @@ for(y in years){
 
 <!-- HEALTH BOARDS -->
 
-```{r render hb pages, include=FALSE}
+```{r health-boards, include=FALSE}
 
 # Get all unique health boards and financial years for the subpages
 health_boards <- sort(unique(pds$health_board))
 years         <- sort(unique(pds$fy))
 
 # Create variable which stores all subpages outputs
-out = NULL
-
-# Set knitr options to allow duplicate labels (needed for the subpages)
-options(knitr.duplicate.label = 'allow')
+out <- NULL
 
 # Create temporary environment which we use for knitting subpages.RMD 
 subpage_env <- new.env()
@@ -128,6 +129,10 @@ for (hb in health_boards) {
   subpage_data <- pds %>% 
     filter(health_board == hb & fy == y)
   
+  # Filter data for Scotland data for each financial year
+  subpage_scot <- pds %>%
+    filter(fy == y)
+  
   # Calculate expected diagnoses figure
   expected <- exp %>%
     filter(health_board_label == hb & fy == y) %>%
@@ -135,6 +140,7 @@ for (hb in health_boards) {
   
   # Assign filtered data, health board and fy to subpage_env 
   assign("subpage_data", subpage_data, subpage_env)
+  assign("subpage_scot", subpage_scot, subpage_env)
   assign("hb", hb, subpage_env)
   assign("sel_fy", y, subpage_env)
   assign("max_fy", max(years), subpage_env) # To determine whether page is hidden
@@ -142,7 +148,7 @@ for (hb in health_boards) {
   assign("exp", expected, subpage_env) # Expected number of diagnoses
   
   # Knit subpage.RMD using the subpage_env and add result to out vector
-  out = c(out, knitr::knit_child('subpage.Rmd', envir = subpage_env))
+  out <- c(out, knitr::knit_child('subpage-hb.Rmd', envir = subpage_env))
     
   }
 }
@@ -165,4 +171,4 @@ Include information on what is done with outstanding errors; e.g. missing PDS st
 
 Include note about what year of expected diagnoses is used for each financial year.
 
-The code used to produce these reports is available on [GitHub](https://github.com/alicebyers5/dementia-management-reports).
+The code used to produce these reports is available on [GitHub](https://github.com/alicebyers5/dementia-pds).

@@ -1,0 +1,115 @@
+`r if_else(max_fy == sel_fy, paste0(hb, '{data-navmenu="Health Boards"}'), paste0(hb, " ", str_replace(sel_fy, "/", ""), ' {.hidden}'))`
+=================================================
+
+```{r summary figures, include=FALSE}
+# Expected vs Referrals
+ref <- sum(subpage_data$referrals)
+exp_rate <- (ref / exp) * 100
+# 12 Months Complete
+num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$referrals)}
+den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
+pds_rate <- (num / den) * 100
+```
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+### `r hb`
+#### Financial Year `r sel_fy`
+
+***
+
+Select Financial Year
+
+<!-- For some reason need '-2' on end of 1819 links - check why this is -->
+|     `r paste0("[2018/19](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-2)")`
+|     `r paste0("[2017/18](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201718)")`
+|     `r paste0("[2016/17](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201617)")`
+
+***
+
+<!-- Reword this and try and force to bottom of sidebar -->
+Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
+
+
+Row {data-height=30}
+-----------------------------------------------------------------------
+
+<!-- Management Information tagline -->
+<font size="3"> 
+<center> 
+<span style="color:red"> 
+MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION 
+</span> </center> </font> 
+
+
+Row
+----------------------------------------------------------------------
+
+### Summary Table
+
+```{r}
+valueBox(ref, 
+         icon = "fa-hashtag",
+         caption = glue("referrals were made for post-diagnostic support."))
+```
+
+### LDP 1: Expected vs Referral
+
+```{r}
+valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
+         icon = "fa-percent",
+         caption = glue("of the expected number of diagnoses were ",
+                        "referred for post diagnostic support."))
+```
+
+### LDP 2: 12 Months Support
+
+```{r}
+valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
+         icon = "fa-percent",
+         caption = glue("of those referred for post diagnostic support ",
+                        "received 12 months of support."))
+```
+
+
+Row {data-height=500}
+----------------------------------------------------------------------
+
+### Number of Referrals {data-width=800}
+
+```{r referrals, include=FALSE}
+ref <- subpage_data %>%
+  group_by(month) %>%
+  summarise(referrals = sum(referrals))  %>%
+  mutate(year = if_else(month %in% 1:3, 
+                        paste0(substr(sel_fy, 1, 2), substr(sel_fy, 6, 7)),
+                        substr(sel_fy, 1, 4)),
+         month_abbr = forcats::fct_relevel(
+                         month(month, label = TRUE),
+                         "Jan", "Feb", "Mar", after = Inf),
+         month_full = month(month, label = TRUE, abbr = FALSE))
+
+p <- 
+  ggplot(ref, aes(x = month_abbr, y = referrals, group = 1,
+                  text = paste0(month_full, " ", year, "<br>",
+                                "Referrals: ", referrals))) + 
+  geom_point() +
+  geom_line() +
+  scale_y_continuous(limits = c(0, NA)) +
+  labs(x = "",
+       y = "Number of Referrals")
+```
+
+```{r Chart1}
+ggplotly(p, tooltip = "text") %>%
+  config(displayModeBar = TRUE,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                             'zoomOut2d', 'autoScale2d', 
+                                             'toggleSpikelines', 
+                                             'hoverCompareCartesian', 
+                                             'hoverClosestCartesian'), 
+               displaylogo = F, collaborate = F, editable = F)
+
+```
+
