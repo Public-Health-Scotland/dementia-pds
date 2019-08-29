@@ -6,8 +6,15 @@ set_env <- function(data = pds,
   subpage_env <- new.env()
   
   # Filter data for selected Health Board and FY
-  subpage_data <- data %>%
-    filter(fy == year)
+  if(hb == "Scotland"){
+    subpage_data <-
+      data %>%
+      filter(fy == year)
+  }else{
+    subpage_data <-
+      data %>%
+      filter(fy == year & health_board == hb)
+  }
   
   # Get expected diagnoses figure for selected Health Board and FY
   subpage_exp  <- exp %>%
@@ -23,9 +30,11 @@ set_env <- function(data = pds,
   assign("exp", subpage_exp, subpage_env)
   
   return(
-    if_else(hb == "Scotland",
-            knitr::knit_child("subpage-scotland.Rmd", envir = subpage_env),
-            knitr::knit_child("subpage-hb.Rmd", envir = subpage_env))
+    if(hb == "Scotland"){
+      knitr::knit_child("subpage-scotland.Rmd", envir = subpage_env)
+    }else{
+      knitr::knit_child("subpage-hb.Rmd", envir = subpage_env)
+    }
   )
   
 }
