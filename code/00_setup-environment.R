@@ -30,6 +30,7 @@ library(glue)          # For working with strings
 library(ggplot2)       # For plotting
 library(plotly)        # For interactive plots
 library(flexdashboard) # For creating markdown outputs
+library(purrr)         # For functional programming
 
 
 ### 2 - Define Whether Running on Server or Locally ----
