@@ -74,11 +74,11 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 ```{r scotland, include=FALSE}
 
-scotland <- map(.x = sort(unique(pds$fy)), 
-                .f = ~set_env(data = pds,
-                              exp = exp,
-                              hb = "Scotland",
-                              year = .x))
+scotland <- map(.x = sort(unique(pds$fy)),
+                .f = ~ set_env(data = pds,
+                               exp  = exp,
+                               hb   = "Scotland",
+                               year = .x))
 
 ```
 
@@ -89,49 +89,15 @@ scotland <- map(.x = sort(unique(pds$fy)),
 
 ```{r health-boards, include=FALSE}
 
-# Get all unique health boards and financial years for the subpages
-health_boards <- sort(unique(pds$health_board))
-years         <- sort(unique(pds$fy))
-
-# Create variable which stores all subpages outputs
-out <- NULL
-
-# Create temporary environment which we use for knitting subpages.RMD 
-subpage_env <- new.env()
-
-for (hb in health_boards) {
-  for(y in years){
-    
-  # Filter data for health board and financial year
-  subpage_data <- pds %>% 
-    filter(health_board == hb & fy == y)
-  
-  # Filter data for Scotland data for each financial year
-  subpage_scot <- pds %>%
-    filter(fy == y)
-  
-  # Calculate expected diagnoses figure
-  expected <- exp %>%
-    filter(health_board_label == hb & fy == y) %>%
-    {.$diagnoses}
-  
-  # Assign filtered data, health board and fy to subpage_env 
-  assign("subpage_data", subpage_data, subpage_env)
-  assign("subpage_scot", subpage_scot, subpage_env)
-  assign("hb", hb, subpage_env)
-  assign("sel_fy", y, subpage_env)
-  assign("max_fy", max(years), subpage_env) # To determine whether page is hidden
-  assign("all_fy", setdiff(years, y), subpage_env) # To add links to all FY pages
-  assign("exp", expected, subpage_env) # Expected number of diagnoses
-  
-  # Knit subpage.RMD using the subpage_env and add result to out vector
-  out <- c(out, knitr::knit_child('subpage-hb.Rmd', envir = subpage_env))
-    
-  }
-}
+health_boards <- map(.x = sort(unique(pds$fy)),
+                     .y = sort(unique(pds$health_board)), 
+                     .f = ~ set_env(data = pds,
+                                    exp  = exp,
+                                    hb   = .y,
+                                    year = .x))
 ```
 
-`r paste(knitr::knit_child(text = out), collapse = '')`
+`r paste(knitr::knit_child(text = health_boards), collapse = '')`
 
 
 Methodology
