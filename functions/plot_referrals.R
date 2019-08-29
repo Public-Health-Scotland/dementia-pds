@@ -22,7 +22,9 @@ plot_referrals <- function(data, ijb_group = TRUE){
     ggplot(aes(x = month_abbr,
                y = referrals,
                group = if(ijb_group == TRUE){ijb}else{1},
-               text = paste0(month_full, " ", year, "<br>",
+               colour = if(ijb_group == TRUE){ijb}else{NULL},
+               text = paste0(if(ijb_group == TRUE){ijb}else{"Board"}, "<br>",
+                             month_full, " ", year, "<br>",
                              "Referrals: ", referrals))) +
     
     geom_point() +
