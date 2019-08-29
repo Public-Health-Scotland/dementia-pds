@@ -1,9 +1,13 @@
 
-plot_referrals <- function(data, group = 1){
+plot_referrals <- function(data, ijb_group = TRUE){
+  
+  if(ijb_group == TRUE){
+    data %<>% group_by(fy, month, ijb)
+  }else{
+    data %<>% group_by(fy, month)
+  }
   
   data %>%
-    
-    group_by(fy, month) %>%
     
     summarise(referrals = sum(referrals)) %>%
     
@@ -17,7 +21,7 @@ plot_referrals <- function(data, group = 1){
     
     ggplot(aes(x = month_abbr,
                y = referrals,
-               group = group,
+               group = if(ijb_group == TRUE){ijb}else{1},
                text = paste0(month_full, " ", year, "<br>",
                              "Referrals: ", referrals))) +
     
