@@ -1,5 +1,5 @@
 
-plot_referrals <- function(data, ijb_group = TRUE){
+plot_referrals <- function(data, scot = FALSE, ijb_group = TRUE){
   
   ijb_group <- ifelse(n_distinct(data$ijb) == 1, FALSE, ijb_group)
   
@@ -20,7 +20,8 @@ plot_referrals <- function(data, ijb_group = TRUE){
   }else{
     
     data %<>% 
-      group_by(fy, month) %>%
+      mutate(health_board = ifelse(scot == TRUE, "Scotland", health_board)) %>%
+      group_by(fy, month, health_board) %>%
       summarise(referrals = sum(referrals))
   
   }
@@ -39,7 +40,7 @@ plot_referrals <- function(data, ijb_group = TRUE){
                y = referrals,
                group = if(ijb_group == TRUE){ijb}else{1},
                colour = if(ijb_group == TRUE){ijb}else{NULL},
-               text = paste0(if(ijb_group == TRUE){ijb}else{"Board"}, "<br>",
+               text = paste0(if(ijb_group == TRUE){ijb}else{health_board}, "<br>",
                              month_full, " ", year, "<br>",
                              "Referrals: ", referrals))) +
     
