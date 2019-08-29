@@ -1,4 +1,4 @@
-`r if_else(max_fy == sel_fy, paste0(hb, if_else(hb == "Scotland", "", '{data-navmenu="Health Boards"}')), paste0(hb, " ", str_replace(sel_fy, "/", ""), ' {.hidden}'))`
+`r if_else(max_fy == sel_fy, hb, paste0(hb, " ", str_replace(sel_fy, "/", ""), ' {.hidden}'))`
 =================================================
 
 ```{r summary figures, include=FALSE}
@@ -46,32 +46,31 @@ MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION
 Row
 ----------------------------------------------------------------------
 
-### LDP 1: Expected vs Referrals
-
-In `r sel_fy`, the expected number of dementia diagnoses in `r hb` was **`r exp`**. The actual number of referrals was **`r ref`**. 
+### Summary Table
 
 ```{r}
-gauge(round_half_up(exp_rate, 1), min = 0, max = 100, symbol = '%')
+valueBox(ref, 
+         icon = "fa-hashtag",
+         caption = glue("referrals were made for post-diagnostic support."))
+```
+
+### LDP 1: Expected vs Referral
+
+```{r}
+valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
+         icon = "fa-percent",
+         caption = glue("of the expected number of diagnoses were ",
+                        "referred for post diagnostic support."))
 ```
 
 ### LDP 2: 12 Months Support
 
-In `r sel_fy`, **`r num`** referrals completed 12 months of post-diagnostic support in `r hb`. This includes those who have completed PDS and those who are exempt. The total number of referrals (excluding those whose support is still ongoing) was **`r den`**.
-
 ```{r}
-gauge(round_half_up(pds_rate, 1), min = 0, max = 100, symbol = '%')
+valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
+         icon = "fa-percent",
+         caption = glue("of those referred for post diagnostic support ",
+                        "received 12 months of support."))
 ```
-
-### Table
-
-```{r}
-subpage_data %>% 
-  group_by(ldp = ldp) %>% 
-  summarise(referrals = sum(referrals)) %>% 
-  arrange(-referrals) %>% 
-  knitr::kable()
-```
-
 
 
 Row {data-height=500}
@@ -83,17 +82,34 @@ Row {data-height=500}
 ref <- subpage_data %>%
   group_by(month) %>%
   summarise(referrals = sum(referrals))  %>%
-  mutate(month = month(month, label = TRUE)) %>%
-  mutate(month = forcats::fct_relevel(month, "Jan", "Feb", "Mar", after = Inf))
+  mutate(year = if_else(month %in% 1:3, 
+                        paste0(substr(sel_fy, 1, 2), substr(sel_fy, 6, 7)),
+                        substr(sel_fy, 1, 4)),
+         month_abbr = forcats::fct_relevel(
+                         month(month, label = TRUE),
+                         "Jan", "Feb", "Mar", after = Inf),
+         month_full = month(month, label = TRUE, abbr = FALSE))
 
 p <- 
-  ggplot(ref, aes(x = month, y = referrals, group = 1)) + 
-  geom_line() +
+  ggplot(ref, aes(x = month_abbr, y = referrals, group = 1,
+                  text = paste0(month_full, " ", year, "<br>",
+                                "Referrals: ", referrals))) + 
   geom_point() +
-  scale_y_continuous(limits = c(0, NA))
+  geom_line() +
+  scale_y_continuous(limits = c(0, NA)) +
+  labs(x = "",
+       y = "Number of Referrals")
 ```
 
 ```{r Chart1}
-ggplotly(p)
+ggplotly(p, tooltip = "text") %>%
+  config(displayModeBar = TRUE,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                             'zoomOut2d', 'autoScale2d', 
+                                             'toggleSpikelines', 
+                                             'hoverCompareCartesian', 
+                                             'hoverClosestCartesian'), 
+               displaylogo = F, collaborate = F, editable = F)
+
 ```
 
