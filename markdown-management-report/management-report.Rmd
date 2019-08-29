@@ -12,6 +12,9 @@ output:
 # Load environment file
 source(here::here("code", "00_setup-environment.R"))
 
+# Load functions
+purrr::map(dir(here::here("functions"), full.names = TRUE), source)
+
 # Set knitr options to allow duplicate labels (needed for the subpages)
 options(knitr.duplicate.label = 'allow')
 
