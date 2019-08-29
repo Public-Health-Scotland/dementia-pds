@@ -15,9 +15,6 @@ source(here::here("code", "00_setup-environment.R"))
 # Load functions
 purrr::walk(dir(here::here("functions"), full.names = TRUE), source)
 
-# Set knitr options to allow duplicate labels (needed for the subpages)
-options(knitr.duplicate.label = 'allow')
-
 # Load PDS data
 pds <- read_csv(here("data", glue("{fy}-{qt}_final-data.csv"))) %>%
   

@@ -69,7 +69,12 @@ qt         <- "4"
 options(scipen=999)
 
 
-### 5 - Define exempt termination reason codes ----
+### 5 - Set knitr options to allow duplicate labels ----
+
+options(knitr.duplicate.label = 'allow')
+
+
+### 6 - Define exempt termination reason codes ----
 
 exempt_reasons <- c("03", "04", "05", "06")
 
