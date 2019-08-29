@@ -1,8 +1,9 @@
 set_env <- function(data = pds, 
-                    exp = exp, 
-                    env = subpage_env, 
+                    exp = exp,
                     hb,
                     year){
+  
+  subpage_env <- new.env()
   
   # Filter data for selected Health Board and FY
   subpage_data <- data %>%
