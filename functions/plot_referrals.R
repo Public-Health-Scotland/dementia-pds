@@ -2,14 +2,28 @@
 plot_referrals <- function(data, ijb_group = TRUE){
   
   if(ijb_group == TRUE){
-    data %<>% group_by(fy, month, ijb)
+    
+    data %<>% 
+      group_by(fy, month, health_board, ijb) %>%
+      summarise(referrals = sum(referrals))
+    
+    board <- 
+      data %>%
+        mutate(ijb = health_board) %>%
+        group_by(fy, month, health_board, ijb) %>%
+        summarise(referrals = sum(referrals))
+    
+    data %<>% bind_rows(board)
+    
   }else{
-    data %<>% group_by(fy, month)
+    
+    data %<>% 
+      group_by(fy, month) %>%
+      summarise(referrals = sum(referrals))
+  
   }
   
-  data %>%
-    
-    summarise(referrals = sum(referrals)) %>%
+  data %<>%
     
     mutate(year = if_else(month %in% 1:3,
                           paste0(substr(fy, 1, 2), substr(fy, 6, 7)),
