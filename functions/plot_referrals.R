@@ -22,7 +22,7 @@ plot_referrals <- function(data, scotland = FALSE){
     data %<>% 
       bind_rows(board) %>% 
       ungroup() %>%
-      complete(month, ijb,
+      complete(month = 1:12, ijb,
                fill = list(fy = max(.$fy),
                            health_board = max(.$health_board),
                            referrals = 0))
@@ -39,7 +39,7 @@ plot_referrals <- function(data, scotland = FALSE){
       group_by(fy, month, health_board) %>%
       summarise(referrals = sum(referrals)) %>%
       ungroup() %>%
-      complete(month, health_board,
+      complete(month = 1:12, health_board,
                fill = list(fy = max(.$fy),
                            referrals = 0))
   
