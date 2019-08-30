@@ -1,7 +1,11 @@
 
-plot_referrals <- function(data, scot = FALSE, ijb_group = TRUE){
+plot_referrals <- function(data, scotland = FALSE){
   
-  ijb_group <- ifelse(n_distinct(data$ijb) == 1, FALSE, ijb_group)
+  # Determine whether IJBs breakdown is included
+  ijb_group <- ifelse(scotland == TRUE | 
+                        n_distinct(data$ijb) == 1, 
+                      FALSE, 
+                      TRUE)
   
   if(ijb_group == TRUE){
     

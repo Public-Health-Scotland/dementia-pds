@@ -80,7 +80,7 @@ Row {data-height=500}
 
 ```{r Referrals Plot}
 
-ggplotly(plot_referrals(subpage_data, ijb_group = TRUE), 
+ggplotly(plot_referrals(subpage_data, scotland = FALSE), 
          tooltip = "text") %>%
   
   config(displayModeBar = TRUE,
