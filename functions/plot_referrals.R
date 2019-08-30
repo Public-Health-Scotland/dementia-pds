@@ -71,10 +71,15 @@ plot_referrals <- function(data, scotland = FALSE){
     
     scale_y_continuous(limits = c(0, NA)) +
     
+    # Custom labels on x tick marks
+    scale_x_discrete(labels = paste(levels(data$month_abbr),
+                                    c(rep(min(data$year), 9), rep(max(data$year), 3)))) +
+    
     labs(x = "",
          y = "Number of Referrals") +
     
     theme(legend.title = element_blank(),
-          legend.position = ifelse(ijb_group == FALSE, "none", "right"))
+          legend.position = ifelse(ijb_group == FALSE, "none", "right"),
+          axis.text.x = element_text(angle=45))
   
 }
