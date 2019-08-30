@@ -83,18 +83,7 @@ Row {data-height=500}
 
 ```{r Referrals Plot}
 
-ggplotly(plot_referrals(subpage_data, scotland = TRUE), 
-         tooltip = "text") %>%
-  
-  config(displayModeBar = TRUE,
-         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
-                                       'zoomOut2d', 'autoScale2d', 
-                                       'toggleSpikelines', 
-                                       'hoverCompareCartesian', 
-                                       'hoverClosestCartesian'), 
-         displaylogo = F, 
-         collaborate = F, 
-         editable = F)
+plot_referrals(subpage_data, scotland = TRUE)
 
 ```
 

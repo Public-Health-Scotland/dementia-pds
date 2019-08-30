@@ -55,7 +55,7 @@ plot_referrals <- function(data, scotland = FALSE){
              month(month, label = TRUE),
              "Jan", "Feb", "Mar", after = Inf))
   
-  data %>%
+  plot <- data %>%
     
     ggplot(aes(x = month_abbr,
                y = referrals,
@@ -81,5 +81,15 @@ plot_referrals <- function(data, scotland = FALSE){
     theme(legend.title = element_blank(),
           legend.position = ifelse(ijb_group == FALSE, "none", "right"),
           axis.text.x = element_text(angle=45))
+  
+  ggplotly(plot, tooltip = "text") %>%
+    
+    config(displayModeBar = TRUE,
+           modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                         'zoomOut2d', 'autoScale2d', 
+                                         'toggleSpikelines', 
+                                         'hoverCompareCartesian', 
+                                         'hoverClosestCartesian'), 
+           displaylogo = F, collaborate = F, editable = F)
   
 }
