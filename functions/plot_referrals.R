@@ -27,6 +27,11 @@ plot_referrals <- function(data, scotland = FALSE){
                            health_board = max(.$health_board),
                            referrals = 0))
     
+    data %<>%
+      filter(!is.na(ijb)) %>%
+      mutate(ijb = factor(ijb, levels = sort(unique(ijb)))) %>%
+      mutate(ijb = forcats::fct_relevel(ijb, max(.$health_board)))
+    
   }else{
     
     data %<>% 
@@ -55,7 +60,7 @@ plot_referrals <- function(data, scotland = FALSE){
     ggplot(aes(x = month_abbr,
                y = referrals,
                group = if(ijb_group == TRUE){ijb}else{1},
-               colour = if(ijb_group == TRUE){ijb}else{NULL},
+               colour = if(ijb_group == TRUE){ijb}else{health_board},
                text = paste0(if(ijb_group == TRUE){ijb}else{health_board}, "<br>",
                              month_full, " ", year, "<br>",
                              "Referrals: ", referrals))) +
@@ -67,7 +72,9 @@ plot_referrals <- function(data, scotland = FALSE){
     scale_y_continuous(limits = c(0, NA)) +
     
     labs(x = "",
-         y = "Number of Referrals",
-         colour = "")
+         y = "Number of Referrals") +
+    
+    theme(legend.title = element_blank(),
+          legend.position = ifelse(ijb_group == FALSE, "none", "right"))
   
 }
