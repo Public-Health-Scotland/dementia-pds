@@ -67,6 +67,7 @@ plot_referrals <- function(data, scotland = FALSE){
     scale_y_continuous(limits = c(0, NA)) +
     
     labs(x = "",
-         y = "Number of Referrals")
+         y = "Number of Referrals",
+         colour = "")
   
 }
