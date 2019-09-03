@@ -1,5 +1,5 @@
 ---
-title: "Dementia PDS Quarterly Management Report"
+title: "Dementia PDS Quarterly Management Report: 2018/19 Q4"
 output: 
   flexdashboard::flex_dashboard:
     logo: isdscotland.png
@@ -38,7 +38,7 @@ Row
 
 ### About This Report
 
-This report contains data for referrals made to post diagnostic support services with a diagnosis date between `r format(start_date, "%d %B %Y")` and `r format(end_date, "%d %B %Y")` and is based on board submissions made in `r month(month(floor_date(end_date, "months")) + 1, label = TRUE, abbr = FALSE)` `r year(floor_date(end_date, "months") + 1)`.
+This report contains data for referrals made to post diagnostic support services with a diagnosis date between **`r format(start_date, "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`** and is based on board submissions made in **`r month(month(floor_date(end_date, "months")) + 1, label = TRUE, abbr = FALSE)` `r year(floor_date(end_date, "months") + 1)`**.
 
 These reports are developed by the NSS Public Health and Intelligence National Dementia PDS Team and contain performance-based analysis against the Scottish Government's LDP Standard on Dementia Post-Diagnostic Support whereby anyone newly diagnosed with dementia is entitled to a years worth of person-centred support.
 
