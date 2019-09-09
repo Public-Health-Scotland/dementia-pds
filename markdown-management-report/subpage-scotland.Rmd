@@ -12,6 +12,8 @@ num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$refe
 den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
 pds_rate <- (num / den) * 100
 
+complete_year <- if_else(max_fy == sel_fy & qt != 4, FALSE, TRUE)
+
 ```
 
 Sidebar {.sidebar}
@@ -39,36 +41,44 @@ Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementi
 Row {data-height=30}
 -----------------------------------------------------------------------
 
-<!-- Management Information tagline -->
+### <!-- Management Information Tagline -->
+
 <font size="3"> 
-<center> 
+<center> <bold>
 <span style="color:red"> 
 MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION 
-</span> </center> </font> 
+</span> </center> </font> </bold>
 
 
 Row
 ----------------------------------------------------------------------
 
-### Number of Referrals
+### <!-- Information -->
 
+More information here.
+
+Where the most recent financial year is selected, only quarters with submitted data is displayed.
+
+
+Row
+----------------------------------------------------------------------
+
+### Referrals Value Box
 ```{r Referrals Value Box}
 valueBox(ref, 
          icon = "fa-hashtag",
          caption = glue("referrals were made for post-diagnostic support."))
 ```
 
-### LDP 1: Expected vs Referral
-
-```{r Expected Value Box}
+`r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
+```{r Expected Value Box, include = complete_year}
 valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
          icon = "fa-percent",
          caption = glue("of the expected number of diagnoses were ",
                         "referred for post diagnostic support."))
 ```
 
-### LDP 2: 12 Months Support
-
+### 12 Months Value Box
 ```{r 12 Months Value Box}
 valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
          icon = "fa-percent",

@@ -23,7 +23,9 @@ pds <- read_csv(here("data", glue("{fy}-{qt}_final-data.csv"))) %>%
   
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),
-         ijb          = str_sub(ijb, 11, -1))
+         ijb          = str_sub(ijb, 11, -1)) %>%
+  
+  mutate(health_board = str_replace(health_board, "and", "&"))
 
 # Load expected diagnoses reference file
 exp <- read_csv(here("reference-files", "expected-diagnoses.csv"))
@@ -75,7 +77,8 @@ scotland <- map(.x = sort(unique(pds$fy)),
                 .f = ~ set_env(data = pds,
                                exp  = exp,
                                hb   = "Scotland",
-                               year = .x))
+                               year = .x,
+                               quarter = qt))
 
 ```
 
@@ -89,9 +92,10 @@ scotland <- map(.x = sort(unique(pds$fy)),
 health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
                                   sort(unique(pds$health_board))), 
                       .f = ~ set_env(data = pds,
-                                    exp  = exp,
-                                    hb   = .y,
-                                    year = .x))
+                                     exp  = exp,
+                                     hb   = .y,
+                                     year = .x,
+                                     quarter = qt))
 ```
 
 `r paste(knitr::knit_child(text = health_boards), collapse = '')`
