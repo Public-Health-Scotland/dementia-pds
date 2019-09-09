@@ -19,7 +19,7 @@ purrr::walk(dir(here::here("functions"), full.names = TRUE), source)
 pds <- read_csv(here("data", glue("{fy}-{qt}_final-data.csv"))) %>%
   
   # Filter HB for fasther knitting when testing
-  # filter(substr(health_board, 1, 1) == c("A", "B")) %>%
+  filter(substr(health_board, 1, 1) == c("A", "B")) %>%
   
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),
@@ -103,12 +103,40 @@ Methodology
 Row
 -------------------------------------------------
 
-### Methodology
+### 
 
-Notes will be added here to describe the methodology.
+This page includes more detail regarding the methodology used to arrive at the figures in this report. It is hoped that by sharing this, the reports will be easier to understand and local reporting will be more consistent.
 
-Include information on what is done with outstanding errors; e.g. missing PDS status recoded to active.
+This report was produced using R and R Markdown. The code is available publically on [GitHub](https://github.com/alicebyers5/dementia-pds).
 
-Include note about what year of expected diagnoses is used for each financial year.
 
-The code used to produce these reports is available on [GitHub](https://github.com/alicebyers5/dementia-pds).
+Row
+-------------------------------------------------
+
+### **Number of Expected Diagnoses**
+
+In December 2016, the Scottish Government published a report: [Estimated and Projected Disgnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/). Estimations are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. 
+
+More infomation of the methodology used to calculate these figures and the limitations of this are available in the report.
+
+Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2019/20 uses estimations for the calendar year 2019.
+
+It is expected that this report will be refreshed and methodology reviewed in the near future. More information of this will be included in this section as and when it is available.
+
+
+Row
+-------------------------------------------------
+
+### **Local Delivery Plan (LDP) Standard Classification**
+
+XXX
+
+Row
+-------------------------------------------------
+
+### **Data Quality**
+
+What changes are made to the outstanding errors on the file? e.g. missing PDS Status recoded to active.
+
+
+<!-- END OF SCRIPT -->
