@@ -110,7 +110,7 @@ This page includes more detail regarding the methodology used to arrive at the f
 This report was produced using R and R Markdown. The code is available publically on [GitHub](https://github.com/alicebyers5/dementia-pds).
 
 
-Row
+Row {.tabset}
 -------------------------------------------------
 
 ### **Number of Expected Diagnoses**
@@ -124,15 +124,10 @@ Please note that as estimations are available by calendar year and figures in th
 It is expected that this report will be refreshed and methodology reviewed in the near future. More information of this will be included in this section as and when it is available.
 
 
-Row
--------------------------------------------------
-
 ### **Local Delivery Plan (LDP) Standard Classification**
 
 XXX
 
-Row
--------------------------------------------------
 
 ### **Data Quality**
 
