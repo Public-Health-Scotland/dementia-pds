@@ -30,7 +30,7 @@ pds <-
   clean_names() %>%
   
   # Convert dates from character to date format
-  mutate_at(vars(contains("date")), ~lubridate::dmy(.)) %>%
+  mutate_at(vars(contains("date")), ~ lubridate::ymd(.)) %>%
   
   # Pad CHI Number to 10 digits
   mutate(chi_number = if_else(nchar(chi_number) == 9,
@@ -54,7 +54,7 @@ pds %<>%
 pds %<>%
   
   # Remove records with missing CHI and missing diagnosis date
-  filter(!is.na(dementia_diagnosis_confirmed_date) | !is.na(chi_number)) %>%
+  filter(!is.na(dementia_diagnosis_confirmed_date) & !is.na(chi_number)) %>%
 
   # Select records within reporting period only
   filter(dementia_diagnosis_confirmed_date %within% 
