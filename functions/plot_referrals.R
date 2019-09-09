@@ -1,11 +1,36 @@
 
-plot_referrals <- function(data, scotland = FALSE){
+plot_referrals <- function(data, 
+                           scotland = FALSE, 
+                           quarter = NA){
   
   # Determine whether IJBs breakdown is included
   ijb_group <- ifelse(scotland == TRUE | 
                         n_distinct(data$ijb) == 1, 
                       FALSE, 
                       TRUE)
+  
+  # If incomplete financial year, only include complete months
+  include_months <-
+    
+    if(is.na(quarter)){
+      1:12
+    }else{
+      if(quarter == "1"){
+      c(4:6)
+    }else{
+      if(quarter == "2"){
+        c(4:9)
+      }else{
+        if(quarter == "3"){
+          c(4:12)
+        }else{
+          if(quarter == "4"){
+            c(1:12)
+          }
+        }
+      }
+    }
+    }
   
   if(ijb_group == TRUE){
     
@@ -22,7 +47,7 @@ plot_referrals <- function(data, scotland = FALSE){
     data %<>% 
       bind_rows(board) %>% 
       ungroup() %>%
-      complete(month = 1:12, ijb,
+      complete(month = include_months, ijb,
                fill = list(fy = max(.$fy),
                            health_board = max(.$health_board),
                            referrals = 0))
@@ -39,7 +64,7 @@ plot_referrals <- function(data, scotland = FALSE){
       group_by(fy, month, health_board) %>%
       summarise(referrals = sum(referrals)) %>%
       ungroup() %>%
-      complete(month = 1:12, health_board,
+      complete(month = include_months, health_board,
                fill = list(fy = max(.$fy),
                            referrals = 0))
   

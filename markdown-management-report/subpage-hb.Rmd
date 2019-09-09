@@ -84,7 +84,9 @@ Row {data-height=500}
 
 ```{r Referrals Plot}
 
-plot_referrals(subpage_data, scotland = FALSE)
+plot_referrals(subpage_data, 
+               scotland = FALSE,
+               quarter = ifelse(max_fy == sel_fy, qt, NA))
 
 ```
 
