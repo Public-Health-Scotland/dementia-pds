@@ -39,10 +39,8 @@ pds <-
 
 
 ### 3 - Recode Lanarkshire IJB records ----
-# TO DO - check if this recoding is built into DM process
 
 pds %<>%
-  
   mutate(health_board = 
             case_when(
                str_detect(ijb, "S37000035|S37000028") ~ "L NHS Lanarkshire",
@@ -74,7 +72,7 @@ pds %<>%
   mutate_at(vars("gender", "ethnic_group", "additional_disability",
                  "living_alone", "accommodation_type", "pds_referral_source",
                  "carers_support"), 
-            funs(replace_na(., "99 Not Known"))) %>%
+            ~ replace_na(., "99 Not Known"))
 
 
 ### 5 - Remove duplicates ----
