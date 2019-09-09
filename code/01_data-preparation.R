@@ -18,6 +18,9 @@
 
 source(here::here("code", "00_setup-environment.R"))
 
+# Create data folder if this doesn't already exist
+if(!("data" %in% fs::dir_ls())){fs::dir_create("data")}
+
 
 ### 2 - Read in data ----
 

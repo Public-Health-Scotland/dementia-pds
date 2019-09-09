@@ -48,12 +48,7 @@ filepath <- dplyr::if_else(platform == "server",
                            "//stats/")
 
 
-### 3 - Create data folder ----
-
-if(!("data" %in% fs::dir_ls())){fs::create_dir("data")}
-
-
-### 4 - Extract dates ----
+### 3 - Extract dates ----
 
 # Define the dates that the data are extracted from and to
 
@@ -70,17 +65,17 @@ fy         <- "2019"
 qt         <- "1"       
 
 
-### 5 - Disable scientific notation ----
+### 4 - Disable scientific notation ----
 
 options(scipen=999)
 
 
-### 6 - Set knitr options to allow duplicate labels ----
+### 5 - Set knitr options to allow duplicate labels ----
 
 options(knitr.duplicate.label = 'allow')
 
 
-### 7 - Define exempt termination reason codes ----
+### 6 - Define exempt termination reason codes ----
 
 exempt_reasons <- c("03", "04", "05", "06")
 
