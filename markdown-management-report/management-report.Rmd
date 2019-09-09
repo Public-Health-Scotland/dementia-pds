@@ -23,9 +23,7 @@ pds <- read_csv(here("data", glue("{fy}-{qt}_final-data.csv"))) %>%
   
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),
-         ijb          = str_sub(ijb, 11, -1)) %>%
-  
-  mutate(health_board = str_replace(health_board, "and", "&"))
+         ijb          = str_sub(ijb, 11, -1))
 
 # Load expected diagnoses reference file
 exp <- read_csv(here("reference-files", "expected-diagnoses.csv"))

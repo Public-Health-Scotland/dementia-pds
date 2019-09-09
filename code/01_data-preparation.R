@@ -38,7 +38,10 @@ pds <-
   # Pad CHI Number to 10 digits
   mutate(chi_number = if_else(nchar(chi_number) == 9,
                               paste0("0", chi_number),
-                              chi_number))
+                              chi_number)) %>%
+  
+  # Replace word 'and' with ampersand
+  mutate(health_board = str_replace(health_board, "and", "&"))
 
 
 ### 3 - Recode Lanarkshire IJB records ----
