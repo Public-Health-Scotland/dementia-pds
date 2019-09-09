@@ -32,6 +32,7 @@ library(plotly)        # For interactive plots
 library(flexdashboard) # For creating markdown outputs
 library(purrr)         # For functional programming
 library(fs)            # For creating folder directories
+library(forcats)       # For factor manipulation
 
 
 ### 2 - Define Whether Running on Server or Locally ----
