@@ -56,8 +56,6 @@ Row
 
 More information here.
 
-Where the most recent financial year is selected, only quarters with submitted data is displayed.
-
 
 Row
 ----------------------------------------------------------------------

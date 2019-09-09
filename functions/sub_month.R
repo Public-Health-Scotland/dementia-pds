@@ -11,8 +11,8 @@ sub_month <- function(fy, qt){
   
   year <- 
     case_when(
-      qt %in% 1:2 ~ substr(sel_fy, 1, 4),
-      qt %in% 3:4 ~ paste0("20", substr(sel_fy, 6, 7))
+      qt %in% 1:2 ~ substr(fy, 1, 4),
+      qt %in% 3:4 ~ paste0("20", substr(fy, 6, 7))
     )
   
   paste(month, year)
