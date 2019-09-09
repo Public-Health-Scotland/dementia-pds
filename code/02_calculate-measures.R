@@ -65,13 +65,7 @@ pds %<>%
     # Date 12 months after date of first PDS contact
     pds_12        = add_with_rollback(date_of_initial_first_contact, 
                                       months(12),
-                                      roll_to_first = TRUE),
-    
-    # Number of months between diagnosis and date of first PDS contact
-    time_to_start = trunc(time_length(
-                             interval(dementia_diagnosis_confirmed_date, 
-                                      date_of_initial_first_contact), 
-                          "months"))
+                                      roll_to_first = TRUE)
     
   )
 
@@ -149,7 +143,10 @@ pds %<>%
   mutate(ldp_old = case_when(
     
     # Wait time longer than 12 months
-    time_to_start > 12 ~ "fail",
+    trunc(time_length(
+      interval(dementia_diagnosis_confirmed_date, 
+               date_of_initial_first_contact), 
+      "months")) > 12 ~ "fail",
     
     # Still waiting after 12 months
     is.na(date_of_initial_first_contact) &
@@ -193,19 +190,38 @@ pds %<>%
                          TRUE ~ ldp_old))
 
 
-### 7 - Add flag for waiting list ----
-# check against ldp flags; ongoing, complete, exempt should not be included on waiting list
-# track wait list for every month from april 2016 to latest reporting month
-# can we use inactive to remove people from waiting list or dates more reliable?
-
-
-### 8 - Add waiting time categories
+### 7 - Add time waited ----
 
 pds %<>%
   
+  # Add flag for whether record is still waiting to be seen
+  # Can we use pds_status here?
+  # Depends on quality of this variable
+  mutate(wait_status = case_when(
+    ldp == "ongoing" ~ "still waiting",
+    TRUE ~ ""
+  )) %>%
+  
+  # Number of months between diagnosis and date of first PDS contact
+  mutate(
+    
+    time_to_start = if_else(
+      !is.na(date_of_initial_first_contact),
+      trunc(time_length(
+        interval(dementia_diagnosis_confirmed_date, 
+                 date_of_initial_first_contact), 
+        "months")),
+      trunc(time_length(
+        interval(dementia_diagnosis_confirmed_date, 
+                 end_date), 
+        "months"))
+    )
+    
+  ) %>%
+  
+  # Add measure of time waited/been waiting
   mutate(wait_length = case_when(
     
-    is.na(time_to_start)           ~ "Still Waiting",
     between(time_to_start, 0, 3)   ~ "3 Months or Less",
     between(time_to_start, 4, 6)   ~ "4-6 Months",    
     between(time_to_start, 7, 9)   ~ "7-9 Months",
@@ -215,10 +231,10 @@ pds %<>%
   ))
 
 
-### 9 - Create final output file ----
+### 8 - Create final output file ----
 
 pds %<>%
-  group_by(health_board, ijb, fy, month, ldp, ldp_old, wait_length) %>%
+  group_by(health_board, ijb, fy, month, ldp, wait_status, wait_length) %>%
   summarise(referrals = n())
 
 write_csv(pds, here("data", glue("{fy}-{qt}_final-data.csv")))
