@@ -103,7 +103,7 @@ Methodology
 Row
 -------------------------------------------------
 
-### 
+### <!-- No Title -->
 
 This page includes more detail regarding the methodology used to arrive at the figures in this report. It is hoped that by sharing this, the reports will be easier to understand and local reporting will be more consistent.
 
