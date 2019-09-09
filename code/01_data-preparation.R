@@ -76,25 +76,6 @@ pds %<>%
                  "carers_support"), 
             funs(replace_na(., "99 Not Known"))) %>%
 
-  # Fix error dates
-  # Only use diagnosis, first contact and termination date currently
-  mutate(date_of_initial_first_contact = if_else(date_of_initial_first_contact < dementia_diagnosis_confirmed_date,
-                                                          dementia_diagnosis_confirmed_date,
-                                                          date_of_initial_first_contact),
-                  termination_or_transition_date = if_else(termination_or_transition_date < date_of_initial_first_contact,
-                                                          date_of_initial_first_contact,
-                                                          if_else(is.na(date_of_initial_first_contact) &
-                                                                    termination_or_transition_date < dementia_diagnosis_confirmed_date,
-                                                                  dementia_diagnosis_confirmed_date,
-                                                                  termination_or_transition_date),
-                                                          termination_or_transition_date))
-
-  # mutate_at(vars(setdiff(contains("date"), c("date_of_birth",
-  #                                            "dementia_diagnosis_confirmed_date"))),
-  #           funs(if_else(. < dementia_diagnosis_confirmed_date,
-  #                        dementia_diagnosis_confirmed_date,
-  #                        .)))
-
 
 ### 5 - Remove duplicates ----
 # TO DO - review once number of duplicates is known
