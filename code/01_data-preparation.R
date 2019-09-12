@@ -67,7 +67,6 @@ pds %<>%
 
 
 ### 5 - Recode errors ----
-# TO DO - review once number of errors known
 
 pds %<>%
   
@@ -80,8 +79,7 @@ pds %<>%
 
 
 ### 6 - Remove duplicates ----
-# TO DO - review once number of duplicates is known
-       
+
 pds %<>%
   
   distinct(chi_number, .keep_all = TRUE)
