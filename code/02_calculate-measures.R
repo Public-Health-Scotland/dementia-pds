@@ -17,6 +17,7 @@
 ### 1 - Load environment file ----
 
 source(here::here("code", "00_setup-environment.R"))
+source(here::here("functions", "financial_year.R"))
 
 
 ### 2 - Load data ----
@@ -33,15 +34,7 @@ pds <-
 ### 3 - Add FY and months labels ----
 
 pds %<>%
-  
-  mutate(fy    = if_else(month(dementia_diagnosis_confirmed_date) >= 4,
-                 glue("{year(dementia_diagnosis_confirmed_date)}/",
-                      "{substr(year(dementia_diagnosis_confirmed_date) + 1, ",
-                      "3, 4)}"),
-                 glue("{year(dementia_diagnosis_confirmed_date) - 1}/",
-                      "{substr(year(dementia_diagnosis_confirmed_date), ",
-                      "3, 4)}")
-                 ),
+  mutate(fy    = financial_year(dementia_diagnosis_confirmed_date),
          month = month(dementia_diagnosis_confirmed_date))
 
 
