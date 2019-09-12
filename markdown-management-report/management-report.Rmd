@@ -16,7 +16,7 @@ source(here::here("code", "00_setup-environment.R"))
 purrr::walk(dir(here::here("functions"), full.names = TRUE), source)
 
 # Load PDS data
-pds <- read_csv(here("data", glue("{fy}-{qt}_final-data.csv"))) %>%
+pds <- read_rds(here("data", glue("{fy}-{qt}_final-data.rds"))) %>%
   
   # Filter HB for fasther knitting when testing
   filter(substr(health_board, 1, 1) == c("A", "B")) %>%

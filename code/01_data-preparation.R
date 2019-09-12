@@ -53,7 +53,7 @@ pds %>%
   summarise(errors  = sum(!is.na(record_has_error)),
             records = n()) %>%
   arrange(fy, health_board, ijb) %>%
-  write_rds(here("data", glue("{fy}-{qt}_error-summary.csv")))
+  write_rds(here("data", glue("{fy}-{qt}_error-summary.rds")))
 
 
 ### 4 - Recode Lanarkshire IJB records ----
@@ -87,7 +87,7 @@ pds %<>%
 
 ### 7 - Save data ---
 
-write_csv(pds, here("data", glue("{fy}-{qt}_clean-data.csv")))
+write_rds(pds, here("data", glue("{fy}-{qt}_clean-data.rds")))
 
 
 ### END OF SCRIPT ###

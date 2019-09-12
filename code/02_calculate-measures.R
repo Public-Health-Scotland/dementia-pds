@@ -22,13 +22,7 @@ source(here::here("functions", "financial_year.R"))
 
 ### 2 - Load data ----
 
-pds <- 
-  
-  read_csv(here("data", glue("{fy}-{qt}_clean-data.csv")), 
-                col_types = cols(.default = "c")) %>%
-  
-  # Convert dates from character to date format
-  mutate_at(vars(contains("date")), ~lubridate::ymd(.))
+pds <- read_rds(here("data", glue("{fy}-{qt}_clean-data.rds")))
 
 
 ### 3 - Add FY and months labels ----
@@ -230,7 +224,7 @@ pds %<>%
   group_by(health_board, ijb, fy, month, ldp, wait_status, wait_length) %>%
   summarise(referrals = n())
 
-write_csv(pds, here("data", glue("{fy}-{qt}_final-data.csv")))
+write_rds(pds, here("data", glue("{fy}-{qt}_final-data.rds")))
 
 
 ### END OF SCRIPT ###
