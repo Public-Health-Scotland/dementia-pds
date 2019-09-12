@@ -76,21 +76,7 @@ pds %<>%
 
   # Select records within reporting period only
   filter(dementia_diagnosis_confirmed_date %within% 
-           interval(start_date, end_date)) %>%
-  
-  # Recode missing PDS Status
-  mutate(pds_status = 
-           case_when(
-             str_detect(pds_status, "02") ~ "02 Inactive",
-             is.na(pds_status)            ~ "01 Active",
-             TRUE                         ~ pds_status
-           )) %>%
-
-  # Recode NAs to 99 Not Known (for variables where this is an option)
-  mutate_at(vars("gender", "ethnic_group", "additional_disability",
-                 "living_alone", "accommodation_type", "pds_referral_source",
-                 "carers_support"), 
-            ~ replace_na(., "99 Not Known"))
+           interval(start_date, end_date))
 
 
 ### 6 - Remove duplicates ----
