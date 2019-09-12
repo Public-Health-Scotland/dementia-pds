@@ -33,7 +33,6 @@ pds %<>%
 
 
 ### 4 - Add key dates for calculations ----
-# TO DO - Review whether we want to roll forward or back
 
 pds %<>%
   
