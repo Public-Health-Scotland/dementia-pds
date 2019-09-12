@@ -22,7 +22,7 @@ source(here::here("code", "00_setup-environment.R"))
 if(!("data" %in% fs::dir_ls())){fs::dir_create("data")}
 
 
-### 2 - Read in data ----
+### 2 - Read and clean collated file ----
 
 pds <- 
   
@@ -41,7 +41,7 @@ pds <-
                               chi_number)) %>%
   
   # Replace word 'and' with ampersand
-  mutate(health_board = str_replace(health_board, "and", "&"))
+  mutate(health_board = str_replace(health_board, " and ", " & "))
 
 
 ### 3 - Recode Lanarkshire IJB records ----
