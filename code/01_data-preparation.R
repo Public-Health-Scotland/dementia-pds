@@ -17,6 +17,7 @@
 ### 1 - Load environment file and functions ----
 
 source(here::here("code", "00_setup-environment.R"))
+source(here::here("functions", "financial_year.R"))
 
 # Create data folder if this doesn't already exist
 if(!("data" %in% fs::dir_ls())){fs::dir_create("data")}
@@ -44,7 +45,18 @@ pds <-
   mutate(health_board = str_replace(health_board, " and ", " & "))
 
 
-### 3 - Recode Lanarkshire IJB records ----
+### 3 - Save out error summary
+
+pds %>%
+  mutate(fy = financial_year(dementia_diagnosis_confirmed_date)) %>%
+  group_by(fy, health_board, ijb) %>%
+  summarise(errors  = sum(!is.na(record_has_error)),
+            records = n()) %>%
+  arrange(fy, health_board, ijb) %>%
+  write_rds(here("data", glue("{fy}-{qt}_error-summary.csv")))
+
+
+### 4 - Recode Lanarkshire IJB records ----
 
 pds %<>%
   mutate(health_board = 
@@ -54,7 +66,7 @@ pds %<>%
             ))
 
 
-### 4 - Recode errors ----
+### 5 - Recode errors ----
 # TO DO - review once number of errors known
 
 pds %<>%
@@ -81,7 +93,7 @@ pds %<>%
             ~ replace_na(., "99 Not Known"))
 
 
-### 5 - Remove duplicates ----
+### 6 - Remove duplicates ----
 # TO DO - review once number of duplicates is known
        
 pds %<>%
@@ -89,7 +101,7 @@ pds %<>%
   distinct(chi_number, .keep_all = TRUE)
 
 
-### 6 - Save data ---
+### 7 - Save data ---
 
 write_csv(pds, here("data", glue("{fy}-{qt}_clean-data.csv")))
 
