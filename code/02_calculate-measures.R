@@ -65,29 +65,30 @@ pds %<>%
     ## COMPLETE ##
     
     # Started PDS within 12m of diagnosis AND PDS still ongoing after 12m
-    diag_12 > date_of_initial_first_contact & 
-      is.na(termination_or_transition_date) & pds_12 < end_date
+    date_of_initial_first_contact < diag_12 & 
+      end_date >= pds_12 &
+         is.na(termination_or_transition_date)
     ~ "complete",
     
     # Started PDS within 12m of diagnosis AND PDS ended after 11m
-    diag_12 > date_of_initial_first_contact &
-      pds_11 <= termination_or_transition_date
+    date_of_initial_first_contact < diag_12 &
+      termination_or_transition_date >= pds_11
     ~ "complete",
     
     ## FAIL ##
     
+    # PDS started more than 12m after diagnosis
+    date_of_initial_first_contact >= diag_12
+    ~ "fail",
+    
     # More than 12m since diagnosis and PDS not started
-    diag_12 <= end_date &
+    end_date >= diag_12 & 
       is.na(date_of_initial_first_contact) &
          is.na(termination_or_transition_date)
     ~ "fail",
     
-    # PDS started more than 12m after diagnosis
-    diag_12 <= date_of_initial_first_contact
-    ~ "fail",
-    
     # PDS terminated before 11 months from start date
-    pds_11 > termination_or_transition_date &
+    termination_or_transition_date < pds_11 &
       !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
     ~ "fail",
     
@@ -99,22 +100,22 @@ pds %<>%
     
     ## EXEMPT ##
     
-    # Exempt termination reason; SU died/moved to other HB/refused/can't engage
+    # Exempt termination reason; died/moved to other HB/refused/can't engage
     substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons
     ~ "exempt",
     
     ## ONGOING ##
     
     # Less than 12m since diagnosis and PDS not started
-    diag_12 > end_date & 
+    end_date < diag_12 & 
       is.na(date_of_initial_first_contact) & 
-      is.na(termination_or_transition_date)
+         is.na(termination_or_transition_date)
     ~ "ongoing",
     
     # PDS started within 12m of diagnosis but not yet ended
-    diag_12 > date_of_initial_first_contact &
-      pds_12 > end_date &
-      is.na(termination_or_transition_date)
+    date_of_initial_first_contact < diag_12 &
+      end_date < pds_12 &
+         is.na(termination_or_transition_date)
     ~ "ongoing"
     
   ))
