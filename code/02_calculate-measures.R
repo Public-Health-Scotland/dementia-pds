@@ -166,7 +166,8 @@ pds %<>%
 
 pds %<>%
   group_by(health_board, ijb, fy, month, ldp, wait_status, wait_length) %>%
-  summarise(referrals = n())
+  summarise(referrals = n()) %>%
+  ungroup()
 
 write_rds(pds, here("data", glue("{fy}-{qt}_final-data.rds")))
 
