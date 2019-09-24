@@ -37,7 +37,7 @@ Select Financial Year
 Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
 
 
-Row {data-height=30}
+Row
 -----------------------------------------------------------------------
 
 ### <!-- Management Information Tagline -->
