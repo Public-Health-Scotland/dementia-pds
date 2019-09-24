@@ -48,6 +48,11 @@ pds <-
 ### 3 - Save out error summary
 
 pds %>%
+  filter(dementia_diagnosis_confirmed_date %within% 
+           interval(start_date, end_date)) %>%
+  mutate(health_board = if_else(is.na(health_board),
+                                "Missing",
+                                substring(health_board, 3))) %>%
   mutate(fy = financial_year(dementia_diagnosis_confirmed_date)) %>%
   group_by(fy, health_board, ijb) %>%
   summarise(total_errors     = sum(as.integer(record_has_error)),
