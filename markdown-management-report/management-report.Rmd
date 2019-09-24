@@ -29,7 +29,7 @@ pds <- read_rds(here("data", glue("{fy}-{qt}_final-data.rds"))) %>%
 exp <- read_csv(here("reference-files", "expected-diagnoses.csv"))
 
 # Load error summary
-error <- read_rds(here("data", glue("{fy}-{qt}_error-summary.rds")))
+err <- read_rds(here("data", glue("{fy}-{qt}_error-summary.rds")))
 
 ```
 
@@ -79,6 +79,7 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 scotland <- map(.x = sort(unique(pds$fy)),
                 .f = ~ set_env(data = pds,
                                exp  = exp,
+                               err  = err,
                                hb   = "Scotland",
                                year = .x,
                                quarter = qt))
@@ -96,6 +97,7 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
                                   sort(unique(pds$health_board))), 
                       .f = ~ set_env(data = pds,
                                      exp  = exp,
+                                     err  = err,
                                      hb   = .y,
                                      year = .x,
                                      quarter = qt))
