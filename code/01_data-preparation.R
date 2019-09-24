@@ -53,6 +53,7 @@ pds %>%
   summarise(total_errors     = sum(as.integer(record_has_error)),
             diag_date_errors = sum(is.na(dementia_diagnosis_confirmed_date)),
             records          = n()) %>%
+  ungroup() %>%
   arrange(fy, health_board, ijb) %>%
   write_rds(here("data", glue("{fy}-{qt}_error-summary.rds")))
 
