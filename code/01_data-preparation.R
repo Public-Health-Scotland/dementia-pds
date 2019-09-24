@@ -50,8 +50,9 @@ pds <-
 pds %>%
   mutate(fy = financial_year(dementia_diagnosis_confirmed_date)) %>%
   group_by(fy, health_board, ijb) %>%
-  summarise(errors  = sum(!is.na(record_has_error)),
-            records = n()) %>%
+  summarise(total_errors     = sum(!is.na(record_has_error)),
+            diag_date_errors = sum(is.na(dementia_diagnosis_confirmed_date)),
+            records          = n()) %>%
   arrange(fy, health_board, ijb) %>%
   write_rds(here("data", glue("{fy}-{qt}_error-summary.rds")))
 
