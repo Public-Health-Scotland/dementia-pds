@@ -41,13 +41,15 @@ Row
 
 ### About This Report
 
-This report contains data for referrals made to post diagnostic support services with a diagnosis date between **`r format(start_date, "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`**.
+This report has been produced by the Information Services Division (ISD) of NHS National Services Scotland and contains analysis of performance against the [Scottish Government's LDP Standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) on provision of Dementia Post Diagnostic Support (PDS).
 
-All data in this report are based on the most recently submitted data and are refreshed quarterly for each new report. This page includes data as submitted in **`r sub_month(fy, qt)`**. 
+This report contains data for individuals diagnosed with dementia between **`r format(start_date, "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`** who were referred for post diagnostic support.
 
-These reports are developed by the NSS Public Health and Intelligence National Dementia PDS Team and contain performance-based analysis against the Scottish Government's LDP Standard on Dementia Post-Diagnostic Support whereby anyone newly diagnosed with dementia is entitled to a years worth of person-centred support.
+*This paragraph needs reworded!* <br>
+Data is submitted to ISD by health boards on a quarterly basis and includes a refresh of all records with a diagnosis date from `r format(start_date, "%d %B %Y")` and also new records for individuals diagnosed and referred in the most recent quarter. Therefore, data for the full reporting period is refreshed in each management report based on the most recently submitted data. This report is based on data submitted in **`r sub_month(fy, qt)`**. More information regarding the Dementia PDS dataset and submission process can be found on the [Dementia PDS pages](www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/) of the [ISD website](www.isdscotland.org). 
 
-We would welcome any comments or feedback you may have on these management reports. Please get in touch with the ISD Dementia PDS team at: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
+These reports are an ongoing development following the implementation of the [revised Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf). As such, they are currently marked as **DRAFT** and may change in the future. To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the ISD Dementia PDS team mailbox at: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net).
+
 
 
 Row
