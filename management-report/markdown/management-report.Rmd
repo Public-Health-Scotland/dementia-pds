@@ -1,7 +1,9 @@
 ---
-title: "Dementia PDS Quarterly Management Report: Data as at 30 June 2019"
+title: "Dementia PDS Quarterly Management Report - DRAFT"
 output: 
   flexdashboard::flex_dashboard:
+    navbar:
+      - title: "Data as at 30 June 2019"
     logo: isdscotland.png
     orientation: rows
     vertical_layout: scroll
@@ -57,11 +59,7 @@ Row
 
 ### LDP Standard
 
-The Local Delivery Plan (LDP) standard is as follows:
-
-People newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by a named Link Worker.
-
-Performance against the LDP standard is reported in two parts:
+The Local Delivery Plan (LDP) standard is that *everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker*. Perfromance is reported in two parts:
 
 <style>
 div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
@@ -69,9 +67,12 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 <div class = "blue">
 
 1. The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support.
+
 2. The percentage of people referred who received a minimum of one year’s support.
 
-</div>
+</div> <br>
+
+For more detail on how the above is calculated, please see the [methodology](#methodology) page.
 
 
 <!-- Scotland -->
