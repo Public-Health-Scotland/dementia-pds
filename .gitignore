@@ -8,7 +8,7 @@ data/
 
 # 'output' folders #
 publication/output/
-management-report/output/
+# management-report/output/
 
 # Markdown output #
 *.html
