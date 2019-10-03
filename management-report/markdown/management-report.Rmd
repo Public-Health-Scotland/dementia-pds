@@ -21,7 +21,7 @@ purrr::walk(dir(here::here("functions"), full.names = TRUE), source)
 pds <- read_rds(here("data", glue("{fy}-{qt}_final-data.rds"))) %>%
   
   # Filter HB for fasther knitting when testing
-  filter(substr(health_board, 1, 1) %in% c("A", "B")) %>%
+  # filter(substr(health_board, 1, 1) %in% c("A", "B")) %>%
   
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),

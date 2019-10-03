@@ -55,7 +55,7 @@ pds %>%
                                 substring(health_board, 3))) %>%
   mutate(fy = financial_year(dementia_diagnosis_confirmed_date)) %>%
   group_by(fy, health_board, ijb) %>%
-  summarise(total_errors     = sum(as.integer(record_has_error)),
+  summarise(total_errors     = sum(as.integer(error_flag)),
             diag_date_errors = sum(is.na(dementia_diagnosis_confirmed_date)),
             records          = n()) %>%
   ungroup() %>%
@@ -87,9 +87,9 @@ pds %<>%
 
 ### 6 - Remove duplicates ----
 
-pds %<>%
-  
-  distinct(chi_number, .keep_all = TRUE)
+# pds %<>%
+#   
+#   distinct(chi_number, .keep_all = TRUE)
 
 
 ### 7 - Save data ---
