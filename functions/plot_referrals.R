@@ -11,25 +11,14 @@ plot_referrals <- function(data,
   
   # If incomplete financial year, only include complete months
   include_months <-
-    
-    if(is.na(quarter)){
-      1:12
-    }else{
-      if(quarter == "1"){
-      c(4:6)
-    }else{
-      if(quarter == "2"){
-        c(4:9)
-      }else{
-        if(quarter == "3"){
-          c(4:12)
-        }else{
-          if(quarter == "4"){
-            c(1:12)
+    if(is.na(quarter)){1:12}else{
+      if(quarter == "1"){4:6}else{
+        if(quarter == "2"){4:9}else{
+          if(quarter == "3"){4:12}else{
+            if(quarter == "4"){1:12}
           }
         }
       }
-    }
     }
   
   if(ijb_group == TRUE){
@@ -46,11 +35,7 @@ plot_referrals <- function(data,
     
     data %<>% 
       bind_rows(board) %>% 
-      ungroup() %>%
-      complete(month = include_months, ijb,
-               fill = list(fy = max(.$fy),
-                           health_board = max(.$health_board),
-                           referrals = 0))
+      ungroup()
     
     data %<>%
       filter(!is.na(ijb)) %>%
@@ -63,10 +48,7 @@ plot_referrals <- function(data,
       mutate(health_board = ifelse(scotland == TRUE, "Scotland", health_board)) %>%
       group_by(fy, month, health_board) %>%
       summarise(referrals = sum(referrals)) %>%
-      ungroup() %>%
-      complete(month = include_months, health_board,
-               fill = list(fy = max(.$fy),
-                           referrals = 0))
+      ungroup()
   
   }
   

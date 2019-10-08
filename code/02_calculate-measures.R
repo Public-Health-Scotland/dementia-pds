@@ -164,10 +164,33 @@ pds %<>%
 
 ### 8 - Create final output file ----
 
+inc_months <-
+  if(qt == 1){4:6}else{
+    if(qt == 2){4:9}else{
+      if(qt == 3){4:12}else{
+        if(qt == 4){1:12}
+      }
+    }
+  }
+
 pds %<>%
+  
+  # Aggregate to create minimal tidy dataset
   group_by(health_board, ijb, fy, month, ldp, wait_status, wait_length) %>%
   summarise(referrals = n()) %>%
-  ungroup()
+  ungroup() %>%
+  
+  # Add rows where no referrals were made
+  # Doing this will make sure zeros are still shown in reports
+  complete(nesting(health_board, ijb), fy, month,
+           fill = list(referrals = 0,
+                       ldp = "complete")) %>%
+
+  # Remove completed rows for months in incomplete financial year
+  # e.g. for Q1 reports, remove completed rows for July - March
+  filter(substr(fy, 1, 4) < year(end_date) |
+           (substr(fy, 1, 4) == year(end_date) & 
+              month %in% inc_months))
 
 write_rds(pds, here("data", glue("{fy}-{qt}_final-data.rds")))
 
