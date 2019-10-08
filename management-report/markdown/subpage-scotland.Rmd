@@ -88,7 +88,7 @@ valueBox(paste0(round_half_up(pds_rate, 1), "%"),
 Row {data-height=500}
 ----------------------------------------------------------------------
 
-### Number of Referrals {data-width=800}
+### **Number of Individuals Diagnosed and Referred for PDS** {data-width=800}
 
 ```{r Referrals Plot}
 
