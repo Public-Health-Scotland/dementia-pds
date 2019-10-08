@@ -79,6 +79,8 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 For more detail on how the above is calculated, please see the [methodology](#methodology) page.
 
+Further information regarding the Dementia PDS dataset and submission process can be found on the [Dementia PDS pages](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf?) of the [ISD website](https://www.isdscotland.org/).
+
 
 <!-- Scotland -->
 
