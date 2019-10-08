@@ -48,6 +48,48 @@ Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementi
 Row
 ----------------------------------------------------------------------
 
+### Commentary
+
+Some commentary here.
+
+
+### LDP Breakdown
+
+```{r LDP Table}
+subpage_data %>%
+  group_by(ijb, ldp) %>%
+  summarise(referrals = sum(referrals)) %>%
+  bind_rows(subpage_data %>%
+              group_by(ldp) %>%
+              summarise(ijb = hb,
+                        referrals = sum(referrals))) %>%
+  ungroup() %>%
+  complete(ijb, ldp = c("complete", "exempt", "fail", "ongoing"),
+           fill = list(referrals = 0)) %>%
+  bind_rows(subpage_data %>%
+              group_by(ijb) %>%
+              summarise(ldp = "Total",
+                        referrals = sum(referrals)),
+            subpage_data %>%
+              summarise(ldp = "Total",
+                        ijb = hb,
+                        referrals = sum(referrals))) %>%
+  mutate(`LDP Status` = str_to_title(ldp)) %>%
+  select(-ldp) %>%
+  spread(ijb, referrals) %>%
+  mutate_all(~ replace_na(., 0)) %>%
+  kable() %>%
+  kable_styling(full_width = FALSE) %>%
+  row_spec(5, bold = TRUE) %>%
+  add_header_above(
+    c(" " = 2, 
+      "Integration Joint Board (IJB)" = length(unique(subpage_data$ijb))))
+```
+
+
+Row
+----------------------------------------------------------------------
+
 ### Referrals Value Box
 ```{r Referrals Value Box}
 valueBox(ref, 
