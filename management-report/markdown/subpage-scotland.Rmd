@@ -19,8 +19,18 @@ complete_year <- if_else(max_fy == sel_fy & qt != 4, FALSE, TRUE)
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
+
+
 ### `r hb`
 #### Financial Year `r sel_fy`
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
 
 ***
 
@@ -36,26 +46,6 @@ Select Financial Year
 
 <!-- Reword this and try and force to bottom of sidebar -->
 Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
-
-
-Row
------------------------------------------------------------------------
-
-### <!-- Management Information Tagline -->
-
-<font size="3"> 
-<center> <bold>
-<span style="color:red"> 
-MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION 
-</span> </center> </font> </bold>
-
-
-Row
-----------------------------------------------------------------------
-
-### <!-- Information -->
-
-More information here.
 
 
 Row

@@ -23,6 +23,14 @@ Sidebar {.sidebar}
 
 ***
 
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
 Select Financial Year
 
 <!-- For some reason need '-2' on end of 1819 links - check why this is -->
@@ -35,26 +43,6 @@ Select Financial Year
 
 <!-- Reword this and try and force to bottom of sidebar -->
 Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
-
-
-Row
------------------------------------------------------------------------
-
-### <!-- Management Information Tagline -->
-
-<font size="3"> 
-<center> <bold>
-<span style="color:red"> 
-MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION 
-</span> </center> </font> </bold>
-
-
-Row
-----------------------------------------------------------------------
-
-### <!-- Information -->
-
-More information here.
 
 
 Row
@@ -88,7 +76,7 @@ valueBox(paste0(round_half_up(pds_rate, 1), "%"),
 Row {data-height=500}
 ----------------------------------------------------------------------
 
-### Number of Individuals Diagnosed and Referred for PDS {data-width=800}
+### **Number of Individuals Diagnosed and Referred for PDS** {data-width=800}
 
 ```{r Referrals Plot}
 
