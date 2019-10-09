@@ -47,7 +47,7 @@ pds <-
 
 ### 3 - Save out error summary
 
-pds %>%
+err <- pds %>%
   filter(dementia_diagnosis_confirmed_date %within% 
            interval(start_date, end_date)) %>%
   mutate(health_board = if_else(is.na(health_board),
@@ -58,7 +58,15 @@ pds %>%
   summarise(total_errors     = sum(as.integer(error_flag)),
             diag_date_errors = sum(is.na(dementia_diagnosis_confirmed_date)),
             records          = n()) %>%
-  ungroup() %>%
+  ungroup()
+
+err %>%
+  bind_rows(err %>%
+              group_by(fy, health_board = "Scotland", ijb = "Scotland") %>%
+              summarise(total_errors     = sum(total_errors),
+                        diag_date_errors = sum(diag_date_errors),
+                        records          = sum(records)) %>%
+              ungroup()) %>%
   arrange(fy, health_board, ijb) %>%
   write_rds(here("data", glue("{fy}-{qt}_error-summary.rds")))
 
