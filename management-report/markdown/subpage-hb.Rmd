@@ -45,18 +45,11 @@ Select Financial Year
 Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
 
 
-Row 
+Row
 ----------------------------------------------------------------------
 
-`r ifelse(complete_year == TRUE, "", "### Text here")`
-```{r Referrals Value Box, include = !complete_year}
-valueBox(ref, 
-         icon = "fa-hashtag",
-         caption = glue("referrals were made for post-diagnostic support."))
-```
-
-`r ifelse(complete_year == TRUE, "### Referrals Value Box", "")`
-```{r Referrals Value Box, include = complete_year}
+### Referrals Value Box
+```{r Referrals Value Box}
 valueBox(ref, 
          icon = "fa-hashtag",
          caption = glue("referrals were made for post-diagnostic support."))
