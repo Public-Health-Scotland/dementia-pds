@@ -86,7 +86,7 @@ plot_referrals <- function(data,
          y = "Number of Referrals") +
     
     theme(legend.title = element_blank(),
-          legend.position = ifelse(ijb_group == FALSE, "none", "right"),
+          legend.position = ifelse(ijb_group == FALSE, "none", "top"),
           axis.text.x = element_text(angle=45))
   
   ggplotly(plot, tooltip = "text") %>%
@@ -97,6 +97,8 @@ plot_referrals <- function(data,
                                          'toggleSpikelines', 
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian'), 
-           displaylogo = F, collaborate = F, editable = F)
+           displaylogo = F, editable = F) %>%
+    
+    layout(legend = list(orientation = "h", x = 0.1 , y = -0.2))
   
 }
