@@ -162,6 +162,11 @@ pds %<>%
   ))
 
 
+### 8 - Save individual level file for checking ----
+
+write_csv(pds, here("data", glue("{fy}-{qt}_check-data.csv")))
+
+
 ### 8 - Create final output file ----
 
 inc_months <-
