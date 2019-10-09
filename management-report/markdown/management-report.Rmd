@@ -21,7 +21,7 @@ purrr::walk(dir(here::here("functions"), full.names = TRUE), source)
 pds <- read_rds(here("data", glue("{fy}-{qt}_final-data.rds"))) %>%
   
   # Filter HB for faster knitting when testing
-  filter(substr(health_board, 1, 1) %in% c("A", "B", "T")) %>%
+  # filter(!substr(health_board, 1, 1) %in% c("A", "B", "T")) %>%
   
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),
@@ -191,10 +191,13 @@ The only adjustments made to the data before analysis by ISD are to remove any r
 err %>% 
   group_by(fy, health_board) %>% 
   summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1)) %>%
+  ungroup() %>%
   mutate(err_rate = paste0(err_rate, "%")) %>%
   spread(fy, err_rate) %>%
   rename(`Health Board` = health_board) %>%
-  knitr::kable()
+  kable() %>%
+  kable_styling(full_width = FALSE) %>%
+  row_spec(15, bold = TRUE)
 ```
 
 <!-- END OF SCRIPT -->
