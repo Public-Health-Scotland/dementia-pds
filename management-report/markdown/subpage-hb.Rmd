@@ -45,15 +45,48 @@ Select Financial Year
 Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
 
 
-Row
+Row 
 ----------------------------------------------------------------------
 
-### Commentary
+`r ifelse(complete_year == TRUE, "", "### Text here")`
+```{r Referrals Value Box, include = !complete_year}
+valueBox(ref, 
+         icon = "fa-hashtag",
+         caption = glue("referrals were made for post-diagnostic support."))
+```
 
-Some commentary here.
+`r ifelse(complete_year == TRUE, "### Referrals Value Box", "")`
+```{r Referrals Value Box, include = complete_year}
+valueBox(ref, 
+         icon = "fa-hashtag",
+         caption = glue("referrals were made for post-diagnostic support."))
+```
 
+
+`r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
+```{r Expected Value Box, include = complete_year}
+valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
+         icon = "fa-percent",
+         caption = glue("of the expected number of diagnoses were ",
+                        "referred for post diagnostic support."))
+```
+
+`r ifelse(complete_year == TRUE, "### 12 Months Value Box", "")`
+```{r 12 Months Value Box, include = complete_year}
+valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
+         icon = "fa-percent",
+         caption = glue("of those referred for post diagnostic support ",
+                        "received 12 months of support."))
+```
+
+
+Row {data-height=450}
+----------------------------------------------------------------------
 
 ### LDP Breakdown
+
+Some text here to set the scene...
+
 
 ```{r LDP Table}
 subpage_data %>%
@@ -74,7 +107,12 @@ subpage_data %>%
               summarise(ldp = "Total",
                         ijb = hb,
                         referrals = sum(referrals))) %>%
-  mutate(`LDP Status` = str_to_title(ldp)) %>%
+  mutate(`LDP Status` = 
+           case_when(
+             ldp == "complete" ~ "Met Standard",
+             ldp == "fail" ~ "Not Met Standard",
+             TRUE ~ str_to_title(ldp)
+           )) %>%
   select(-ldp) %>%
   spread(ijb, referrals) %>%
   mutate_all(~ replace_na(., 0)) %>%
@@ -86,37 +124,6 @@ subpage_data %>%
       "Integration Joint Board (IJB)" = length(unique(subpage_data$ijb))))
 ```
 
-
-Row
-----------------------------------------------------------------------
-
-### Referrals Value Box
-```{r Referrals Value Box}
-valueBox(ref, 
-         icon = "fa-hashtag",
-         caption = glue("referrals were made for post-diagnostic support."))
-```
-
-
-`r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
-```{r Expected Value Box, include = complete_year}
-valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
-         icon = "fa-percent",
-         caption = glue("of the expected number of diagnoses were ",
-                        "referred for post diagnostic support."))
-```
-
-### 12 Months Value Box
-```{r 12 Months Value Box}
-valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
-         icon = "fa-percent",
-         caption = glue("of those referred for post diagnostic support ",
-                        "received 12 months of support."))
-```
-
-
-Row {data-height=500}
-----------------------------------------------------------------------
 
 ### **Number of Individuals Diagnosed and Referred for PDS** {data-width=800}
 
