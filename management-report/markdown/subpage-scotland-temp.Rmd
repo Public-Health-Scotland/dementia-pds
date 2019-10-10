@@ -25,6 +25,6 @@ Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementi
 Row
 ----------------------------------------------------------------------
 
-### Title
+### **Note**
 
-Scotland figures are unavailable due to completeness issues in some health boards. These figures be available once these issues have been resolved.
+Scotland figures are currently unavailable due to completeness issues in some areas.
