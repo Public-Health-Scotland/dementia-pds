@@ -48,6 +48,16 @@ Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementi
 Row
 ----------------------------------------------------------------------
 
+### **Note**
+
+`r if_else(hb == "NHS Greater Glasgow & Clyde", "Data for some IJBs in NHS Greater Glasgow & Clyde are currently unavailable and therefore board level figures should be treated with caution.", "")`
+
+These reports are an ongoing development following the implementation of the revised [Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) effective 01 April 2019. As such, they are currently marked as **DRAFT** and may be subject to change in future versions.
+
+
+Row
+----------------------------------------------------------------------
+
 ### Referrals Value Box
 ```{r Referrals Value Box}
 valueBox(ref, 
@@ -76,7 +86,7 @@ valueBox(paste0(round_half_up(pds_rate, 1), "%"),
 Row {data-height=450}
 ----------------------------------------------------------------------
 
-### LDP Breakdown
+### **LDP Breakdown**
 
 Some text here to set the scene...
 
