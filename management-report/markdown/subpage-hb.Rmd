@@ -100,15 +100,19 @@ subpage_data %>%
               summarise(ldp = "Total",
                         ijb = hb,
                         referrals = sum(referrals))) %>%
+  
   mutate(`LDP Status` = 
            case_when(
-             ldp == "complete" ~ "Met Standard",
-             ldp == "fail" ~ "Not Met Standard",
+             ldp == "complete" ~ "Standard Met",
+             ldp == "fail" ~ "Standard Not Met",
              TRUE ~ str_to_title(ldp)
            )) %>%
   select(-ldp) %>%
   spread(ijb, referrals) %>%
   mutate_all(~ replace_na(., 0)) %>%
+  mutate(`LDP Status` = fct_relevel(factor(`LDP Status`, levels = unique(.$`LDP Status`)),
+                                    "Standard Met", "Standard Not Met", "Ongoing", "Exempt", "Total")) %>%
+  arrange(`LDP Status`) %>%
   kable() %>%
   kable_styling(full_width = FALSE) %>%
   row_spec(5, bold = TRUE) %>%
