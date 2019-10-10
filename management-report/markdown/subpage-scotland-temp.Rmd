@@ -1,0 +1,30 @@
+Scotland
+=================================================
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+
+
+### Scotland
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<!-- Reword this and try and force to bottom of sidebar -->
+Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
+
+
+Row
+----------------------------------------------------------------------
+
+### Title
+
+Scotland figures are unavailable due to completeness issues in some health boards. These figures be available once these issues have been resolved.

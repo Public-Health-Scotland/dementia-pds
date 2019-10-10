@@ -21,7 +21,6 @@ purrr::walk(dir(here::here("functions"), full.names = TRUE), source)
 pds <- read_rds(here("data", glue("{fy}-{qt}_final-data.rds"))) %>%
   
   # Filter HB for faster knitting when testing
-  # filter(!substr(health_board, 1, 1) %in% c("A", "B", "T")) %>%
   
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),
@@ -84,7 +83,7 @@ Further information regarding the Dementia PDS dataset and submission process ca
 
 <!-- Scotland -->
 
-```{r scotland, include=FALSE}
+```{r scotland, include=FALSE, eval = FALSE}
 
 scotland <- map(.x = sort(unique(pds$fy)),
                 .f = ~ set_env(data = pds,
@@ -96,7 +95,9 @@ scotland <- map(.x = sort(unique(pds$fy)),
 
 ```
 
-`r paste(knitr::knit_child(text = scotland), collapse = '')`
+`r # paste(knitr::knit_child(text = scotland), collapse = '')`
+
+`r knitr::knit_child("subpage-scotland-temp.Rmd")`
 
 
 <!-- HEALTH BOARDS -->
@@ -111,6 +112,7 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
                                      hb   = .y,
                                      year = .x,
                                      quarter = qt))
+
 ```
 
 `r paste(knitr::knit_child(text = health_boards), collapse = '')`
