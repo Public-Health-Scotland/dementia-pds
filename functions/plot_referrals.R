@@ -82,8 +82,8 @@ plot_referrals <- function(data,
     scale_x_discrete(labels = paste(levels(data$month_abbr),
                                     c(rep(min(data$year), 9), rep(max(data$year), 3)))) +
     
-    labs(x = "",
-         y = "Number of Referrals") +
+    labs(x = "Month of Diagnosis",
+         y = "Number") +
     
     theme(legend.title = element_blank(),
           legend.position = ifelse(ijb_group == FALSE, "none", "top"),
@@ -99,6 +99,6 @@ plot_referrals <- function(data,
                                          'hoverClosestCartesian'), 
            displaylogo = F, editable = F) %>%
     
-    layout(legend = list(orientation = "h", x = 0.1 , y = -0.2))
+    layout(legend = list(orientation = "h", x = 0.1 , y = -0.5))
   
 }
