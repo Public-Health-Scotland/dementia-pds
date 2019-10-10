@@ -58,29 +58,38 @@ These reports are an ongoing development following the implementation of the rev
 Row
 ----------------------------------------------------------------------
 
-### Referrals Value Box
-```{r Referrals Value Box}
-valueBox(ref, 
-         icon = "fa-hashtag",
-         caption = glue("referrals were made for post-diagnostic support."))
-```
-
-
 `r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
 ```{r Expected Value Box, include = complete_year}
 valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
          icon = "fa-percent",
-         caption = glue("of the expected number of diagnoses were ",
-                        "referred for post diagnostic support."))
+         color = "Blue",
+         caption = glue("The percentage of the expected number of new ",
+                        "dementia diagnoses ({exp}) who were actually ",
+                        "referred to post diagnostic support ({ref})."))
 ```
+
+`r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
+
+The expected number of new dementia diagnoses is <span style="color:blue"><font size="4">**`r exp`**</font></span>. 
+
+The number of referrals to post diagnostic support is <span style="color:blue"><font size="4">**`r ref`**</font></span>.
+
+
+Row
+---------------------------------------------------------------------
 
 `r ifelse(complete_year == TRUE, "### 12 Months Value Box", "")`
 ```{r 12 Months Value Box, include = complete_year}
 valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
          icon = "fa-percent",
+         color = "CornflowerBlue",
          caption = glue("of those referred for post diagnostic support ",
                         "received 12 months of support."))
 ```
+
+`r ifelse(complete_year == TRUE, "### 12 Months Value Box", "")`
+
+Of the `r ref` referrals to post diagnostic support, `r ref - den` are still undergoing PDS. Of the remaining `r den`, `r num` have met the LDP standard. This includes those who have completed 12 months of PDS and those who are exempt.
 
 
 Row {data-height=450}
