@@ -134,58 +134,24 @@ Row {.tabset data-height=800}
 
 ### **Number of Expected Diagnoses**
 
-In December 2016, the Scottish Government published a report: [Estimated and Projected Disgnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/). Estimations are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. 
-
-More infomation of the methodology used to calculate these figures and the limitations of this are available in the report.
+In December 2016, the Scottish Government published a report: [Estimated and Projected Disgnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/). Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. 
+Infomation on the methodology used to calculate these figures and the limitations of this are available in the report.
 
 Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2019/20 uses estimations for the calendar year 2019.
-
-It is expected that this report will be refreshed and methodology reviewed in the near future. More information of this will be included in this section as and when it is available.
 
 
 ### **Local Delivery Plan (LDP) Standard Classification**
 
-A record is classed as _complete_ if it meets the following criteria:
-
-* Started PDS within 12 months of diagnosis and support is still ongoing after 12 months
-
-* Started PDS within 12 months of diagnosis and PDS has ended after at least 11 months
-
-
-A record is classed as a _fail_ if it meets the following criteria:
-
-* PDS started more than 12 months after diagnosis
-
-* PDS not started and more than 12 months has passed since diagnosis
-
-* PDS terminated less than 11 months after first contact date
-
-* PDS terminated before first contact has been made
-
-
-A record is classed as _exempt_ if the termination reason is one of the following:
-
-* Service user has died
-
-* Service user has moved to a different Health Board
-
-* Service user has terminated PDS early/refused
-
-* Service user no longer able to engage in PDS
-
-
-A record is classed as _ongoing_ if it meets the following criteria:
-
-* Less than 12 months has passed since diagnosis and PDS has not yet started
-
-* PDS has started within 12 months of diagnosis, is still being received and 12 months has not yet passed
+To be updated with agreed methodology.
 
 
 ### **Data Quality**
 
 Any errors or queries outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
 
-The only adjustments made to the data before analysis by ISD are to remove any records with a diagnosis date outwith the reporting period; i.e. before `r format(start_date, "%d %B %Y")` or after `r format(end_date, "%d %B %Y")` and also remove any records with no diagnosis date provided.
+Records that are removed before analysis include those with a diagnosis date outwith the reporting period (i.e. before `r format(start_date, "%d %B %Y")` or after `r format(end_date, "%d %B %Y")`), and records with no diagnosis date provided.
+
+The table below shows the percentage of records which contain one or more errors.
 
 ```{r error summary}
 err %>% 
