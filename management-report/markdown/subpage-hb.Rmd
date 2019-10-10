@@ -86,50 +86,41 @@ valueBox(paste0(round_half_up(pds_rate, 1), "%"),
 Row {data-height=450}
 ----------------------------------------------------------------------
 
-### **LDP Breakdown**
+### **Number of Individuals relating to LDP Standard**
 
-Some text here to set the scene...
+For more information regarding how the LDP Standard is calculated, see the [methodology](#methodology) page.
 
 
-```{r LDP Table}
+```{r ldp-table}
+
 subpage_data %>%
-  group_by(ijb, ldp) %>%
+  group_by(ijb = hb, ldp) %>%
   summarise(referrals = sum(referrals)) %>%
   bind_rows(subpage_data %>%
-              group_by(ldp) %>%
-              summarise(ijb = hb,
-                        referrals = sum(referrals))) %>%
-  ungroup() %>%
-  complete(ijb, ldp = c("complete", "exempt", "fail", "ongoing"),
-           fill = list(referrals = 0)) %>%
-  bind_rows(subpage_data %>%
-              group_by(ijb) %>%
-              summarise(ldp = "Total",
-                        referrals = sum(referrals)),
+              group_by(ijb = hb, ldp = "Total") %>%
+              summarise(referrals = sum(referrals)),
             subpage_data %>%
-              summarise(ldp = "Total",
-                        ijb = hb,
-                        referrals = sum(referrals))) %>%
-  
-  mutate(`LDP Status` = 
+              group_by(ijb, ldp) %>%
+              summarise(referrals = sum(referrals)),
+            subpage_data %>%
+              group_by(ijb, ldp = "Total") %>%
+              summarise(referrals = sum(referrals))) %>%
+  ungroup() %>%
+  complete(ijb, ldp = c("complete", "fail", "exempt", "ongoing", "Total"),
+           fill = list(referrals = 0)) %>%
+  mutate(ldp = 
            case_when(
              ldp == "complete" ~ "Standard Met",
              ldp == "fail" ~ "Standard Not Met",
              ldp == "ongoing" ~ "PDS Ongoing",
              TRUE ~ str_to_title(ldp)
            )) %>%
-  select(-ldp) %>%
-  spread(ijb, referrals) %>%
+  pivot_wider(names_from = ldp, values_from = referrals) %>%
   mutate_all(~ replace_na(., 0)) %>%
-  mutate(`LDP Status` = fct_relevel(factor(`LDP Status`, levels = unique(.$`LDP Status`)),
-                                    "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt", "Total")) %>%
-  arrange(`LDP Status`) %>%
-  kable() %>%
-  kable_styling(full_width = FALSE) %>%
-  row_spec(5, bold = TRUE) %>%
-  add_header_above(
-    c(" " = 2, 
-      "Integration Joint Board (IJB)" = length(unique(subpage_data$ijb))))
+  select(ijb, "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt", "Total") %>%
+  arrange(match(ijb, c(hb, unique(subpage_data$ijb)))) %>%
+  kable(col.names = c("", "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt", "Total")) %>%
+  kable_styling(full_width = FALSE)
 ```
 
 
