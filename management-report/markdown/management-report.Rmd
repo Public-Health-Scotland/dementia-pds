@@ -20,8 +20,6 @@ purrr::walk(dir(here::here("functions"), full.names = TRUE), source)
 # Load PDS data
 pds <- read_rds(here("data", glue("{fy}-{qt}_final-data.rds"))) %>%
   
-  # Filter HB for faster knitting when testing
-  
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),
          ijb          = str_sub(ijb, 11, -1))
@@ -61,7 +59,7 @@ To ensure these reports are as useful as possible, we would welcome any comments
 Row
 -------------------------------------------------
 
-### LDP Standard
+### **About the LDP Standard**
 
 The Local Delivery Plan (LDP) standard is that *everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker*. Perfromance is reported in two parts:
 
