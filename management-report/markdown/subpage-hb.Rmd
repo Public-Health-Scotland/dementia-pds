@@ -55,41 +55,39 @@ Row
 These reports are an ongoing development following the implementation of the revised [Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) effective 01 April 2019. As such, they are currently marked as **DRAFT** and may be subject to change in future versions.
 
 
-Row
+Row `r if(complete_year == FALSE)"{.hidden}"`
 ----------------------------------------------------------------------
 
 `r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
 ```{r Expected Value Box, include = complete_year}
 valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
          icon = "fa-percent",
-         color = "SlateBlue",
          caption = glue("The percentage of the expected number of new ",
                         "dementia diagnoses ({exp}) who were actually ",
                         "referred to post diagnostic support ({ref})."))
 ```
 
-`r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
+`r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
 
-The expected number of new dementia diagnoses is <span style="color:blue"><font size="4">**`r exp`**</font></span>. 
+`r ifelse(complete_year == TRUE, glue("The expected number of new dementia diagnoses is <span style='color:CornflowerBlue'>**{exp}**</span>."), "")` 
 
-The number of referrals to post diagnostic support is <span style="color:blue"><font size="4">**`r ref`**</font></span>.
+`r ifelse(complete_year == TRUE, glue("The number of referrals to post diagnostic support is <span style='color:CornflowerBlue'>**{ref}**</span>."), "")`
 
 
-Row
+Row `r if(complete_year == FALSE)"{.hidden}"`
 ---------------------------------------------------------------------
 
 `r ifelse(complete_year == TRUE, "### 12 Months Value Box", "")`
 ```{r 12 Months Value Box, include = complete_year}
 valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
          icon = "fa-percent",
-         color = "CornflowerBlue",
          caption = glue("of those referred for post diagnostic support ",
                         "received 12 months of support."))
 ```
 
-`r ifelse(complete_year == TRUE, "### 12 Months Value Box", "")`
+`r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
 
-Of the `r ref` referrals to post diagnostic support, `r ref - den` are still undergoing PDS. Of the remaining `r den`, `r num` have met the LDP standard. This includes those who have completed 12 months of PDS and those who are exempt.
+`r ifelse(complete_year == TRUE, glue("Of the {ref} referrals to post diagnostic support, {ref - den} are still undergoing PDS. Of the remaining {den}, {num} have met the LDP standard. This includes those who have completed 12 months of PDS and those who are exempt."), "")`
 
 
 Row {data-height=450}
