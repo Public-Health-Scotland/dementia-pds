@@ -62,7 +62,7 @@ Row
 ```{r Expected Value Box, include = complete_year}
 valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
          icon = "fa-percent",
-         color = "Blue",
+         color = "SlateBlue",
          caption = glue("The percentage of the expected number of new ",
                         "dementia diagnoses ({exp}) who were actually ",
                         "referred to post diagnostic support ({ref})."))
@@ -127,7 +127,7 @@ subpage_data %>%
   pivot_wider(names_from = ldp, values_from = referrals) %>%
   mutate_all(~ replace_na(., 0)) %>%
   select(ijb, "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt", "Total") %>%
-  arrange(match(ijb, c(hb, unique(subpage_data$ijb)))) %>%
+  arrange(match(ijb, c(subpage_data$health_board, unique(subpage_data$ijb)))) %>%
   kable(col.names = c("", "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt", "Total")) %>%
   kable_styling(full_width = FALSE)
 ```
