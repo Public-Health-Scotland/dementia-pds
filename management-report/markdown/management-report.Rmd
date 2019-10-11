@@ -126,8 +126,6 @@ Row
 
 This page includes more detail regarding the methodology used to arrive at the figures in this report. It is hoped that by sharing this, the reports will be easier to understand and local reporting will be more consistent.
 
-This report was produced using R and R Markdown. The code is available publically on [GitHub](https://github.com/alicebyers5/dementia-pds).
-
 
 Row {.tabset data-height=800}
 -------------------------------------------------
