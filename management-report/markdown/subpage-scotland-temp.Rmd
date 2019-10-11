@@ -27,4 +27,4 @@ Row
 
 ### **Note**
 
-Scotland figures are currently unavailable due to completeness issues in some areas.
+Scotland figures are currently unavailable due to data submission issues in some areas.
