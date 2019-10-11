@@ -54,40 +54,36 @@ Row
 
 These reports are an ongoing development following the implementation of the revised [Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) effective 01 April 2019. As such, they are currently marked as **DRAFT** and may be subject to change in future versions.
 
+`r ifelse(complete_year == FALSE, "LDP Standard performance figures are not provided until data is available for the full financial year.", "")`
 
-Row `r if(complete_year == FALSE)"{.hidden}"`
+
+Row `r ifelse(complete_year == FALSE, "{.hidden}", "")`
 ----------------------------------------------------------------------
 
 `r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
 ```{r Expected Value Box, include = complete_year}
-valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
-         icon = "fa-percent",
-         caption = glue("The percentage of the expected number of new ",
-                        "dementia diagnoses ({exp}) who were actually ",
-                        "referred to post diagnostic support ({ref})."))
+valueBox(paste0(round_half_up(exp_rate, 1), "%"),
+         caption = glue("of people estimated to be newly diagnosed with ",
+                        "dementia were referred for post-diagnostic support."))
 ```
 
 `r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
 
-`r ifelse(complete_year == TRUE, glue("The expected number of new dementia diagnoses is <span style='color:CornflowerBlue'>**{exp}**</span>."), "")` 
-
-`r ifelse(complete_year == TRUE, glue("The number of referrals to post diagnostic support is <span style='color:CornflowerBlue'>**{ref}**</span>."), "")`
-
+`r ifelse(complete_year == TRUE, glue("A total of <span style='color:CornflowerBlue'>**{ref}**</span> referrals were made to post-diagnostic support. This is divided by <span style='color:CornflowerBlue'>**{exp}**</span>, the estimated number of people newly diagnosed with dementia."), "")`
 
 Row `r if(complete_year == FALSE)"{.hidden}"`
----------------------------------------------------------------------
+----------------------------------------------------------------------
 
 `r ifelse(complete_year == TRUE, "### 12 Months Value Box", "")`
 ```{r 12 Months Value Box, include = complete_year}
 valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
-         icon = "fa-percent",
-         caption = glue("of those referred for post diagnostic support ",
-                        "received 12 months of support."))
+         caption = glue("of those referred for post-diagnostic support ",
+                        "received a minimum of 12 months of support."))
 ```
 
 `r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
 
-`r ifelse(complete_year == TRUE, glue("Of the {ref} referrals to post diagnostic support, {ref - den} are still undergoing PDS. Of the remaining {den}, {num} have met the LDP standard. This includes those who have completed 12 months of PDS and those who are exempt."), "")`
+`r ifelse(complete_year == TRUE, glue("<span style='color:CornflowerBlue'>**{num}**</span> of referrals either met or were exempt from the LDP standard. This is divided by <span style='color:CornflowerBlue'>**{den}**</span>, the total number of referrals (excluding those whose support is ongoing)."), "")`
 
 
 Row {data-height=450}
@@ -127,7 +123,9 @@ subpage_data %>%
   select(ijb, "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt", "Total") %>%
   arrange(match(ijb, c(subpage_data$health_board, unique(subpage_data$ijb)))) %>%
   kable(col.names = c("", "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt", "Total")) %>%
-  kable_styling(full_width = FALSE)
+  kable_styling(full_width = FALSE) %>%
+  column_spec(1, bold = T)
+
 ```
 
 
