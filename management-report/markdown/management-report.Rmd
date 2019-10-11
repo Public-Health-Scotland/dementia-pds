@@ -17,11 +17,6 @@ source(here::here("code", "00_setup-environment.R"))
 # Load functions
 purrr::walk(dir(here::here("functions"), full.names = TRUE), source)
 
-# Knitr hook to add thousands separator
-knit_hooks$set(inline = function(x) {
-  prettyNum(x, big.mark=",")
-})
-
 # Load PDS data
 pds <- read_rds(here("data", glue("{fy}-{qt}_final-data.rds"))) %>%
   

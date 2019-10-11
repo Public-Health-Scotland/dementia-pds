@@ -73,9 +73,15 @@ qt         <- "1"
 options(scipen=999)
 
 
-### 5 - Set knitr options to allow duplicate labels ----
+### 5 - Set knitr options ----
 
+# Allow duplicate labels
 options(knitr.duplicate.label = 'allow')
+
+# Knitr hook to add thousands separator
+knit_hooks$set(inline = function(x) {
+  prettyNum(x, big.mark=",")
+})
 
 
 ### 6 - Define exempt termination reason codes ----
