@@ -79,9 +79,9 @@ options(scipen=999)
 options(knitr.duplicate.label = 'allow')
 
 # Knitr hook to add thousands separator
-knit_hooks$set(inline = function(x) {
-  prettyNum(x, big.mark=",")
-})
+# knit_hooks$set(inline = function(x) {
+#   prettyNum(x, big.mark=",")
+# })
 
 
 ### 6 - Define exempt termination reason codes ----
