@@ -41,7 +41,10 @@ Select Financial Year
 
 ***
 
-<!-- Reword this and try and force to bottom of sidebar -->
+For more information regarding how the LDP Standard is calculated, please see the [methodology](#methodology) page.
+
+***
+
 Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
 
 
@@ -57,12 +60,12 @@ These reports are an ongoing development following the implementation of the rev
 `r ifelse(complete_year == FALSE, "LDP Standard performance figures are not provided until data is available for the full financial year.", "")`
 
 
-Row `r ifelse(complete_year == FALSE, "{.hidden}", "")`
+Row `r if(complete_year == FALSE)"{.hidden}"` 
 ----------------------------------------------------------------------
 
 `r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
 ```{r Expected Value Box, include = complete_year}
-valueBox(paste0(round_half_up(exp_rate, 1), "%"),
+valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
          caption = glue("of people estimated to be newly diagnosed with ",
                         "dementia were referred for post-diagnostic support."))
 ```
@@ -86,13 +89,10 @@ valueBox(paste0(round_half_up(pds_rate, 1), "%"),
 `r ifelse(complete_year == TRUE, glue("<span style='color:CornflowerBlue'>**{num}**</span> of referrals either met or were exempt from the LDP standard. This is divided by <span style='color:CornflowerBlue'>**{den}**</span>, the total number of referrals (excluding those whose support is ongoing)."), "")`
 
 
-Row {data-height=450}
+Row
 ----------------------------------------------------------------------
 
 ### **Number of Individuals relating to LDP Standard**
-
-For more information regarding how the LDP Standard is calculated, see the [methodology](#methodology) page.
-
 
 ```{r ldp-table}
 
@@ -118,16 +118,23 @@ subpage_data %>%
              ldp == "ongoing" ~ "PDS Ongoing",
              TRUE ~ str_to_title(ldp)
            )) %>%
-  pivot_wider(names_from = ldp, values_from = referrals) %>%
+  pivot_wider(names_from = ijb, values_from = referrals) %>%
   mutate_all(~ replace_na(., 0)) %>%
-  select(ijb, "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt", "Total") %>%
-  arrange(match(ijb, c(subpage_data$health_board, sort(unique(subpage_data$ijb))))) %>%
-  kable(col.names = c("", "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt", "Total")) %>%
+  select(ldp, c(subpage_data$health_board, sort(unique(subpage_data$ijb)))) %>%
+  arrange(match(ldp, c("Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt", "Total"))) %>%
+  kable(col.names = c("", unique(subpage_data$health_board), sort(unique(subpage_data$ijb)))) %>%
   kable_styling(full_width = FALSE) %>%
-  column_spec(1, bold = T)
-
+  column_spec(1, bold = T) %>%
+  row_spec(5, bold = TRUE) %>%
+  add_header_above(
+    c(" " = 1,
+      "Health Board" = 1,
+      "Integration Joint Board (IJB)" = length(unique(subpage_data$ijb))))
 ```
 
+
+Row {.data-height=500}
+----------------------------------------------------------------------
 
 ### **Number of Individuals Diagnosed and Referred for PDS** {data-width=800}
 
