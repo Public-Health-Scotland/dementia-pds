@@ -93,14 +93,7 @@ pds %<>%
            interval(start_date, end_date))
 
 
-### 6 - Remove duplicates ----
-
-# pds %<>%
-#   
-#   distinct(chi_number, .keep_all = TRUE)
-
-
-### 7 - Save data ---
+### 6 - Save data ---
 
 write_rds(pds, here("data", glue("{fy}-{qt}_clean-data.rds")))
 
