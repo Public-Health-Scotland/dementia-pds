@@ -143,7 +143,36 @@ Please note that as estimations are available by calendar year and figures in th
 
 ### **Local Delivery Plan (LDP) Standard Classification**
 
-To be updated with agreed methodology.
+The following steps are taken to ensure the data is of sufficient quality for analysis:
+
+* Remove records with diagnosis date outwith the reporting period.
+* Remove records with missing diagnosis date.
+* Where referral, allocation, first contact or termination date pre-date diagnosis date, these are fixed to diagnosis date.
+
+#### LDP Standard Met
+
+* Started PDS within 12 months of diagnosis and support ongoing after 12 months.
+* Started PDS within 12 months of diagnosis and PDS ended after at least 11 months.
+
+#### LDP Standard Not Met
+
+* PDS started more than 12 months after diagnosis.
+* PDS not started and more than 12 months has passed since diagnosis.
+* PDS terminated less than 11 months after first contact date.
+* PDS terminated before first contact made.
+
+#### Exempt from LDP Standard
+
+* No first contact date or less than 12 months between diagnosis and first contact date and one of the following termination reasons:
+    * 03 Service user has died.
+    * 04 Service user has moved to a different Health Board area.
+    * 05 Service user has terminated PDS early/refused.
+    * 06 Service user no longer able to engage in PDS.
+
+#### PDS Ongoing
+
+* Less than 12 months since diagnosis and PDS not yet started.
+* PDS started within 12 months and not yet ended.
 
 
 ### **Data Quality**
