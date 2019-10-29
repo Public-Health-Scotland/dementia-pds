@@ -96,49 +96,18 @@ Row
 
 ```{r ldp-table}
 
-subpage_data %>%
-  group_by(ijb = hb, ldp) %>%
-  summarise(referrals = sum(referrals)) %>%
-  bind_rows(subpage_data %>%
-              group_by(ijb = hb, ldp = "Total") %>%
-              summarise(referrals = sum(referrals)),
-            subpage_data %>%
-              group_by(ijb, ldp) %>%
-              summarise(referrals = sum(referrals)),
-            subpage_data %>%
-              group_by(ijb, ldp = "Total") %>%
-              summarise(referrals = sum(referrals))) %>%
-  ungroup() %>%
-  complete(ijb, ldp = c("complete", "fail", "exempt", "ongoing", "Total"),
-           fill = list(referrals = 0)) %>%
-  mutate(ldp = 
-           case_when(
-             ldp == "complete" ~ "Standard Met",
-             ldp == "fail" ~ "Standard Not Met",
-             ldp == "ongoing" ~ "PDS Ongoing",
-             TRUE ~ str_to_title(ldp)
-           )) %>%
-  pivot_wider(names_from = ijb, values_from = referrals) %>%
-  mutate_all(~ replace_na(., 0)) %>%
-  select(ldp, c(subpage_data$health_board, sort(unique(subpage_data$ijb)))) %>%
-  arrange(match(ldp, c("Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt", "Total"))) %>%
-  kable(col.names = c("", unique(subpage_data$health_board), sort(unique(subpage_data$ijb)))) %>%
-  kable_styling(full_width = FALSE) %>%
-  column_spec(1, bold = T) %>%
-  row_spec(5, bold = TRUE) %>%
-  add_header_above(
-    c(" " = 1,
-      "Health Board" = 1,
-      "Integration Joint Board (IJB)" = length(unique(subpage_data$ijb))))
+ldp_table(subpage_data,
+          include_pc = complete_year)
+
 ```
 
 
-Row {.data-height=500}
+Row {.data-height=1000}
 ----------------------------------------------------------------------
 
 ### **Number of Individuals Diagnosed and Referred for PDS** {data-width=800}
 
-```{r Referrals Plot}
+```{r referrals-plot}
 
 plot_referrals(subpage_data, 
                scotland = FALSE,
@@ -146,3 +115,6 @@ plot_referrals(subpage_data,
 
 ```
 
+
+Row
+-----------------------------------------------------------------------
