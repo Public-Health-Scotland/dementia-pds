@@ -14,6 +14,9 @@ output:
 # Load environment file
 source(here::here("code", "00_setup-environment.R"))
 
+# Remove tidylog
+detach("package:tidylog", unload = TRUE)
+
 # Load functions
 purrr::walk(dir(here::here("functions"), full.names = TRUE), source)
 
