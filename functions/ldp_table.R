@@ -12,7 +12,7 @@ ldp_table <- function(data,
     mutate(rate = (num / den) * 100,
            rate = replace_na(rate, 0)) %>%
     select(-num, -den) %>%
-    mutate(rate = paste0(round_half_up(rate, 1), "%")) %>%
+    mutate(rate = paste0(format(round_half_up(rate, 1), big.mark = ","), "%")) %>%
     mutate(ldp = "% received 12 months PDS") %>%
     pivot_wider(names_from = ijb, values_from = rate)
   
@@ -43,7 +43,7 @@ ldp_table <- function(data,
                TRUE ~ str_to_title(ldp)
              )) %>%
     mutate(referrals = replace_na(referrals, 0),
-           referrals = as.character(referrals)) %>%
+           referrals = format(referrals, big.mark = ",")) %>%
     pivot_wider(names_from = ijb, values_from = referrals) %>%
     bind_rows(if(include_pc == TRUE)pds_rate_ijb) %>%
     select(ldp, c(data$health_board, sort(unique(data$ijb)))) %>%

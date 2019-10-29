@@ -12,7 +12,14 @@ num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$refe
 den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
 pds_rate <- (num / den) * 100
 
+# Is there data for all four quarters of the selected year?
 complete_year <- if_else(max_fy == sel_fy & qt != 4, FALSE, TRUE)
+
+# Format figures with thousands separator
+ref_format <- format(ref, big.mark = ",")
+exp_format <- format(exp, big.mark = ",")
+num_format <- format(num, big.mark = ",")
+den_format <- format(den, big.mark = ",")
 ```
 
 Sidebar {.sidebar}
@@ -53,7 +60,7 @@ Row
 
 ### **Note**
 
-`r if_else(hb == "NHS Greater Glasgow & Clyde", "Data for some IJBs in NHS Greater Glasgow & Clyde are currently unavailable and therefore board level figures should be treated with caution.", "")`
+`r if_else(hb == "NHS Greater Glasgow & Clyde", "<span style='color:red'>Data for some IJBs in NHS Greater Glasgow & Clyde are currently unavailable and therefore board level figures should be treated with caution.</span>", if_else(hb == "NHS Lanarkshire", "<span style='color:red'>Some South Lanarkshire records are submitted by NHS Greater Glasgow & Clyde. Due to data submission issues, these records are not included in the below information.</span>", ""))`
 
 These reports are an ongoing development following the implementation of the revised [Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) effective 01 April 2019. As such, they are currently marked as **DRAFT** and may be subject to change in future versions.
 
@@ -72,7 +79,7 @@ valueBox(paste0(round_half_up(exp_rate, 1), "%"),
 
 `r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
 
-`r ifelse(complete_year == TRUE, glue("A total of <span style='color:CornflowerBlue'>**{ref}**</span> referrals were made to post-diagnostic support. This is divided by <span style='color:CornflowerBlue'>**{exp}**</span>, the estimated number of people newly diagnosed with dementia."), "")`
+`r ifelse(complete_year == TRUE, glue("A total of <span style='color:CornflowerBlue'>**{ref_format}**</span> referrals were made to post-diagnostic support. This is divided by <span style='color:CornflowerBlue'>**{exp_format}**</span>, the estimated number of people newly diagnosed with dementia."), "")`
 
 Row `r if(complete_year == FALSE)"{.hidden}"`
 ----------------------------------------------------------------------
@@ -86,7 +93,7 @@ valueBox(paste0(round_half_up(pds_rate, 1), "%"),
 
 `r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
 
-`r ifelse(complete_year == TRUE, glue("<span style='color:CornflowerBlue'>**{num}**</span> of referrals either met or were exempt from the LDP standard. This is divided by <span style='color:CornflowerBlue'>**{den}**</span>, the total number of referrals (excluding those whose support is ongoing)."), "")`
+`r ifelse(complete_year == TRUE, glue("<span style='color:CornflowerBlue'>**{num_format}**</span> of referrals either met or were exempt from the LDP standard. This is divided by <span style='color:CornflowerBlue'>**{den_format}**</span>, the total number of referrals (excluding those whose support is ongoing)."), "")`
 
 
 Row

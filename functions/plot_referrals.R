@@ -70,7 +70,7 @@ plot_referrals <- function(data,
                colour = if(ijb_group == TRUE){ijb}else{health_board},
                text = paste0(if(ijb_group == TRUE){ijb}else{health_board}, "<br>",
                              month_full, " ", year, "<br>",
-                             "Referrals: ", referrals))) +
+                             "Referrals: ", format(referrals, big.mark = ",")))) +
     
     geom_point() +
     
