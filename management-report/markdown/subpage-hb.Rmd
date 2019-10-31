@@ -35,14 +35,15 @@ completeness_text <-
     complete_year == FALSE ~ 
       paste0("LDP Standard performance figures are not provided ",
              "until data is available for the full financial year."),
-    sel_fy == min_fy ~ "",
+    sel_fy == min_fy ~ 
+      paste0("The figures shown are now complete for this financial year and ",
+             "should not change in future versions of these reports. However, ",
+             "slight variations may be seen as data errors are resolved."),
     TRUE ~ 
-      paste0("As ", 
-             subpage_data %>% filter(ldp == "ongoing") %>% {sum(.$referrals)}, 
-             " referrals in ", sel_fy, " are still ongoing, it is not yet ",
-             "known whether they will meet the LDP standard to receive a ",
-             "minimum of 12 months support. Therefore, this figure ", 
-             "is likely to change in future versions of this report.")
+      paste0("As PDS for some referrals in ", sel_fy, " is still ongoing, ",
+             "it is not known yet whether or not they will meet the LDP ",
+             "standard. Therefore, the figures shown are currently provisional",
+             " and subject to change in future versions of this report.")
   )
 
 # Title for LDP table
