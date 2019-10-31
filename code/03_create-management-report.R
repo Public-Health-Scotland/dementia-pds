@@ -24,7 +24,7 @@ rmarkdown::render(
   input = here("management-report", "markdown", 
                "management-report.Rmd"),
   output_file = here("management-report", "output", 
-                     glue("{fy}-Q{qt}_management-report.html"))
+                     glue("{end_date}_management-report.html"))
 )
 
 
