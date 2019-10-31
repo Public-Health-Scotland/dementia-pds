@@ -45,7 +45,11 @@ completeness_text <-
              "is likely to change in future versions of this report.")
   )
 
-
+# Title for LDP table
+table_title <-
+  ifelse(complete_year == TRUE,
+          "",
+          paste0(" - up to Q", qt))
 
 ```
 
@@ -126,7 +130,7 @@ valueBox(paste0(round_half_up(pds_rate, 1), "%"),
 Row
 ----------------------------------------------------------------------
 
-### **Number of Individuals relating to LDP Standard**
+### **Number of Individuals relating to LDP Standard**: Financial Year `r paste0(sel_fy, table_title)`
 
 ```{r ldp-table}
 
