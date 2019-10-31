@@ -12,21 +12,48 @@ num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$refe
 den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
 pds_rate <- (num / den) * 100
 
-# Is there data for all four quarters of the selected year?
-complete_year <- if_else(max_fy == sel_fy & qt != 4, FALSE, TRUE)
-
 # Format figures with thousands separator
 ref_format <- format(ref, big.mark = ",")
 exp_format <- format(exp, big.mark = ",")
 num_format <- format(num, big.mark = ",")
 den_format <- format(den, big.mark = ",")
+
+# Is there data for all four quarters of the selected year?
+complete_year <- if_else(max_fy == sel_fy & qt != 4, FALSE, TRUE)
+
+# If incomplete year, list quarters included
+qt_text <-
+  if(complete_year){""}else{
+    if(qt == 1){"- Q1"}else{
+      if(qt %in% 2:3){paste0("- Q1-", qt)}
+    }
+  }
+
+# Text to explain incomplete years / referrals still ongoing
+completeness_text <-
+  case_when(
+    complete_year == FALSE ~ 
+      paste0("LDP Standard performance figures are not provided ",
+             "until data is available for the full financial year."),
+    sel_fy == min_fy ~ "",
+    TRUE ~ 
+      paste0("As ", 
+             subpage_data %>% filter(ldp == "ongoing") %>% {sum(.$referrals)}, 
+             " referrals in ", sel_fy, " are still ongoing, it is not yet ",
+             "known whether they will meet the LDP standard to receive a ",
+             "minimum of 12 months support. Therefore, this figure ", 
+             "is likely to change in future versions of this report.")
+  )
+
+
+
 ```
 
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
 ### `r hb`
-#### Financial Year `r sel_fy`
+#### Financial Year `r paste(sel_fy, qt_text)`
 
 ***
 
@@ -64,7 +91,7 @@ Row
 
 These reports are an ongoing development following the implementation of the revised [Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) effective 01 April 2019. As such, they are currently marked as **DRAFT** and may be subject to change in future versions.
 
-`r ifelse(complete_year == FALSE, "LDP Standard performance figures are not provided until data is available for the full financial year.", "")`
+`r completeness_text`
 
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
