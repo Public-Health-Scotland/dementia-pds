@@ -139,7 +139,6 @@ The following steps are taken to ensure the data is of sufficient quality for an
 
 * Remove records with diagnosis date outwith the reporting period.
 * Remove records with missing diagnosis date.
-* Where referral, allocation, first contact or termination date pre-date diagnosis date, these are fixed to diagnosis date.
 
 #### LDP Standard Met
 
