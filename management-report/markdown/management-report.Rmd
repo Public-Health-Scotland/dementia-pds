@@ -1,0 +1,198 @@
+---
+title: "Dementia PDS Quarterly Management Report - DRAFT"
+output: 
+  flexdashboard::flex_dashboard:
+    navbar:
+      - title: "Data as at 30 June 2019"
+    logo: isdscotland.png
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{r setup, include=FALSE}
+
+# Load environment file
+source(here::here("code", "00_setup-environment.R"))
+
+# Remove tidylog
+detach("package:tidylog", unload = TRUE)
+
+# Load functions
+purrr::walk(dir(here::here("functions"), full.names = TRUE), source)
+
+# Load PDS data
+pds <- read_rds(here("data", glue("{fy}-{qt}_final-data.rds"))) %>%
+  
+  # Remove codes from board and IJB
+  mutate(health_board = str_sub(health_board, 3, -1),
+         ijb          = str_sub(ijb, 11, -1))
+
+# Load expected diagnoses reference file
+exp <- read_csv(here("reference-files", "expected-diagnoses.csv"))
+
+# Load error summary
+err <- read_rds(here("data", glue("{fy}-{qt}_error-summary.rds")))
+
+```
+
+Home
+=================================================
+
+Row
+-------------------------------------------------
+
+### **About This Report**
+
+This report has been produced by Information Services Division (ISD), part of NHS National Services Scotland, and contains analysis of performance against the [Scottish Government's LDP Standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) on provision of Dementia Post Diagnostic Support (PDS).
+
+<span style="color:red"> **The information contained in this report is for management information only and should not be distributed widely.** </span>
+
+These reports are an ongoing development following the implementation of the revised [Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) effective 01 April 2019. As such, they are currently marked as **DRAFT** and may be subject to change in future versions.
+
+This report contains data for individuals diagnosed with dementia between **`r format(start_date, "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`** who were referred for post diagnostic support.
+
+Data are submitted to ISD by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(start_date, "%d %B %Y")` onwards. Therefore, data for the full reporting period is refreshed in each management report and is based on the most recently submitted data. This report is based on data submitted in `r sub_month(fy, qt)` and contains data as at **`r format(end_date, "%d %B %Y")`**. 
+
+Information is shown at Scotland, Health Board and Integration Joint Board level using the drop down menus at the top of the page.
+
+To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the ISD Dementia PDS team mailbox at: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net).
+
+
+
+Row
+-------------------------------------------------
+
+### **About the LDP Standard**
+
+The Local Delivery Plan (LDP) standard is that *everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker*. Perfromance is reported in two parts:
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+1. The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support.
+
+2. The percentage of people referred who received a minimum of one year’s support.
+
+</div> <br>
+
+For more detail on how the above is calculated, please see the [methodology](#methodology) page.
+
+Further information regarding the Dementia PDS dataset and submission process can be found on the [Dementia PDS pages](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support) of the [ISD website](https://www.isdscotland.org/).
+
+
+<!-- Scotland -->
+
+```{r scotland, include=FALSE, eval = FALSE}
+
+scotland <- map(.x = sort(unique(pds$fy)),
+                .f = ~ set_env(data = pds,
+                               exp  = exp,
+                               err  = err,
+                               hb   = "Scotland",
+                               year = .x,
+                               quarter = qt))
+
+```
+
+`r # paste(knitr::knit_child(text = scotland), collapse = '')`
+
+`r knitr::knit_child("subpage-scotland-temp.Rmd")`
+
+
+<!-- HEALTH BOARDS -->
+
+```{r health-boards, include=FALSE}
+
+health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
+                                  sort(unique(pds$health_board))), 
+                      .f = ~ set_env(data = pds,
+                                     exp  = exp,
+                                     err  = err,
+                                     hb   = .y,
+                                     year = .x,
+                                     quarter = qt))
+
+```
+
+`r paste(knitr::knit_child(text = health_boards), collapse = '')`
+
+
+Methodology
+=================================================
+
+Row
+-------------------------------------------------
+
+### <!-- No Title -->
+
+This page includes more detail regarding the methodology used to arrive at the figures in this report. It is hoped that by sharing this, the reports will be easier to understand and local reporting will be more consistent.
+
+
+Row {.tabset data-height=800}
+-------------------------------------------------
+
+### **Local Delivery Plan (LDP) Standard Classification**
+
+The following steps are taken to ensure the data is of sufficient quality for analysis:
+
+* Remove records with diagnosis date outwith the reporting period.
+* Remove records with missing diagnosis date.
+
+#### LDP Standard Met
+
+* Started PDS within 12 months of diagnosis and support ongoing after 12 months.
+* Started PDS within 12 months of diagnosis and PDS ended after at least 11 months.
+
+#### LDP Standard Not Met
+
+* PDS started more than 12 months after diagnosis.
+* PDS not started and more than 12 months has passed since diagnosis.
+* PDS terminated (for non-exempt reason) less than 11 months after first contact date.
+* PDS terminated (for non-exempt reason) before first contact made.
+
+#### Exempt from LDP Standard
+
+* No first contact date or less than 12 months between diagnosis and first contact date and one of the following termination reasons:
+    * 03 Service user has died.
+    * 04 Service user has moved to a different Health Board area.
+    * 05 Service user has terminated PDS early/refused.
+    * 06 Service user no longer able to engage in PDS.
+
+#### PDS Ongoing
+
+* Less than 12 months since diagnosis and PDS not yet started.
+* PDS started within 12 months and not yet ended.
+
+
+### **Data Quality**
+
+Any errors or queries outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+
+Records that are removed before analysis include those with a diagnosis date outwith the reporting period (i.e. before `r format(start_date, "%d %B %Y")` or after `r format(end_date, "%d %B %Y")`), and records with no diagnosis date provided.
+
+The table below shows the percentage of records which contain one or more errors.
+
+```{r error summary}
+err %>% 
+  group_by(fy, health_board) %>% 
+  summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1)) %>%
+  ungroup() %>%
+  mutate(err_rate = paste0(err_rate, "%")) %>%
+  spread(fy, err_rate) %>%
+  rename(`Health Board` = health_board) %>%
+  kable() %>%
+  kable_styling(full_width = FALSE) %>%
+  row_spec(15, bold = TRUE)
+```
+
+### **Number of Expected Diagnoses**
+
+In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/). Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. 
+Information on the methodology used to calculate these figures and the limitations of this are available in the report.
+
+Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018.
+
+
+<!-- END OF SCRIPT -->

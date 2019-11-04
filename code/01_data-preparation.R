@@ -17,9 +17,13 @@
 ### 1 - Load environment file and functions ----
 
 source(here::here("code", "00_setup-environment.R"))
+source(here::here("functions", "financial_year.R"))
+
+# Create data folder if this doesn't already exist
+if(!("data" %in% fs::dir_ls())){fs::dir_create("data")}
 
 
-### 2 - Read in data ----
+### 2 - Read and clean collated file ----
 
 pds <- 
   
@@ -30,19 +34,46 @@ pds <-
   clean_names() %>%
   
   # Convert dates from character to date format
-  mutate_at(vars(contains("date")), ~lubridate::dmy(.)) %>%
+  mutate_at(vars(contains("date")), ~ lubridate::ymd(.)) %>%
   
   # Pad CHI Number to 10 digits
   mutate(chi_number = if_else(nchar(chi_number) == 9,
                               paste0("0", chi_number),
-                              chi_number))
+                              chi_number)) %>%
+  
+  # Replace word 'and' with ampersand
+  mutate(health_board = str_replace(health_board, " and ", " & "))
 
 
-### 3 - Recode Lanarkshire IJB records ----
-# TO DO - check if this recoding is built into DM process
+### 3 - Save out error summary
+
+err <- pds %>%
+  filter(dementia_diagnosis_confirmed_date %within% 
+           interval(start_date, end_date)) %>%
+  mutate(health_board = if_else(is.na(health_board),
+                                "Missing",
+                                substring(health_board, 3))) %>%
+  mutate(fy = financial_year(dementia_diagnosis_confirmed_date)) %>%
+  group_by(fy, health_board, ijb) %>%
+  summarise(total_errors     = sum(as.integer(error_flag)),
+            diag_date_errors = sum(is.na(dementia_diagnosis_confirmed_date)),
+            records          = n()) %>%
+  ungroup()
+
+err %>%
+  bind_rows(err %>%
+              group_by(fy, health_board = "Scotland", ijb = "Scotland") %>%
+              summarise(total_errors     = sum(total_errors),
+                        diag_date_errors = sum(diag_date_errors),
+                        records          = sum(records)) %>%
+              ungroup()) %>%
+  arrange(fy, health_board, ijb) %>%
+  write_rds(here("data", glue("{fy}-{qt}_error-summary.rds")))
+
+
+### 4 - Recode Lanarkshire IJB records ----
 
 pds %<>%
-  
   mutate(health_board = 
             case_when(
                str_detect(ijb, "S37000035|S37000028") ~ "L NHS Lanarkshire",
@@ -50,63 +81,21 @@ pds %<>%
             ))
 
 
-### 4 - Recode errors ----
-# TO DO - review once number of errors known
+### 5 - Recode errors ----
 
 pds %<>%
   
-  # Remove records with missing CHI and missing diagnosis date
-  filter(!is.na(dementia_diagnosis_confirmed_date) | !is.na(chi_number)) %>%
+  # Remove records with missing diagnosis date
+  filter(!is.na(dementia_diagnosis_confirmed_date)) %>%
 
   # Select records within reporting period only
   filter(dementia_diagnosis_confirmed_date %within% 
-           interval(start_date, end_date)) %>%
-  
-  # Recode missing PDS Status
-  mutate(pds_status = 
-           case_when(
-             str_detect(pds_status, "02") ~ "02 Inactive",
-             is.na(pds_status)            ~ "01 Active",
-             TRUE                         ~ pds_status
-           )) %>%
-
-  # Recode NAs to 99 Not Known (for variables where this is an option)
-  mutate_at(vars("gender", "ethnic_group", "additional_disability",
-                 "living_alone", "accommodation_type", "pds_referral_source",
-                 "carers_support"), 
-            funs(replace_na(., "99 Not Known"))) %>%
-
-  # Fix error dates
-  # Only use diagnosis, first contact and termination date currently
-  mutate(date_of_initial_first_contact = if_else(date_of_initial_first_contact < dementia_diagnosis_confirmed_date,
-                                                          dementia_diagnosis_confirmed_date,
-                                                          date_of_initial_first_contact),
-                  termination_or_transition_date = if_else(termination_or_transition_date < date_of_initial_first_contact,
-                                                          date_of_initial_first_contact,
-                                                          if_else(is.na(date_of_initial_first_contact) &
-                                                                    termination_or_transition_date < dementia_diagnosis_confirmed_date,
-                                                                  dementia_diagnosis_confirmed_date,
-                                                                  termination_or_transition_date),
-                                                          termination_or_transition_date))
-
-  # mutate_at(vars(setdiff(contains("date"), c("date_of_birth",
-  #                                            "dementia_diagnosis_confirmed_date"))),
-  #           funs(if_else(. < dementia_diagnosis_confirmed_date,
-  #                        dementia_diagnosis_confirmed_date,
-  #                        .)))
-
-
-### 5 - Remove duplicates ----
-# TO DO - review once number of duplicates is known
-       
-pds %<>%
-  
-  distinct(chi_number, .keep_all = TRUE)
+           interval(start_date, end_date))
 
 
 ### 6 - Save data ---
 
-write_csv(pds, here("data", glue("{fy}-{qt}_clean-data.csv")))
+write_rds(pds, here("data", glue("{fy}-{qt}_clean-data.rds")))
 
 
 ### END OF SCRIPT ###

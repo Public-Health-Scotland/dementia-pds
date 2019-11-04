@@ -1,11 +1,25 @@
 
-plot_referrals <- function(data, scotland = FALSE){
+plot_referrals <- function(data, 
+                           scotland = FALSE, 
+                           quarter = NA){
   
   # Determine whether IJBs breakdown is included
   ijb_group <- ifelse(scotland == TRUE | 
                         n_distinct(data$ijb) == 1, 
                       FALSE, 
                       TRUE)
+  
+  # If incomplete financial year, only include complete months
+  include_months <-
+    if(is.na(quarter)){1:12}else{
+      if(quarter == "1"){4:6}else{
+        if(quarter == "2"){4:9}else{
+          if(quarter == "3"){4:12}else{
+            if(quarter == "4"){1:12}
+          }
+        }
+      }
+    }
   
   if(ijb_group == TRUE){
     
@@ -21,11 +35,7 @@ plot_referrals <- function(data, scotland = FALSE){
     
     data %<>% 
       bind_rows(board) %>% 
-      ungroup() %>%
-      complete(month = 1:12, ijb,
-               fill = list(fy = max(.$fy),
-                           health_board = max(.$health_board),
-                           referrals = 0))
+      ungroup()
     
     data %<>%
       filter(!is.na(ijb)) %>%
@@ -38,10 +48,7 @@ plot_referrals <- function(data, scotland = FALSE){
       mutate(health_board = ifelse(scotland == TRUE, "Scotland", health_board)) %>%
       group_by(fy, month, health_board) %>%
       summarise(referrals = sum(referrals)) %>%
-      ungroup() %>%
-      complete(month = 1:12, health_board,
-               fill = list(fy = max(.$fy),
-                           referrals = 0))
+      ungroup()
   
   }
   
@@ -63,7 +70,7 @@ plot_referrals <- function(data, scotland = FALSE){
                colour = if(ijb_group == TRUE){ijb}else{health_board},
                text = paste0(if(ijb_group == TRUE){ijb}else{health_board}, "<br>",
                              month_full, " ", year, "<br>",
-                             "Referrals: ", referrals))) +
+                             "Referrals: ", format(referrals, big.mark = ",")))) +
     
     geom_point() +
     
@@ -75,11 +82,11 @@ plot_referrals <- function(data, scotland = FALSE){
     scale_x_discrete(labels = paste(levels(data$month_abbr),
                                     c(rep(min(data$year), 9), rep(max(data$year), 3)))) +
     
-    labs(x = "",
-         y = "Number of Referrals") +
+    labs(x = "Month of Diagnosis",
+         y = "Number") +
     
     theme(legend.title = element_blank(),
-          legend.position = ifelse(ijb_group == FALSE, "none", "right"),
+          legend.position = ifelse(ijb_group == FALSE, "none", "top"),
           axis.text.x = element_text(angle=45))
   
   ggplotly(plot, tooltip = "text") %>%
@@ -90,6 +97,8 @@ plot_referrals <- function(data, scotland = FALSE){
                                          'toggleSpikelines', 
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian'), 
-           displaylogo = F, collaborate = F, editable = F)
+           displaylogo = F, editable = F) %>%
+    
+    layout(legend = list(orientation = "h", x = 0.1 , y = -0.5))
   
 }

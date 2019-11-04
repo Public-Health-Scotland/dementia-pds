@@ -1,0 +1,33 @@
+Scotland
+=================================================
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+
+
+### Scotland
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+For more information regarding how the LDP Standard is calculated, please see the [methodology](#methodology) page.
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+Scotland figures are currently unavailable due to data submission issues in some areas.

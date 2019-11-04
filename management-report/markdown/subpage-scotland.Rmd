@@ -12,20 +12,33 @@ num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$refe
 den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
 pds_rate <- (num / den) * 100
 
+complete_year <- if_else(max_fy == sel_fy & qt != 4, FALSE, TRUE)
+
 ```
 
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
+
+
 
 ### `r hb`
 #### Financial Year `r sel_fy`
 
 ***
 
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
 Select Financial Year
 
 <!-- For some reason need '-2' on end of 1819 links - check why this is -->
-|     `r paste0("[2018/19](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-2)")`
+|     `r paste0("[2019/20](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-3)")`
+|     `r paste0("[2018/19](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201819)")`
 |     `r paste0("[2017/18](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201718)")`
 |     `r paste0("[2016/17](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201617)")`
 
@@ -35,39 +48,25 @@ Select Financial Year
 Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
 
 
-Row {data-height=30}
------------------------------------------------------------------------
-
-<!-- Management Information tagline -->
-<font size="3"> 
-<center> 
-<span style="color:red"> 
-MANAGEMENT INFORMATION ONLY: NOT FOR ONWARD DISTRIBUTION 
-</span> </center> </font> 
-
-
 Row
 ----------------------------------------------------------------------
 
-### Number of Referrals
-
+### Referrals Value Box
 ```{r Referrals Value Box}
 valueBox(ref, 
          icon = "fa-hashtag",
          caption = glue("referrals were made for post-diagnostic support."))
 ```
 
-### LDP 1: Expected vs Referral
-
-```{r Expected Value Box}
+`r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
+```{r Expected Value Box, include = complete_year}
 valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
          icon = "fa-percent",
          caption = glue("of the expected number of diagnoses were ",
                         "referred for post diagnostic support."))
 ```
 
-### LDP 2: 12 Months Support
-
+### 12 Months Value Box
 ```{r 12 Months Value Box}
 valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
          icon = "fa-percent",
@@ -79,11 +78,13 @@ valueBox(paste0(round_half_up(pds_rate, 1), "%"),
 Row {data-height=500}
 ----------------------------------------------------------------------
 
-### Number of Referrals {data-width=800}
+### **Number of Individuals Diagnosed and Referred for PDS** {data-width=800}
 
 ```{r Referrals Plot}
 
-plot_referrals(subpage_data, scotland = TRUE)
+plot_referrals(subpage_data, 
+               scotland = TRUE,
+               quarter = ifelse(max_fy == sel_fy, qt, NA))
 
 ```
 

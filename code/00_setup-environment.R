@@ -31,6 +31,10 @@ library(ggplot2)       # For plotting
 library(plotly)        # For interactive plots
 library(flexdashboard) # For creating markdown outputs
 library(purrr)         # For functional programming
+library(fs)            # For creating folder directories
+library(forcats)       # For factor manipulation
+library(knitr)         # For creating kable tables
+library(kableExtra)    # For customising kable tables
 
 
 ### 2 - Define Whether Running on Server or Locally ----
@@ -57,11 +61,11 @@ start_date <- lubridate::ymd(20160401)
 
 # End date of reporting period
 # Update quarterly to last day of new quarter
-end_date   <- lubridate::ymd(20190331)
+end_date   <- lubridate::ymd(20190630)
 
 # FY and Quarter of reporting period
-fy         <- "2018"
-qt         <- "4"       
+fy         <- "2019"
+qt         <- "1"       
 
 
 ### 4 - Disable scientific notation ----
@@ -69,9 +73,15 @@ qt         <- "4"
 options(scipen=999)
 
 
-### 5 - Set knitr options to allow duplicate labels ----
+### 5 - Set knitr options ----
 
+# Allow duplicate labels
 options(knitr.duplicate.label = 'allow')
+
+# Knitr hook to add thousands separator
+# knit_hooks$set(inline = function(x) {
+#   prettyNum(x, big.mark=",")
+# })
 
 
 ### 6 - Define exempt termination reason codes ----

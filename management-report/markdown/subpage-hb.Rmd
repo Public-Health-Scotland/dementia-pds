@@ -1,0 +1,159 @@
+`r if_else(max_fy == sel_fy, paste0(hb, '{data-navmenu="Health Boards"}'), paste0(hb, " ", str_replace(sel_fy, "/", ""), ' {.hidden}'))`
+=================================================
+
+```{r summary figures, include=FALSE}
+
+# Expected vs Referrals
+ref <- sum(subpage_data$referrals)
+exp_rate <- (ref / exp) * 100
+
+# 12 Months Complete
+num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$referrals)}
+den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
+pds_rate <- (num / den) * 100
+
+# Format figures with thousands separator
+ref_format <- format(ref, big.mark = ",")
+exp_format <- format(exp, big.mark = ",")
+num_format <- format(num, big.mark = ",")
+den_format <- format(den, big.mark = ",")
+
+# Is there data for all four quarters of the selected year?
+complete_year <- if_else(max_fy == sel_fy & qt != 4, FALSE, TRUE)
+
+# If incomplete year, list quarters included
+qt_text <-
+  if(complete_year){""}else{
+    if(qt == 1){"- Q1"}else{
+      if(qt %in% 2:3){paste0("- Q1-", qt)}
+    }
+  }
+
+# Text to explain incomplete years / referrals still ongoing
+completeness_text <-
+  case_when(
+    complete_year == FALSE ~ 
+      paste0("LDP Standard performance figures are not provided ",
+             "until data is available for the full financial year."),
+    sel_fy == min_fy ~ 
+      paste0("The figures shown are now complete for this financial year and ",
+             "should not change in future versions of these reports. However, ",
+             "slight variations may be seen as data errors are resolved."),
+    TRUE ~ 
+      paste0("As PDS for some referrals in ", sel_fy, " is still ongoing, ",
+             "it is not known yet whether or not they will meet the LDP ",
+             "standard. Therefore, the figures shown are currently provisional",
+             " and subject to change in future versions of this report.")
+  )
+
+# Title for LDP table
+table_title <-
+  ifelse(complete_year == TRUE,
+          "",
+          paste0(" - up to Q", qt))
+
+```
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+### `r hb`
+#### Financial Year `r paste(sel_fy, qt_text)`
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+Select Financial Year
+
+<!-- For some reason need '-2' on end of 1819 links - check why this is -->
+|     `r paste0("[2019/20](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-3)")`
+|     `r paste0("[2018/19](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201819)")`
+|     `r paste0("[2017/18](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201718)")`
+|     `r paste0("[2016/17](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201617)")`
+
+***
+
+For more information regarding how the LDP Standard is calculated, please see the [methodology](#methodology) page.
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+`r if_else(hb == "NHS Greater Glasgow & Clyde", "<span style='color:red'>Data for some IJBs in NHS Greater Glasgow & Clyde are currently unavailable/incomplete and therefore board level figures should be treated with caution.</span>", if_else(hb == "NHS Lanarkshire", "<span style='color:red'>Some South Lanarkshire records are submitted by NHS Greater Glasgow & Clyde. Due to data submission issues, these records are not included in the below information.</span>", ""))`
+
+These reports are an ongoing development following the implementation of the revised [Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) effective 01 April 2019. As such, they are currently marked as **DRAFT** and may be subject to change in future versions.
+
+`r completeness_text`
+
+
+Row `r if(complete_year == FALSE)"{.hidden}"` 
+----------------------------------------------------------------------
+
+`r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
+```{r Expected Value Box, include = complete_year}
+valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
+         caption = glue("of people estimated to be newly diagnosed with ",
+                        "dementia were referred for post-diagnostic support."))
+```
+
+`r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
+
+`r ifelse(complete_year == TRUE, glue("A total of <span style='color:CornflowerBlue'>**{ref_format}**</span> referrals were made to post-diagnostic support. This is divided by <span style='color:CornflowerBlue'>**{exp_format}**</span>, the estimated number of people newly diagnosed with dementia."), "")`
+
+Row `r if(complete_year == FALSE)"{.hidden}"`
+----------------------------------------------------------------------
+
+`r ifelse(complete_year == TRUE, "### 12 Months Value Box", "")`
+```{r 12 Months Value Box, include = complete_year}
+valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
+         caption = glue("of those referred for post-diagnostic support ",
+                        "received a minimum of 12 months of support."))
+```
+
+`r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
+
+`r ifelse(complete_year == TRUE, glue("<span style='color:CornflowerBlue'>**{num_format}**</span> of referrals either met or were exempt from the LDP standard. This is divided by <span style='color:CornflowerBlue'>**{den_format}**</span>, the total number of referrals (excluding those whose support is ongoing)."), "")`
+
+
+Row
+----------------------------------------------------------------------
+
+### **Number of Individuals relating to LDP Standard**: Financial Year `r paste0(sel_fy, table_title)`
+
+```{r ldp-table}
+
+ldp_table(subpage_data,
+          include_pc = complete_year)
+
+```
+
+
+Row {.data-height=1000}
+----------------------------------------------------------------------
+
+### **Number of Individuals Diagnosed and Referred for PDS** {data-width=800}
+
+```{r referrals-plot}
+
+plot_referrals(subpage_data, 
+               scotland = FALSE,
+               quarter = ifelse(max_fy == sel_fy, qt, NA))
+
+```
+
+
+Row
+-----------------------------------------------------------------------

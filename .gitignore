@@ -6,5 +6,9 @@
 # 'data' folder #
 data/
 
+# 'output' folders #
+publication/output/
+management-report/output/
+
 # Markdown output #
 *.html

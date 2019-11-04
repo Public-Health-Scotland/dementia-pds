@@ -14,39 +14,25 @@
 #########################################################################
 
 
-### 1 - Load environment file ----
+### 1 - Load environment file and functions ----
 
 source(here::here("code", "00_setup-environment.R"))
+source(here::here("functions", "financial_year.R"))
 
 
 ### 2 - Load data ----
 
-pds <- 
-  
-  read_csv(here("data", glue("{fy}-{qt}_clean-data.csv")), 
-                col_types = cols(.default = "c")) %>%
-  
-  # Convert dates from character to date format
-  mutate_at(vars(contains("date")), ~lubridate::ymd(.))
+pds <- read_rds(here("data", glue("{fy}-{qt}_clean-data.rds")))
 
 
 ### 3 - Add FY and months labels ----
 
 pds %<>%
-  
-  mutate(fy    = if_else(month(dementia_diagnosis_confirmed_date) >= 4,
-                 glue("{year(dementia_diagnosis_confirmed_date)}/",
-                      "{substr(year(dementia_diagnosis_confirmed_date) + 1, ",
-                      "3, 4)}"),
-                 glue("{year(dementia_diagnosis_confirmed_date) - 1}/",
-                      "{substr(year(dementia_diagnosis_confirmed_date), ",
-                      "3, 4)}")
-                 ),
+  mutate(fy    = financial_year(dementia_diagnosis_confirmed_date),
          month = month(dementia_diagnosis_confirmed_date))
 
 
 ### 4 - Add key dates for calculations ----
-# TO DO - Review whether we want to roll forward or back
 
 pds %<>%
   
@@ -65,13 +51,7 @@ pds %<>%
     # Date 12 months after date of first PDS contact
     pds_12        = add_with_rollback(date_of_initial_first_contact, 
                                       months(12),
-                                      roll_to_first = TRUE),
-    
-    # Number of months between diagnosis and date of first PDS contact
-    time_to_start = trunc(time_length(
-                             interval(dementia_diagnosis_confirmed_date, 
-                                      date_of_initial_first_contact), 
-                          "months"))
+                                      roll_to_first = TRUE)
     
   )
 
@@ -85,29 +65,30 @@ pds %<>%
     ## COMPLETE ##
     
     # Started PDS within 12m of diagnosis AND PDS still ongoing after 12m
-    diag_12 > date_of_initial_first_contact & 
-      is.na(termination_or_transition_date) & pds_12 < end_date
+    date_of_initial_first_contact < diag_12 & 
+      end_date >= pds_12 &
+         is.na(termination_or_transition_date)
     ~ "complete",
     
     # Started PDS within 12m of diagnosis AND PDS ended after 11m
-    diag_12 > date_of_initial_first_contact &
-      pds_11 <= termination_or_transition_date
+    date_of_initial_first_contact < diag_12 &
+      termination_or_transition_date >= pds_11
     ~ "complete",
     
     ## FAIL ##
     
+    # PDS started more than 12m after diagnosis
+    date_of_initial_first_contact >= diag_12
+    ~ "fail",
+    
     # More than 12m since diagnosis and PDS not started
-    diag_12 <= end_date &
+    end_date >= diag_12 & 
       is.na(date_of_initial_first_contact) &
          is.na(termination_or_transition_date)
     ~ "fail",
     
-    # PDS started more than 12m after diagnosis
-    diag_12 <= date_of_initial_first_contact
-    ~ "fail",
-    
     # PDS terminated before 11 months from start date
-    pds_11 > termination_or_transition_date &
+    termination_or_transition_date < pds_11 &
       !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
     ~ "fail",
     
@@ -119,93 +100,59 @@ pds %<>%
     
     ## EXEMPT ##
     
-    # Exempt termination reason; SU died/moved to other HB/refused/can't engage
+    # Exempt termination reason; died/moved to other HB/refused/can't engage
     substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons
     ~ "exempt",
     
     ## ONGOING ##
     
     # Less than 12m since diagnosis and PDS not started
-    diag_12 > end_date & 
+    end_date < diag_12 & 
       is.na(date_of_initial_first_contact) & 
-      is.na(termination_or_transition_date)
+         is.na(termination_or_transition_date)
     ~ "ongoing",
     
     # PDS started within 12m of diagnosis but not yet ended
-    diag_12 > date_of_initial_first_contact &
-      pds_12 > end_date &
-      is.na(termination_or_transition_date)
+    date_of_initial_first_contact < diag_12 &
+      end_date < pds_12 &
+         is.na(termination_or_transition_date)
     ~ "ongoing"
     
   ))
 
 
-### 6 - Add old LDP standard classification ----
+### 6 - Add time waited ----
 
 pds %<>%
   
-  ## FAIL ##
-  
-  mutate(ldp_old = case_when(
-    
-    # Wait time longer than 12 months
-    time_to_start > 12 ~ "fail",
-    
-    # Still waiting after 12 months
-    is.na(date_of_initial_first_contact) &
-      !(substr(termination_or_transition_reason, 1, 2) %in% c("03", "04")) &
-      #!is.na(remove_reason) &      # condition on remove reason not missing causing records 'still waiting' to be marked as complete
-      substr(pds_status, 1, 2) != "02" &     
-      diag_12 < end_date ~ "fail",
-    
-    # Removed from service before 12 months with no reason provided
-    # TO DO: Impossible
-    # (remove_date < pds_end & is.na(remove_date)) &
-    #   is.na(remove_reason) ~ "fail",
-    
-    # Remove reason 12 months complete but removed before 12 months
-    substr(termination_or_transition_reason, 1, 2) == "01" & termination_or_transition_date < pds_11 ~ "fail",
-    
-    # Removed for non-exempt reasons before 12 months
-    (termination_or_transition_date < pds_11 | is.na(termination_or_transition_date)) &
-      substr(termination_or_transition_reason, 1, 2) %in% c("02", "98", "99") ~ "fail"
-    
+  # Add flag for whether record is still waiting to be seen
+  # Can we use pds_status here?
+  # Depends on quality of this variable
+  mutate(wait_status = case_when(
+    ldp == "ongoing" ~ "still waiting",
+    TRUE ~ ""
   )) %>%
   
-  ## EXEMPT ##
+  # Number of months between diagnosis and date of first PDS contact
+  mutate(
+    
+    time_to_start = if_else(
+      !is.na(date_of_initial_first_contact),
+      trunc(time_length(
+        interval(dementia_diagnosis_confirmed_date, 
+                 date_of_initial_first_contact), 
+        "months")),
+      trunc(time_length(
+        interval(dementia_diagnosis_confirmed_date, 
+                 end_date), 
+        "months"))
+    )
+    
+  ) %>%
   
-  mutate(ldp_old = case_when(
-    is.na(ldp_old) & substr(termination_or_transition_reason, 1, 2) %in% c("03", "04") ~ "exempt",
-    TRUE ~ ldp_old
-  )) %>%
-  
-  ## ONGOING ##
-  
-  mutate(ldp_old = case_when(
-    (is.na(ldp_old) & (pds_11 > end_date | is.na(date_of_initial_first_contact))) &
-      (!is.na(date_of_initial_first_contact) | (dementia_diagnosis_confirmed_date + months(12)) >= end_date) ~ "ongoing",
-    TRUE ~ ldp_old
-  )) %>%
-
-  ## COMPLETE ##
-  
-  mutate(ldp_old = case_when(is.na(ldp_old) ~ "complete",
-                         TRUE ~ ldp_old))
-
-
-### 7 - Add flag for waiting list ----
-# check against ldp flags; ongoing, complete, exempt should not be included on waiting list
-# track wait list for every month from april 2016 to latest reporting month
-# can we use inactive to remove people from waiting list or dates more reliable?
-
-
-### 8 - Add waiting time categories
-
-pds %<>%
-  
+  # Add measure of time waited/been waiting
   mutate(wait_length = case_when(
     
-    is.na(time_to_start)           ~ "Still Waiting",
     between(time_to_start, 0, 3)   ~ "3 Months or Less",
     between(time_to_start, 4, 6)   ~ "4-6 Months",    
     between(time_to_start, 7, 9)   ~ "7-9 Months",
@@ -215,13 +162,42 @@ pds %<>%
   ))
 
 
-### 9 - Create final output file ----
+### 8 - Save individual level file for checking ----
+
+write_csv(pds, here("data", glue("{fy}-{qt}_check-data.csv")))
+
+
+### 8 - Create final output file ----
+
+inc_months <-
+  if(qt == 1){4:6}else{
+    if(qt == 2){4:9}else{
+      if(qt == 3){4:12}else{
+        if(qt == 4){1:12}
+      }
+    }
+  }
 
 pds %<>%
-  group_by(health_board, ijb, fy, month, ldp, ldp_old, wait_length) %>%
-  summarise(referrals = n())
+  
+  # Aggregate to create minimal tidy dataset
+  group_by(health_board, ijb, fy, month, ldp, wait_status, wait_length) %>%
+  summarise(referrals = n()) %>%
+  ungroup() %>%
+  
+  # Add rows where no referrals were made
+  # Doing this will make sure zeros are still shown in reports
+  complete(nesting(health_board, ijb), fy, month,
+           fill = list(referrals = 0,
+                       ldp = "complete")) %>%
 
-write_csv(pds, here("data", glue("{fy}-{qt}_final-data.csv")))
+  # Remove completed rows for months in incomplete financial year
+  # e.g. for Q1 reports, remove completed rows for July - March
+  filter(substr(fy, 1, 4) < year(end_date) |
+           (substr(fy, 1, 4) == year(end_date) & 
+              month %in% inc_months))
+
+write_rds(pds, here("data", glue("{fy}-{qt}_final-data.rds")))
 
 
 ### END OF SCRIPT ###
