@@ -197,6 +197,8 @@ pds %<>%
            (substr(fy, 1, 4) == year(end_date) & 
               month %in% inc_months))
 
+pds %<>% filter(!is.na(ijb))
+
 write_rds(pds, here("data", glue("{fy}-{qt}_final-data.rds")))
 
 
