@@ -40,8 +40,8 @@ library(kableExtra)    # For customising kable tables
 ### 2 - Define Whether Running on Server or Locally ----
 
 # Comment out as appropriate
-# platform <- c("server")
-platform <- c("local")
+platform <- c("server")
+# platform <- c("local")
 
 
 # Define root directory for stats server based on whether script is running 
@@ -61,11 +61,11 @@ start_date <- lubridate::ymd(20160401)
 
 # End date of reporting period
 # Update quarterly to last day of new quarter
-end_date   <- lubridate::ymd(20190630)
+end_date   <- lubridate::ymd(20190930)
 
 # FY and Quarter of reporting period
 fy         <- "2019"
-qt         <- "1"       
+qt         <- "2"       
 
 
 ### 4 - Disable scientific notation ----
