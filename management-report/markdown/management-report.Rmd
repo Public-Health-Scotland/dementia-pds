@@ -188,7 +188,7 @@ Some text here about importance of data quality.
 Row {.tabset data-height=800}
 -------------------------------------------------
 
-### Errors & Queries
+### **Errors & Queries**
 
 Any errors or queries outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
 
@@ -216,7 +216,7 @@ err %>%
 ```
 
 
-### Number of Records Submitted
+### **Number of Records Submitted**
 
 The table below shows the number of records submitted by each IJB. Any records with missing diagnosis date or diagnosis date out with the reporting period are not included in the below counts.
 
