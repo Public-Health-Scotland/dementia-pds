@@ -182,19 +182,15 @@ Row
 
 ### <!-- No Title -->
 
-Some text here about importance of data quality.
+This page includes information about data quality. Any errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
 
 
 Row {.tabset data-height=800}
 -------------------------------------------------
 
-### **Errors & Queries**
+### **Errors**
 
-Any errors or queries outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
-
-Records that are removed before analysis include those with a diagnosis date outwith the reporting period (i.e. before `r format(start_date, "%d %B %Y")` or after `r format(end_date, "%d %B %Y")`), and records with no diagnosis date provided.
-
-The table below shows the percentage of records which contain one or more errors.
+The table below shows the percentage of records which contain one or more errors. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts.
 
 ```{r error summary}
 err %>% 
@@ -218,7 +214,7 @@ err %>%
 
 ### **Number of Records Submitted**
 
-The table below shows the number of records submitted by each IJB. Any records with missing diagnosis date or diagnosis date out with the reporting period are not included in the below counts.
+The table below shows the number of records submitted by each Health Board. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts.
 
 ```{r record-summary}
 err %>%
