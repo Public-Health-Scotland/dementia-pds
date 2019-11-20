@@ -33,8 +33,10 @@ pds <- read_rds(here("data", glue("{fy}-{qt}_final-data.rds"))) %>%
 exp <- read_csv(here("reference-files", "expected-diagnoses.csv"))
 
 # Load error summary
-err <- read_rds(here("data", glue("{fy}-{qt}_error-summary.rds")))
-
+err <- read_rds(here("data", glue("{fy}-{qt}_error-summary.rds"))) %>%
+  mutate(ijb = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
 ```
 
 Home
@@ -175,7 +177,10 @@ Please note that as estimations are available by calendar year and figures in th
 Data Quality
 =================================================
 
-### <!-- No Title -->
+Row {.tabset data-height=800}
+-------------------------------------------------
+
+### Errors & Queries
 
 Any errors or queries outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
 
@@ -197,6 +202,26 @@ err %>%
   row_spec(15, bold = TRUE)
 ```
 
+
+### Number of Records Submitted
+
+```{r record-summary}
+err %>%
+  group_by(fy, health_board, ijb) %>% 
+  summarise(records = sum(records)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = fy, 
+              values_from = records,
+              values_fill = list(records = 0)) %>%
+  arrange(health_board, ijb) %>%
+  rename(`Health Board` = health_board,
+         IJB = ijb) %>%
+  kable() %>%
+  kable_styling(full_width = FALSE) %>%
+  row_spec(length(unique(err$ijb)) + 1, bold = TRUE) %>%
+  collapse_rows(columns = 1, valign = "top") %>%
+  scroll_box(height = "700px")
+```
 
 
 <!-- END OF SCRIPT -->
