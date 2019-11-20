@@ -86,21 +86,18 @@ Further information regarding the Dementia PDS dataset and submission process ca
 
 <!-- Scotland -->
 
-```{r scotland, include=FALSE, eval = FALSE}
+```{r scotland, include=FALSE}
 
 scotland <- map(.x = sort(unique(pds$fy)),
                 .f = ~ set_env(data = pds,
                                exp  = exp,
-                               err  = err,
                                hb   = "Scotland",
                                year = .x,
                                quarter = qt))
 
 ```
 
-`r # paste(knitr::knit_child(text = scotland), collapse = '')`
-
-`r knitr::knit_child("subpage-scotland-temp.Rmd")`
+`r paste(knitr::knit_child(text = scotland), collapse = '')`
 
 
 <!-- HEALTH BOARDS -->
@@ -111,7 +108,6 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
                                   sort(unique(pds$health_board))), 
                       .f = ~ set_env(data = pds,
                                      exp  = exp,
-                                     err  = err,
                                      hb   = .y,
                                      year = .x,
                                      quarter = qt))

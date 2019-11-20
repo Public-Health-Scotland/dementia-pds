@@ -1,6 +1,13 @@
 
 ldp_table <- function(data, 
+                      scotland = FALSE,
                       include_pc = TRUE){
+  
+  if(scotland == TRUE){
+    data %<>%
+      mutate(health_board = "Scotland",
+             ijb          = "ScotlandIJB")
+  }
   
   # 12 Months Complete - IJB level for table
   num_ijb <- data %>% filter(ldp %in% c("complete", "exempt")) %>% group_by(ijb) %>% summarise(num = sum(referrals)) %>%
@@ -16,10 +23,9 @@ ldp_table <- function(data,
     mutate(ldp = "% received 12 months PDS") %>%
     pivot_wider(names_from = ijb, values_from = rate)
   
-  table <-
+  data2 <-
     
     data %>%
-  
     group_by(ijb = health_board, ldp) %>%
     summarise(referrals = sum(referrals)) %>%
     bind_rows(data %>%
@@ -49,24 +55,22 @@ ldp_table <- function(data,
     select(ldp, c(data$health_board, sort(unique(data$ijb)))) %>%
     arrange(match(ldp, c("Total Referrals", "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt")))
   
-  if(include_pc == TRUE){
+  if(scotland == TRUE){
     
-    table %>%
-    kable(col.names = c("", unique(data$health_board), sort(unique(data$ijb))),
-          align = c("l", "r", rep("r", length(unique(data$ijb))))) %>%
+    table <-
+      data2 %>%
+      select(-ScotlandIJB) %>%
+      kable(col.names = c("", "Scotland"),
+            align = c("l", "r")) %>%
       kable_styling(full_width = FALSE) %>%
-      column_spec(1, bold = T) %>%
-      row_spec(6, bold = T) %>%
-      add_header_above(
-        c(" " = 1,
-          "Health Board" = 1,
-          "Integration Joint Board (IJB)" = length(unique(data$ijb))))
+      column_spec(1, bold = T)
     
   }else{
     
-    table %>%
-    kable(col.names = c("", unique(data$health_board), sort(unique(data$ijb))),
-          align = c("l", "r", rep("r", length(unique(data$ijb))))) %>%
+    table <-
+      data2 %>%
+      kable(col.names = c("", unique(data$health_board), sort(unique(data$ijb))),
+            align = c("l", "r", rep("r", length(unique(data$ijb))))) %>%
       kable_styling(full_width = FALSE) %>%
       column_spec(1, bold = T) %>%
       add_header_above(
@@ -74,6 +78,18 @@ ldp_table <- function(data,
           "Health Board" = 1,
           "Integration Joint Board (IJB)" = length(unique(data$ijb))))
     
+  }
+  
+  
+  if(include_pc == TRUE){
+
+    table %>%
+    row_spec(6, bold = T)
+
+  }else{
+
+    table
+
   }
   
 }
