@@ -201,6 +201,11 @@ err %>%
   group_by(fy, health_board) %>% 
   summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1)) %>%
   ungroup() %>%
+  bind_rows(
+    err %>% 
+    group_by(fy = "All", health_board) %>% 
+    summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1)) %>%
+    ungroup()) %>%
   mutate(err_rate = paste0(err_rate, "%")) %>%
   pivot_wider(names_from = fy,
               values_from = err_rate) %>%
@@ -220,17 +225,23 @@ err %>%
   group_by(fy, health_board, ijb) %>% 
   summarise(records = sum(records)) %>%
   ungroup() %>%
+  bind_rows(
+    err %>%
+    group_by(fy = "All", health_board, ijb) %>% 
+    summarise(records = sum(records)) %>%
+    ungroup()) %>%
+  mutate(records = format(records, big.mark = ",")) %>%
   pivot_wider(names_from = fy, 
               values_from = records,
-              values_fill = list(records = 0)) %>%
+              values_fill = list(records = "0")) %>%
   arrange(health_board, ijb) %>%
   rename(`Health Board` = health_board,
          IJB = ijb) %>%
-  kable() %>%
+  kable(align = c("l", "l", rep("r", length(unique(err$fy)) + 1))) %>%
   kable_styling(full_width = FALSE) %>%
   row_spec(length(unique(err$ijb)) + 1, bold = TRUE) %>%
   collapse_rows(columns = 1, valign = "top") %>%
-  scroll_box(height = "700px")
+  scroll_box(height = "740px")
 ```
 
 
