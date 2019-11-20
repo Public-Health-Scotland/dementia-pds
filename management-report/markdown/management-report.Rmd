@@ -177,6 +177,14 @@ Please note that as estimations are available by calendar year and figures in th
 Data Quality
 =================================================
 
+Row
+-------------------------------------------------
+
+### <!-- No Title -->
+
+Some text here about importance of data quality.
+
+
 Row {.tabset data-height=800}
 -------------------------------------------------
 
@@ -204,6 +212,8 @@ err %>%
 
 
 ### Number of Records Submitted
+
+The table below shows the number of records submitted by each IJB. Any records with missing diagnosis date or diagnosis date out with the reporting period are not included in the below counts.
 
 ```{r record-summary}
 err %>%
