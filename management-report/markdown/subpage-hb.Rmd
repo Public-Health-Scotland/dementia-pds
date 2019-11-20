@@ -92,8 +92,6 @@ Row
 
 ### **Note**
 
-`r if_else(hb == "NHS Greater Glasgow & Clyde", "<span style='color:red'>Data for some IJBs in NHS Greater Glasgow & Clyde are currently unavailable/incomplete and therefore board level figures should be treated with caution.</span>", if_else(hb == "NHS Lanarkshire", "<span style='color:red'>Some South Lanarkshire records are submitted by NHS Greater Glasgow & Clyde. Due to data submission issues, these records are not included in the below information.</span>", ""))`
-
 These reports are an ongoing development following the implementation of the revised [Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) effective 01 April 2019. As such, they are currently marked as **DRAFT** and may be subject to change in future versions.
 
 `r completeness_text`
