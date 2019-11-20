@@ -189,7 +189,8 @@ err %>%
   summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1)) %>%
   ungroup() %>%
   mutate(err_rate = paste0(err_rate, "%")) %>%
-  spread(fy, err_rate) %>%
+  pivot_wider(names_from = fy,
+              values_from = err_rate) %>%
   rename(`Health Board` = health_board) %>%
   kable() %>%
   kable_styling(full_width = FALSE) %>%
