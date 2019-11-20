@@ -1,7 +1,6 @@
 
 set_env <- function(data = pds, 
                     exp = exp,
-                    error = error,
                     hb,
                     year,
                     quarter){
@@ -15,19 +14,11 @@ set_env <- function(data = pds,
       data %>%
       filter(fy == year)
     
-    subpage_err <-
-      err %>%
-      filter(fy == year)
-    
   }else{
     
     subpage_data <-
       data %>%
       filter(fy == year & health_board == hb)
-    
-    subpage_err <-
-      err %>%
-      filter(fy == year)
     
   }
   
@@ -53,7 +44,6 @@ set_env <- function(data = pds,
   assign("min_fy", min(sort(unique(data$fy))), subpage_env)
   assign("all_fy", setdiff(unique(data$fy), year), subpage_env)
   assign("exp", subpage_exp, subpage_env)
-  assign("err", subpage_err, subpage_env)
   assign("qt", quarter, subpage_env)
   
   if(hb != "Scotland"){
