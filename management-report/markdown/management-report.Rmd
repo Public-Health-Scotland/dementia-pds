@@ -232,7 +232,7 @@ err %>%
               values_fill = list(records = "0")) %>%
   arrange(health_board, ijb) %>%
   rename(`Health Board` = health_board,
-         IJB = ijb) %>%
+         `Integration Joint Board (IJB)` = ijb) %>%
   kable(align = c("l", "l", rep("r", length(unique(err$fy)) + 1))) %>%
   kable_styling(full_width = FALSE) %>%
   row_spec(length(unique(err$ijb)) + 1, bold = TRUE) %>%
