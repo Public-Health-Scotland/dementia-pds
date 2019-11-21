@@ -28,7 +28,7 @@ ldp_table <- function(data,
     mutate(ldp = "% received 12 months PDS") %>%
     pivot_wider(names_from = ijb, values_from = rate)
   
-  data2 <-
+  table <-
     
     data %>%
     group_by(ijb = health_board, ldp) %>%
@@ -62,22 +62,25 @@ ldp_table <- function(data,
   
   if(scotland == TRUE){
     
-    table <-
-      data2 %>%
-      select(ldp, Scotland, everything()) %>%
+    table %>%
       select(-All) %>%
+      
+      pivot_longer(cols = c("Scotland", starts_with("NHS")),
+                   names_to = "board",
+                   values_to = "value") %>%
+      pivot_wider(names_from = ldp,
+                  values_from = value) %>%
+      
       kable(col.names = c("", names(.)[-1]),
-            align = c("l", rep("r", length(names(.)) - 1))) %>%
+            align = c("l", rep("r", length(names(.)) - 1))
+        ) %>%
       kable_styling(full_width = FALSE) %>%
       column_spec(1, bold = T) %>%
-      add_header_above(
-        c(" " = 2,
-          "Health Board" = 14))
+      column_spec(if_else(include_pc, 7, 6), bold = include_pc)
     
   }else{
     
-    table <-
-      data2 %>%
+    table %>%
       kable(col.names = c("", unique(data$health_board), sort(unique(data$ijb))),
             align = c("l", "r", rep("r", length(unique(data$ijb))))) %>%
       kable_styling(full_width = FALSE) %>%
@@ -85,20 +88,10 @@ ldp_table <- function(data,
       add_header_above(
         c(" " = 1,
           "Health Board" = 1,
-          "Integration Joint Board (IJB)" = length(unique(data$ijb))))
+          "Integration Joint Board (IJB)" = length(unique(data$ijb)))) %>%
+      row_spec(if_else(include_pc, 6, 5), bold = include_pc)
     
   }
-  
-  
-  if(include_pc == TRUE){
 
-    table %>%
-    row_spec(6, bold = T)
-
-  }else{
-
-    table
-
-  }
   
 }
