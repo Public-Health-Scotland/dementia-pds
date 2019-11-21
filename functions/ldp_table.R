@@ -5,9 +5,14 @@ ldp_table <- function(data,
   
   if(scotland == TRUE){
     data %<>%
-      mutate(health_board = "Scotland",
-             ijb          = "ScotlandIJB")
-  }
+      mutate(ijb = "All") %>%
+      bind_rows(data %>% 
+                  mutate(health_board = "Scotland",
+                         ijb          = "All")) %>%
+      group_by(health_board, ijb, fy, ldp) %>%
+      summarise(referrals = sum(referrals)) %>%
+      ungroup()
+   }
   
   # 12 Months Complete - IJB level for table
   num_ijb <- data %>% filter(ldp %in% c("complete", "exempt")) %>% group_by(ijb) %>% summarise(num = sum(referrals)) %>%
@@ -59,11 +64,15 @@ ldp_table <- function(data,
     
     table <-
       data2 %>%
-      select(-ScotlandIJB) %>%
-      kable(col.names = c("", "Scotland"),
-            align = c("l", "r")) %>%
+      select(ldp, Scotland, everything()) %>%
+      select(-All) %>%
+      kable(col.names = c("", names(.)[-1]),
+            align = c("l", rep("r", length(names(.)) - 1))) %>%
       kable_styling(full_width = FALSE) %>%
-      column_spec(1, bold = T)
+      column_spec(1, bold = T) %>%
+      add_header_above(
+        c(" " = 2,
+          "Health Board" = 14))
     
   }else{
     
