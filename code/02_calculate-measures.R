@@ -22,7 +22,9 @@ source(here::here("functions", "financial_year.R"))
 
 ### 2 - Load data ----
 
-pds <- read_rds(here("data", glue("{fy}-{qt}_clean-data.rds")))
+pds <- read_rds(here("data", 
+                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+                     glue("{fy}-{qt}_clean-data.rds")))
 
 
 ### 3 - Add FY and months labels ----
@@ -164,7 +166,9 @@ pds %<>%
 
 ### 8 - Save individual level file for checking ----
 
-write_csv(pds, here("data", glue("{fy}-{qt}_check-data.csv")))
+write_csv(pds, here("data", 
+                    glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+                    glue("{fy}-{qt}_check-data.csv")))
 
 
 ### 8 - Create final output file ----
@@ -197,7 +201,9 @@ pds %<>%
            (substr(fy, 1, 4) == year(end_date) & 
               month %in% inc_months))
 
-write_rds(pds, here("data", glue("{fy}-{qt}_final-data.rds")))
+write_rds(pds, here("data", 
+                    glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+                    glue("{fy}-{qt}_final-data.rds")))
 
 
 ### END OF SCRIPT ###

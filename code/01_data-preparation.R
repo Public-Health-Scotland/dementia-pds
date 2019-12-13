@@ -72,7 +72,9 @@ err %>%
                         records          = sum(records)) %>%
               ungroup()) %>%
   arrange(fy, health_board, ijb) %>%
-  write_rds(here("data", glue("{fy}-{qt}_error-summary.rds")))
+  write_rds(here("data", 
+                 glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+                 glue("{fy}-{qt}_error-summary.rds")))
 
 
 ### 4 - Recode Lanarkshire IJB records ----
@@ -99,7 +101,9 @@ pds %<>%
 
 ### 6 - Save data ---
 
-write_rds(pds, here("data", glue("{fy}-{qt}_clean-data.rds")))
+write_rds(pds, here("data", 
+                    glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+                    glue("{fy}-{qt}_clean-data.rds")))
 
 
 ### END OF SCRIPT ###
