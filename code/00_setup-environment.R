@@ -93,4 +93,28 @@ options(knitr.duplicate.label = 'allow')
 exempt_reasons <- c("03", "04", "05", "06")
 
 
+### 7 - SIMD Lookup ----
+
+simd     <- function(){
+  
+  read_rds(glue("{filepath}/linkage/output/lookups/Unicode/",
+                "Deprivation/postcode_2019_2_simd2016.rds")) %>%
+    
+    clean_names() %>%
+    
+    select(pc7, simd2016_sc_quintile) %>%
+    
+    rename(simd = simd2016_sc_quintile) %>%
+    
+    mutate(
+      simd = case_when(
+        simd == 1 ~ "1 - Most Deprived",
+        simd == 5 ~ "5 - Least Deprived",
+        TRUE ~ as.character(simd)
+      )
+    )
+  
+}
+
+
 ### END OF SCRIPT ###
