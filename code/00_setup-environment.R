@@ -35,6 +35,7 @@ library(fs)            # For creating folder directories
 library(forcats)       # For factor manipulation
 library(knitr)         # For creating kable tables
 library(kableExtra)    # For customising kable tables
+library(phsmethods)    # For formatting postcode
 
 
 ### 2 - Define Whether Running on Server or Locally ----
