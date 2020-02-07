@@ -123,48 +123,35 @@ pds %<>%
   ))
 
 
-### 6 - Add time waited ----
+### 6 - Add Age Group and Deprivation ----
 
 pds %<>%
   
-  # Add flag for whether record is still waiting to be seen
-  # Can we use pds_status here?
-  # Depends on quality of this variable
-  mutate(wait_status = case_when(
-    ldp == "ongoing" ~ "still waiting",
-    TRUE ~ ""
-  )) %>%
-  
-  # Number of months between diagnosis and date of first PDS contact
-  mutate(
-    
-    time_to_start = if_else(
-      !is.na(date_of_initial_first_contact),
-      trunc(time_length(
-        interval(dementia_diagnosis_confirmed_date, 
-                 date_of_initial_first_contact), 
-        "months")),
-      trunc(time_length(
-        interval(dementia_diagnosis_confirmed_date, 
-                 end_date), 
-        "months"))
-    )
-    
+  mutate(age = 
+           floor(time_length(
+             interval(date_of_birth,
+                      dementia_diagnosis_confirmed_date),
+             "years"))
   ) %>%
+  mutate(age_grp = 
+           case_when(
+             age <= 0 | is.na(age) ~ "Missing",
+             age %in% 1:59 ~ "59 and Under",
+             age %in% 60:64 ~ "60 to 64",
+             age %in% 65:69 ~ "65 to 69",
+             age %in% 70:74 ~ "70 to 74",
+             age %in% 75:79 ~ "75 to 79",
+             age %in% 80:84 ~ "80 to 84",
+             age %in% 85:89 ~ "85 to 89",
+             age >= 90      ~ "90+"
+           )) %>%
   
-  # Add measure of time waited/been waiting
-  mutate(wait_length = case_when(
-    
-    between(time_to_start, 0, 3)   ~ "3 Months or Less",
-    between(time_to_start, 4, 6)   ~ "4-6 Months",    
-    between(time_to_start, 7, 9)   ~ "7-9 Months",
-    between(time_to_start, 10, 12) ~ "10-12 Months",
-    time_to_start >= 13            ~ "Over 1 Year",
-    
-  ))
+  mutate(postcode = phsmethods::postcode(postcode)) %>%
+  left_join(simd(), by = c("postcode" = "pc7")) %>%
+  mutate(simd = replace_na(simd, "Missing"))
+          
 
-
-### 8 - Save individual level file for checking ----
+### 7 - Save individual level file for checking ----
 
 write_csv(pds, here("data", 
                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
@@ -185,7 +172,7 @@ inc_months <-
 pds %<>%
   
   # Aggregate to create minimal tidy dataset
-  group_by(health_board, ijb, fy, month, ldp, wait_status, wait_length) %>%
+  group_by(health_board, ijb, fy, month, ldp, age_grp, simd) %>%
   summarise(referrals = n()) %>%
   ungroup() %>%
   
