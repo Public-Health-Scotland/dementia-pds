@@ -25,6 +25,11 @@ pds <-
                       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
                       glue("{fy}-{qt}_final-data.rds")))
 
+expected <-
+  read_csv(here("reference-files",
+                "expected-diagnoses.csv")) %>%
+  select(-health_board)
+
 
 ### 3 - Restructure data ----
 
@@ -98,10 +103,24 @@ excel_data <-
 
 ### 4 - Save data to excel template ----
 
-write_csv(excel_data,
-          here("data", 
-               glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-               glue("{fy}-{qt}_excel-data.csv")))
+wb <- loadWorkbook(here("reference-files",
+                        "excel-template.xlsx"))
 
+writeData(wb,
+          "data",
+          excel_data,
+          startCol = 2)
+
+writeData(wb,
+          "expected",
+          expected,
+          startCol = 2)
+
+sheetVisibility(wb)[7:9] <- "hidden"
+
+saveWorkbook(wb,
+             here("publication", "output", 
+                  glue("{today()}_excel-tables.xlsx")),
+             overwrite = TRUE)
 
 ### END OF SCRIPT ###
