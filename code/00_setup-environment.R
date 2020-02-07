@@ -39,9 +39,12 @@ library(kableExtra)    # For customising kable tables
 
 ### 2 - Define Whether Running on Server or Locally ----
 
-# Comment out as appropriate
-platform <- c("server")
-# platform <- c("local")
+if (sessionInfo()$platform %in% c("x86_64-redhat-linux-gnu (64-bit)",
+                                  "x86_64-pc-linux-gnu (64-bit)")) {
+  platform <- "server"
+} else {
+  platform <- "locally"
+}
 
 
 # Define root directory for stats server based on whether script is running 
