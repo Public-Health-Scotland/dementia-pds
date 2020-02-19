@@ -134,7 +134,7 @@ pds %<>%
 write_csv(dupes,
           here("data", 
                glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-               glue("{fy}-{qt}_dupes.rds")))
+               glue("{fy}-{qt}_dupes.csv")))
 
 
 ### 7 - Save data ---
