@@ -239,7 +239,7 @@ err %>%
          `Integration Joint Board (IJB)` = ijb) %>%
   kable(align = c("l", "l", rep("r", length(unique(err$fy)) + 1))) %>%
   kable_styling(full_width = FALSE) %>%
-  row_spec(length(unique(err$ijb)) + 1, bold = TRUE) %>%
+  row_spec(length(unique(paste(err$health_board, err$ijb))), bold = TRUE) %>%
   collapse_rows(columns = 1, valign = "top") %>%
   scroll_box(height = "740px")
 ```
