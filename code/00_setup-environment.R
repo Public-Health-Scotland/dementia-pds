@@ -66,11 +66,11 @@ start_date <- lubridate::ymd(20160401)
 
 # End date of reporting period
 # Update quarterly to last day of new quarter
-end_date   <- lubridate::ymd(20190930)
+end_date   <- lubridate::ymd(20191231)
 
 # FY and Quarter of reporting period
 fy         <- "2019"
-qt         <- "2"       
+qt         <- "3"       
 
 
 ### 4 - Disable scientific notation ----
