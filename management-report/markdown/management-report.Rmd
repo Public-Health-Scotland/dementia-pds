@@ -3,7 +3,7 @@ title: "Dementia PDS Quarterly Management Report - DRAFT"
 output: 
   flexdashboard::flex_dashboard:
     navbar:
-      - title: "Data as at 30 September 2019"
+      - title: "Data as at 31 December 2019"
     logo: isdscotland.png
     orientation: rows
     vertical_layout: scroll
