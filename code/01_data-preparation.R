@@ -87,7 +87,7 @@ pds %<>%
             ))
 
 
-### 5 - Recode errors ----
+### 5 - Remove unusable records ----
 
 pds %<>%
   
@@ -99,7 +99,45 @@ pds %<>%
            interval(start_date, end_date))
 
 
-### 6 - Save data ---
+### 6 - Remove duplicate records ----
+
+pds %<>%
+
+  # Add flag for GGC/H duplicates
+  group_by(chi_number) %>%
+  mutate(ggc_h_dupe = 
+           if_else(n() > 1 &
+                     all(health_board %in% c("G NHS Greater Glasgow & Clyde",
+                                             "H NHS Highland")),
+                   1,
+                   0)) %>%
+  ungroup()
+
+# Save duplicate records
+dupes <- 
+  pds %>% 
+  filter(ggc_h_dupe == 1) %>%
+  mutate(dupe_kept = if_else(health_board == "G NHS Greater Glasgow & Clyde",
+                             1, 0))
+
+pds %<>%
+  
+  # Remove Highland duplicates
+  filter(ggc_h_dupe == 0 | (ggc_h_dupe == 1 & health_board == "H NHS Highland")) %>%
+  
+  # Recode GGC duplicate as Argyll & Bute activity
+  mutate(health_board = if_else(ggc_h_dupe == 1, "H NHS Highland", health_board),
+         ijb = if_else(ggc_h_dupe == 1, "S37000004 Argyll and Bute", ijb))
+
+
+# Save duplicates
+write_csv(dupes,
+          here("data", 
+               glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+               glue("{fy}-{qt}_dupes.rds")))
+
+
+### 7 - Save data ---
 
 write_rds(pds, here("data", 
                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
