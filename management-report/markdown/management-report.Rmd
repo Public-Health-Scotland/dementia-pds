@@ -178,6 +178,11 @@ Information on the methodology used to calculate these figures and the limitatio
 Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018.
 
 
+### **Removal of Duplicate Records**
+
+Write something here about how duplicates are removed/accounted for.
+
+
 Data Quality
 =================================================
 
