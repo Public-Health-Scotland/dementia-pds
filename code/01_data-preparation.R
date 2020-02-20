@@ -117,8 +117,10 @@ pds %<>%
 dupes <- 
   pds %>% 
   filter(ggc_h_dupe == 1) %>%
+  select(-ggc_h_dupe) %>%
   mutate(dupe_kept = if_else(health_board == "G NHS Greater Glasgow & Clyde",
-                             1, 0))
+                             1, 0),
+         dupe_type = "GGC/Highland SLA")
 
 pds %<>%
   
