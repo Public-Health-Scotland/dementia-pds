@@ -144,7 +144,7 @@ pds %<>%
                n_distinct(date_of_initial_first_contact) > 1 &
                date_of_initial_first_contact == min(date_of_initial_first_contact, na.rm = TRUE) ~ 4,
              
-             TRUE ~ 0
+             TRUE ~ 5
              
            )) %>%
   
