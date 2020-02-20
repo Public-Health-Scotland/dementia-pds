@@ -103,40 +103,77 @@ pds %<>%
 
 pds %<>%
 
-  # Add flag for GGC/H duplicates
   group_by(chi_number) %>%
+  
+  # Add flag for GGC/H duplicates
   mutate(ggc_h_dupe = 
            if_else(n() > 1 &
                      all(health_board %in% c("G NHS Greater Glasgow & Clyde",
                                              "H NHS Highland")),
                    1,
-                   0)) %>%
+                   0)) %>% 
+  
+  # For remaining duplicates, select in order
+  # Earliest diagnosis date, Term reason 04, Earliest contact date
+  mutate(other_dupe = 
+           if_else(
+             ggc_h_dupe == 0 & n() > 1 & !is.na(chi_number),
+             1,
+             0)) %>%
+  
+  mutate(dupe_keep = 
+           case_when(
+             
+             ggc_h_dupe == 1 & str_detect(health_board, "^G") ~ 1,
+             
+             other_dupe == 1 &
+               
+               # Select earliest diag date where different
+               n_distinct(dementia_diagnosis_confirmed_date) > 1 &
+               dementia_diagnosis_confirmed_date == min(dementia_diagnosis_confirmed_date, na.rm = TRUE) ~ 2,
+             
+             other_dupe == 1 &
+               
+               # Select termination reason 04 Moved to different Health Board
+               n_distinct(termination_or_transition_reason) > 1 &
+               str_detect(termination_or_transition_reason, "^04") ~ 3,
+             
+             other_dupe == 1 &
+               
+               # Select earliest contact date
+               n_distinct(date_of_initial_first_contact) > 1 &
+               date_of_initial_first_contact == min(date_of_initial_first_contact, na.rm = TRUE) ~ 4,
+             
+             TRUE ~ 0
+             
+           )) %>%
+  
   ungroup()
+
 
 # Save duplicate records
 dupes <- 
   pds %>% 
-  filter(ggc_h_dupe == 1) %>%
-  select(-ggc_h_dupe) %>%
-  mutate(dupe_kept = if_else(health_board == "G NHS Greater Glasgow & Clyde",
-                             1, 0),
-         dupe_type = "GGC/Highland SLA")
+  filter(ggc_h_dupe == 1 | other_dupe == 1)
 
-pds %<>%
-  
-  # Remove Highland duplicates
-  filter(ggc_h_dupe == 0 | (ggc_h_dupe == 1 & health_board == "H NHS Highland")) %>%
-  
-  # Recode GGC duplicate as Argyll & Bute activity
-  mutate(health_board = if_else(ggc_h_dupe == 1, "H NHS Highland", health_board),
-         ijb = if_else(ggc_h_dupe == 1, "S37000004 Argyll and Bute", ijb))
-
-
-# Save duplicates
 write_csv(dupes,
           here("data", 
                glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
                glue("{fy}-{qt}_dupes.csv")))
+
+
+# Remove duplicate records
+pds %<>%
+  
+  group_by(chi_number) %>%
+  filter(dupe_keep == min(dupe_keep)) %>%
+  ungroup() %>%
+  
+  # Recode GGC duplicate as Argyll & Bute activity
+  mutate(health_board = if_else(ggc_h_dupe == 1, "H NHS Highland", health_board),
+         ijb = if_else(ggc_h_dupe == 1, "S37000004 Argyll and Bute", ijb)) %>%
+  
+  select(-contains("dupe"))
 
 
 ### 7 - Save data ---
