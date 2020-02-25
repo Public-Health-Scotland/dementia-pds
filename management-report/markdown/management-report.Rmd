@@ -180,7 +180,15 @@ Please note that as estimations are available by calendar year and figures in th
 
 ### **Removal of Duplicate Records**
 
-Write something here about how duplicates are removed/accounted for.
+For a relatively small number of individuals, multiple records have been submitted. To avoid counting these service users more than once, the following rules have been applied to select only one record per CHI Number:
+
+1. Keep record with earliest diagnosis date. If these are the same, then;
+2. Keep record with termination reason 04 Service user has moved to a different Health Board area. If no record was terminated for this reason, then;
+3. Keep record with earliest first contact date.
+
+There also exists a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IJB. The support provided to these service users is apportioned to NHS Highland, as the first part of the LDP Standard is a population based measure, and so by not including these Argyll & Bute residents this figure may be skewed.
+
+If you have any queries regarding the above, please contact [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net).
 
 
 Data Quality
@@ -199,7 +207,7 @@ Row {.tabset data-height=800}
 
 ### **Errors**
 
-The table below shows the percentage of records which contain one or more errors. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts.
+The table below shows the percentage of records which contain one or more errors. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
 
 ```{r error summary}
 err %>% 
@@ -223,7 +231,7 @@ err %>%
 
 ### **Number of Records Submitted**
 
-The table below shows the number of records submitted by each Health Board. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts.
+The table below shows the number of records submitted by each Health Board. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
 
 ```{r record-summary}
 err %>%
