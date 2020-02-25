@@ -180,9 +180,7 @@ write_csv(dupes,
 # Remove duplicate records
 pds %<>%
   
-  group_by(chi_number) %>%
-  filter(dupe_keep == min(dupe_keep)) %>%
-  ungroup() %>%
+  filter(dupe_keep == 1) %>%
   
   # Recode GGC duplicate as Argyll & Bute activity
   mutate(health_board = if_else(ggc_h_dupe == 1, "H NHS Highland", health_board),
