@@ -15,6 +15,12 @@
 #########################################################################
 
 
+### 0 - UPDATE THIS DATE ###
+
+# Last day in reporting period
+end_date   <- lubridate::ymd(20191231)
+
+
 ### 1 - Load packages ----
 
 library(dplyr)         # For data manipulation in the "tidy" way
@@ -58,19 +64,17 @@ filepath <- dplyr::if_else(platform == "server",
 
 ### 3 - Extract dates ----
 
-# Define the dates that the data are extracted from and to
-
 # Start date of reporting period
-# Update annually when Q1 of new FY is submitted
-start_date <- lubridate::ymd(20160401)
-
-# End date of reporting period
-# Update quarterly to last day of new quarter
-end_date   <- lubridate::ymd(20191231)
+start_date <- lubridate::ymd(
+  paste0(if_else(month(end_date) >= 4,
+                 year(end_date) - 3,
+                 year(end_date) - 4),
+         "0401")
+)
 
 # FY and Quarter of reporting period
-fy         <- "2019"
-qt         <- "3"       
+fy <- phsmethods::fin_year(end_date) %>% substr(1, 4)
+qt <- lubridate::quarter(end_date, fiscal_start = 4)     
 
 
 ### 4 - Disable scientific notation ----
