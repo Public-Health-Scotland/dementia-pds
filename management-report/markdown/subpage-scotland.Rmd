@@ -83,7 +83,7 @@ Select Financial Year
 
 ***
 
-For more information regarding how the LDP Standard is calculated, please see the [methodology](#methodology) page.
+For more information regarding how the LDP Standard is calculated and how individuals with multiple records are presented, please see the [methodology](#methodology) page.
 
 ***
 
