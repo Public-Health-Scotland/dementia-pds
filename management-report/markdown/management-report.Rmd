@@ -59,7 +59,7 @@ These reports are an ongoing development following the implementation of the rev
 
 This report contains data for individuals diagnosed with dementia between **`r format(start_date, "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`** who were referred for post diagnostic support.
 
-Data are submitted to ISD by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(start_date, "%d %B %Y")` onwards. Therefore, data for the full reporting period is refreshed in each management report and is based on the most recently submitted data. This report is based on data submitted in `r sub_month(fy, qt)` and contains data as at **`r format(end_date, "%d %B %Y")`**. 
+Data are submitted to ISD by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(start_date, "%d %B %Y")` onwards. Therefore, data for the full reporting period is refreshed in each management report and is based on the most recently submitted data. This report is based on data submitted in `r format(end_date + month(1), "%B %Y")` and contains data as at **`r format(end_date, "%d %B %Y")`**. 
 
 Information is shown at Scotland, Health Board and Integration Joint Board level using the drop down menus at the top of the page.
 
