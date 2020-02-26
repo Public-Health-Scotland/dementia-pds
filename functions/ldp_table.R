@@ -25,7 +25,7 @@ ldp_table <- function(data,
            rate = replace_na(rate, 0)) %>%
     select(-num, -den) %>%
     mutate(rate = paste0(format(round_half_up(rate, 1), big.mark = ","), "%")) %>%
-    mutate(ldp = "% received 12 months PDS") %>%
+    mutate(ldp = "% Met Standard/Exempt") %>%
     pivot_wider(names_from = ijb, values_from = rate)
   
   table <-
