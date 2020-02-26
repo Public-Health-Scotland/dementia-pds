@@ -30,7 +30,7 @@ pds <- read_rds(here("data",
 ### 3 - Add FY and months labels ----
 
 pds %<>%
-  mutate(fy    = financial_year(dementia_diagnosis_confirmed_date),
+  mutate(fy    = fin_year(dementia_diagnosis_confirmed_date),
          month = month(dementia_diagnosis_confirmed_date))
 
 
