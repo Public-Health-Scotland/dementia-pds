@@ -186,7 +186,7 @@ For a relatively small number of individuals, multiple records have been submitt
 2. Keep record with termination reason 04 Service user has moved to a different Health Board area. If no record was terminated for this reason, then;
 3. Keep record with earliest first contact date.
 
-There also exists a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IJB. The support provided to these service users is apportioned to NHS Highland, as the first part of the LDP Standard is a population based measure, and so by not including these Argyll & Bute residents this figure may be skewed.
+There also exists a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IJB. The support provided to these service users has been apportioned to NHS Highland in this report, as part of the LDP Standard is a population based measure, and so by not including these Argyll & Bute residents this figure may be skewed.
 
 If you have any queries regarding the above, please contact [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net).
 
