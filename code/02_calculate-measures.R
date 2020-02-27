@@ -14,10 +14,9 @@
 #########################################################################
 
 
-### 1 - Load environment file and functions ----
+### 1 - Load environment file ----
 
 source(here::here("code", "00_setup-environment.R"))
-source(here::here("functions", "financial_year.R"))
 
 
 ### 2 - Load data ----
