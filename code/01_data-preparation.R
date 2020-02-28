@@ -57,7 +57,7 @@ err <- pds %>%
   mutate(health_board = if_else(is.na(health_board),
                                 "Missing",
                                 substring(health_board, 3))) %>%
-  mutate(fy = financial_year(dementia_diagnosis_confirmed_date)) %>%
+  mutate(fy = fin_year(dementia_diagnosis_confirmed_date)) %>%
   group_by(fy, health_board, ijb) %>%
   summarise(total_errors     = sum(as.integer(error_flag)),
             diag_date_errors = sum(is.na(dementia_diagnosis_confirmed_date)),
