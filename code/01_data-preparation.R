@@ -17,21 +17,13 @@
 ### 1 - Load environment file and functions ----
 
 source(here::here("code", "00_setup-environment.R"))
-source(here::here("functions", "financial_year.R"))
-
-# Create data folder if this doesn't already exist
-if(!("data" %in% fs::dir_ls())){fs::dir_create("data")}
-
-if(!(glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}") %in% fs::dir_ls("data"))){
-  fs::dir_create(glue("data/{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"))
-}
 
 
 ### 2 - Read and clean collated file ----
 
 pds <- 
   
-  read_csv(glue("{filepath}dementia/03-Outputs/zNational/",
+  read_csv(glue("{filepath}dementia/03-Outputs/National/",
                      "{fy}-Q{qt}_national.csv"),
                 col_types = cols(.default = "c")) %>%
 
