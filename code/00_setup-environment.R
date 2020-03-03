@@ -47,6 +47,7 @@ library(knitr)         # For creating kable tables
 library(kableExtra)    # For customising kable tables
 library(phsmethods)    # For formatting postcode
 library(openxlsx)      # For working with Excel files
+library(flextable)     # For formatted tables in publication output
 
 
 ### 2 - Define Whether Running on Server or Locally ----
