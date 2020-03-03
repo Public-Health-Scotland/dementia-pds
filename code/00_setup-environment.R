@@ -20,6 +20,10 @@
 # Last day in reporting period
 end_date   <- lubridate::ymd(20191231)
 
+# Date of publication - Only used when running publication, can comment out otherwise
+pub_date <- lubridate::ymd(20200331)
+fy_in_pub <- c("2016/17", "2017/18")
+
 
 ### 1 - Load packages ----
 
