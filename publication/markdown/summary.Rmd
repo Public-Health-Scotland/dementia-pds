@@ -1,50 +1,35 @@
 ---
 output: 
   word_document:
-    reference_docx: "NATIONAL_STATS_SUMMARY_TEMPLATE.docx"
+    reference_docx: "summary-template.docx"
 ---
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE,error=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
-#Create a pseudo chart
-library(ggplot2)
+# Run setup environment script
+source(here::here("code", "00_setup-environment.R"))
 
-Year <- c(rep("2014", times = 8), rep("2015", times = 8))
-Month <- rep(c(4, 5, 6, 7, 8, 9, 10, 11), times = 2)
-Count <- c(800, 820, 840, 860, 880, 1000, 1100, 1200, 
-           800, 840, 860, 880, 1000, 1100, 1200, 1300)
+# Load basefile
+pds <-
+  read_rds(here("data", 
+                glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+                glue("{fy}-{qt}_final-data.rds"))) %>%
+  filter(fy %in% fy_in_pub)
 
-ChartData <- data.frame(Year, Month, Count)
+# Create contact information
+contacts <- tibble(
+  contact1 = c("Lisa Reedie", "Principal Information Analyst", "0131 275 6117"),
+  contact2 = c("Alice Byers", "Senior Information Analyst", "0131 314 1725")
+)
 
-chart <- ggplot(data = ChartData, aes(x = Month, y = Count, group = Year, color = Year)) +
-  geom_line(size = 1) + 
-  geom_point(size = 3) +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 11),
-    panel.background = element_blank(),
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(),
-    axis.text.x = element_text(angle = 90),
-    axis.title.y = element_text(margin = margin(0,10,0,0)),
-    axis.line = element_line(colour="grey"),
-    axis.ticks = element_line(colour="grey")) +
-  xlab("Month") + ylab("Count") +
-  ggtitle("Chart title")
-
-ggsave("chart1.png", plot = chart, device = "png", dpi = 300)
-
-#Create contact information
-contact1 <- c("**name**", "role", "number", "email")
-contact2 <- c("**name**", "role", "number", "email")
-
-contact <- data.frame(contact1, contact2)
 ```
 
-# Insert publication Title here
-## Subtitle
-#### A National Statistics publication for Scotland
+# Dementia Post-Diagnostic Support
+## NHS Board Performance to `r max(pds$fy)`
+#### A Management Information publication for Scotland
 
-#### Publication date: DD Month YYYY
-##### RESTRICTED STATISTICS: embargoed to 09:30 dd/mm/yyyy
+#### Publication date: `r format(pub_date, "%d %B %Y")`
+##### RESTRICTED STATISTICS: embargoed to 09:30 `r format(pub_date, "%d/%m/%Y")`
 
 ### About this release
 
