@@ -6,8 +6,9 @@ output:
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
-# Run setup environment script
+# Run setup environment script and functions
 source(here::here("code", "00_setup-environment.R"))
+source(here::here("functions", "ldp_12_months.R"))
 
 # Load basefile
 pds <-
@@ -16,17 +17,108 @@ pds <-
                 glue("{fy}-{qt}_final-data.rds"))) %>%
   filter(fy %in% fy_in_pub)
 
+# Load error summary
+err <-
+  read_rds(here("data",
+                glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+                glue("{fy}-{qt}_error-summary.rds"))) %>%
+  filter(fy %in% fy_in_pub)
+
 # Number of referrals
 referrals <-
   pds %>%
   group_by(fy) %>%
   summarise(referrals = sum(referrals))
 
+# Number received 12 months
+ldp12 <-
+  pds %>%
+  ldp_12_months(fy, format = TRUE)
+
+# Number referred by age
+referrals_age <-
+  pds %>%
+  filter(!is.na(age_grp)) %>%
+  group_by(fy = fy_in_pub[2], age_grp) %>%
+  summarise(referrals = sum(referrals)) %>%
+  ungroup() %>%
+  mutate(perc = referrals / sum(referrals) * 100)
+  
+max_age <-
+  referrals_age %>%
+  filter(perc == max(perc)) %>%
+  mutate(perc = paste0(sprintf("%.1f", 
+                               round_half_up(perc, 1)), "%"))
+
+# Age distribution chart
+fig <- 
+  referrals_age %>%
+  filter(age_grp != "Missing") %>%
+  mutate(age_grp = str_wrap(age_grp, width = 8)) %>%
+  ggplot(aes(x = age_grp, y = perc, fill = 1)) +
+  geom_bar(stat = "identity", show.legend = F, width = 0.7, fill = "#004785") +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme(panel.background = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        axis.title.x = element_text(size = 8, face = "bold"),
+        axis.title.y = element_text(size = 8, face = "bold"),
+        axis.text = element_text(size = 8),
+        legend.title = element_blank(),
+        axis.line = element_line(size = 0.1)) +
+  xlab("Age Group") + 
+  ylab("% of Total Referrals")
+
+ggsave(here("publication", "markdown", "figures", "summary-figure.png"), 
+       plot = fig,
+       width = 10.8, height = 5.87, 
+       units = "cm", device = "png", dpi = 600)
+
+# Number received 12 months by IJB
+ldp12_ijb <-
+  pds %>%
+  ldp_12_months(fy, ijb, format = FALSE) %>%
+  mutate(fy = case_when(
+    fy == fy_in_pub[1] ~ "minfy",
+    fy == fy_in_pub[2] ~ "maxfy"
+  )) %>%
+  pivot_wider(names_from = fy, values_from = perc) %>%
+  mutate(inc = maxfy >= minfy)
+
+# Expected Diagnoses
+exp <- 
+  read_csv(
+    here("reference-files",
+       "expected-diagnoses.csv")
+  ) %>%
+  filter(health_board == "Scotland") %>%
+  group_by(fy) %>%
+  summarise(diagnoses = sum(diagnoses))
+
+ldp_exp <-
+  pds %>%
+  group_by(fy) %>%
+  summarise(referrals = sum(referrals)) %>%
+  ungroup() %>%
+  left_join(exp, by = "fy") %>%
+  mutate(perc = paste0(sprintf("%.1f", 
+                               round_half_up(referrals / diagnoses * 100, 1)), 
+                       "%"))
+  
+
 # Create contact information
 contacts <- tibble(
   contact1 = c("Lisa Reedie", "Principal Information Analyst", "0131 275 6117"),
   contact2 = c("Alice Byers", "Senior Information Analyst", "0131 314 1725")
 )
+
+# Beta website link
+link <-
+  paste0("https://beta.isdscotland.org/find-publications-and-data/",
+         "conditions-and-diseases/dementia/",
+         "dementia-post-diagnostic-support-nhs-board-performance/",
+         day(pub_date), format(pub_date, "-%B-%Y")
+  )
 
 ```
 
@@ -48,31 +140,34 @@ Figures reported in this release are for `r glue_collapse(fy_in_pub, sep = ", ",
 
 * There were `r referrals %>% filter(fy == fy_in_pub[1]) %>% pull(referrals)` people referred for dementia post-diagnostic support in `r fy_in_pub[1]` and `r referrals %>% filter(fy == fy_in_pub[2]) %>% pull(referrals)` in `r fy_in_pub[2]`.
 
-* Quisque iaculis congue aliquet. Aenean in dictum nisl. Etiam quis ullamcorper ex. Aenean mollis ante eget.
+* Of those referred to dementia post-diagnostic support in `r fy_in_pub[1]`, `r ldp12 %>% filter(fy == fy_in_pub[1]) %>% pull(perc)` received one year of support as proposed in the LDP standard, and `r ldp12 %>% filter(fy == fy_in_pub[2]) %>% pull(perc)` in `r fy_in_pub[2]`.
 
-Maecenas bibendum consequat vehicula. Fusce id viverra lorem, et
+* In `r fy_in_pub[2]`, those aged `r max_age$age_grp` years accounted for the largest percentage of people referred to dementia post-diagnostic support services (`r max_age$perc`).
 
-* Curabitur luctus luctus lorem, at commodo mauris rutrum quis. Mauris aliquet turpis vel magna bibendum hendrerit. Nulla finibus porta sapien ut pretium. Aliquam elementum mauris.
+<Div custom-style = "Chart Title">**Age distribution of referrals to dementia post-diagnostic support; `r fy_in_pub[2]`**</div>
+![Alt Text](figures/summary-figure.png) <br>
 
-* Vivamus bibendum ut tellus rhoncus porttitor. Nam id nibh et.
+* In `r fy_in_pub[2]`, `r sum(ldp12_ijb$inc)` of the 31 Integration Joint Boards had the same or a higher percentage of people referred and receiving 12 months support compared to `r fy_in_pub[1]`.
 
-* Ut in dapibus massa, ut gravida ligula. Vestibulum ut consectetur:
+* It is estimated that `r ldp_exp %>% filter(fy == fy_in_pub[2]) %>% pull(perc)` of people estimated to be newly diagnosed with dementia within `r fy_in_pub[2]` were referred for PDS.
 
-    + Vivamus luctus varius nibh, a scelerisque ex tincidunt non. Etiam dignissim.
-    + Curabitur laoreet viverra magna eget dapibus. Maecenas scelerisque euismod mattis. Sed cursus.
-    + Sed in iaculis lectus, sed fermentum urna. Donec efficitur diam eu ipsum viverra, eu ornare justo mollis. Phasellus in dictum tellus.
 
 ### Background
 
-Aliquam sed maximus ante, a imperdiet est. Vivamus vel diam facilisis, pulvinar erat consequat, consequat nulla. Praesent lorem dolor, luctus ut libero vitae, venenatis congue tortor.
+In 2010’s ‘Scotland’s National Dementia Strategy’, the Scottish Government made a commitment to improving post-diagnostic support for individuals receiving a diagnosis of dementia. The Scottish Government endorsed a 12 month post-diagnosis support model that used [The Five Pillars](http://www.alzscot.org/campaigning/five_pillars) methodology developed by Alzheimer Scotland, and concluded with a person-centred support plan. The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017 which continues to support the post-diagnostic support entitlement.
 
-Nunc at mauris euismod, mattis tellus sed, vehicula dolor. Duis quis auctor elit. Fusce eu dui eu magna convallis porttitor in ac purus. Proin sed tellus massa. In pulvinar augue sit amet faucibus maximus. Aenean porttitor arcu vitae lacus fringilla condimentum. Praesent laoreet, felis non dignissim viverra, libero nunc eleifend sapien, sed dignissim felis risus et tellus.
+In order to effectively monitor performance of post-diagnosis support delivery, a national [Local Delivery Plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced in April 2013 for all those newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support.
 
-Please see [News and Updates section](http://www.isdscotland.org/) of our website for more details.
+NHS Boards provide quarterly data submissions to ISD containing information on individuals referred for post-diagnostic support within their local services and this dataset forms the basis of the LDP standard calculation. Revised data definitions and reporting processes were effective from 1 April 2019 and have improved the data quality and consistency of post-diagnostic support information. The Scotland level error rate for `r glue_collapse(fy_in_pub, sep = ", ", last = " and ")` is `r err %>% summarise(err_perc = round_half_up(sum(total_errors) / sum(records) * 100, 0)) %>% pull(err_perc)`%. Due to the change in definitions information presented in this publication is not comparable to previously published information relating to the Dementia Post Diagnostic Support LDP standard.
+
+This report presents final figures for `r fy_in_pub[1]` and provisional figures for `r fy_in_pub[2]` which will be revised in the next publication.
+
+The second part of the LDP standard requires the number of referrals to be compared against an estimated number of newly diagnosed dementia cases each year. Estimates of dementia incidence are from the Scottish Government paper [‘Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020’](http://www.gov.scot/Publications/2016/12/9363) published in 2016.
+
 
 ### Contact
 
-```{r contact-table, echo = FALSE}
+```{r contact-table, echo = FALSE, ft.align = "left"}
 contacts %>%
   flextable() %>%
   delete_part(part = "header") %>%
@@ -83,19 +178,18 @@ contacts %>%
   width(j = 1:2, width = 2.2)
 ```
 
-<br> [nss.isddementiapds@nhs.net](mailto:nss.isddementiapds@nhs.net)
+
+[nss.isddementiapds@nhs.net](mailto:nss.isddementiapds@nhs.net)
 
 
 ### Further Information
 
-Find out more in the [full report](http://www.isdscotland.org/). The data from this publication is available to download [from our webpage](http://www.isdscotland.org/) along with a [background information and glossary](http://www.isdscotland.org/), and [metadata document](http://www.isdscotland.org/). 
+Find out more detailed information in the [full publication report](`r link`). Data from this publication are available to download in [Excel tables](`r link`). 
 
-For more information on XXX see the [XXX section of our website](http://www.isdscotland.org/). For related topics, please see the [XXX](http://www.isdscotland.org/) pages.
+For more information on Dementia Post-Diagnostic Support see the [Dementia Post-Diagnostic Support section of our website](http://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support-Target/).
 
-The next release of this publication will be DD Month YYYY.
+For information on the Dementia Benchmarking toolkit see the [Quality Indicators](https://www.isdscotland.org/Health-Topics/Quality-Indicators/National-Benchmarking-Project/Dementia.asp) web pages.
 
-### NHS Performs
+For related topics, please see ISD’s [Mental Health](https://www.isdscotland.org/Health-Topics/Mental-Health/) and [Health and Social Care](http://www.isdscotland.org/Health-Topics/Health-and-Social-Community-Care/) web pages.
 
-A selection of information from this publication is included in [NHS Performs](http://www.nhsperforms.scot/). NHS Performs is a website that brings together a range of information on how hositals and NHS Boards within NHSScotland are performing.
-
-
+The next release of this publication will be March 2021.
