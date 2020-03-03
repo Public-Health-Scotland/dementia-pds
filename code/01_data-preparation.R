@@ -34,6 +34,9 @@ if(!"publication/output" %in% fs::dir_ls("publication")){
   fs::dir_create("publication/output")
 }
 
+if(!"publication/markdown/figures" %in% fs::dir_ls("publication")){
+  fs::dir_create("publication/markdown/figures")
+}
 
 
 ### 2 - Read and clean collated file ----
