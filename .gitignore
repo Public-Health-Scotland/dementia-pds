@@ -11,4 +11,5 @@ publication/output/
 management-report/output/
 
 # Markdown output #
-*.html
+publication/markdown/report.docx
+publication/markdown/summary.docx
