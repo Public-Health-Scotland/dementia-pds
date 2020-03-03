@@ -16,3 +16,6 @@ publication/markdown/summary.docx
 
 # Figures #
 *.png
+
+# Dev file
+*dev.xlsx
