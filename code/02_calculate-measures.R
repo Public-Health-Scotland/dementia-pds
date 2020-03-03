@@ -179,7 +179,9 @@ pds %<>%
   # Doing this will make sure zeros are still shown in reports
   complete(nesting(health_board, ijb), fy, month,
            fill = list(referrals = 0,
-                       ldp = "complete")) %>%
+                       ldp = "complete",
+                       age_grp = "Missing",
+                       simd = "Missing")) %>%
 
   # Remove completed rows for months in incomplete financial year
   # e.g. for Q1 reports, remove completed rows for July - March
