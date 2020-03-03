@@ -13,3 +13,6 @@ management-report/output/
 # Markdown output #
 publication/markdown/report.docx
 publication/markdown/summary.docx
+
+# Figures #
+*.png
