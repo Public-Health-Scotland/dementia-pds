@@ -16,6 +16,12 @@ pds <-
                 glue("{fy}-{qt}_final-data.rds"))) %>%
   filter(fy %in% fy_in_pub)
 
+# Number of referrals
+referrals <-
+  pds %>%
+  group_by(fy) %>%
+  summarise(referrals = sum(referrals))
+
 # Create contact information
 contacts <- tibble(
   contact1 = c("Lisa Reedie", "Principal Information Analyst", "0131 275 6117"),
@@ -33,17 +39,16 @@ contacts <- tibble(
 
 ### About this release
 
-Vestibulum lacinia, turpis eu sagittis lacinia, justo orci blandit orci, ut suscipit tortor turpis et metus. Pellentesque sollicitudin nisl et porttitor laoreet. Nunc id purus pretium, suscipit justo vitae, pretium dui. Quisque congue ex dignissim tellus pulvinar, a interdum libero fermentum.
+This release by Information Services Division (ISD) reports on NHS Board performance against the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should have a minimum of twelve months post-diagnostic support. Performance against the LDP standard is reported in two parts. The percentage of people referred for post diagnostic support who received a minimum of one year’s support, and the percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support.
+
+Figures reported in this release are for `r glue_collapse(fy_in_pub, sep = ", ", last = " and ")`. They are published as management information because **??**.
+
 
 ### Main Points
 
-Proin nec ultricies dolor. Maecenas pulvinar, enim et imperdiet cursus, mi
-
-* Maecenas ut sagittis mi. Vestibulum faucibus ligula sit amet facilisis pulvinar. Morbi mollis odio id est consequat, a convallis quam finibus. Morbi id congue turpis, sit amet ultrices tortor. Phasellus vel nisi.
+* There were `r referrals %>% filter(fy == fy_in_pub[1]) %>% pull(referrals)` people referred for dementia post-diagnostic support in `r fy_in_pub[1]` and `r referrals %>% filter(fy == fy_in_pub[2]) %>% pull(referrals)` in `r fy_in_pub[2]`.
 
 * Quisque iaculis congue aliquet. Aenean in dictum nisl. Etiam quis ullamcorper ex. Aenean mollis ante eget.
-
-![Appropriate ALT Text to be added.](chart1.png) \
 
 Maecenas bibendum consequat vehicula. Fusce id viverra lorem, et
 
@@ -67,9 +72,19 @@ Please see [News and Updates section](http://www.isdscotland.org/) of our websit
 
 ### Contact
 
-```{r, echo = FALSE}
-    knitr::kable(contact, col.names=NULL)
+```{r contact-table, echo = FALSE}
+contacts %>%
+  flextable() %>%
+  delete_part(part = "header") %>%
+  bold(i = 1) %>%
+  align(align = "left") %>%
+  border_remove() %>%
+  height_all(height = 0.2) %>%
+  width(j = 1:2, width = 2.2)
 ```
+
+<br> [nss.isddementiapds@nhs.net](mailto:nss.isddementiapds@nhs.net)
+
 
 ### Further Information
 
