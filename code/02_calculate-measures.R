@@ -134,7 +134,7 @@ pds %<>%
   ) %>%
   mutate(age_grp = 
            case_when(
-             age <= 0 | is.na(age) ~ "Missing",
+             age <= 0 | is.na(age) ~ "Unknown",
              age %in% 1:59 ~ "59 and Under",
              age %in% 60:64 ~ "60 to 64",
              age %in% 65:69 ~ "65 to 69",
@@ -147,7 +147,7 @@ pds %<>%
   
   mutate(postcode = phsmethods::postcode(postcode)) %>%
   left_join(simd(), by = c("postcode" = "pc7")) %>%
-  mutate(simd = replace_na(simd, "Missing"))
+  mutate(simd = replace_na(simd, "Unknown"))
           
 
 ### 7 - Save individual level file for checking ----
@@ -180,8 +180,8 @@ pds %<>%
   complete(nesting(health_board, ijb), fy, month,
            fill = list(referrals = 0,
                        ldp = "complete",
-                       age_grp = "Missing",
-                       simd = "Missing")) %>%
+                       age_grp = "Unknown",
+                       simd = "Unknown")) %>%
 
   # Remove completed rows for months in incomplete financial year
   # e.g. for Q1 reports, remove completed rows for July - March
