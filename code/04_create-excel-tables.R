@@ -116,7 +116,7 @@ writeData(wb,
           expected,
           startCol = 2)
 
-sheetVisibility(wb)[7:9] <- "hidden"
+sheetVisibility(wb)[8:10] <- "hidden"
 
 saveWorkbook(wb,
              here("publication", "output", 
