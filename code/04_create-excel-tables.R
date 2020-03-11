@@ -120,7 +120,7 @@ sheetVisibility(wb)[7:9] <- "hidden"
 
 saveWorkbook(wb,
              here("publication", "output", 
-                  glue("{today()}_excel-tables.xlsx")),
+                  glue("{pub_date}_excel-tables.xlsx")),
              overwrite = TRUE)
 
 ### END OF SCRIPT ###
