@@ -120,7 +120,8 @@ sheetVisibility(wb)[8:10] <- "hidden"
 
 saveWorkbook(wb,
              here("publication", "output", 
-                  glue("{pub_date}_excel-tables.xlsx")),
+                  glue("{pub_date}-DementiaPDS-excel-tables.xlsx")),
              overwrite = TRUE)
+
 
 ### END OF SCRIPT ###
