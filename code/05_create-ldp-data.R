@@ -34,11 +34,12 @@ ldp <-
   filter(fy %in% fy_in_pub) %>%
   
   group_by(fy, health_board) %>%
+  filter(ldp != "ongoing") %>%
   mutate(denom = sum(referrals)) %>%
   filter(ldp %in% c("complete", "exempt")) %>%
   summarise(num = sum(referrals),
             denom = max(denom)) %>%
-  ungroup() %>%
+  ungroup() %>% 
   
   bind_rows(
     pds %>%
