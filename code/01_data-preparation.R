@@ -28,12 +28,10 @@ pds <-
   clean_names() %>%
   
   # Convert dates from character to date format
-  mutate_at(vars(contains("date")), ~ lubridate::ymd(.)) %>%
+  mutate(across(contains("date"), ymd)) %>%
   
   # Pad CHI Number to 10 digits
-  mutate(chi_number = if_else(nchar(chi_number) == 9,
-                              paste0("0", chi_number),
-                              chi_number)) %>%
+  mutate(chi_number = chi_pad(chi_number)) %>%
   
   # Replace word 'and' with ampersand
   mutate(health_board = str_replace(health_board, " and ", " & "))
@@ -51,17 +49,17 @@ err <- pds %>%
   group_by(fy, health_board, ijb) %>%
   summarise(total_errors     = sum(as.integer(error_flag)),
             diag_date_errors = sum(is.na(dementia_diagnosis_confirmed_date)),
-            records          = n()) %>%
-  ungroup()
-
-err %>%
-  bind_rows(err %>%
-              group_by(fy, health_board = "Scotland", ijb = "Scotland") %>%
-              summarise(total_errors     = sum(total_errors),
-                        diag_date_errors = sum(diag_date_errors),
-                        records          = sum(records)) %>%
-              ungroup()) %>%
-  arrange(fy, health_board, ijb) %>%
+            records          = n(),
+            .groups = "drop") %>%
+  group_by(fy) %>%
+  group_modify(
+    ~ bind_rows(.x, summarise(.x,
+                              health_board = "Scotland",
+                              ijb = "Scotland",
+                              across(c(total_errors, diag_date_errors, records), sum)))
+  ) %>%
+  ungroup() %>%
+  arrange(fy, health_board, ijb) %T>%
   write_rds(here("data", 
                  glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
                  glue("{fy}-{qt}_error-summary.rds")))
