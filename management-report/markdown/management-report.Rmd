@@ -21,7 +21,7 @@ date: "`r paste('Data as at', format(end_date, '%d %B %Y'))`"
 detach("package:tidylog", unload = TRUE)
 
 # Load functions
-purrr::walk(dir(here::here("functions"), full.names = TRUE), source)
+walk(dir(here::here("functions"), full.names = TRUE), source)
 
 # Load PDS data
 pds <- read_rds(here("data", 
@@ -215,13 +215,13 @@ The table below shows the percentage of records which contain one or more errors
 ```{r error summary}
 err %>% 
   group_by(fy, health_board) %>% 
-  summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1)) %>%
-  ungroup() %>%
+  summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1),
+            .groups = "drop") %>%
   bind_rows(
     err %>% 
     group_by(fy = "All", health_board) %>% 
-    summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1)) %>%
-    ungroup()) %>%
+    summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1),
+              .groups = "drop")) %>%
   mutate(err_rate = paste0(err_rate, "%")) %>%
   pivot_wider(names_from = fy,
               values_from = err_rate) %>%
@@ -239,13 +239,13 @@ The table below shows the number of records submitted by each Health Board. Reco
 ```{r record-summary}
 err %>%
   group_by(fy, health_board, ijb) %>% 
-  summarise(records = sum(records)) %>%
-  ungroup() %>%
+  summarise(records = sum(records),
+            .groups = "drop") %>%
   bind_rows(
     err %>%
     group_by(fy = "All", health_board, ijb) %>% 
-    summarise(records = sum(records)) %>%
-    ungroup()) %>%
+    summarise(records = sum(records),
+              .groups = "drop")) %>%
   mutate(records = format(records, big.mark = ",")) %>%
   pivot_wider(names_from = fy, 
               values_from = records,
