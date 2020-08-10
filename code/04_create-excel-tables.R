@@ -2,14 +2,12 @@
 # Name of file - 04_create-excel-tables.R
 # Data release - Annual Dementia PDS Publication
 # Original Authors - Alice Byers
-# Orginal Date - February 2020
+# Original Date - February 2020
 #
 # Written/run on - RStudio Server
-# Version of R - 3.5.1
+# Version of R - 3.6.1
 #
 # Description - Restructure data and save to tab in excel template
-#
-# Approximate run time - xx minutes
 #########################################################################
 
 
@@ -22,8 +20,8 @@ source(here::here("code", "00_setup-environment.R"))
 
 pds <-
   read_rds(here("data", 
-                      glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                      glue("{fy}-{qt}_final-data.rds")))
+                glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+                glue("{fy}-{qt}_final-data.rds")))
 
 expected <-
   read_csv(here("reference-files",

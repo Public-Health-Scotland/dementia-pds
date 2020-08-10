@@ -143,7 +143,7 @@ pds %<>%
              age >= 90      ~ "90+"
            )) %>%
   
-  mutate(postcode = phsmethods::postcode(postcode)) %>%
+  mutate(postcode = postcode(postcode)) %>%
   left_join(simd(), by = c("postcode" = "pc7")) %>%
   mutate(simd = replace_na(simd, "Unknown"))
           
@@ -170,8 +170,7 @@ pds %<>%
   
   # Aggregate to create minimal tidy dataset
   group_by(health_board, ijb, fy, month, ldp, age_grp, simd) %>%
-  summarise(referrals = n()) %>%
-  ungroup() %>%
+  summarise(referrals = n(), .groups = "drop") %>%
   
   # Add rows where no referrals were made
   # Doing this will make sure zeros are still shown in reports
@@ -187,9 +186,12 @@ pds %<>%
            (substr(fy, 1, 4) == year(end_date) & 
               month %in% inc_months))
 
-write_rds(pds, here("data", 
-                    glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                    glue("{fy}-{qt}_final-data.rds")))
+write_rds(
+  pds, 
+  here("data", 
+       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+       glue("{fy}-{qt}_final-data.rds"))
+)
 
 
 ### END OF SCRIPT ###

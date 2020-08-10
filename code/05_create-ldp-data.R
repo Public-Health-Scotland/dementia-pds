@@ -2,14 +2,12 @@
 # Name of file - 05_create-ldp-data.R
 # Data release - Annual Dementia PDS Publication
 # Original Authors - Alice Byers
-# Orginal Date - March 2020
+# Original Date - March 2020
 #
 # Written/run on - RStudio Server
-# Version of R - 3.5.1
+# Version of R - 3.6.1
 #
 # Description - Restructure data for Discovery LDP data submission
-#
-# Approximate run time - xx minutes
 #########################################################################
 
 
@@ -22,8 +20,8 @@ source(here::here("code", "00_setup-environment.R"))
 
 pds <-
   read_rds(here("data", 
-                      glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                      glue("{fy}-{qt}_final-data.rds")))
+                glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+                glue("{fy}-{qt}_final-data.rds")))
 
 
 ### 3 - Restructure data ----
@@ -38,8 +36,8 @@ ldp <-
   mutate(denom = sum(referrals)) %>%
   filter(ldp %in% c("complete", "exempt")) %>%
   summarise(num = sum(referrals),
-            denom = max(denom)) %>%
-  ungroup() %>% 
+            denom = max(denom),
+            .group = "drop") %>%
   
   bind_rows(
     pds %>%
@@ -50,8 +48,8 @@ ldp <-
       mutate(denom = sum(referrals)) %>%
       filter(ldp %in% c("complete", "exempt")) %>%
       summarise(num = sum(referrals),
-                denom = max(denom)) %>%
-      ungroup()
+                denom = max(denom),
+                .groups = "drop")
   ) %>%
   
   mutate(fy = dmy(paste0("310320", substr(fy, 6, 7))),
