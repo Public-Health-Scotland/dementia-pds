@@ -2,15 +2,13 @@
 # Name of file - 01_data-preparation.R
 # Data release - Quarterly Dementia PDS Management Reports
 # Original Authors - Alice Byers
-# Orginal Date - July 2019
+# Original Date - July 2019
 #
 # Written/run on - RStudio Desktop
-# Version of R - 3.5.1
+# Version of R - 3.6.1
 #
 # Description - Read in data file from data management and prepare for
 # adding measures and producing outputs.
-#
-# Approximate run time - xx minutes
 #########################################################################
 
 
@@ -43,10 +41,10 @@ if(!"publication/markdown/figures" %in% fs::dir_ls("publication")){
 
 pds <- 
   
-  read_csv(glue("{filepath}dementia/03-Outputs/National/",
-                     "{fy}-Q{qt}_national.csv"),
-                col_types = cols(.default = "c")) %>%
-
+  read_csv(glue("{stats}/dementia/03-Outputs/National/",
+                "{fy}-Q{qt}_national.csv"),
+           col_types = cols(.default = "c")) %>%
+  
   clean_names() %>%
   
   # Convert dates from character to date format
