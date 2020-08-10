@@ -16,26 +16,6 @@
 
 source(here::here("code", "00_setup-environment.R"))
 
-# Create data folder if this doesn't already exist
-if(!("data" %in% fs::dir_ls())){fs::dir_create("data")}
-
-if(!(glue("data/{fy}-{substr(as.numeric(fy)+1, 3, 4)}") %in% fs::dir_ls("data"))){
-  fs::dir_create(glue("data/{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"))
-}
-
-# Create output folder if this doesn't already exist
-if(!"management-report/output" %in% fs::dir_ls("management-report")){
-  fs::dir_create("management-report/output")
-}
-
-if(!"publication/output" %in% fs::dir_ls("publication")){
-  fs::dir_create("publication/output")
-}
-
-if(!"publication/markdown/figures" %in% fs::dir_ls("publication")){
-  fs::dir_create("publication/markdown/figures")
-}
-
 
 ### 2 - Read and clean collated file ----
 

@@ -2,16 +2,14 @@
 # Name of file - 00_setup-environment.R
 # Data release - Quarterly Dementia PDS Management Reports
 # Original Authors - Alice Byers
-# Orginal Date - July 2019
+# Original Date - July 2019
 #
 # Written/run on - RStudio Desktop
-# Version of R - 3.5.1
+# Version of R - 3.6.1
 #
 # Description - Sets up environment required for running quarterly management
 # reports. This is the only file which should require updating everytime 
 # the process is run.
-#
-# Approximate run time - xx minutes
 #########################################################################
 
 
@@ -48,6 +46,7 @@ library(kableExtra)    # For customising kable tables
 library(phsmethods)    # For formatting postcode
 library(openxlsx)      # For working with Excel files
 library(flextable)     # For formatted tables in publication output
+library(usethis)       # For creating folder structure
 
 
 ### 2 - Define file paths dependent on whether running on server or desktop ----
@@ -120,6 +119,19 @@ simd     <- function(){
     )
   
 }
+
+
+### 8 - Create folder structure ----
+
+# Create data folder for FY and Qtr
+use_directory(
+  glue("data/{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}")
+)
+
+# Create output folders
+use_directory("management-report/output")
+use_directory("publication/output")
+use_directory("publication/markdown/figures")
 
 
 ### END OF SCRIPT ###
