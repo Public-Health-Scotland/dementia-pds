@@ -1,18 +1,21 @@
 ---
-title: "Dementia PDS Quarterly Management Report - DRAFT"
+title: "Dementia PDS Quarterly Management Report"
 output: 
   flexdashboard::flex_dashboard:
-    navbar:
-      - title: "Data as at 31 December 2019"
     logo: isdscotland.png
     orientation: rows
     vertical_layout: scroll
 ---
 
-```{r setup, include=FALSE}
-
-# Load environment file
+```{r load-setup, include=FALSE}
 source(here::here("code", "00_setup-environment.R"))
+```
+
+---
+date: "`r paste('Data as at', format(end_date, '%d %B %Y'))`"
+---
+
+```{r setup, include=FALSE}
 
 # Remove tidylog
 detach("package:tidylog", unload = TRUE)
