@@ -2,7 +2,7 @@
 title: "Dementia PDS Quarterly Management Report"
 output: 
   flexdashboard::flex_dashboard:
-    logo: isdscotland.png
+    logo: phs-logo.png
     orientation: rows
     vertical_layout: scroll
 ---
@@ -54,7 +54,7 @@ Row
 
 ### **About This Report**
 
-This report has been produced by Information Services Division (ISD), part of NHS National Services Scotland, and contains analysis of performance against the [Scottish Government's LDP Standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) on provision of Dementia Post Diagnostic Support (PDS).
+This report has been produced by Public Health Scotland (PHS) and contains analysis of performance against the [Scottish Government's LDP Standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) on provision of Dementia Post Diagnostic Support (PDS).
 
 <span style="color:red"> **The information contained in this report is for management information only and should not be distributed widely.** </span>
 
@@ -62,11 +62,11 @@ These reports are an ongoing development following the implementation of the rev
 
 This report contains data for individuals diagnosed with dementia between **`r format(start_date, "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`** who were referred for post diagnostic support.
 
-Data are submitted to ISD by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(start_date, "%d %B %Y")` onwards. Therefore, data for the full reporting period is refreshed in each management report and is based on the most recently submitted data. This report is based on data submitted in `r format(end_date + month(1), "%B %Y")` and contains data as at **`r format(end_date, "%d %B %Y")`**. 
+Data are submitted to PHS by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(start_date, "%d %B %Y")` onwards. Therefore, data for the full reporting period is refreshed in each management report and is based on the most recently submitted data. This report is based on data submitted in `r format(end_date + month(1), "%B %Y")` and contains data as at **`r format(end_date, "%d %B %Y")`**. 
 
 Information is shown at Scotland, Health Board and Integration Joint Board level using the drop down menus at the top of the page.
 
-To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the ISD Dementia PDS team mailbox at: [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net).
+To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the PHS Dementia PDS team mailbox at: [phs.dementiapds@nhs.net](mailto:phs.dementiapds@nhs.net).
 
 
 
@@ -90,7 +90,7 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 For more detail on how the above is calculated, please see the [methodology](#methodology) page.
 
-Further information regarding the Dementia PDS dataset and submission process can be found on the [Dementia PDS pages](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support) of the [ISD website](https://www.isdscotland.org/).
+Further information regarding the Dementia PDS dataset and submission process can be found on the [Dementia PDS pages](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support) of the [PHS website](https://www.isdscotland.org/).
 
 
 <!-- Scotland -->
@@ -191,7 +191,7 @@ For a relatively small number of individuals, multiple records have been submitt
 
 There also exists a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IJB. The support provided to these service users has been apportioned to NHS Highland in this report, as part of the LDP Standard is a population based measure, and so by not including these Argyll & Bute residents this figure may be skewed.
 
-If you have any queries regarding the above, please contact [NSS.ISDDementiaPDS@nhs.net](mailto:NSS.ISDDementiaPDS@nhs.net).
+If you have any queries regarding the above, please contact [phs.dementiapds@nhs.net](mailto:phs.dementiapds@nhs.net).
 
 
 Data Quality
