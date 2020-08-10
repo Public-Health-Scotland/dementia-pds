@@ -50,21 +50,18 @@ library(openxlsx)      # For working with Excel files
 library(flextable)     # For formatted tables in publication output
 
 
-### 2 - Define Whether Running on Server or Locally ----
+### 2 - Define file paths dependent on whether running on server or desktop ----
 
-if (sessionInfo()$platform %in% c("x86_64-redhat-linux-gnu (64-bit)",
-                                  "x86_64-pc-linux-gnu (64-bit)")) {
-  platform <- "server"
-} else {
-  platform <- "locally"
-}
+stats <- case_when(
+  sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ "/conf",
+  TRUE ~ "//stats"
+)
 
-
-# Define root directory for stats server based on whether script is running 
-# locally or on server
-filepath <- dplyr::if_else(platform == "server",
-                           "/conf/",
-                           "//stats/")
+cl_out <- case_when(
+  sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ 
+    "/conf/linkage/output",
+  TRUE ~ "//stats/cl-out"
+)
 
 
 ### 3 - Extract dates ----
@@ -107,14 +104,12 @@ exempt_reasons <- c("03", "04", "05", "06")
 
 simd     <- function(){
   
-  read_rds(glue("{filepath}/linkage/output/lookups/Unicode/",
-                "Deprivation/postcode_2019_2_simd2016.rds")) %>%
+  read_rds(glue("{cl_out}/lookups/Unicode/",
+                "Deprivation/postcode_2020_1_simd2020v2.rds")) %>%
     
     clean_names() %>%
     
-    select(pc7, simd2016_sc_quintile) %>%
-    
-    rename(simd = simd2016_sc_quintile) %>%
+    select(pc7, simd = simd2020v2_sc_quintile) %>%
     
     mutate(
       simd = case_when(
