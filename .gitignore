@@ -8,7 +8,9 @@ data/
 
 # 'output' folders #
 publication/output/
-management-report/output/
+
+# html files #
+*.html
 
 # Markdown output #
 publication/markdown/report.docx
@@ -16,6 +18,3 @@ publication/markdown/summary.docx
 
 # Figures #
 *.png
-
-# Dev file
-*dev.xlsx
