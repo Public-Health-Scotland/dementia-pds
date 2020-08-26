@@ -228,7 +228,11 @@ err %>%
   rename(`Health Board` = health_board) %>%
   kable() %>%
   kable_styling(full_width = FALSE) %>%
-  row_spec(15, bold = TRUE)
+  row_spec(15, bold = TRUE) %>%
+  add_header_above(
+        c(" " = 1,
+          "Financial Year of Diagnosis" = 4,
+          " " = 1))
 ```
 
 
