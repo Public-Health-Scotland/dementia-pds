@@ -157,12 +157,10 @@ pds %<>%
 # Save duplicate records
 dupes <- 
   pds %>% 
-  filter(dupe == 1)
-
-write_csv(dupes,
-          here("data", 
-               glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-               glue("{fy}-{qt}_dupes.csv")))
+  filter(dupe == 1) %T>%
+  write_csv(here("data", 
+                 glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+                 glue("{fy}-{qt}_dupes.csv")))
 
 
 # Remove duplicate records
