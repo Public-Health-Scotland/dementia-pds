@@ -224,7 +224,8 @@ err %>%
               .groups = "drop")) %>%
   mutate(err_rate = paste0(err_rate, "%")) %>%
   pivot_wider(names_from = fy,
-              values_from = err_rate) %>%
+              values_from = err_rate,
+              values_fill = list(err_rate = "-")) %>%
   rename(`Health Board` = health_board) %>%
   kable() %>%
   kable_styling(full_width = FALSE) %>%
