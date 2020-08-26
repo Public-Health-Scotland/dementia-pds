@@ -72,11 +72,10 @@ Sidebar {.sidebar}
 
 Select Financial Year
 
-<!-- For some reason need '-2' on end of 1819 links - check why this is -->
-|     `r paste0("[2019/20](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-3)")`
-|     `r paste0("[2018/19](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201819)")`
-|     `r paste0("[2017/18](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201718)")`
-|     `r paste0("[2016/17](#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201617)")`
+|     `r paste0(if_else(sel_fy == "2020/21", "[**2020/21**]", "[2020/21]"), "(#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-3)")`
+|     `r paste0(if_else(sel_fy == "2019/20", "[**2019/20**]", "[2019/20]"), "(#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201920)")`
+|     `r paste0(if_else(sel_fy == "2018/19", "[**2018/19**]", "[2018/19]"), "(#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201819)")`
+|     `r paste0(if_else(sel_fy == "2017/18", "[**2017/18**]", "[2017/18]"), "(#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201718)")`
 
 ***
 
