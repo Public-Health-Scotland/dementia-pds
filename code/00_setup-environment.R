@@ -7,20 +7,21 @@
 # Written/run on - RStudio Desktop
 # Version of R - 3.6.1
 #
-# Description - Sets up environment required for running quarterly management
-# reports. This is the only file which should require updating everytime 
-# the process is run.
+# Description - Sets up environment required for running quarterly 
+# management reports. This is the only file which should require updating 
+# everytime the process is run.
 #########################################################################
 
 
-### 0 - UPDATE THIS DATE ###
+### 0 - DATES - UPDATE THIS SECTION ###
 
 # Last day in reporting period
-end_date   <- lubridate::ymd(20191231)
+end_date   <- lubridate::ymd(20200630)
 
-# Date of publication - Only used when running publication, can comment out otherwise
-pub_date <- lubridate::ymd(20200331)
-fy_in_pub <- c("2016/17", "2017/18")
+# Date of publication
+# Only used when running publication, can comment out otherwise
+# pub_date <- lubridate::ymd(20200331)
+# fy_in_pub <- c("2016/17", "2017/18")
 
 
 ### 1 - Load packages ----
@@ -66,7 +67,7 @@ cl_out <- case_when(
 ### 3 - Extract dates ----
 
 # Start date of reporting period
-start_date <- lubridate::ymd(
+start_date <- ymd(
   paste0(if_else(month(end_date) >= 4,
                  year(end_date) - 3,
                  year(end_date) - 4),
@@ -74,8 +75,8 @@ start_date <- lubridate::ymd(
 )
 
 # FY and Quarter of reporting period
-fy <- phsmethods::fin_year(end_date) %>% substr(1, 4)
-qt <- lubridate::quarter(end_date, fiscal_start = 4)     
+fy <- fin_year(end_date) %>% substr(1, 4)
+qt <- quarter(end_date, fiscal_start = 4)     
 
 
 ### 4 - Disable scientific notation ----
