@@ -243,6 +243,7 @@ The table below shows the number of records submitted by each Health Board. Reco
 
 ```{r record-summary}
 err %>%
+  filter(str_sub(fy, 1, 4) >= year(start_date)) %>%
   group_by(fy, health_board, ijb) %>% 
   summarise(records = sum(records),
             .groups = "drop") %>%
