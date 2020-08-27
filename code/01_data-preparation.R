@@ -12,7 +12,7 @@
 #########################################################################
 
 
-### 1 - Load environment file and create folders ----
+### 1 - Load environment file ----
 
 source(here::here("code", "00_setup-environment.R"))
 
@@ -34,7 +34,10 @@ pds <-
   mutate(chi_number = chi_pad(chi_number)) %>%
   
   # Replace word 'and' with ampersand
-  mutate(health_board = str_replace(health_board, " and ", " & "))
+  mutate(health_board = str_replace(health_board, " and ", " & ")) %>%
+  
+  # Remove records with missing diag date or outwith reporting period
+  filter(between(dementia_diagnosis_confirmed_date, start_date, end_date))
 
 
 ### 3 - Save out error summary
@@ -75,19 +78,7 @@ pds %<>%
             ))
 
 
-### 5 - Remove unusable records ----
-
-pds %<>%
-  
-  # Remove records with missing diagnosis date
-  filter(!is.na(dementia_diagnosis_confirmed_date)) %>%
-
-  # Select records within reporting period only
-  filter(dementia_diagnosis_confirmed_date %within% 
-           interval(start_date, end_date))
-
-
-### 6 - Remove duplicate records ----
+### 5 - Remove duplicate records ----
 
 pds %<>%
 
@@ -175,7 +166,7 @@ pds %<>%
   select(-contains("dupe"))
 
 
-### 7 - Save data ---
+### 6 - Save data ---
 
 write_rds(pds, here("data", 
                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
