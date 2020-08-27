@@ -232,7 +232,7 @@ err %>%
   row_spec(15, bold = TRUE) %>%
   add_header_above(
         c(" " = 1,
-          "Financial Year of Diagnosis" = 4,
+          "Financial Year of Diagnosis" = 5,
           " " = 1))
 ```
 

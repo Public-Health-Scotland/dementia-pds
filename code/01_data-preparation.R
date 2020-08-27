@@ -40,18 +40,28 @@ pds <-
   filter(between(dementia_diagnosis_confirmed_date, start_date, end_date))
 
 
+### 3 - Add on final data no longer submitted ----
+
+pds <-
+  
+  # Read in and bind all previous finalised years data
+  list.files(here("data", "final"), full.names = TRUE) %>%
+  map(read_rds) %>%
+  reduce(bind_rows) %>%
+  
+  # Add to latest submission data
+  bind_rows(pds)
+
+
 ### 3 - Save out error summary
 
 err <- pds %>%
-  filter(dementia_diagnosis_confirmed_date %within% 
-           interval(start_date, end_date)) %>%
   mutate(health_board = if_else(is.na(health_board),
                                 "Missing",
                                 substring(health_board, 3))) %>%
   mutate(fy = fin_year(dementia_diagnosis_confirmed_date)) %>%
   group_by(fy, health_board, ijb) %>%
   summarise(total_errors     = sum(as.integer(error_flag)),
-            diag_date_errors = sum(is.na(dementia_diagnosis_confirmed_date)),
             records          = n(),
             .groups = "drop") %>%
   group_by(fy) %>%
@@ -59,7 +69,7 @@ err <- pds %>%
     ~ bind_rows(.x, summarise(.x,
                               health_board = "Scotland",
                               ijb = "Scotland",
-                              across(c(total_errors, diag_date_errors, records), sum)))
+                              across(c(total_errors, records), sum)))
   ) %>%
   ungroup() %>%
   arrange(fy, health_board, ijb) %T>%
