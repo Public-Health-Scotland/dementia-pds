@@ -105,7 +105,7 @@ exempt_reasons <- c("03", "04", "05", "06")
 simd     <- function(){
   
   read_rds(glue("{cl_out}/lookups/Unicode/",
-                "Deprivation/postcode_2020_1_simd2020v2.rds")) %>%
+                "Deprivation/postcode_2020_2_simd2020v2.rds")) %>%
     
     clean_names() %>%
     
