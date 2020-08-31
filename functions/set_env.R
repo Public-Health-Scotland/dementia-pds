@@ -45,6 +45,7 @@ set_env <- function(data = pds,
   assign("all_fy", setdiff(unique(data$fy), year), subpage_env)
   assign("exp", subpage_exp, subpage_env)
   assign("qt", quarter, subpage_env)
+  assign("start_date", start_date, subpage_env)
   
   if(hb != "Scotland"){
     assign("subpage_data_scot", subpage_data_scot, subpage_env)
