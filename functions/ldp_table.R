@@ -10,17 +10,16 @@ ldp_table <- function(data,
                   mutate(health_board = "Scotland",
                          ijb          = "All")) %>%
       group_by(health_board, ijb, fy, ldp) %>%
-      summarise(referrals = sum(referrals)) %>%
-      ungroup()
+      summarise(referrals = sum(referrals), .groups = "drop")
    }
   
   # 12 Months Complete - IJB level for table
-  num_ijb <- data %>% filter(ldp %in% c("complete", "exempt")) %>% group_by(ijb) %>% summarise(num = sum(referrals)) %>%
-    bind_rows(data %>% filter(ldp %in% c("complete", "exempt")) %>% group_by(ijb = health_board) %>% summarise(num = sum(referrals)))
-  den_ijb <- data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% group_by(ijb) %>% summarise(den = sum(referrals)) %>%
-    bind_rows(data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% group_by(ijb = health_board) %>% summarise(den = sum(referrals)))
+  num_ijb <- data %>% filter(ldp %in% c("complete", "exempt")) %>% group_by(ijb) %>% summarise(num = sum(referrals), .groups = "drop") %>%
+    bind_rows(data %>% filter(ldp %in% c("complete", "exempt")) %>% group_by(ijb = health_board) %>% summarise(num = sum(referrals), .groups = "drop"))
+  den_ijb <- data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% group_by(ijb) %>% summarise(den = sum(referrals), .groups = "drop") %>%
+    bind_rows(data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% group_by(ijb = health_board) %>% summarise(den = sum(referrals), .groups = "drop"))
   pds_rate_ijb <- 
-    full_join(num_ijb, den_ijb) %>%
+    full_join(num_ijb, den_ijb, by = "ijb") %>%
     mutate(rate = (num / den) * 100,
            rate = replace_na(rate, 0)) %>%
     select(-num, -den) %>%
@@ -32,17 +31,16 @@ ldp_table <- function(data,
     
     data %>%
     group_by(ijb = health_board, ldp) %>%
-    summarise(referrals = sum(referrals)) %>%
+    summarise(referrals = sum(referrals), .groups = "drop") %>%
     bind_rows(data %>%
                 group_by(ijb = health_board, ldp = "total") %>%
-                summarise(referrals = sum(referrals)),
+                summarise(referrals = sum(referrals), .groups = "drop"),
               data %>%
                 group_by(ijb, ldp) %>%
-                summarise(referrals = sum(referrals)),
+                summarise(referrals = sum(referrals), .groups = "drop"),
               data %>%
                 group_by(ijb, ldp = "total") %>%
-                summarise(referrals = sum(referrals))) %>%
-    ungroup() %>%
+                summarise(referrals = sum(referrals), .groups = "drop")) %>%
     complete(ijb, ldp = c("complete", "fail", "exempt", "ongoing", "total"),
              fill = list(referrals = 0)) %>%
     mutate(ldp = 

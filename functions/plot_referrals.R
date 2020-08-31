@@ -25,13 +25,13 @@ plot_referrals <- function(data,
     
     data %<>% 
       group_by(fy, month, health_board, ijb) %>%
-      summarise(referrals = sum(referrals))
+      summarise(referrals = sum(referrals), .groups = "drop")
     
     board <- 
       data %>%
         mutate(ijb = health_board) %>%
         group_by(fy, month, health_board, ijb) %>%
-        summarise(referrals = sum(referrals))
+        summarise(referrals = sum(referrals), .groups = "drop")
     
     data %<>% 
       bind_rows(board) %>% 
@@ -47,7 +47,7 @@ plot_referrals <- function(data,
     data %<>% 
       mutate(health_board = ifelse(scotland == TRUE, "Scotland", health_board)) %>%
       group_by(fy, month, health_board) %>%
-      summarise(referrals = sum(referrals)) %>%
+      summarise(referrals = sum(referrals), .groups = "drop") %>%
       ungroup()
   
   }
