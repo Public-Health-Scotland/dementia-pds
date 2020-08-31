@@ -99,6 +99,7 @@ plot_referrals <- function(data,
                                          'hoverClosestCartesian'), 
            displaylogo = F, editable = F) %>%
     
-    layout(legend = list(orientation = "h", x = 0.1 , y = -0.5))
+    layout(legend = list(orientation = "h", x = 0.2 , y = -0.6,
+                         xanchor = "center", yanchor = "bottom"))
   
 }
