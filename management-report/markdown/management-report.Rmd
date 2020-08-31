@@ -66,6 +66,8 @@ Data are submitted to PHS by health boards on a quarterly basis. Each health boa
 
 Information is shown at Scotland, Health Board and Integration Joint Board level using the drop down menus at the top of the page.
 
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**
+
 To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the PHS Dementia PDS team mailbox at: [phs.dementiapds@nhs.net](mailto:phs.dementiapds@nhs.net).
 
 

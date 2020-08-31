@@ -104,6 +104,8 @@ These reports are an ongoing development following the implementation of the rev
 
 `r completeness_text`
 
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**
+
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
 ----------------------------------------------------------------------
