@@ -58,6 +58,8 @@ This report has been produced by Public Health Scotland (PHS) and contains analy
 
 <span style="color:red"> **The information contained in this report is for management information only and should not be distributed widely.** </span>
 
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**
+
 These reports are an ongoing development following the implementation of the revised [Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) effective 01 April 2019. As such, they are currently marked as **DRAFT** and may be subject to change in future versions.
 
 This report contains data for individuals diagnosed with dementia between **`r format(dmy(01042016), "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`** who were referred for post diagnostic support.
@@ -65,8 +67,6 @@ This report contains data for individuals diagnosed with dementia between **`r f
 Data are submitted to PHS by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(start_date, "%d %B %Y")` onwards. Therefore, data for diagnoses from this date onwards are refreshed in each management report and are based on the most recently submitted data. Data for diagnoses prior to `r format(start_date, "%d %B %Y")` are also included but are now final and will not be updated in future versions of this report.
 
 Information is shown at Scotland, Health Board and Integration Joint Board level using the drop down menus at the top of the page.
-
-**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**
 
 To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the PHS Dementia PDS team mailbox at: [phs.dementiapds@nhs.net](mailto:phs.dementiapds@nhs.net).
 

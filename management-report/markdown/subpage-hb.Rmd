@@ -97,11 +97,11 @@ Row
 
 ### **Note**
 
-These reports are an ongoing development following the implementation of the revised [Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) effective 01 April 2019. As such, they are currently marked as **DRAFT** and may be subject to change in future versions.
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**
+
+These reports reflect the [Dementia PDS dataset](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) effective 01 April 2019.
 
 `r completeness_text`
-
-**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**
 
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
