@@ -16,7 +16,7 @@
 ### 0 - DATES - UPDATE THIS SECTION ###
 
 # Last day in reporting period
-end_date   <- lubridate::ymd(20200630)
+end_date   <- lubridate::ymd(20200930)
 
 # Date of publication
 # Only used when running publication, can comment out otherwise
