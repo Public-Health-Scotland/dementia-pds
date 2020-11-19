@@ -66,7 +66,7 @@ Data are submitted to PHS by health boards on a quarterly basis. Each health boa
 
 Information is shown at Scotland, Health Board and Integration Joint Board level using the drop down menus at the top of the page.
 
-To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the PHS Dementia PDS team mailbox at: [phs.dementiapds@nhs.net](mailto:phs.dementiapds@nhs.net).
+To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the PHS Dementia PDS team mailbox at: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot).
 
 
 
@@ -191,7 +191,7 @@ For a relatively small number of individuals, multiple records have been submitt
 
 There also exists a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IJB. The support provided to these service users has been apportioned to NHS Highland in this report, as part of the LDP Standard is a population based measure, and so by not including these Argyll & Bute residents this figure may be skewed.
 
-If you have any queries regarding the above, please contact [phs.dementiapds@nhs.net](mailto:phs.dementiapds@nhs.net).
+If you have any queries regarding the above, please contact [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot).
 
 
 Data Quality
