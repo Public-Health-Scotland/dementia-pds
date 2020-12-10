@@ -1,6 +1,6 @@
 #########################################################################
 # Name of file - 00_setup-environment.R
-# Data release - Quarterly Dementia PDS Management Reports
+# Data release - Dementia PDS Analytical Outputs
 # Original Authors - Alice Byers
 # Original Date - July 2019
 #
@@ -8,20 +8,9 @@
 # Version of R - 3.6.1
 #
 # Description - Sets up environment required for running quarterly 
-# management reports. This is the only file which should require updating 
-# everytime the process is run.
+#               management reports and publication. This is the only file 
+#               to be updated everytime the process is run.
 #########################################################################
-
-
-### 0 - DATES - UPDATE THIS SECTION ###
-
-# Last day in reporting period
-end_date   <- lubridate::ymd(20200930)
-
-# Date of publication
-# Only used when running publication, can comment out otherwise
-# pub_date <- lubridate::ymd(20200331)
-# fy_in_pub <- c("2016/17", "2017/18")
 
 
 ### 1 - Load packages ----
@@ -40,7 +29,6 @@ library(ggplot2)       # For plotting
 library(plotly)        # For interactive plots
 library(flexdashboard) # For creating markdown outputs
 library(purrr)         # For functional programming
-library(fs)            # For creating folder directories
 library(forcats)       # For factor manipulation
 library(knitr)         # For creating kable tables
 library(kableExtra)    # For customising kable tables
@@ -50,7 +38,17 @@ library(flextable)     # For formatted tables in publication output
 library(usethis)       # For creating folder structure
 
 
-### 2 - Define file paths dependent on whether running on server or desktop ----
+### 2 - Dates - UPDATE THIS SECTION ----
+
+# Last day in reporting period
+end_date   <- dmy(30092020)
+
+# Date of publication
+# Only used when running publication, can comment out otherwise
+pub_date <- dmy(30032021)
+
+
+### 3 - Define file paths dependent on whether running on server or desktop ----
 
 stats <- case_when(
   sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ "/conf",
@@ -64,9 +62,10 @@ cl_out <- case_when(
 )
 
 
-### 3 - Extract dates ----
+### 4 - Extract dates ----
 
-# Start date of reporting period
+# Start date of time period to be submitted
+# Note that previous years are reported but no longer submitted
 start_date <- ymd(
   paste0(if_else(month(end_date) >= 4,
                  year(end_date) - 3,
@@ -74,43 +73,39 @@ start_date <- ymd(
          "0401")
 )
 
-# FY and Quarter of reporting period
+# Latest FY and Quarter
 fy <- fin_year(end_date) %>% substr(1, 4)
 qt <- quarter(end_date, fiscal_start = 4)     
 
 
-### 4 - Disable scientific notation ----
+### 5 - Disable scientific notation ----
 
-options(scipen=999)
+options(scipen = 999)
 
 
-### 5 - Set knitr options ----
+### 6 - Set knitr options ----
 
 # Allow duplicate labels
-options(knitr.duplicate.label = 'allow')
+options(knitr.duplicate.label = "allow")
 
 # Knitr hook to add thousands separator
-# knit_hooks$set(inline = function(x) {
-#   prettyNum(x, big.mark=",")
-# })
+knit_hooks$set(inline = function(x) {
+  prettyNum(x, big.mark=",")
+})
 
 
-### 6 - Define exempt termination reason codes ----
+### 7 - Define exempt termination reason codes ----
 
 exempt_reasons <- c("03", "04", "05", "06")
 
 
-### 7 - SIMD Lookup ----
+### 8 - SIMD Lookup ----
 
-simd     <- function(){
-  
+simd <- function(){
   read_rds(glue("{cl_out}/lookups/Unicode/",
                 "Deprivation/postcode_2020_2_simd2020v2.rds")) %>%
-    
     clean_names() %>%
-    
     select(pc7, simd = simd2020v2_sc_quintile) %>%
-    
     mutate(
       simd = case_when(
         simd == 1 ~ "1 - Most Deprived",
@@ -118,11 +113,10 @@ simd     <- function(){
         TRUE ~ as.character(simd)
       )
     )
-  
 }
 
 
-### 8 - Create folder structure ----
+### 9 - Create folder structure ----
 
 # Create data folder for FY and Qtr
 use_directory(
@@ -131,8 +125,10 @@ use_directory(
 
 # Create output folders
 use_directory("management-report/output")
-use_directory("publication/output")
-use_directory("publication/markdown/figures")
+
+if(exists("pub_date")){
+  use_directory(glue("publication/output/{pub_date}"))
+}
 
 
 ### END OF SCRIPT ###
