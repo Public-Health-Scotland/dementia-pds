@@ -36,6 +36,7 @@ library(phsmethods)    # For formatting postcode
 library(openxlsx)      # For working with Excel files
 library(flextable)     # For formatted tables in publication output
 library(usethis)       # For creating folder structure
+library(rmarkdown)     # For render function
 
 
 ### 2 - Dates - UPDATE THIS SECTION ----

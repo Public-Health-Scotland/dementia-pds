@@ -1,129 +1,218 @@
 ---
 output: 
   word_document:
-    reference_docx: "PHS-NatStats-SumTemplate.docx"
+    reference_docx: "templates/summary-template.docx"
     fig_caption: no
 ---
 
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
-library(flextable)
-library(magrittr)
-library(ggplot2)
 
-# Create a pseudo chart
-Year <- c(rep("2014-15", times = 8), rep("2015-16", times = 8))
-Month <- rep(c('Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov'), times = 2)
-Count <- c(1100, 1220, 1240, 1250, 1290, 1300, 1380, 1350, 
-           1100, 1140, 1150, 1150, 1190, 1260, 1270, 1280)
+# Run setup environment script
+source(here::here("code", "00_setup-environment.R"))
 
-ChartData <- data.frame(Year, Month, Count)
+# Write numbers with thousands separator
+knit_hooks$set(inline = function(x){
+  if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
+})
 
-chart <- ggplot(data = ChartData, aes(x = Month, y = Count, group = Year, 
-                                      color = Year, shape = Year, linetype = Year)) +
-scale_y_continuous(breaks = c(200, 400, 600, 800, 1000, 1200, 1400, 1600), 
-    labels = c('200', '400', '600', '800', '1,000', '1,200', '1,400', '1,600'),
-    limits = c(0, 1600),  expand = expansion(mult = 0)) +
-scale_x_discrete(limits =  c('Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov'),
-    labels =  c('Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov'))  +
-scale_color_manual(values = c('#59B4F0', '#FF0000')) +
-geom_line( size = .75 ) + 
-geom_point( size = c(rep(3, 8), rep(2.5, 8)) ) +
-scale_shape_manual(values = c('diamond', 'square')) +
-scale_linetype_manual(values = c('dashed', 'solid')) + 
-theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 12, colour = "#6C2383"),
-    plot.margin = margin(l = 30, b = 10),
-    panel.background = element_blank(),
-    panel.grid.major = element_blank(), 
-    panel.grid.major.y = element_line(size = .4, color = "#969696"), 
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "#969696", fill = NA, size = 0.75), 
-    legend.box.spacing = unit(0, 'cm'),
-    legend.box.margin = margin(b = 0),
-    legend.position = 'top',
-    legend.title=element_blank(),
-    legend.key.height = unit(10, 'pt'),
-    legend.key.width = unit(30, 'pt'),
-    legend.text = element_text(size = 8),
-    axis.title.y = element_blank(),
-    axis.line = element_line(colour = "grey"),
-    axis.ticks = element_line(colour = "grey"),
-    axis.text.x = element_text(size = 7.5, color = 'black'), 
-    axis.text.y = element_text(size = 7, color = 'black'),
-    axis.title.x = element_text(size = 8, face = 'bold', margin = margin(t = 10))) +
-  xlab("Month")
+# Derive financial years to be included
+fy_in_pub <- 
+  seq.Date(dmy(01042016), 
+           dmy(glue("0104{year(pub_date) - 3}")), 
+           "years") %>%
+  fin_year()
+
+latest_fy <- last(fy_in_pub)
+prev_fy   <- nth(fy_in_pub, -2)
+
+# Read in data
+pds <- 
+  read_rds(
+    here("data", 
+         glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+         glue("{fy}-{qt}_final-data.rds"))
+  ) %>%
+  
+  # Select only FY to be incuded in pub
+  filter(fy %in% fy_in_pub) %>%
+  
+  # Remove codes from board and IJB
+  mutate(health_board = str_sub(health_board, 3, -1),
+         ijb          = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
+
+# Load expected diagnoses reference file
+exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
+  filter(health_board == "Scotland" & fy %in% fy_in_pub)
+
+perc_complete <-
+  pds %>%
+  group_by(fy, ldp) %>% 
+  summarise(ref = sum(referrals), .groups = "drop") %>%
+  group_by(fy, x = ldp %in% c("complete", "exempt")) %>%
+  mutate(complete = sum(ref)) %>%
+  group_by(fy) %>%
+  mutate(all = sum(ref)) %>%
+  filter(x) %>%
+  distinct(fy, complete, all) %>%
+  mutate(perc = round_half_up(complete / all * 100, 1))
+
+age_data <-
+  pds %>%
+  filter(age_grp != "Unknown") %>%
+  group_by(fy, age_grp) %>%
+  summarise(ref = sum(referrals), .groups = "drop") %>%
+  group_by(fy) %>%
+  mutate(perc = ref / sum(ref) * 100) %>%
+  ungroup()
+
+incidence <-
+  pds %>% 
+  group_by(fy) %>%
+  summarise(ref = sum(referrals), .groups = "drop") %>%
+  left_join(exp, by = "fy") %>%
+  mutate(perc = round_half_up(ref / diagnoses * 100, 1))
+
+chart_data <-
+  age_data %>%
+  filter(fy == latest_fy)
+
+chart <-
+  chart_data %>%
+  ggplot(aes(x = age_grp, y = perc, fill = 1)) +
+  geom_bar(stat = "identity", width = 0.5, fill = "#3f3685") +
+  geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
+            vjust = -0.5,
+            size = 3) +
+  theme(panel.background = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(color = "#d9d9d9"),
+        axis.title.y = element_text(size = 10, angle = 0, 
+                                    hjust = 0.5, vjust = 0.5),
+        axis.title.x = element_text(size = 10, angle = 0, 
+                                    hjust = 0.5, vjust = 0.5),
+        axis.text = element_text(size = 10),
+        axis.line = element_line()) +
+  scale_y_continuous(
+    limits = 
+      c(0, ceiling(max(chart_data$perc) / 10) * 10),
+    breaks = 
+      seq(0, ceiling(max(chart_data$perc) / 10) * 10, 
+          by = 5),
+    labels = paste0(seq(0, ceiling(max(chart_data$perc) / 10) * 10, 
+          by = 5), "%"),
+    expand = c(0, 0)) +
+  scale_x_discrete(labels = str_wrap(chart_data$age_grp, width = 8)) +
+  xlab("Age Group") +
+  ylab(str_wrap("Percentage of total referrals", width = 10))
+
+# Save chart to output folder
+ggsave(
+  here("publication", "output", pub_date, paste0(pub_date, "_chart.png")),
+  plot = chart,
+  width = 6.8,
+  height = 3.5,
+  device = "png",
+  dpi = 600
+)
+
+alt_text <-
+  paste0("Bar chart showing distribution of referrals to dementia ",
+         "post-diagnostic support by age group in financial year ",
+         latest_fy, ".")
+
+err <- read_rds(here("data", 
+                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+                     glue("{fy}-{qt}_error-summary.rds"))) %>%
+  filter(fy %in% fy_in_pub) %>%
+  group_by(fy) %>%
+  summarise(across(where(is.numeric), sum), .groups = "drop") %>%
+  mutate(perc = round_half_up(total_errors/records * 100, 0))
 
 # Create contact information
-contact1 <- c("Name", "Role", "Number", "email")
-contact2 <- c("Name", "Role", "Number", "email")
+contact1 <- c("**Lisa Reedie**", 
+              "Principal Information Analyst", 
+              "0131 275 6117",
+              "phs.dementiapds@phs.scot")
+contact2 <- c("**Alice Byers**", 
+              "Senior Information Analyst", 
+              "0131 314 1725",
+              "")
 
-contact <- data.frame(contact1, contact2)
+contact <- tibble(contact1, contact2)
+
+pub_date_url <- 
+  paste0("https://beta.isdscotland.org/find-publications-and-data/",
+         "conditions-and-diseases/dementia/dementia-post-diagnostic-support/",
+         format(pub_date, "%e-%B-%Y") %>% str_trim())
 ```
 
-<Div custom-style = "Publication Title"> <br> </Div>
-
-<Div custom-style = "Publication Title"> <br> </Div>
-
-<Div custom-style = "Publication Title">Insert publication title here</Div>
-<Div custom-style = "Publication subtitle">Subtitle</Div>
-<Div custom-style = "National stats">A National Statistics statistical release for Scotland</Div>
+<Div custom-style = "Publication Title">Dementia Post-Diagnostic  
+Support</Div>
+<!-- <Div custom-style = "Publication Title">Support</Div> -->
+<Div custom-style = "Publication subtitle">Local Delivery Plan Standard; Figures for `r glue_collapse(fy_in_pub, sep = ", ", last = " and ")`</Div>
+<Div custom-style = "National stats">A Management Information publication for Scotland</Div>
 
 <br>
 
-**Publication date: DD Month YYYY**
+**Publication date: `r format(pub_date, "%d %B %Y")`**
 
-<Div custom-style = "RestrictedStats">RESTRICTED STATISTICS: embargoed to 09:30 dd/mm/yyyy</Div>
+<Div custom-style = "RestrictedStats">RESTRICTED STATISTICS: embargoed to 09:30 `r format(pub_date, "%d/%m/%Y")`</Div>
 
 ### About this release
-Vestibulum lacinia, turpis eu sagittis lacinia, justo orci blandit orci, ut suscipit tortor turpis et metus. Pellentesque sollicitudin nisl et porttitor laoreet. Nunc id purus pretium, suscipit justo vitae, pretium dui. Quisque congue ex dignissim tellus pulvinar, a interdum libero fermentum.
+This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should receive a minimum of one year’s post-diagnostic support. The LDP standard is reported in two parts. The percentage of people estimated to be newly diagnosed with dementia who were referred for postdiagnostic support and, of those referred, the percentage who received a minimum of one year’s support. This report presents finalised figures for `r glue_collapse(setdiff(fy_in_pub, latest_fy), sep = ", ", last = " and ")` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
 
 ### Main Points
-Proin nec ultricies dolor. Maecenas pulvinar, enim et imperdiet cursus, mi
+* There were `r pds %>% filter(fy == latest_fy) %$% sum(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r pds %>% filter(fy != latest_fy) %>% group_by(fy) %>% summarise(ref = sum(referrals)) %>% pull(ref) %>% glue_collapse(sep = ", ", last = " and ")` in `r pds %>% filter(fy != latest_fy) %$% unique(fy) %>% glue_collapse(sep = ", ", last = " and ")` respectively.
 
-* Maecenas ut sagittis mi. Vestibulum faucibus ligula sit amet facilisis pulvinar. Morbi mollis odio id est consequat, a convallis quam finibus. Morbi id congue turpis, sit amet ultrices tortor. Phasellus vel nisi.
+* Of those referred in `r latest_fy` for post-diagnostic support, `r perc_complete %>% filter(fy == latest_fy) %>% pull(perc)`% received a minimum of one year's support. In `r prev_fy`, the percentage was `r perc_complete %>% filter(fy == prev_fy) %>% pull(perc)`%.
 
-* Quisque iaculis congue aliquet. Aenean in dictum nisl. Etiam quis ullamcorper ex. Aenean mollis ante eget.
+* In `r latest_fy`, those aged `r chart_data %>% filter(perc == max(perc)) %>% pull(age_grp)` years accounted for the largest percentage of people referred for post-diagnostic support (`r max(chart_data$perc) %>% round_half_up(1) %>% format(nsmall = 1)`%).
 
-<Div custom-style = "Chart Title">`Chart title`</Div>
+<br>
+
+<Div custom-style = "Chart Title">Age distribution of referrals to dementia post-diagnostic support; `r latest_fy`^p^</Div>
 <Div custom-style = "Figure_Style">
-```{r fig-uptake, echo=FALSE, fig.width=6.15, fig.height=3, fig.cap="Appropriate ALT Text to be added."}
+```{r chart, echo=FALSE, fig.width=6, fig.height=3, dpi=600, fig.cap=alt_text}
 chart
 ```
 </div>
 
-Maecenas bibendum consequat vehicula. Fusce id viverra lorem, et
+<Div custom-style = "Footnotes">^p^ Figures for `r latest_fy` are provisional subject to all service users completing their support.</div>
 
-* Curabitur luctus luctus lorem, at commodo mauris rutrum quis. Mauris aliquet turpis vel magna bibendum hendrerit. Nulla finibus porta sapien ut pretium. Aliquam elementum mauris.
+<br>
 
-* Vivamus bibendum ut tellus rhoncus porttitor. Nam id nibh et.
-
-* Ut in dapibus massa, ut gravida ligula. Vestibulum ut consectetur:
-
-    + Vivamus luctus varius nibh, a scelerisque ex tincidunt non. Etiam dignissim.
-    + Curabitur laoreet viverra magna eget dapibus. Maecenas scelerisque euismod mattis. Sed cursus.
-    + Sed in iaculis lectus, sed fermentum urna. Donec efficitur diam eu ipsum viverra, eu ornare justo mollis. Phasellus in dictum tellus.
+* In Scotland, `r incidence %>% filter(fy == latest_fy) %>% pull(perc)`% of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support. 
 
 ### Background
-Aliquam sed maximus ante, a imperdiet est. Vivamus vel diam facilisis, pulvinar erat consequat, consequat nulla. Praesent lorem dolor, luctus ut libero vitae, venenatis congue tortor.
+The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnostic support a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all those newly diagnosed with dementia to receive a minimum of one year’s postdiagnostic support.
 
-Nunc at mauris euismod, mattis tellus sed, vehicula dolor. Duis quis auctor elit. Fusce eu dui eu magna convallis porttitor in ac purus. Proin sed tellus massa. In pulvinar augue sit amet faucibus maximus. Aenean porttitor arcu vitae lacus fringilla condimentum. Praesent laoreet, felis non dignissim viverra, libero nunc eleifend sapien, sed dignissim felis risus et tellus.
+NHS Boards provide quarterly data submissions to Public Health Scotland on individuals diagnosed and referred for post-diagnostic support within their local areas and this dataset forms the basis of the LDP standard calculation.
+
+Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) and reporting processes were effective from 1 April 2019 and designed in consultation with stakeholders to improve the quality and consistency of the data reported. The Scotland level error rate for `r latest_fy` is `r err %>% filter(fy == latest_fy) %>% pull(perc)`%. **Add error rate for previous years here**.
+
+Information presented in this publication is not comparable to previously published information relating to the dementia post-diagnostic support LDP standard. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
+
+Part of the LDP standard calculation requires the number of referrals for post-diagnostic support to be compared against an estimated number of newly diagnosed dementia cases each year. Health Board level estimates of people newly diagnosed with dementia (incidence) used for this calculation are from the paper [‘Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020’](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) published by the Scottish Government in 2016.
+
+<br>
 
 ### Contact
 
-```{r tab_contact, echo = FALSE, ft.align = "left"}
-flextable(contact, theme_fun = NULL) %>% 
-  delete_part(part = "header") %>%
-  bold(i = 1, part = "body") %>% 
-  align(align = "left", part = "body") %>% 
-  width(j = 1:2, width = 8.15 / 2.54) %>% 
-  padding(padding.top = 0, padding.bottom = 0)
+<Div custom-style = "Normal-no-space">
+```{r tab_contact, echo = FALSE}
+suppressWarnings(kable(contact, col.names = NULL))
 ```
+</Div>
+
+For all media enquires, please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 07500 854 574.
+
+<br>
 
 ### Further Information
-Data from this publication are available from the [publication page]() on our website.
+Data from this publication are available from the [publication page](`r pub_date_url`) on our website.
 
-The next release of this publication will be DD Month YYYY.
-
-### NHS Performs
-A selection of information from this publication is included in [NHS Performs](http://www.nhsperforms.scot/). NHS Performs is a website that brings together a range of information on how hositals and NHS Boards within NHSScotland are performing.
+The next release of this publication will be in `r format(pub_date + years(1), "%B %Y")`.
