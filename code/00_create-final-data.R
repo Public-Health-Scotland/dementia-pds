@@ -2,7 +2,7 @@
 # Name of file - 00_create-final-data.R
 # Data release - Quarterly Dementia PDS Management Reports
 # Original Authors - Alice Byers
-# Original Date - July 2019
+# Original Date - September 2020
 #
 # Written/run on - RStudio Desktop
 # Version of R - 3.6.1
