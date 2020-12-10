@@ -1,5 +1,5 @@
 #########################################################################
-# Name of file - 04_create-excel-tables.R
+# Name of file - 02_create-excel-tables.R
 # Data release - Annual Dementia PDS Publication
 # Original Authors - Alice Byers
 # Original Date - February 2020

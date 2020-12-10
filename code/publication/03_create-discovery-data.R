@@ -1,5 +1,5 @@
 #########################################################################
-# Name of file - 05_create-ldp-data.R
+# Name of file - 03_create-discovery-data.R
 # Data release - Annual Dementia PDS Publication
 # Original Authors - Alice Byers
 # Original Date - March 2020
