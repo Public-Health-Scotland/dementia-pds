@@ -118,6 +118,57 @@ writeData(wb,
           expected,
           startCol = 1)
 
+# Add some lookup values to calculation tab
+writeData(
+    wb,
+    "calculation",
+    tibble(fy_in_pub) %>%
+      mutate(n = row_number(), .before = everything()),
+    startCol = 1,
+    startRow = 2,
+    colNames = FALSE
+  )
+
+writeData(
+  wb,
+  "calculation",
+  as.character(glue_collapse(fy_in_pub, sep = ", ", last = " and ")),
+  startCol = "F",
+  startRow = 5
+)
+
+writeData(
+  wb,
+  "calculation",
+  format(end_date, "'%d %B %Y"),
+  startCol = "F",
+  startRow = 6
+)
+
+writeData(
+  wb,
+  "calculation",
+  max(fy_in_pub),
+  startCol = "F",
+  startRow = 8
+)
+
+# Add publication link to Notes page
+link <- 
+  paste0("https://beta.isdscotland.org/find-publications-and-data/",
+         "conditions-and-diseases/dementia/dementia-post-diagnostic-support/",
+         format(pub_date, "%e-%B-%Y") %>% str_trim())
+# names(link) <- "See Appendix 2 of the full report for more information."
+class(link) <- "hyperlink"
+
+writeData(wb, 
+          "Contents & Notes", 
+          startCol = "B",
+          startRow = 18,
+          x = link)
+
+
+# Hide data sheets and calculation sheet
 sheetVisibility(wb)[8:10] <- "hidden"
 
 saveWorkbook(wb,
