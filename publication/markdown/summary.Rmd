@@ -68,40 +68,6 @@ incidence <-
   left_join(exp, by = "fy") %>%
   mutate(perc = round_half_up(ref / diagnoses * 100, 1))
 
-chart_data <-
-  age_data %>%
-  filter(fy == latest_fy)
-
-chart <-
-  chart_data %>%
-  ggplot(aes(x = age_grp, y = perc, fill = 1)) +
-  geom_bar(stat = "identity", width = 0.5, fill = "#3f3685") +
-  geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
-            vjust = -0.5,
-            size = 3) +
-  theme(panel.background = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.major.y = element_line(color = "#d9d9d9"),
-        axis.title.y = element_text(size = 10, angle = 0, 
-                                    hjust = 0.5, vjust = 0.5),
-        axis.title.x = element_text(size = 10, angle = 0, 
-                                    hjust = 0.5, vjust = 0.5),
-        axis.text = element_text(size = 10),
-        axis.line = element_line()) +
-  scale_y_continuous(
-    limits = 
-      c(0, ceiling(max(chart_data$perc) / 10) * 10),
-    breaks = 
-      seq(0, ceiling(max(chart_data$perc) / 10) * 10, 
-          by = 5),
-    labels = paste0(seq(0, ceiling(max(chart_data$perc) / 10) * 10, 
-          by = 5), "%"),
-    expand = c(0, 0)) +
-  scale_x_discrete(labels = str_wrap(chart_data$age_grp, width = 8)) +
-  xlab("Age Group") +
-  ylab(str_wrap("Percentage of total referrals", width = 10))
-
 alt_text <-
   paste0("Bar chart showing distribution of referrals to dementia ",
          "post-diagnostic support by age group in financial year ",
@@ -153,7 +119,7 @@ This release by Public Health Scotland (PHS) reports on the Scottish Governmentâ
 
 * Of those referred in `r latest_fy` for post-diagnostic support, `r perc_complete %>% filter(fy == latest_fy) %>% pull(perc)`% received a minimum of one year's support. In `r prev_fy`, the percentage was `r perc_complete %>% filter(fy == prev_fy) %>% pull(perc)`%.
 
-* In `r latest_fy`, those aged `r chart_data %>% filter(perc == max(perc)) %>% pull(age_grp)` years accounted for the largest percentage of people referred for post-diagnostic support (`r max(chart_data$perc) %>% round_half_up(1) %>% format(nsmall = 1)`%).
+* In `r latest_fy`, those aged `r age_data %>% filter(fy == latest_fy) %>% filter(perc == max(perc)) %>% pull(age_grp)` years accounted for the largest percentage of people referred for post-diagnostic support (`r age_data %>% filter(fy == latest_fy) %$% max(perc) %>% round_half_up(1) %>% format(nsmall = 1)`%).
 
 <br>
 

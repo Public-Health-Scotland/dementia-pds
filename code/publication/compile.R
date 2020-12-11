@@ -1,8 +1,3 @@
-# Load required libraries
-library(officer)
-library(magrittr)
-
-
 # Check Filepaths Exist
 rmd_exists <- file.exists(params$rmd_filename)
 cover_exists <- file.exists(params$cover_filename)

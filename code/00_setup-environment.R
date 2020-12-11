@@ -37,6 +37,7 @@ library(openxlsx)      # For working with Excel files
 library(flextable)     # For formatted tables in publication output
 library(usethis)       # For creating folder structure
 library(rmarkdown)     # For render function
+library(officer)       # For adding cover page and toc to report
 
 
 ### 2 - Dates - UPDATE THIS SECTION ----
