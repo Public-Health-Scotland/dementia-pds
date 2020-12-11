@@ -26,13 +26,14 @@ pds <-
 expected <-
   read_csv(here("reference-files",
                 "expected-diagnoses.csv")) %>%
-  select(-health_board)
+  select(-health_board) %>%
+  mutate(lookup = paste0(fy, health_board_label), .before = everything())
 
 
 ### 3 - Restructure data ----
 
 pds %<>%
-  filter(fy %in% c("2016/17", "2017/18")) %>%
+  filter(fy %in% fy_in_pub) %>%
   mutate(health_board = substring(health_board, 3),
          ijb = substring(ijb, 11))
 
@@ -44,59 +45,62 @@ excel_data <-
     # Health Board
     pds %>% 
       group_by(fy, category = "hb", category_split = health_board, ldp) %>% 
-      summarise(referrals = sum(referrals, na.rm = TRUE)) %>% 
-      ungroup() %>%
-      pivot_wider(names_from = ldp, values_from = referrals) %>%
-      mutate_at(vars(complete:ongoing), ~ replace_na(., 0)) %>%
+      summarise(referrals = sum(referrals), .groups = "drop") %>%
+      pivot_wider(names_from = ldp, 
+                  values_from = referrals,
+                  values_fill = list(referrals = 0)) %>%
       arrange(fy, category, category_split),
     
     # Scotland Rows
     pds %>% 
       group_by(fy, category = "hb", category_split = "Scotland", ldp) %>% 
-      summarise(referrals = sum(referrals, na.rm = TRUE)) %>% 
-      ungroup() %>%
-      pivot_wider(names_from = ldp, values_from = referrals) %>%
-      mutate_at(vars(complete:ongoing), ~ replace_na(., 0)),
+      summarise(referrals = sum(referrals), .groups = "drop") %>% 
+      pivot_wider(names_from = ldp, 
+                  values_from = referrals, 
+                  values_fill = list(referrals = 0)),
     
     # IJB
     pds %>% 
       group_by(fy, category = "ijb", category_split = ijb, ldp) %>% 
-      summarise(referrals = sum(referrals, na.rm = TRUE)) %>% 
-      ungroup() %>%
-      pivot_wider(names_from = ldp, values_from = referrals) %>%
-      mutate_at(vars(complete:ongoing), ~ replace_na(., 0)) %>%
+      summarise(referrals = sum(referrals), .groups = "drop") %>% 
+      pivot_wider(names_from = ldp, 
+                  values_from = referrals, 
+                  values_fill = list(referrals = 0)) %>%
       arrange(fy, category, category_split),
     
     pds %>% 
       group_by(fy, category = "ijb", category_split = "Scotland", ldp) %>% 
-      summarise(referrals = sum(referrals, na.rm = TRUE)) %>% 
-      ungroup() %>%
-      pivot_wider(names_from = ldp, values_from = referrals) %>%
-      mutate_at(vars(complete:ongoing), ~ replace_na(., 0)),
+      summarise(referrals = sum(referrals), .groups = "drop") %>%
+      pivot_wider(names_from = ldp, 
+                  values_from = referrals,
+                  values_fill = list(referrals = 0)),
     
     # Age Group
     pds %>% 
       group_by(fy, category = "age", category_split = age_grp, ldp) %>% 
-      summarise(referrals = sum(referrals, na.rm = TRUE)) %>% 
-      ungroup() %>%
-      pivot_wider(names_from = ldp, values_from = referrals) %>%
-      mutate_at(vars(complete:ongoing), ~ replace_na(., 0)) %>%
+      summarise(referrals = sum(referrals), .groups = "drop") %>%
+      pivot_wider(names_from = ldp, 
+                  values_from = referrals,
+                  values_fill = list(referrals = 0)) %>%
       arrange(fy, category, category_split),
     
     # Deprivation
     pds %>% 
       group_by(fy, category = "simd", category_split = simd, ldp) %>% 
-      summarise(referrals = sum(referrals, na.rm = TRUE)) %>% 
-      ungroup() %>%
-      pivot_wider(names_from = ldp, values_from = referrals) %>%
-      mutate_at(vars(complete:ongoing), ~ replace_na(., 0)) %>%
+      summarise(referrals = sum(referrals), .groups = "drop") %>%
+      pivot_wider(names_from = ldp, 
+                  values_from = referrals,
+                  values_fill = list(referrals = 0)) %>%
       arrange(fy, category, category_split)
     
   ) %>%
   
   filter(!is.na(category_split)) %>%
   mutate(referrals = reduce(select(., complete:ongoing), `+`),
-         rate = (complete + exempt) / (referrals - ongoing))
+         rate = (complete + exempt) / (referrals - ongoing)) %>%
+  
+  # Add lookup column
+  mutate(lookup = paste0(fy, category, category_split), .before = everything())
 
 
 ### 4 - Save data to excel template ----
@@ -107,18 +111,18 @@ wb <- loadWorkbook(here("reference-files",
 writeData(wb,
           "data",
           excel_data,
-          startCol = 2)
+          startCol = 1)
 
 writeData(wb,
           "expected",
           expected,
-          startCol = 2)
+          startCol = 1)
 
 sheetVisibility(wb)[8:10] <- "hidden"
 
 saveWorkbook(wb,
-             here("publication", "output", 
-                  glue("{pub_date}-DementiaPDS-excel-tables.xlsx")),
+             here("publication", "output", pub_date, 
+                  glue("{pub_date}_excel-tables.xlsx")),
              overwrite = TRUE)
 
 
