@@ -31,4 +31,22 @@ render(
 )
 
 
+### 4 - Knit report ----
+
+params <- list(
+  rmd_filename    = here("publication", "markdown", "report.Rmd"),
+  cover_filename  = here("publication", "markdown", "templates", 
+                         "report-cover-page.docx"),
+  title           = "Dementia Post-Diagnostic Support",
+  subtitle        = paste("Local Delivery Plan Standard - Figures for",
+                          glue_collapse(fy_in_pub, sep = ", ", last = " and ")),
+  date1           = pub_date %>% format("%e %B %Y") %>% str_trim(),
+  date2           = pub_date %>% format("%d/%m/%Y"),
+  filename_out    = here("publication", "output", pub_date, 
+                         paste0(pub_date, "_report.docx"))
+)
+
+source(here("code", "publication", "compile.R"))
+
+
 ### END OF SCRIPT ###
