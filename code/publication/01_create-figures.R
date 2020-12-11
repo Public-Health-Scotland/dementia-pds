@@ -56,7 +56,7 @@ age_dist_data <-
 age_dist <-
   age_dist_data %>%
   ggplot(aes(x = age_grp, y = perc, fill = 1)) +
-  geom_bar(stat = "identity", width = 0.5, fill = "#3f3685") +
+  geom_bar(stat = "identity", width = 0.5, fill = phs_colours("phs-purple")) +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
             vjust = -0.5,
             size = 3) +

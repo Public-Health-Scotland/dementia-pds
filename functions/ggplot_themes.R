@@ -12,3 +12,29 @@ theme_dementia <- function(){
           axis.text = element_text(size = 10),
           axis.line = element_line())
 }
+
+colours <- c(
+  `phs-purple` = "#3F3685",
+  `phs-magenta` = "#9B4393",
+  `phs-blue` = "#0078D4",
+  `phs-green` = "#83BB26",
+  `phs-graphite` = "#948DA3",
+  `phs-teal` = "#1E7F84",
+  `phs-liberty` = "#6B5C85",
+  `phs-rust` = "#C73918"
+)
+
+phs_colours <- function(...) {
+  cols <- c(...)
+  
+  if (is.null(cols))
+    return (colours)
+  
+  colours[cols]
+}
+
+palettes <- list(
+  `main` = phs_colours("phs-purple", "phs-magenta", "phs-blue", "phs-green"),
+  `supporting` = phs_colours("phs-graphite", "phs-teal", "phs-liberty", "phs-rust")
+)
+
