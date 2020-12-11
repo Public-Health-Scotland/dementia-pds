@@ -11,9 +11,11 @@
 #########################################################################
 
 
-### 1 - Load environment file ----
+### 1 - Load environment file and themes ----
 
 source(here::here("code", "00_setup-environment.R"))
+
+source(here("functions", "ggplot_themes.R"))
 
 
 ### 2 - Read in data ----
@@ -41,7 +43,7 @@ exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
 
 ### 3 - Summary chart - age distribution ----
 
-chart_data <-
+age_dist_data <-
   pds %>%
   filter(age_grp != "Unknown") %>%
   group_by(fy, age_grp) %>%
@@ -51,33 +53,24 @@ chart_data <-
   ungroup() %>%
   filter(fy == last(fy_in_pub))
 
-chart <-
-  chart_data %>%
+age_dist <-
+  age_dist_data %>%
   ggplot(aes(x = age_grp, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3f3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
             vjust = -0.5,
             size = 3) +
-  theme(panel.background = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.major.y = element_line(color = "#d9d9d9"),
-        axis.title.y = element_text(size = 10, angle = 0, 
-                                    hjust = 0.5, vjust = 0.5),
-        axis.title.x = element_text(size = 10, angle = 0, 
-                                    hjust = 0.5, vjust = 0.5),
-        axis.text = element_text(size = 10),
-        axis.line = element_line()) +
+  theme_dementia() +
   scale_y_continuous(
     limits = 
-      c(0, ceiling(max(chart_data$perc) / 10) * 10),
+      c(0, ceiling(max(age_dist_data$perc) / 10) * 10),
     breaks = 
-      seq(0, ceiling(max(chart_data$perc) / 10) * 10, 
+      seq(0, ceiling(max(age_dist_data$perc) / 10) * 10, 
           by = 5),
-    labels = paste0(seq(0, ceiling(max(chart_data$perc) / 10) * 10, 
+    labels = paste0(seq(0, ceiling(max(age_dist_data$perc) / 10) * 10, 
                         by = 5), "%"),
     expand = c(0, 0)) +
-  scale_x_discrete(labels = str_wrap(chart_data$age_grp, width = 8)) +
+  scale_x_discrete(labels = str_wrap(age_dist_data$age_grp, width = 8)) +
   xlab("Age Group") +
   ylab(str_wrap("Percentage of total referrals", width = 10))
 
@@ -85,7 +78,7 @@ chart <-
 ggsave(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_summary-chart.png")),
-  plot = chart,
+  plot = age_dist,
   width = 6.8,
   height = 3.5,
   device = "png",
