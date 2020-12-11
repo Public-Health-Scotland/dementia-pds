@@ -102,16 +102,6 @@ chart <-
   xlab("Age Group") +
   ylab(str_wrap("Percentage of total referrals", width = 10))
 
-# Save chart to output folder
-ggsave(
-  here("publication", "output", pub_date, paste0(pub_date, "_chart.png")),
-  plot = chart,
-  width = 6.8,
-  height = 3.5,
-  device = "png",
-  dpi = 600
-)
-
 alt_text <-
   paste0("Bar chart showing distribution of referrals to dementia ",
          "post-diagnostic support by age group in financial year ",
@@ -169,8 +159,12 @@ This release by Public Health Scotland (PHS) reports on the Scottish Governmentâ
 
 <Div custom-style = "Chart Title">Age distribution of referrals to dementia post-diagnostic support; `r latest_fy`^p^</Div>
 <Div custom-style = "Figure_Style">
-```{r chart, echo=FALSE, fig.width=6, fig.height=3, dpi=600, fig.cap=alt_text}
-chart
+```{r age-dist-chart, echo=FALSE, fig.cap = "alt text here"}
+include_graphics(
+  here("publication", "output", pub_date, "figures", 
+       paste0(pub_date, "_summary-chart.png")), 
+  dpi = 600
+)
 ```
 </div>
 

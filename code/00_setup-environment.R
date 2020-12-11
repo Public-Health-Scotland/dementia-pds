@@ -137,7 +137,7 @@ use_directory(
 use_directory("management-report/output")
 
 if(exists("pub_date")){
-  use_directory(glue("publication/output/{pub_date}"))
+  use_directory(glue("publication/output/{pub_date}/figures"))
 }
 
 
