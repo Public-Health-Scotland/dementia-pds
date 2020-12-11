@@ -16,13 +16,6 @@ knit_hooks$set(inline = function(x){
   if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
 })
 
-# Derive financial years to be included
-fy_in_pub <- 
-  seq.Date(dmy(01042016), 
-           dmy(glue("0104{year(pub_date) - 3}")), 
-           "years") %>%
-  fin_year()
-
 latest_fy <- last(fy_in_pub)
 prev_fy   <- nth(fy_in_pub, -2)
 

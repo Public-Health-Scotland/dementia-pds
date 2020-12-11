@@ -48,6 +48,15 @@ end_date   <- dmy(30092020)
 # Only used when running publication, can comment out otherwise
 pub_date <- dmy(30032021)
 
+# FYs included in pub
+if(exists("pub_date")){
+  fy_in_pub <-  
+    seq.Date(dmy(01042016), 
+             dmy(glue("0104{year(pub_date) - 3}")), 
+             "years") %>%
+    fin_year()
+}
+
 
 ### 3 - Define file paths dependent on whether running on server or desktop ----
 
