@@ -5,8 +5,15 @@ output:
     fig_caption: no
 ---
 
+```{r set-up, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+source(here::here("code", "00_setup-environment.R"))
+
+latest_fy <- last(fy_in_pub)
+```
+
 
 ```{r TableData, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+
 NHSBoard <- c("AA", "BR", "DG", "FF", "FV", "GR", "GGC", "HG", "LN", "LO", "NWTC", "OR", "SH", "TY", "WI", "Scotland")
 
 Q2Cases <- as.character(c(22, 2, 9, 9, 10, 16, 52, 9, 22, 44, 0, 1, 0, 24, 1, 221))
@@ -174,54 +181,54 @@ Description <- c("",
 MetaData <- data.frame(Indicator, Description)
 ```
 
-<Div custom-style = "Publication subtitle">This is a National Statistics Publication</Div>
+<Div custom-style = "Publication subtitle">This is a Management Information Publication</Div>
 
-National Statistics status means that the official statistics meet the highest standards of trustworthiness, quality and public value. They are identified by the quality mark shown above.
+Published management information are non-official statistics which may be in the process of being transitioned into official statistics. They may not comply with the UK Statistics Authority’s Code of Practice with regard to high data quality or high public value but there is a public interest or a specific interest by a specialist user group in accessing these statistics as there are no associated official statistics available.
 
-The UK Statistics Authority has designated these statistics as National Statistics signifying compliance with the Code of Practice for Statistics.
-
-Once statistics have been designated as National Statistics, it is a statutory requirement that the Code of Practice shall continue to be observed.
-
-The statistics last underwent a full [assessment](https://www.statisticsauthority.gov.uk/archive/assessment/assessment/assessment-reports/confirmation-of-designation-letters/letter-of-confirmation-as-national-statistics---assessment-report-177.pdf) by the Office for Statistics Regulation (OSR) against the Code of Practice in <span custom-style = "highlight">June 2019</span>. The OSR is the regulatory arm of the UK Statistics Authority.
-
-The continued designation of these statistics as National Statistics was confirmed in <span custom-style = "highlight">June 2019</span> following a compliance check by the Office for Statistics Regulation. The [compliance check report](https://www.statisticsauthority.gov.uk/correspondence/compliance-check-on-home-offices-statistics-on-immigration/) highlighted a number of strengths and made suggestions for improvements.
+Users should therefore be aware of the aspects of data quality and caveats surrounding these data, all of which are listed in this document.
 
 <br>
 
-Find out more about the Code of Practice at:   
-https://www.statisticsauthority.gov.uk/osr/code-of-practice/
-
+Find out more about Management Information publications at:  
+https://code.statisticsauthority.gov.uk/national-statisticians-guidance-management-information-and-official-statistics-3/
 <br>
-
-Find out more about National Statistics at:  
-https://www.statisticsauthority.gov.uk/national-statistician/types-of-official-statistics/
-
-<br>
-
-<br>
-
-<span custom-style = "Red_Bold_Highlight">Please remove</span>
-
-  *	<span custom-style = "highlight">Note to analyst: Remove the last paragraph relating to compliance checks if your publication has not undergone compliance checks. </span>
-  *	<span custom-style = "highlight">Please provide the correct hyperlinks to the published assessment and, if applicable, the compliance check report </span>
-
-\newpage
 
 # Introduction
-In tristique lobortis sagittis. Phasellus mollis mattis iaculis. Vivamus nunc justo, finibus nec maximus vel, ultricies vel urna. Ut ac mi sit amet augue fringilla egestas et ut mauris. Morbi volutpat, felis vel egestas scelerisque, nunc purus auctor ligula, non lobortis nulla felis in tortor. In nec commodo sem. Donec a dolor gravida, lobortis ligula vitae, pulvinar ante. Integer faucibus eros ut luctus tristique.
+This release by Information Services Division (ISD) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should have a minimum of one year’s post-diagnostic support. Data are presented by financial year of diagnosis and this report presents finalised figures for 2016/17 and provisional figures for 2017/18 which are subject to some service users completing their support.
 
-Proin vitae vehicula purus. Cras consequat iaculis venenatis. Morbi vel risus vestibulum, aliquet mi in, volutpat massa. Sed urna sem, posuere eu semper vitae, ullamcorper quis leo. Mauris nisi metus, scelerisque sed urna eu, maximus porttitor ante. Sed scelerisque accumsan commodo. Sed interdum justo volutpat, sodales nisi sed, consectetur arcu. Interdum et malesuada fames ac ante ipsum primis in faucibus. [Donec sodales lacus in erat elementum viverra](http://www.isdscotland.org/). Phasellus faucibus faucibus erat vitae pharetra. Mauris sed blandit dolor. Duis consequat fermentum diam quis elementum. Maecenas euismod non lorem sit amet ornare.
+The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnostic support a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all those newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support. 
 
-Praesent congue molestie nisi, ut congue dui mattis in. Vivamus vel urna risus. Donec sed blandit ex. Donec vel aliquam velit, in vestibulum lectus. Vivamus molestie massa in quam porttitor viverra. Nulla facilisi. Suspendisse fermentum metus justo, vel elementum ante rutrum eget.
+The LDP standard is reported in two parts, each addressing a separate element to the standard:
 
-\newpage
+1.	The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support.
+2.	The percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support.
+
+NHS Boards provide quarterly data submissions to ISD on individuals diagnosed and referred for post-diagnostic support within their local areas and this dataset forms the basis of the LDP standard calculation. 
+
+<br>
+
+## Comparability to previously published LDP standard figures
+Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) and reporting processes were effective from 1 April 2019 for all dementia diagnoses and referrals for post-diagnostic support from 1 April 2016 onwards. The revised definitions were designed in consultation with stakeholders to improve the quality and consistency of the data reported. 
+
+Due to the change in definitions, improvements in data quality and refinements to the method used to calculate the LDP standard, information presented in this publication is not comparable to previously published information relating to the dementia post-diagnostic support LDP standard.
+
+The Scotland level error rate for both 2016/17 and 2017/18 is around 3%. Further information around data quality can be found in [Appendix 1](#appendix-1---background-information).
 
 # Main Points
 * In tristique lobortis sagittis. Phasellus mollis mattis iaculis. Vivamus nunc justo, finibus nec maximus vel, ultricies vel urna. Ut ac mi sit amet augue fringilla egestas et ut mauris. Morbi volutpat, felis vel egestas scelerisque, nunc purus auctor ligula, non lobortis nulla felis in tortor. In nec commodo sem.
 * Proin vitae vehicula purus. Cras consequat iaculis venenatis. Morbi vel risus vestibulum, aliquet mi in, volutpat massa. Sed urna sem, posuere eu semper vitae, ullamcorper quis leo. Mauris nisi metus, scelerisque sed urna eu, maximus porttitor ante. Sed scelerisque accumsan commodo. Sed interdum justo volutpat, sodales nisi sed, consectetur arcu. Interdum et malesuada fames ac ante ipsum primis in faucibus.
-* Praesent congue molestie nisi, ut congue dui mattis in. Vivamus vel urna risus. Donec sed blandit ex. Donec vel aliquam velit, in vestibulum lectus.
 
-\newpage
+<Div custom-style = "TableChart title">Age distribution of referrals to dementia post-diagnostic support; `r latest_fy`^p^</Div>
+<Div custom-style = "Figure_Style">
+```{r age-dist-chart, echo=FALSE, fig.cap = "alt text here"}
+include_graphics(
+  here("publication", "output", pub_date, paste0(pub_date, "_chart.png")), 
+  dpi = 600
+)
+```
+</div>
+
+* Praesent congue molestie nisi, ut congue dui mattis in. Vivamus vel urna risus. Donec sed blandit ex. Donec vel aliquam velit, in vestibulum lectus.
 
 # Results and Commentary
 Suspendisse velit nisi, tempor ut posuere ut, blandit in mauris. Suspendisse commodo sagittis pretium. Nullam.
@@ -296,8 +303,6 @@ FigureTwo
 
 Fusce hendrerit nibh sit amet tellus tincidunt vehicula. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam non libero eu orci viverra rhoncus eu sed massa. Donec viverra scelerisque orci, sit amet dignissim eros ullamcorper rhoncus. Donec et metus sodales, aliquet ligula nec, bibendum leo.
 
-\newpage
-
 # Glossary
 ```{r kable_glossary, echo = FALSE, ft.align = "left"}
 # flextable(glossary, theme_fun = NULL) %>% 
@@ -309,8 +314,6 @@ Fusce hendrerit nibh sit amet tellus tincidunt vehicula. Class aptent taciti soc
 #   height(i = 2, height = 1, part = "body") %>% 
 #   fontsize(size = 12, part = "all")
 ```
-
-\newpage
 
 # Contact
 **Name, title**  
@@ -338,8 +341,6 @@ Data from this publication is available to download from the [Scottish Health an
 
 # Rate this publication
 Let us know what you think about this publication via. the link at the bottom of this [publication page]() on the PHS website.
-
-\newpage
 
 # Appendices
 ## Appendix 1 - Background information
