@@ -56,11 +56,12 @@ age_dist_data <-
 age_dist <-
   age_dist_data %>%
   ggplot(aes(x = age_grp, y = perc, fill = 1)) +
-  geom_bar(stat = "identity", width = 0.5, fill = phs_colours("phs-purple")) +
+  geom_bar(stat = "identity", width = 0.5) +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
             vjust = -0.5,
             size = 3) +
   theme_dementia() +
+  scale_fill_phs(discrete = FALSE) +
   scale_y_continuous(
     limits = 
       c(0, ceiling(max(age_dist_data$perc) / 10) * 10),

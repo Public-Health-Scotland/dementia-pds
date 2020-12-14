@@ -10,10 +10,11 @@ theme_dementia <- function(){
           axis.title.x = element_text(size = 10, angle = 0, 
                                       hjust = 0.5, vjust = 0.5),
           axis.text = element_text(size = 10),
-          axis.line = element_line())
+          axis.line = element_line(),
+          legend.position = "none")
 }
 
-colours <- c(
+phs_colours <- c(
   `phs-purple` = "#3F3685",
   `phs-magenta` = "#9B4393",
   `phs-blue` = "#0078D4",
@@ -24,17 +25,47 @@ colours <- c(
   `phs-rust` = "#C73918"
 )
 
-phs_colours <- function(...) {
+phs_cols <- function(...) {
   cols <- c(...)
   
   if (is.null(cols))
-    return (colours)
+    return (phs_colours)
   
-  colours[cols]
+  phs_colours[cols]
 }
 
-palettes <- list(
-  `main` = phs_colours("phs-purple", "phs-magenta", "phs-blue", "phs-green"),
-  `supporting` = phs_colours("phs-graphite", "phs-teal", "phs-liberty", "phs-rust")
+phs_palettes <- list(
+  `main` = phs_cols("phs-purple", "phs-magenta", "phs-blue", "phs-green"),
+  `supporting` = phs_cols("phs-graphite", "phs-teal", "phs-liberty", "phs-rust")
 )
 
+phs_pal <- function(palette = "main", reverse = FALSE, ...) {
+  pal <- phs_palettes[[palette]]
+  
+  if (reverse) pal <- rev(pal)
+  
+  colorRampPalette(pal, ...)
+}
+
+scale_fill_phs <- function(palette = "main", discrete = TRUE, reverse = FALSE, ...) {
+  pal <- phs_pal(palette = palette, reverse = reverse)
+  
+  if (discrete) {
+    discrete_scale("fill", paste0("phs_", palette), palette = pal, ...)
+  } else {
+    scale_fill_gradientn(colours = pal(256), ...)
+  }
+}
+
+scale_colour_phs <- function(palette = "main", discrete = TRUE, reverse = FALSE, ...) {
+  pal <- phs_pal(palette = palette, reverse = reverse)
+  
+  if (discrete) {
+    discrete_scale("colour", paste0("phs_", palette), palette = pal, ...)
+  } else {
+    scale_color_gradientn(colours = pal(256), ...)
+  }
+}
+
+
+### END OF SCRIPT ###
