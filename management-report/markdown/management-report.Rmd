@@ -9,6 +9,11 @@ output:
 
 ```{r load-setup, include=FALSE}
 source(here::here("code", "00_setup-environment.R"))
+
+# Write numbers with thousands separator
+knit_hooks$set(inline = function(x){
+  if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
+})
 ```
 
 ---
