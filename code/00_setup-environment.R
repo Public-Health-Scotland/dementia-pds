@@ -43,7 +43,7 @@ library(officer)       # For adding cover page and toc to report
 ### 2 - Dates - UPDATE THIS SECTION ----
 
 # Last day in reporting period
-end_date   <- dmy(30092020)
+end_date   <- dmy(31122020)
 
 # Date of publication
 # Only used when running publication, can comment out otherwise
