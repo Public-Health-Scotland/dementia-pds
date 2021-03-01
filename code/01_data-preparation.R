@@ -27,6 +27,9 @@ pds <-
   
   clean_names() %>%
   
+  # Remove empty 'x' variables (TEMP - move this to DM script)
+  select(-starts_with("x")) %>%
+  
   # Convert dates from character to date format
   mutate(across(contains("date"), ymd)) %>%
   
