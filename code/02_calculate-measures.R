@@ -150,9 +150,12 @@ pds %<>%
 
 ### 7 - Save individual level file for checking ----
 
-write_csv(pds, here("data", 
-                    glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                    glue("{fy}-{qt}_check-data.csv")))
+write_csv(
+  pds, 
+  here("data", 
+       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+       glue("{fy}-{qt}_check-data.csv"))
+)
 
 
 ### 8 - Create final output file ----
@@ -190,7 +193,8 @@ write_rds(
   pds, 
   here("data", 
        glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-       glue("{fy}-{qt}_final-data.rds"))
+       glue("{fy}-{qt}_final-data.rds")),
+  compress = "gz"
 )
 
 

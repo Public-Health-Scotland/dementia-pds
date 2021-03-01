@@ -181,9 +181,13 @@ pds %<>%
 
 ### 6 - Save data ---
 
-write_rds(pds, here("data", 
-                    glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                    glue("{fy}-{qt}_clean-data.rds")))
+write_rds(
+  pds, 
+  here("data", 
+       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+       glue("{fy}-{qt}_clean-data.rds")),
+  compress = "gz"
+)
 
 
 ### END OF SCRIPT ###
