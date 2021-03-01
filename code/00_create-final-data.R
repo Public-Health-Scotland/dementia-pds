@@ -38,13 +38,15 @@ pds <-
   mutate(chi_number = chi_pad(chi_number)) %>%
   
   # Replace word 'and' with ampersand
-  mutate(health_board = str_replace(health_board, " and ", " & "))
+  mutate(health_board = str_replace(health_board, " and ", " & ")) %>%
+  
+  # Rename 'Gender' to 'Sex'
+  rename_with(~"sex", matches("gender"))
 
 
 ### 3 - Extract records with diagnosis date before start date ----
 
 pds %<>%
-  
   filter(between(dementia_diagnosis_confirmed_date, start_final, end_final))
 
 
@@ -53,7 +55,8 @@ pds %<>%
 write_rds(
   pds,
   here("data", "final",
-       glue("{fy_final}_final-data.rds"))
+       glue("{fy_final}_final-data.rds")),
+  compress = "gz"
 )
 
 
