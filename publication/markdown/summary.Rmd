@@ -102,8 +102,8 @@ pub_date_url <-
 <Div custom-style = "Publication Title">Dementia Post-Diagnostic  
 Support</Div>
 <!-- <Div custom-style = "Publication Title">Support</Div> -->
-<Div custom-style = "Publication subtitle">Local Delivery Plan Standard; Figures for `r glue_collapse(fy_in_pub, sep = ", ", last = " and ")`</Div>
-<Div custom-style = "National stats">A Management Information publication for Scotland</Div>
+<Div custom-style = "Publication subtitle">Local Delivery Plan Standard; Figures to `r latest_fy`</Div>
+<Div custom-style = "National stats">An Official Statistics publication for Scotland</Div>
 
 <br>
 
