@@ -1,6 +1,6 @@
 ---
 output: 
-  word_document:
+  officedown::rdocx_document:
     reference_docx: "templates/summary-template.docx"
     fig_caption: no
 ---
@@ -82,11 +82,11 @@ err <- read_rds(here("data",
   mutate(perc = round_half_up(total_errors/records * 100, 0))
 
 # Create contact information
-contact1 <- c("**Lisa Reedie**", 
+contact1 <- c("Lisa Reedie", 
               "Principal Information Analyst", 
               "0131 275 6117",
               "phs.dementiapds@phs.scot")
-contact2 <- c("**Alice Byers**", 
+contact2 <- c("Alice Byers", 
               "Senior Information Analyst", 
               "0131 314 1725",
               "")
@@ -121,18 +121,17 @@ This release by Public Health Scotland (PHS) reports on the Scottish Governmentâ
 
 * In `r latest_fy`, those aged `r age_data %>% filter(fy == latest_fy) %>% filter(perc == max(perc)) %>% pull(age_grp)` years accounted for the largest percentage of people referred for post-diagnostic support (`r age_data %>% filter(fy == latest_fy) %$% max(perc) %>% round_half_up(1) %>% format(nsmall = 1)`%).
 
-<br>
-
 <Div custom-style = "Chart Title">Age distribution of referrals to dementia post-diagnostic support; `r latest_fy`^p^</Div>
 <Div custom-style = "Figure_Style">
-```{r age-dist-chart, echo=FALSE, fig.cap = "alt text here"}
-include_graphics(
+```{r age-dist-chart, echo=FALSE}
+external_img(
   here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_summary-chart.png")), 
-  dpi = 600
+       paste0(pub_date, "_summary-chart.png")),
+  width = 6.8, height = 3.5,
+  alt = "alt text here"
 )
 ```
-</div>
+</Div>
 
 <Div custom-style = "Footnotes">^p^ Figures for `r latest_fy` are provisional subject to all service users completing their support.</div>
 
@@ -155,17 +154,41 @@ Part of the LDP standard calculation requires the number of referrals for post-d
 
 ### Contact
 
-<Div custom-style = "Normal-no-space">
-```{r tab_contact, echo = FALSE}
-suppressWarnings(kable(contact, col.names = NULL))
+```{r contact-table, echo = FALSE, ft.align = "left"}
+set_flextable_defaults(
+  font.family = "Arial", 
+  font.size = 12,
+  font.color = "black"
+)
+
+contact %>%
+  flextable() %>%
+  compose(i = 4, j = 1,
+          value = as_paragraph(
+            hyperlink_text(x = contact$contact1[4],
+                           url = paste0("mailto:", contact$contact1[4]),
+                           props = fp_text(color = "#964091",
+                                           underlined = TRUE,
+                                           font.size = 12))
+          )) %>%
+  delete_part(part = "header") %>%
+  bold(i = 1) %>%
+  align(align = "left") %>%
+  border_remove() %>%
+  height_all(height = 0.01) %>%
+  width(width = 2.5) %>%
+  line_spacing(part = "body", space = 0.5)
 ```
-</Div>
 
 For all media enquires, please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 07500 854 574.
 
 <br>
 
 ### Further Information
-Data from this publication are available from the [publication page](`r pub_date_url`) on our website.
+Data from this publication, along with the full report, are available from the [publication page](`r pub_date_url`) on our website.
+
+For further information, please see the [Dementia Post-Diagnostic Support](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/) web page. 
+
+For information on the Dementia Benchmarking toolkit, please see the publication [web page](https://beta.isdscotland.org/find-publications-and-data/conditions-and-diseases/dementia/dementia-benchmarking-toolkit/). For related topics, please see the [mental health](https://www.isdscotland.org/Health-Topics/Mental-Health/) and [health and social community care](http://www.isdscotland.org/Health-Topics/Health-and-Social-Community-Care/) web pages.
 
 The next release of this publication will be in `r format(pub_date + years(1), "%B %Y")`.
