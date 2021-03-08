@@ -30,7 +30,7 @@ create_report <- function(pub_date, fy_in_pub){
   cover_page <- officer::read_docx(
     here::here("publication", "markdown", "templates", 
                "report-cover-page.docx")) %>%
-    officer::body_replace_all_text("Insert publication title here::here",
+    officer::body_replace_all_text("Insert publication title here",
                                    "Dementia Post-Diagnostic Support") %>%
     officer::body_replace_all_text(
       "Subtitle",
