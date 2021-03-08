@@ -7,24 +7,184 @@ output:
 
 ```{r set-up, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
-
-pds <- read_rds(
-  here("data", "publication", glue("{pub_date}_pub-data.rds"))
-)
+source(here("functions", "flextable_style.R"))
 
 latest_fy <- last(fy_in_pub)
+
+pub_date_url <- 
+  paste0("https://beta.isdscotland.org/find-publications-and-data/",
+         "conditions-and-diseases/dementia/dementia-post-diagnostic-support/",
+         format(pub_date, "%e-%B-%Y") %>% str_trim())
+
+pds <- 
+  read_rds(
+    here("data", "publication", glue("{pub_date}_pub-data.rds"))
+  ) %>%
+  filter(ijb != "Unknown")
 ```
 
-```{r glossary, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
-glossary1 <- c("Hendrerit", "Class aptent")
-glossary2 <- c("Donec et metus sodales, aliquet ligula nec, bibendum leo.",
-               "Nullam mi libero, hendrerit vitae condimentum in, iaculis porta purus. Suspendisse potenti. Donec sed molestie nisi, ut blandit ex. Proin tempor, mauris sit amet consectetur placerat, elit lorem placerat dui, sed placerat mi ante a purus.")
+```{r incidence-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
+  select(fy, health_board = health_board_label, diagnoses)
 
-glossary <- data.frame(glossary1, glossary2)
+incidence <-
+  pds %>%
+  filter(fy == max(fy_in_pub)) %>%
+  group_by(health_board) %>%
+  summarise(across(c(referrals), sum),
+            .groups = "drop") %>%
+  adorn_totals(name = "Scotland") %>%
+  left_join(exp %>% filter(fy == max(fy_in_pub)), 
+            by = "health_board") %>%
+  mutate(
+    perc = case_when(
+      referrals == 0 ~ 0,
+      TRUE ~ referrals / diagnoses * 100),
+    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
+  ) %>%
+  select(health_board, diagnoses, referrals, perc_formatted)
+
+incidence_trend <-
+  pds %>%
+  group_by(health_board, fy) %>%
+  summarise(across(c(referrals), sum),
+            .groups = "drop") %>%
+  group_by(fy) %>%
+  group_modify(~ adorn_totals(., name = "Scotland")) %>%
+  left_join(exp, by = c("health_board", "fy")) %>%
+  ungroup() %>%
+  mutate(
+    perc = case_when(
+      referrals == 0 ~ 0,
+      TRUE ~ referrals / diagnoses * 100),
+    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")) %>%
+  select(-c(referrals:perc)) %>%
+  pivot_wider(names_from = fy, values_from = perc_formatted)
+```
+
+```{r 12-months-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+hb_12 <-
+  pds %>%
+  filter(fy == max(fy_in_pub)) %>%
+  group_by(health_board) %>%
+  summarise(across(c(complete:numerator), sum),
+            .groups = "drop") %>%
+  adorn_totals(name = "Scotland") %>%
+  mutate(
+    perc = case_when(
+      referrals == 0 ~ 0,
+      TRUE ~ numerator / referrals * 100),
+    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
+  ) %>%
+  select(health_board, referrals, complete, exempt, ongoing, fail, perc_formatted)
+
+ijb_12 <-
+  pds %>%
+  filter(fy == max(fy_in_pub)) %>%
+  group_by(ijb) %>%
+  summarise(across(c(complete:numerator), sum),
+            .groups = "drop") %>%
+  adorn_totals(name = "Scotland") %>%
+  mutate(
+    perc = case_when(
+      referrals == 0 ~ 0,
+      TRUE ~ numerator / referrals * 100),
+    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
+  ) %>%
+  select(ijb, referrals, complete, exempt, ongoing, fail, perc_formatted)
+
+headers <-
+  c("Number of People Referred to PDS",
+    "Standard Met",
+    "Exempt from Standard",
+    "PDS Ongoing",
+    "Standard Not Met",
+    "Percentage of LDP Standard Achieved")
+
+hb_headers <- c("NHS Board", headers)
+ijb_headers <- c("Integration Joint Board", headers)
+
+hb_trend <-
+  pds %>%
+  group_by(health_board, fy) %>%
+  summarise(across(c(referrals, numerator), sum),
+            .groups = "drop") %>%
+  group_by(fy) %>%
+  group_modify(~ adorn_totals(., name = "Scotland")) %>%
+  ungroup() %>%
+  mutate(
+    perc = case_when(
+      referrals == 0 ~ 0,
+      TRUE ~ numerator / referrals * 100),
+    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")) %>%
+  select(-c(referrals:perc)) %>%
+  pivot_wider(names_from = fy, values_from = perc_formatted)
+
+ijb_trend <-
+  pds %>%
+  group_by(ijb, fy) %>%
+  summarise(across(c(referrals, numerator), sum),
+            .groups = "drop") %>%
+  group_by(fy) %>%
+  group_modify(~ adorn_totals(., name = "Scotland")) %>%
+  ungroup() %>%
+  mutate(
+    perc = case_when(
+      referrals == 0 ~ 0,
+      TRUE ~ numerator / referrals * 100),
+    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")) %>%
+  select(-c(referrals:perc)) %>%
+  pivot_wider(names_from = fy, values_from = perc_formatted)
+```
+
+```{r alt-text, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+
+```
+
+```{r footnotes, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+source_footnote <- 
+  paste0("Source: Public Health Scotland quarterly dementia post-diagnostic ",
+        "support dataset. Data submissions from NHS Boards as at ", 
+        format(end_date, "%d %B %Y"), ".")
+
+prov_footnote <- 
+  paste("Figures for", latest_fy, "are provisional (^P^) subject to all",
+        "service users completing their support.")
+
+incidence_footnote <-
+  paste0("The estimated number of people newly diagnosed with dementia is ",
+        "subject to the limitations detailed within the [Estimated and ",
+        "Projected Diagnosis Rates for Dementia in Scotland: 2014-2020]",
+        "(http://www.gov.scot/Publications/2016/12/9363) publication. ",
+        "Estimates for calendar year", str_sub(latest_fy, 1, 4),
+        " have been used.")
+
+method_footnote <-
+  paste("For detailed information on how the percentage of LDP standard",
+        "achieved is calculated, and how 'standard met', 'exempt from",
+        "standard', 'PDS ongoing' and 'standard not met' are defined,",
+        "please see the [Background section](#appendix-1---background-information) of this report.")
+
+interpret_footnote <-
+  paste("When interpreting this information consideration should also be",
+        "taken of the percentage of people estimated to be newly diagnosed",
+        "with dementia being referred to post-diagnostic support",
+        "(see [section 1](#section-1)).")
+
+age_footnote <-
+  paste("Age is calculated as at the dementia diagnosis date. There are",
+        "a small number of records with and incomplete date of birth and",
+        "therefore the age is unknown.")
+
+simd_footnote <- 
+  paste("1.	Deprivation is calculated by matching postcodes to the",
+        "Scottish Index of Multiple Deprivation (SIMD) quintiles.	There are",
+        "a small number of records with an incomplete postcode and therefore",
+        "the deprivation quintile is unknown.")
 ```
 
 ```{r metadata, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
-Indicator <- c("Publication title",
+indicator <- c("Publication title",
 "Description",
 "Theme",
 "Topic",
@@ -54,7 +214,7 @@ Indicator <- c("Publication title",
 "Help email",
 "Date form completed")
 
-Description <- c("",
+description <- c("",
 "",
 "",
 "",
@@ -84,7 +244,7 @@ Description <- c("",
 "",
 "DD Month YYYY")
 
-MetaData <- data.frame(Indicator, Description)
+metadata <- data.frame(indicator, description)
 ```
 
 <Div custom-style = "Publication subtitle">This is an Official Statistics Publication</Div>
@@ -99,15 +259,15 @@ Find out more about Official Statistics on the [UK Statistics Authority website]
 
 <br>
 
-Other formats of this publication are available on request at: 
-
-0131 314 5300 
-
+Other formats of this publication are available on request at:  
+0131 314 5300  
 phs.otherformats@phs.scot
+
+\newpage
 
 # Introduction
 
-This release by Information Services Division (ISD) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should have a minimum of one year’s post-diagnostic support. Data are presented by financial year of diagnosis and this report presents finalised figures for 2016/17 and provisional figures for 2017/18 which are subject to some service users completing their support.
+This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should have a minimum of one year’s post-diagnostic support. Data are presented by financial year of diagnosis and this report presents finalised figures for 2016/17 and provisional figures for 2017/18 which are subject to some service users completing their support.
 
 The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnostic support a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all those newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support. 
 
@@ -116,7 +276,7 @@ The LDP standard is reported in two parts, each addressing a separate element to
 1.	The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support.
 2.	The percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support.
 
-NHS Boards provide quarterly data submissions to ISD on individuals diagnosed and referred for post-diagnostic support within their local areas and this dataset forms the basis of the LDP standard calculation. 
+NHS Boards provide quarterly data submissions to PHS on individuals diagnosed and referred for post-diagnostic support within their local areas and this dataset forms the basis of the LDP standard calculation. 
 
 <br>
 
@@ -130,26 +290,246 @@ The Scotland level error rate for both 2016/17 and 2017/18 is around 3%. Further
 \newpage
 
 # Main Points
-* In tristique lobortis sagittis. Phasellus mollis mattis iaculis. Vivamus nunc justo, finibus nec maximus vel, ultricies vel urna. Ut ac mi sit amet augue fringilla egestas et ut mauris. Morbi volutpat, felis vel egestas scelerisque, nunc purus auctor ligula, non lobortis nulla felis in tortor. In nec commodo sem.
-* Proin vitae vehicula purus. Cras consequat iaculis venenatis. Morbi vel risus vestibulum, aliquet mi in, volutpat massa. Sed urna sem, posuere eu semper vitae, ullamcorper quis leo. Mauris nisi metus, scelerisque sed urna eu, maximus porttitor ante. Sed scelerisque accumsan commodo. Sed interdum justo volutpat, sodales nisi sed, consectetur arcu. Interdum et malesuada fames ac ante ipsum primis in faucibus.
 
-<Div custom-style = "TableChart title">Age distribution of referrals to dementia post-diagnostic support; `r latest_fy`^p^</Div>
 
 \newpage
 
 # Results and Commentary
-Suspendisse velit nisi, tempor ut posuere ut, blandit in mauris. Suspendisse commodo sagittis pretium. Nullam.
 
-## Sub-heading
-Suspendisse potenti. Donec sit amet porttitor urna. Fusce egestas et elit quis imperdiet. Quisque tempor, metus vel gravida fermentum, odio neque imperdiet justo, vitae sagittis turpis velit vitae velit. Nulla iaculis egestas tellus, non efficitur lorem molestie at. Donec urna sem, pharetra ut nunc non, tempor ullamcorper dolor. Duis fringilla mi eu erat lobortis, ac sagittis ipsum eleifend. Fusce eget rhoncus lorem.
+## 1. Number and percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support
 
-Sed suscipit nisl vel orci scelerisque mattis. Proin ut tortor et purus bibendum pharetra vel elementum dolor. Morbi orci massa, egestas vel dictum quis, maximus id justo. Fusce eu sem consequat, mollis nulla in, mollis nisl. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at facilisis augue.
+This part of the LDP standard requires the number of referrals for post-diagnostic support to be compared against an estimated number of people newly diagnosed with dementia each year. Health Board level estimates of the number of people newly diagnosed with dementia (incidence) used for this calculation are from the paper [Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020](http://www.gov.scot/Publications/2016/12/9363) published by the Scottish Government in 2016. 
 
-\newpage
+Table 1 presents the number and percentage of people referred for dementia post-diagnostic support compared to the estimated number of people newly diagnosed with dementia in `r latest_fy` by NHS Board. 
 
-<Div custom-style = "TableChart title">X</Div>
+<Div custom-style = "TableChart title">Table 1: Estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^P^</Div>
+
+```{r table-1, echo = FALSE, ft.align = "left"}
+incidence %>%
+  flextable() %>% 
+  ft_dementia_style() %>% 
+  width(j = 1, width = 2.4) %>%
+  width(j = -1, width = 1.5) %>%
+  set_header_labels(
+    values = c(
+      health_board = "NHS Board",
+      diagnoses = "Estimated Number of People Newly Diagnosed with Dementia",
+      referrals = "Number of People Referred to PDS",
+      perc_formatted = paste("Percentage of Estimated Number of People",
+                             "Diagnosed with Dementia Referred to PDS")
+    ))
+```
+
+<Div custom-style = "Normal_Notes">
+`r source_footnote` Estimated and Projected Diagnosis Rates of Dementia in Scotland: 2014-2020.
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r incidence_footnote`
+</div>
+
+<br>
+
+COMMENTARY HERE
+
+Figure 1 presents the percentage of people referred for dementia post-diagnostic support compared to the estimated number of people newly diagnosed with dementia by NHS Board in `r latest_fy`.
+
+<Div custom-style = "TableChart title">Figure 1: Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^P^</Div>
+
 <Div custom-style = "Figure_Style">
-```{r age-dist-chart, echo=FALSE}
+```{r fig-1, echo=FALSE}
+external_img(
+  here("publication", "output", pub_date, "figures", 
+       paste0(pub_date, "_incidence-hb.png")),
+  width = 6, height = 6,
+  alt = "alt text here"
+)
+```
+</Div>
+
+<Div custom-style = "Normal_Notes">
+Add footnotes here once finalised for above table.
+</div>
+
+COMMENTARY HERE
+
+Table 2 below presents the trend of Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board.
+
+<Div custom-style = "TableChart title">Table 2: Trend of percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board</Div>
+
+```{r table-2, echo = FALSE, ft.align = "left"}
+incidence_trend %>%
+  flextable() %>% 
+  ft_dementia_style() %>% 
+  width(j = 1, width = 2.4) %>%
+  width(j = -1, width = 1.5) %>%
+  set_header_labels(values = c(health_board = "NHS Board")) %>%
+  compose(
+    j = ncol(hb_trend), part = "header",
+    value = as_paragraph(latest_fy, as_sup("P"))
+  ) %>%
+  compose(
+    j = ncol(hb_trend) - 1, part = "header",
+    value = as_paragraph(nth(fy_in_pub, -2), as_sup("R"))
+  )
+```
+
+FOOTNOTES HERE
+
+COMMENTARY HERE
+
+## 2. Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support
+
+This part of LDP standard reports on the number of people referred for dementia post-diagnostic support who received a minimum of one year’s support. Figures presented in this section should be interpreted in conjunction with [section 1]().
+
+The criteria used to define this part of the LDP standard is detailed in [Appendix 1]().
+
+### NHS Board
+
+Table 3 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS board for `r latest_fy`.
+
+<Div custom-style = "TableChart title">Table 3: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board; `r latest_fy`^P^</Div>
+
+```{r table-3, echo = FALSE, ft.align = "left"}
+names(hb_headers) <- names(hb_12)
+
+hb_12 %>%
+  flextable() %>% 
+  ft_dementia_style() %>% 
+  width(j = 1, width = 2.2) %>%
+  width(j = 2:(ncol(hb_12) - 1), width = 0.8) %>%
+  width(j = ncol(hb_12), width = 1) %>%
+  fontsize(size = 10, part = "all") %>%
+  set_header_labels(values = hb_headers)
+```
+
+FOOTNOTES HERE
+
+COMMENTARY HERE
+
+Figure 2 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS board for `r latest_fy`.
+
+<Div custom-style = "TableChart title">Figure 2: Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^P^</Div>
+
+<Div custom-style = "Figure_Style">
+```{r fig-2, echo=FALSE}
+external_img(
+  here("publication", "output", pub_date, "figures", 
+       paste0(pub_date, "_12-months-hb.png")),
+  width = 6, height = 6,
+  alt = "alt text here"
+)
+```
+</Div>
+
+FOOTNOTES HERE
+
+COMMENTARY HERE
+
+Table 4 below presents the trend of percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS Board.
+
+<Div custom-style = "TableChart title">Table 4: Trend of percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board</Div>
+
+```{r table-4, echo = FALSE, ft.align = "left"}
+hb_trend %>%
+  flextable() %>% 
+  ft_dementia_style() %>% 
+  width(j = 1, width = 2.4) %>%
+  width(j = -1, width = 1.5) %>%
+  set_header_labels(values = c(health_board = "NHS Board")) %>%
+  compose(
+    j = ncol(hb_trend), part = "header",
+    value = as_paragraph(latest_fy, as_sup("P"))
+  ) %>%
+  compose(
+    j = ncol(hb_trend) - 1, part = "header",
+    value = as_paragraph(nth(fy_in_pub, -2), as_sup("R"))
+  )
+```
+
+FOOTNOTES HERE
+
+COMMENTARY HERE
+
+
+### Integration Joint Board
+
+Table 5 below presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Joint Board (IJB).
+
+<Div custom-style = "TableChart title">Table 5: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board; `r latest_fy`^P^</Div>
+
+```{r table-5, echo = FALSE, ft.align = "left"}
+names(ijb_headers) <- names(ijb_12)
+
+ijb_12 %>%
+  flextable() %>% 
+  ft_dementia_style() %>% 
+  width(j = 1, width = 2.2) %>%
+  width(j = 2:(ncol(ijb_12) - 1), width = 0.8) %>%
+  width(j = ncol(ijb_12), width = 1) %>%
+  fontsize(size = 10, part = "all") %>%
+  set_header_labels(values = ijb_headers)
+```
+
+FOOTNOTES HERE
+
+COMMENTARY HERE
+
+Figure 3 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support by IJB for `r latest_fy`.
+
+<Div custom-style = "TableChart title">Figure 3: Percentage of referrals who received a minimum of one year’s post-diagnostic support by Integration Joint Board; `r latest_fy`^P^</Div>
+
+<Div custom-style = "Figure_Style">
+```{r fig-3, echo=FALSE}
+external_img(
+  here("publication", "output", pub_date, "figures", 
+       paste0(pub_date, "_12-months-ijb.png")),
+  width = 6, height = 9,
+  alt = "alt text here"
+)
+```
+</Div>
+
+FOOTNOTES HERE
+
+Table 6 below presents the trend of percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Joint Board (IJB).
+
+<Div custom-style = "TableChart title">Table 6: Trend of percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board</Div>
+
+```{r table-6, echo = FALSE, ft.align = "left"}
+ijb_trend %>%
+  flextable() %>% 
+  ft_dementia_style() %>% 
+  width(j = 1, width = 2.4) %>%
+  width(j = -1, width = 1.5) %>%
+  set_header_labels(values = c(ijb = "Integration Joint Board")) %>%
+  compose(
+    j = ncol(hb_trend), part = "header",
+    value = as_paragraph(latest_fy, as_sup("P"))
+  ) %>%
+  compose(
+    j = ncol(hb_trend) - 1, part = "header",
+    value = as_paragraph(nth(fy_in_pub, -2), as_sup("R"))
+  )
+```
+
+FOOTNOTES HERE
+
+COMMENTARY HERE
+
+## 3. Demographics and Inequalities
+
+This part of the report presents information on the demographics of individuals who have been referred for dementia post-diagnostic support. Age and deprivation have been identified as two of the main areas of interest. 
+
+### Age
+
+Figure 4 below presents the age distribution of those referred for dementia post-diagnostic support for `r latest_fy`.
+
+<Div custom-style = "TableChart title">Figure 4: Age distribution of referrals for dementia post-diagnostic support; `r latest_fy`^P^</Div>
+
+<Div custom-style = "Figure_Style">
+```{r fig-4, echo=FALSE}
 external_img(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_age-dist.png")),
@@ -159,63 +539,166 @@ external_img(
 ```
 </Div>
 
-<Div custom-style = "Normal_Notes">
-1. Note one.
-2. Note two.
-3. Note three.
-4. Note four. 
-</div>
+FOOTNOTES HERE
 
-<br>
+COMMENTARY HERE
+
+Figure 5 below presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by age group for `r latest_fy`. 
+
+<Div custom-style = "TableChart title">Figure 5: Percentage of referrals who received a minimum of one year’s post-diagnostic support by age group; `r latest_fy`^P^</Div>
+
+<Div custom-style = "Figure_Style">
+```{r fig-5, echo=FALSE}
+external_img(
+  here("publication", "output", pub_date, "figures", 
+       paste0(pub_date, "_12-months-age.png")),
+  width = 6.8, height = 3.5,
+  alt = "alt text here"
+)
+```
+</Div>
+
+FOOTNOTES HERE
+
+COMMENTARY HERE
+
+### Deprivation
+
+Figure 6 presents the distribution of referrals for dementia post-diagnostic support by deprivation quintile for `r latest_fy`. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived) to 5 (least deprived). 
+
+<Div custom-style = "TableChart title">Figure 6: Distribution of referrals to dementia post-diagnostic support by deprivation quintile; `r latest_fy`^P^</Div>
+
+<Div custom-style = "Figure_Style">
+```{r fig-6, echo=FALSE}
+external_img(
+  here("publication", "output", pub_date, "figures", 
+       paste0(pub_date, "_simd-dist.png")),
+  width = 6.8, height = 3.5,
+  alt = "alt text here"
+)
+```
+</Div>
+
+FOOTNOTES HERE
+
+COMMENTARY HERE
+
+Figure 7 below presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by deprivation quintile for `r latest_fy`. 
+
+<Div custom-style = "TableChart title">Figure 7: Percentage of referrals who received a minimum of one year’s post-diagnostic support by deprivation quintile; `r latest_fy`^P^</Div>
+
+<Div custom-style = "Figure_Style">
+```{r fig-7, echo=FALSE}
+external_img(
+  here("publication", "output", pub_date, "figures", 
+       paste0(pub_date, "_12-months-simd.png")),
+  width = 6.8, height = 3.5,
+  alt = "alt text here"
+)
+```
+</Div>
+
+FOOTNOTES HERE
+
+COMMENTARY HERE
 
 \newpage
 
 # Glossary
-```{r glossary-table, echo = FALSE, ft.align = "left"}
-flextable(glossary, theme_fun = NULL) %>%
-  delete_part(part = "header") %>%
-  align(align = "left", part = "body") %>%
-  valign(valign = "top", part = "body") %>%
-  width(j = 1, width = 4.94 / 2.54) %>%
-  width(j = 2, width = 12.69 / 2.54) %>%
-  height(i = 2, height = 1, part = "body") %>%
-  fontsize(size = 12, part = "all")
-```
+
+**Incidence**  
+Incidence refers to the number of new cases of a particular illness or disease during a defined time period. For the purposes of this publication we are looking at the number of new diagnoses of dementia.
+
+**LDP Standard**  
+Formerly known as HEAT Targets, Local Delivery Plan (LDP) standards are priorities agreed between Scottish Government and NHS Boards. Performance on Dementia PDS is one of the current LDP Standards. Further information can be found on the [Scottish Government website](http://www.gov.scot/Topics/Health/Quality-Improvement-Performance/NHS-Performance-Targets).
+
+**Post-Diagnostic Support (PDS)**  
+Support commissioned by the Scottish Government that everyone newly diagnosed with dementia is entitled to a minimum of one year’s post-diagnostic support. Further information on post-diagnostic support can be found on the [Alzheimer Scotland](https://www.alzscot.org/living-with-dementia/newly-diagnosed/accessing-post-diagnostic-support) website.
+
+**Referral**  
+When a person receives a new diagnosis of dementia, a referral is made to a service that provides post-diagnostic support and allocates a named person to work alongside the individual and those close to them. 
+
+**Deprivation Quintile**  
+The Scottish Index of Multiple Deprivation (SIMD) Quintiles. Deprivation for individuals is estimated from aggregate data derived from the census and other routine sources. These are used to estimate the deprivation of small geographical areas. The Scottish Index of Multiple Deprivation (SIMD) has seven domains (income, employment, education, housing, health, crime, and geographical access) at datazone level, which have been combined into an overall index to pick out area concentrations of multiple deprivation. Data in this report are analysed by the ‘Scotland level’ Scottish Index of Multiple Deprivation population weighted quintiles. Each quintile consists of approximately 20% of the population living in Scotland, with deprivation quintile 1 indicating the 20% of the population living in the most deprived areas and deprivation quintile 5 the 20% of the population living in the least deprived areas.
 
 \newpage
 
 # Contact
-**Name, title**  
-Service  
-Phone:  
-Email:  
-**Name, title**  
-Service  
-Phone:  
-Email:  
+**Alice Byers, Senior Information Analyst**  
+Health & Social Care  
+0131 314 1725  
+
+**Lisa Reedie, Principal Information Analyst**   
+Health & Social Care  
+0131 275 6117  
+
+phs.dementiapds@phs.scot
 
 <br>
 
 # Further Information
-Further information and data for this publication are available from the [publication page](http://www.google.com/) on our website.
+Further information and data for this publication are available from the [publication page](`r pub_date_url`) on our website.
 
-The next release of this publication will be DD Month YYYY.
-
-<br>
-
-# Open data
-Data from this publication is available to download from the [Scottish Health and Social Care Open Data Portal](https://www.opendata.nhs.scot/).
+The next release of this publication will be in `r format(pub_date + years(1), "%B %Y")`.
 
 <br>
 
 # Rate this publication
-Let us know what you think about this publication via. the link at the bottom of this [publication page]() on the PHS website.
+Let us know what you think about this publication via the link at the bottom of this [publication page](`r pub_date_url`) on the PHS website.
 
 \newpage
 
 # Appendices
+
 ## Appendix 1 - Background information
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero.
+
+### Local Delivery Plan (LDP) Standard
+
+In order to effectively monitor performance of post-diagnostic support delivery, a national [Local Delivery Plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced in April 2013 for all those newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support.
+
+The LDP standard is defined and calculated as follows:
+
+* **LDP standard met** - The LDP standard is considered met if post-diagnostic support (PDS) started within 12 months of diagnosis and support was ongoing after 12 months, or PDS started within 12 months of diagnosis and ended after at least 11 months.
+   
+*	**LDP standard not met** - The LDP standard is considered not met if a first substantive contact had not occurred within 12 months of diagnosis or where PDS was stopped prior to 12 months where this was not due to an exempt reason (see below). 
+   
+* **Exempt from LDP standard** - Exemptions from the LDP standard include where PDS had not yet started, or had started and was completed before 12 months due to the following reasons: service user died, service user moved to a different health board area, service user terminated early or refused and service user no longer actively able to engage in PDS.
+   
+* **PDS ongoing** - Post-diagnostic support was considered still ongoing if there was less than 12 months since diagnosis and PDS had not yet started, or PDS had started within 12 months and had not yet been delivered for a minimum of 11 months.
+   
+This part of the LDP standard is calculated as:
+
+<br>
+$$
+\text{LDP Standard Achieved (%)} = \frac{\text{LDP Standard met + Exempt from LDP Standard}}{\text{LDP Standard met + Exempt + LDP Standard not met}} \times 100
+$$
+<br>
+
+Service users for whom it is not yet known if they have met the standard as their PDS is ongoing are excluded from the calculation and therefore figures for the latest year are currently provisional subject to all service users completing their support.
+
+### Comparability to previously published LDP standard figures
+
+Information presented in this publication is not comparable to previously published information relating to the dementia post-diagnostic support LDP standard. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
+
+### Data Definitions and Reporting
+
+NHS Boards provide quarterly data submissions to PHS on individuals diagnosed and referred for post-diagnostic support within their local areas and this dataset forms the basis of the LDP standard calculation. 
+
+Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) and reporting processes were effective from 1 April 2019 for all referrals for post-diagnostic support from 1 April 2016 onwards. The revised definitions were designed in consultation with stakeholders to improve the quality and consistency of the data reported.
+
+### Data Quality
+
+PHS undertake data quality checks and feedback data errors and queries to each Health Board, relating to the Dementia Post-Diagnostic Support dataset, following each data submission.
+
+As at the 31 December 2019 data submission, the Scotland level error rate for 2016/17 was 3.4% and for 2017/18 was 3.3%. This relates to the percentage of records with one or more error.
+
+For a relatively small number of individuals, multiple records were submitted and to avoid counting these service users more than once, the following rules were applied to select only one record per individual:
+
+1.	Keep record with earliest diagnosis date. If these are the same, then;
+2.	Keep record with termination reason that service user has moved to a different Health Board area. If no record was terminated for this reason, then;
+3.	Keep record with earliest first contact date.
+
+There also exists a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IJB. The support provided to these service users has been apportioned to NHS Highland in this report, as part of the LDP Standard is a population based measure, and so by not including these Argyll & Bute residents this figure may be skewed.
 
 \newpage
 
@@ -224,11 +707,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praes
 <br>
 
 ```{r metadata-table, echo = FALSE, ft.align = "left"}
-flextable(MetaData, theme_fun = NULL) %>%
-  set_header_labels(Indicator = "Metadata Indicator",
-                    Description = "Description") %>%
-  align(j = 1, align = "right", part = "body") %>%
-  align(j = 2, align = "left", part = "body") %>%
+metadata %>%
+  flextable() %>%
+  ft_dementia_style() %>%
+  set_header_labels(indicator = "Metadata Indicator",
+                    description = "Description") %>%
+  align(align = "left", part = "body") %>%
   valign(valign = "top", part = "all") %>%
   bold(j = 1, part = "body") %>%
   border_outer(border = fp_border()) %>%
@@ -263,12 +747,6 @@ NHS Board Communication leads
 **Early Access for Management Information**
 
 These statistics will also have been made available to those who needed access to ‘management information’, ie as part of the delivery of health and care:
-
-<br>
-
-**Early Access for Quality Assurance**
-
-These statistics will also have been made available to those who needed access to help quality assure the publication:
 
 \newpage
 
