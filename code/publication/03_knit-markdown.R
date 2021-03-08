@@ -29,7 +29,7 @@ render(
 
 ### 2 - Knit report ----
 
-create_report(pub_date, fy_in_pub)
+create_report(pub_date, max(fy_in_pub))
 
 
 ### END OF SCRIPT ###

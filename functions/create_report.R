@@ -1,5 +1,5 @@
 
-create_report <- function(pub_date, fy_in_pub){
+create_report <- function(pub_date, latest_fy){
   
   `%>%` <- magrittr::`%>%`
   
@@ -34,8 +34,7 @@ create_report <- function(pub_date, fy_in_pub){
                                    "Dementia Post-Diagnostic Support") %>%
     officer::body_replace_all_text(
       "Subtitle",
-      paste("Local Delivery Plan Standard - Figures for",
-            glue::glue_collapse(fy_in_pub, sep = ", ", last = " and "))) %>%
+      paste("Local Delivery Plan Standard - Figures to", latest_fy)) %>%
     officer::body_replace_all_text(
       "DD Month YYYY", 
       stringr::str_trim(format(pub_date, "%e %B %Y"))) %>%
