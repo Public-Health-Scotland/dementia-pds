@@ -9,7 +9,7 @@ output:
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 
 # Run setup environment script
-source(here::here("code", "00_setup-environment.R"))
+source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 # Write numbers with thousands separator
 knit_hooks$set(inline = function(x){
@@ -126,7 +126,7 @@ This release by Public Health Scotland (PHS) reports on the Scottish Government�
 ```{r age-dist-chart, echo=FALSE}
 external_img(
   here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_summary-chart.png")),
+       paste0(pub_date, "_age-dist.png")),
   width = 6.8, height = 3.5,
   alt = "alt text here"
 )
@@ -149,8 +149,6 @@ Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Heal
 Information presented in this publication is not comparable to previously published information relating to the dementia post-diagnostic support LDP standard. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
 
 Part of the LDP standard calculation requires the number of referrals for post-diagnostic support to be compared against an estimated number of newly diagnosed dementia cases each year. Health Board level estimates of people newly diagnosed with dementia (incidence) used for this calculation are from the paper [‘Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020’](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) published by the Scottish Government in 2016.
-
-<br>
 
 ### Contact
 
@@ -181,8 +179,6 @@ contact %>%
 ```
 
 For all media enquires, please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 07500 854 574.
-
-<br>
 
 ### Further Information
 Data from this publication, along with the full report, are available from the [publication page](`r pub_date_url`) on our website.
