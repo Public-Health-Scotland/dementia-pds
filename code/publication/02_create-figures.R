@@ -13,28 +13,17 @@
 
 ### 1 - Load environment file and themes ----
 
-source(here::here("code", "00_setup-environment.R"))
+source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 source(here("functions", "ggplot_themes.R"))
 
 
 ### 2 - Read in data ----
 
-pds <- 
+basefile <-
   read_rds(
-    here("data", 
-         glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-         glue("{fy}-{qt}_final-data.rds"))
-  ) %>%
-  
-  # Select only FY to be incuded in pub
-  filter(fy %in% fy_in_pub) %>%
-  
-  # Remove codes from board and IJB
-  mutate(health_board = str_sub(health_board, 3, -1),
-         ijb          = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
+    here("data", "publication", glue("{pub_date}_pub-data.rds"))
+  )
 
 # Load expected diagnoses reference file
 exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%

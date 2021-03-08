@@ -13,7 +13,7 @@
 
 ### 1 - Load environment file ----
 
-source(here::here("code", "00_setup-environment.R"))
+source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 
 ### 2 - Restructure data file ----
@@ -60,9 +60,7 @@ basefile <-
 
 write_rds(
   basefile,
-  here("data", 
-       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-       glue("{fy}-{qt}_pub-data.rds")),
+  here("data", "publication", glue("{pub_date}_pub-data.rds")),
   compress = "gz"
 )
 

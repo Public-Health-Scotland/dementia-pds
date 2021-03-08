@@ -13,7 +13,7 @@
 
 ### 1 - Load environment file ----
 
-source(here::here("code", "00_setup-environment.R"))
+source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 
 ### 2 - Load data ----
