@@ -11,11 +11,6 @@ output:
 # Run setup environment script
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
-# Write numbers with thousands separator
-knit_hooks$set(inline = function(x){
-  if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
-})
-
 latest_fy <- last(fy_in_pub)
 prev_fy   <- nth(fy_in_pub, -2)
 
