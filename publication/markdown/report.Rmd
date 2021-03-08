@@ -1,6 +1,6 @@
 ---
 output: 
-  word_document:
+  officedown::rdocx_document:
     reference_docx: "templates/report-template.docx"
     fig_caption: no
 ---
@@ -9,7 +9,7 @@ output:
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 pds <- read_rds(
-  here("data", "publication", glue("{pub_date}_pub-data.rds")),
+  here("data", "publication", glue("{pub_date}_pub-data.rds"))
 )
 
 latest_fy <- last(fy_in_pub)
@@ -23,7 +23,7 @@ glossary2 <- c("Donec et metus sodales, aliquet ligula nec, bibendum leo.",
 glossary <- data.frame(glossary1, glossary2)
 ```
 
-```{r MetaData, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+```{r metadata, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 Indicator <- c("Publication title",
 "Description",
 "Theme",
@@ -93,15 +93,20 @@ Public Health Scotland has authority to produce official statistics on any matte
 
 All official statistics should comply with the UK Statistics Authority’s Code of Practice which promotes the production and dissemination of official statistics that inform decision making. They can be formally assessed by the UK Statistics Authority’s regulatory arm for National Statistics status.
 
-<br>
-
 Find out more about the Code of Practice on the [UK Statistics Authority website](https://code.statisticsauthority.gov.uk/). 
-
-<br>
 
 Find out more about Official Statistics on the [UK Statistics Authority website](https://code.statisticsauthority.gov.uk/glossary/#official-statistics).
 
+<br>
+
+Other formats of this publication are available on request at: 
+
+0131 314 5300 
+
+phs.otherformats@phs.scot
+
 # Introduction
+
 This release by Information Services Division (ISD) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should have a minimum of one year’s post-diagnostic support. Data are presented by financial year of diagnosis and this report presents finalised figures for 2016/17 and provisional figures for 2017/18 which are subject to some service users completing their support.
 
 The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnostic support a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all those newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support. 
@@ -122,22 +127,15 @@ Due to the change in definitions, improvements in data quality and refinements t
 
 The Scotland level error rate for both 2016/17 and 2017/18 is around 3%. Further information around data quality can be found in [Appendix 1](#appendix-1---background-information).
 
+\newpage
+
 # Main Points
 * In tristique lobortis sagittis. Phasellus mollis mattis iaculis. Vivamus nunc justo, finibus nec maximus vel, ultricies vel urna. Ut ac mi sit amet augue fringilla egestas et ut mauris. Morbi volutpat, felis vel egestas scelerisque, nunc purus auctor ligula, non lobortis nulla felis in tortor. In nec commodo sem.
 * Proin vitae vehicula purus. Cras consequat iaculis venenatis. Morbi vel risus vestibulum, aliquet mi in, volutpat massa. Sed urna sem, posuere eu semper vitae, ullamcorper quis leo. Mauris nisi metus, scelerisque sed urna eu, maximus porttitor ante. Sed scelerisque accumsan commodo. Sed interdum justo volutpat, sodales nisi sed, consectetur arcu. Interdum et malesuada fames ac ante ipsum primis in faucibus.
 
 <Div custom-style = "TableChart title">Age distribution of referrals to dementia post-diagnostic support; `r latest_fy`^p^</Div>
-<Div custom-style = "Figure_Style">
-```{r age-dist-chart, echo=FALSE, fig.cap = "alt text here"}
-include_graphics(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_summary-chart.png")), 
-  dpi = 600
-)
-```
-</div>
 
-* Praesent congue molestie nisi, ut congue dui mattis in. Vivamus vel urna risus. Donec sed blandit ex. Donec vel aliquam velit, in vestibulum lectus.
+\newpage
 
 # Results and Commentary
 Suspendisse velit nisi, tempor ut posuere ut, blandit in mauris. Suspendisse commodo sagittis pretium. Nullam.
@@ -147,45 +145,19 @@ Suspendisse potenti. Donec sit amet porttitor urna. Fusce egestas et elit quis i
 
 Sed suscipit nisl vel orci scelerisque mattis. Proin ut tortor et purus bibendum pharetra vel elementum dolor. Morbi orci massa, egestas vel dictum quis, maximus id justo. Fusce eu sem consequat, mollis nulla in, mollis nisl. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at facilisis augue.
 
-<Div custom-style = "TableChart title">Table title</Div>
-```{r flextable_TableData, echo = FALSE, ft.align = "left"}
-# Set up some formatting for flextable to be applied to most tables
-my_ft_format <- function(ft) {
-  ft %>% 
-    bold(part = "header") %>% 
-    bg(bg = "#964091", part = "header") %>% 
-    color(color = "white", part = "header") %>% 
-    align(align = "center", part = "header") %>% 
-    valign(valign = "center", part = "all") %>% 
-    padding(padding.top = 0, padding.bottom = 0, part = "all")
-}
-
-headings <- list("NHS Board", "Q2 Cases", "Q2 Bed Days", "Q2 Rate", "Q3 Cases", 
-                 "Q3 Bed Days", "Q3 Rate")
-names(headings) <- names(TableData)
-
-# flextable(TableData, theme_fun = NULL) %>% 
-#   my_ft_format() %>% 
-#   set_header_labels(values = headings) %>% 
-#   align(j = 1, align = "left", part = "all") %>% 
-#   align(j = 2:ncol(TableData), align = "right", part = "all") %>% 
-#   align(align = "right", part = "body") %>% 
-#   bold(i = nrow(TableData)) %>% 
-#   border_outer(border = fp_border()) %>% 
-#   border(i = nrow(TableData) - 1, border.bottom = fp_border(), part = "body") %>%
-#   border(j = c(1, 4, ncol(TableData)), border.right = fp_border(), part = "all") %>%
-#   autofit(add_w = 0, add_h = 0.05)
-```
-
 \newpage
 
-<Div custom-style = "TableChart title">`r fig_nums("uptake")`</Div>
-<!-- hack to get images to be placed in the right location when the 'Normal' style has been altered --> 
+<Div custom-style = "TableChart title">X</Div>
 <Div custom-style = "Figure_Style">
-```{r fig-uptake, echo = FALSE, fig.width = 7, fig.height = 5.6, fig.cap = "Uptake rate by NHS Board by three-year rolling period 2013-16."}
-FigureOne
+```{r age-dist-chart, echo=FALSE}
+external_img(
+  here("publication", "output", pub_date, "figures", 
+       paste0(pub_date, "_age-dist.png")),
+  width = 6.8, height = 3.5,
+  alt = "alt text here"
+)
 ```
-</div>
+</Div>
 
 <Div custom-style = "Normal_Notes">
 1. Note one.
@@ -196,33 +168,21 @@ FigureOne
 
 <br>
 
-## Sub-heading
-Fusce hendrerit nibh sit amet tellus tincidunt vehicula. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam non libero eu orci viverra rhoncus eu sed massa.
-
-Mauris ac neque vel erat varius cursus. Praesent at molestie felis. Nunc eget ipsum non lectus facilisis dictum quis viverra magna. Pellentesque elementum condimentum accumsan. Nunc vel pharetra augue. Pellentesque vitae lectus cursus magna blandit aliquet. In aliquet sapien sit amet viverra aliquam.
-
-Pellentesque aliquam imperdiet neque et interdum. Nulla sodales tellus magna, id venenatis justo pulvinar ut. Etiam luctus facilisis auctor. Curabitur interdum feugiat convallis. Nullam mi libero, hendrerit vitae condimentum in, iaculis porta purus. Suspendisse potenti. Donec sed molestie nisi, ut blandit ex. Proin tempor, mauris sit amet consectetur placerat, elit lorem placerat dui, sed placerat mi ante a purus.
-
-<Div custom-style = "TableChart title">`r fig_nums("cancer")`</Div>
-<Div custom-style = "Figure_Style">
-```{r fig-cancer, echo = FALSE, fig.width = 7, fig.height = 5.6, fig.cap = "Trend in invasive cancer detection rates for Scotland, three-year rolling periods (2007/10 to 2013/16). There is a bar for each three-year rolling period."}
-FigureTwo
-```
-</div>
-
-Fusce hendrerit nibh sit amet tellus tincidunt vehicula. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam non libero eu orci viverra rhoncus eu sed massa. Donec viverra scelerisque orci, sit amet dignissim eros ullamcorper rhoncus. Donec et metus sodales, aliquet ligula nec, bibendum leo.
+\newpage
 
 # Glossary
-```{r kable_glossary, echo = FALSE, ft.align = "left"}
-# flextable(glossary, theme_fun = NULL) %>% 
-#   delete_part(part = "header") %>% 
-#   align(align = "left", part = "body") %>% 
-#   valign(valign = "top", part = "body") %>% 
-#   width(j = 1, width = 4.94 / 2.54) %>% 
-#   width(j = 2, width = 12.69 / 2.54) %>% 
-#   height(i = 2, height = 1, part = "body") %>% 
-#   fontsize(size = 12, part = "all")
+```{r glossary-table, echo = FALSE, ft.align = "left"}
+flextable(glossary, theme_fun = NULL) %>%
+  delete_part(part = "header") %>%
+  align(align = "left", part = "body") %>%
+  valign(valign = "top", part = "body") %>%
+  width(j = 1, width = 4.94 / 2.54) %>%
+  width(j = 2, width = 12.69 / 2.54) %>%
+  height(i = 2, height = 1, part = "body") %>%
+  fontsize(size = 12, part = "all")
 ```
+
+\newpage
 
 # Contact
 **Name, title**  
@@ -237,7 +197,7 @@ Email:
 <br>
 
 # Further Information
-Further information and data for this publication are available from the [publication page](http://www.phs.org/) on our website.
+Further information and data for this publication are available from the [publication page](http://www.google.com/) on our website.
 
 The next release of this publication will be DD Month YYYY.
 
@@ -251,13 +211,11 @@ Data from this publication is available to download from the [Scottish Health an
 # Rate this publication
 Let us know what you think about this publication via. the link at the bottom of this [publication page]() on the PHS website.
 
+\newpage
+
 # Appendices
 ## Appendix 1 - Background information
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero.
-
-Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet. Mauris ipsum. Nulla metus metus, ullamcorper vel, tincidunt sed, euismod in, nibh.
-
-Quisque volutpat condimentum velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam nec ante. Sed lacinia, urna non tincidunt mattis, tortor neque adipiscing diam, a cursus ipsum ante quis turpis. Nulla facilisi. Ut fringilla. Suspendisse potenti. Nunc feugiat mi a tellus consequat imperdiet. Vestibulum sapien. Proin quam. Etiam ultrices. Suspendisse in justo eu magna luctus suscipit. Sed lectus. Integer euismod lacus luctus magna.
 
 \newpage
 
@@ -265,20 +223,19 @@ Quisque volutpat condimentum velit. Class aptent taciti sociosqu ad litora torqu
 
 <br>
 
-```{r kable_MetaData, echo = FALSE, ft.align = "left"}
-# flextable(MetaData, theme_fun = NULL) %>% 
-#   my_ft_format() %>% 
-#   set_header_labels(Indicator = "Metadata Indicator",
-#                     Description = "Description") %>% 
-#   align(j = 1, align = "right", part = "body") %>% 
-#   align(j = 2, align = "left", part = "body") %>% 
-#   valign(valign = "top", part = "all") %>% 
-#   bold(j = 1, part = "body") %>% 
-#   border_outer(border = fp_border()) %>%
-#   border_inner(border = fp_border()) %>%
-#   autofit(add_w = 0, add_h = 0.06) %>% 
-#   width(j = 1, width = 5.5 / 2.54) %>% 
-#   width(j = 2, width = 12.3 / 2.54)
+```{r metadata-table, echo = FALSE, ft.align = "left"}
+flextable(MetaData, theme_fun = NULL) %>%
+  set_header_labels(Indicator = "Metadata Indicator",
+                    Description = "Description") %>%
+  align(j = 1, align = "right", part = "body") %>%
+  align(j = 2, align = "left", part = "body") %>%
+  valign(valign = "top", part = "all") %>%
+  bold(j = 1, part = "body") %>%
+  border_outer(border = fp_border()) %>%
+  border_inner(border = fp_border()) %>%
+  autofit(add_w = 0, add_h = 0.06) %>%
+  width(j = 1, width = 5.5 / 2.54) %>%
+  width(j = 2, width = 12.3 / 2.54)
 ```
 
 \newpage
