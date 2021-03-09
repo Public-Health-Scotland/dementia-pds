@@ -42,7 +42,33 @@ incidence <-
       TRUE ~ referrals / diagnoses * 100),
     perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
   ) %>%
-  select(health_board, diagnoses, referrals, perc_formatted)
+  select(health_board, diagnoses, referrals, perc = perc_formatted)
+
+inc_top3 <- 
+  incidence %>% 
+  arrange(desc(perc)) %>%
+  filter(row_number() %in% 1:3)
+
+inc_bot2 <- 
+  incidence %>% 
+  arrange(perc) %>%
+  filter(row_number() %in% 1:2)
+
+inc_text <- glue(
+  "In Scotland, {incidence %>% filter(health_board == 'Scotland') %>% ",
+  "pull(perc)} of those people estimated to be newly diagnosed ",
+  "with dementia in {latest_fy} were referred for post-diagnostic ",
+  "support. {inc_top3$health_board[1]} had the highest percentage ",
+  "of referrals compared to the estimated number of people newly ",
+  "diagnosed with dementia ({inc_top3$perc[1]}), ",
+  "followed by {inc_top3$health_board[2]} ",
+  "({inc_top3$perc[2]}) and {inc_top3$health_board[3]} ",
+  "({inc_top3$perc[3]}). ",
+  "{glue_collapse(inc_bot2$health_board, sep = ' and ')} ",
+  "had the lowest percentages, with ",
+  "{glue_collapse(inc_bot2$perc, sep = ' and ')} ",
+  "respectively."
+)
 
 incidence_trend <-
   pds %>%
@@ -60,6 +86,7 @@ incidence_trend <-
     perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")) %>%
   select(-c(referrals:perc)) %>%
   pivot_wider(names_from = fy, values_from = perc_formatted)
+
 ```
 
 ```{r 12-months-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
@@ -76,7 +103,30 @@ hb_12 <-
       TRUE ~ numerator / referrals * 100),
     perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
   ) %>%
-  select(health_board, referrals, complete, exempt, ongoing, fail, perc_formatted)
+  select(health_board, referrals, complete, exempt, 
+         ongoing, fail, perc = perc_formatted)
+
+top3_hb <- 
+  hb_12 %>%
+  arrange(desc(perc)) %>%
+  filter(row_number() %in% 1:3)
+
+bot2_hb <-
+  hb_12 %>%
+  arrange(perc) %>%
+  filter(row_number() %in% 1:2)
+
+text_hb <- glue(
+  "In Scotland, {hb_12 %>% filter(health_board == 'Scotland') %>% ",
+  "pull(perc)} of those people referred for dementia post-diagnostic ",
+  "support received a minimum of one year's support. ",
+  "{top3_hb$health_board[1]} had the highest percentage of people receiving ",
+  "a minimum of one year's post-diagnostic support ",
+  "({top3_hb$perc[1]}) followed by {top3_hb$health_board[2]} ",
+  "({top3_hb$perc[2]}) and {top3_hb$health_board[3]} ({top3_hb$perc[3]}). ",
+  "{glue_collapse(bot2_hb$health_board, sep = ' and ')} had the lowest ",
+  "percentages with {glue_collapse(bot2_hb$perc, sep = ' and ')} respectively."
+)
 
 ijb_12 <-
   pds %>%
@@ -91,7 +141,27 @@ ijb_12 <-
       TRUE ~ numerator / referrals * 100),
     perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
   ) %>%
-  select(ijb, referrals, complete, exempt, ongoing, fail, perc_formatted)
+  select(ijb, referrals, complete, exempt, 
+         ongoing, fail, perc = perc_formatted)
+
+top2_ijb <- 
+  ijb_12 %>%
+  arrange(desc(perc)) %>%
+  filter(row_number() %in% 1:3)
+
+bot2_ijb <-
+  ijb_12 %>%
+  arrange(perc) %>%
+  filter(row_number() %in% 1:2)
+
+text_ijb <- glue(
+  "In {latest_fy}, {top2_ijb$ijb[1]} Integration Joint Board had the highest ",
+  "percentage of people receiving a minimum of one year's post-diagnostic ",
+  "support ({top2_ijb$perc[1]}), followed by {top2_ijb$ijb[2]} ",
+  "({top2_ijb$perc[2]}). {glue_collapse(bot2_ijb$ijb, sep = ' and ')} ",
+  "had the lowest percentages with {glue_collapse(bot2_ijb$perc, ",
+  "sep = ' and ')} respectively."
+)
 
 headers <-
   c("Number of People Referred to PDS",
@@ -137,6 +207,83 @@ ijb_trend <-
   pivot_wider(names_from = fy, values_from = perc_formatted)
 ```
 
+```{r demographics-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+age <-
+  pds %>%
+  filter(fy == latest_fy & age_grp != "Unknown") %>%
+  group_by(age_grp) %>%
+  summarise(across(c(numerator, referrals), sum), .groups = "drop") %>%
+  mutate(
+    ref_dist = referrals / sum(referrals) * 100,
+    ldp = numerator / referrals * 100
+  ) %>%
+  mutate(
+    across(c(ref_dist, ldp),
+           ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")),
+    age_text = case_when(
+      str_detect(age_grp, "to") ~ paste("between", age_grp, "years"),
+      age_grp == "90+" ~ "90 years and over",
+      age_grp == "59 and Under" ~ "59 years and under"
+    )
+  )
+
+age_ref_top <- age %>% filter(ref_dist == max(ref_dist))
+age_ref_bot <- age %>% filter(ref_dist == min(ref_dist))
+
+age_referrals_text <- glue(
+  "People aged {age_ref_top$age_text} accounted for the largest percentage ",
+  "of referrals for dementia post-diagnostic support in {latest_fy} ",
+  "({age_ref_top$ref_dist}). In contrast, the lowest percentage of referrals ",
+  "was for people aged {age_ref_bot$age_text} ({age_ref_bot$ref_dist})."
+)
+
+age_ldp_top <- age %>% filter(ldp == max(ldp))
+age_ldp_bot <- age %>% filter(ldp == min(ldp))
+
+age_ldp_text <- glue(
+  "In {latest_fy}, the percentage of referrals receiving a minimum of one ",
+  "year's post-diagnostic support ranged from {age_ldp_bot$ldp} for those ",
+  "aged {age_ldp_bot$age_text}, to {age_ldp_top$ldp} for those aged ",
+  "{age_ldp_top$age_text}."
+)
+
+simd <-
+  pds %>%
+  filter(fy == latest_fy & simd != "Unknown") %>%
+  group_by(simd) %>%
+  summarise(across(c(numerator, referrals), sum), .groups = "drop") %>%
+  mutate(
+    ref_dist = referrals / sum(referrals) * 100,
+    ldp = numerator / referrals * 100
+  ) %>%
+  mutate(
+    across(c(ref_dist, ldp),
+           ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")),
+    simd = str_sub(simd, 1, 1)
+  )
+
+simd_ref_top <- simd %>% filter(ref_dist == max(ref_dist))
+simd_ref_bot <- simd %>% filter(ref_dist == min(ref_dist))
+
+simd_referrals_text <- glue(
+  "Deprivation quintile {simd_ref_top$simd} had the highest percentage of ",
+  "referrals for dementia post-diagnostic support in {latest_fy} ",
+  "({simd_ref_top$ref_dist}). Deprivation quintile {simd_ref_bot$simd} had ",
+  "the lowest percentage of referrals ({simd_ref_bot$ref_dist})."
+)
+
+simd_ldp_top <- simd %>% filter(ldp == max(ldp))
+simd_ldp_bot <- simd %>% filter(ldp == min(ldp))
+
+simd_ldp_text <- glue(
+  "Deprivation quintile {simd_ldp_top$simd} had the highest percentage of ",
+  "referrals who received a minimum of one year's support in {latest_fy} ",
+  "({simd_ldp_top$ldp}). Deprivation quintile {simd_ldp_bot$simd} had the ",
+  "lowest percentage of referrals who received a minimum of one year's ",
+  "support ({simd_ldp_bot$ldp})."
+)
+```
+
 ```{r alt-text, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 
 ```
@@ -156,7 +303,7 @@ incidence_footnote <-
         "subject to the limitations detailed within the [Estimated and ",
         "Projected Diagnosis Rates for Dementia in Scotland: 2014-2020]",
         "(http://www.gov.scot/Publications/2016/12/9363) publication. ",
-        "Estimates for calendar year", str_sub(latest_fy, 1, 4),
+        "Estimates for calendar year ", str_sub(latest_fy, 1, 4),
         " have been used.")
 
 method_footnote <-
@@ -287,10 +434,11 @@ Due to the change in definitions, improvements in data quality and refinements t
 
 The Scotland level error rate for both 2016/17 and 2017/18 is around 3%. Further information around data quality can be found in [Appendix 1](#data-quality).
 
+**Review this section and add note on COVID effect.**
+
 \newpage
 
 # Main Points
-
 
 \newpage
 
@@ -315,8 +463,8 @@ incidence %>%
       health_board = "NHS Board",
       diagnoses = "Estimated Number of People Newly Diagnosed with Dementia",
       referrals = "Number of People Referred to PDS",
-      perc_formatted = paste("Percentage of Estimated Number of People",
-                             "Diagnosed with Dementia Referred to PDS")
+      perc = paste("Percentage of Estimated Number of People",
+                   "Diagnosed with Dementia Referred to PDS")
     ))
 ```
 
@@ -331,7 +479,7 @@ incidence %>%
 
 <br>
 
-COMMENTARY HERE
+`r inc_text`
 
 Figure 1 presents the percentage of people referred for dementia post-diagnostic support compared to the estimated number of people newly diagnosed with dementia by NHS Board in `r latest_fy`.
 
@@ -358,8 +506,6 @@ external_img(
 </div>
 
 <br>
-
-COMMENTARY HERE
 
 Table 2 below presents the trend of Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board.
 
@@ -393,7 +539,7 @@ incidence_trend %>%
 
 <br>
 
-COMMENTARY HERE
+**COMMENTARY HERE**
 
 ## 2. Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support
 
@@ -432,7 +578,7 @@ hb_12 %>%
 
 <br>
 
-COMMENTARY HERE
+`r text_hb`
 
 Figure 2 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS board for `r latest_fy`.
 
@@ -460,8 +606,6 @@ external_img(
 </div>
 
 <br>
-
-COMMENTARY HERE
 
 Table 4 below presents the trend of percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS Board.
 
@@ -496,8 +640,7 @@ hb_trend %>%
 
 <br>
 
-COMMENTARY HERE
-
+**COMMENTARY HERE**
 
 ### Integration Joint Board
 
@@ -530,7 +673,7 @@ ijb_12 %>%
 
 <br>
 
-COMMENTARY HERE
+`r text_ijb`
 
 Figure 3 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support by IJB for `r latest_fy`.
 
@@ -592,7 +735,7 @@ ijb_trend %>%
 
 <br>
 
-COMMENTARY HERE
+**COMMENTARY HERE**
 
 ## 3. Demographics and Inequalities
 
@@ -626,7 +769,7 @@ external_img(
 
 <br>
 
-COMMENTARY HERE
+`r age_referrals_text`
 
 Figure 5 below presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by age group for `r latest_fy`. 
 
@@ -654,7 +797,7 @@ external_img(
 
 <br>
 
-COMMENTARY HERE
+`r age_ldp_text` 
 
 ### Deprivation
 
@@ -684,7 +827,7 @@ external_img(
 
 <br>
 
-COMMENTARY HERE
+`r simd_referrals_text`
 
 Figure 7 below presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by deprivation quintile for `r latest_fy`. 
 
@@ -712,7 +855,7 @@ external_img(
 
 <br>
 
-COMMENTARY HERE
+`r simd_ldp_text`
 
 \newpage
 
@@ -780,11 +923,11 @@ The LDP standard is defined and calculated as follows:
    
 This part of the LDP standard is calculated as:
 
-<br>
+<Div custom-style = "Formula">
 $$
-\text{LDP Standard Achieved (%)} = \frac{\text{LDP Standard met + Exempt from LDP Standard}}{\text{LDP Standard met + Exempt + LDP Standard not met}} \times 100
+\text{LDP Standard Achieved (%)} = \frac{\text{LDP Standard met + Exempt from LDP Standard}}{\text{LDP Standard met + Exempt + LDP Standard not met}} \times \text{100}
 $$
-<br>
+</Div>
 
 Service users for whom it is not yet known if they have met the standard as their PDS is ongoing are excluded from the calculation and therefore figures for the latest year are currently provisional subject to all service users completing their support.
 
