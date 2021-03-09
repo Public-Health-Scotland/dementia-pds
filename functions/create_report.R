@@ -21,8 +21,6 @@ create_report <- function(pub_date, latest_fy){
                           style = "Contents Header") %>%
     officer::cursor_reach(keyword = "Introduction") %>%
     officer::body_add_break(pos = "before") %>%
-    officer::cursor_reach(keyword = "Contents") %>%
-    officer::body_add_break(pos = "before") %>%
     print(here::here("publication", "output", pub_date,
                      paste0(pub_date, "_temp-report-2.docx")))
   
