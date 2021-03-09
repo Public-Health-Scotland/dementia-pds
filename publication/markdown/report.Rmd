@@ -163,13 +163,13 @@ method_footnote <-
   paste("For detailed information on how the percentage of LDP standard",
         "achieved is calculated, and how 'standard met', 'exempt from",
         "standard', 'PDS ongoing' and 'standard not met' are defined,",
-        "please see the [Background section](#appendix-1---background-information) of this report.")
+        "please see the [Background section](#background) of this report.")
 
 interpret_footnote <-
   paste("When interpreting this information consideration should also be",
         "taken of the percentage of people estimated to be newly diagnosed",
         "with dementia being referred to post-diagnostic support",
-        "(see [section 1](#section-1)).")
+        "(see [section 1](#section1)).")
 
 age_footnote <-
   paste("Age is calculated as at the dementia diagnosis date. There are",
@@ -285,7 +285,7 @@ Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Heal
 
 Due to the change in definitions, improvements in data quality and refinements to the method used to calculate the LDP standard, information presented in this publication is not comparable to previously published information relating to the dementia post-diagnostic support LDP standard.
 
-The Scotland level error rate for both 2016/17 and 2017/18 is around 3%. Further information around data quality can be found in [Appendix 1](#appendix-1---background-information).
+The Scotland level error rate for both 2016/17 and 2017/18 is around 3%. Further information around data quality can be found in [Appendix 1](#data-quality).
 
 \newpage
 
@@ -296,7 +296,7 @@ The Scotland level error rate for both 2016/17 and 2017/18 is around 3%. Further
 
 # Results and Commentary
 
-## 1. Number and percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support
+## 1. Number and percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support{#section1}
 
 This part of the LDP standard requires the number of referrals for post-diagnostic support to be compared against an estimated number of people newly diagnosed with dementia each year. Health Board level estimates of the number of people newly diagnosed with dementia (incidence) used for this calculation are from the paper [Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020](http://www.gov.scot/Publications/2016/12/9363) published by the Scottish Government in 2016. 
 
@@ -349,8 +349,15 @@ external_img(
 </Div>
 
 <Div custom-style = "Normal_Notes">
-Add footnotes here once finalised for above table.
+`r source_footnote` Estimated and Projected Diagnosis Rates of Dementia in Scotland: 2014-2020.
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r incidence_footnote`
 </div>
+
+<br>
 
 COMMENTARY HERE
 
@@ -375,15 +382,24 @@ incidence_trend %>%
   )
 ```
 
-FOOTNOTES HERE
+<Div custom-style = "Normal_Notes">
+`r source_footnote` Estimated and Projected Diagnosis Rates of Dementia in Scotland: 2014-2020.
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r incidence_footnote`
+</div>
+
+<br>
 
 COMMENTARY HERE
 
 ## 2. Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support
 
-This part of LDP standard reports on the number of people referred for dementia post-diagnostic support who received a minimum of one year’s support. Figures presented in this section should be interpreted in conjunction with [section 1]().
+This part of LDP standard reports on the number of people referred for dementia post-diagnostic support who received a minimum of one year’s support. Figures presented in this section should be interpreted in conjunction with [section 1](#section1).
 
-The criteria used to define this part of the LDP standard is detailed in [Appendix 1]().
+The criteria used to define this part of the LDP standard is detailed in [Appendix 1](#background).
 
 ### NHS Board
 
@@ -404,7 +420,17 @@ hb_12 %>%
   set_header_labels(values = hb_headers)
 ```
 
-FOOTNOTES HERE
+<Div custom-style = "Normal_Notes">
+`r source_footnote`
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r method_footnote`
+3. `r interpret_footnote`
+</div>
+
+<br>
 
 COMMENTARY HERE
 
@@ -423,7 +449,17 @@ external_img(
 ```
 </Div>
 
-FOOTNOTES HERE
+<Div custom-style = "Normal_Notes">
+`r source_footnote`
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r method_footnote`
+3. `r interpret_footnote`
+</div>
+
+<br>
 
 COMMENTARY HERE
 
@@ -448,7 +484,17 @@ hb_trend %>%
   )
 ```
 
-FOOTNOTES HERE
+<Div custom-style = "Normal_Notes">
+`r source_footnote`
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r method_footnote`
+3. `r interpret_footnote`
+</div>
+
+<br>
 
 COMMENTARY HERE
 
@@ -472,7 +518,17 @@ ijb_12 %>%
   set_header_labels(values = ijb_headers)
 ```
 
-FOOTNOTES HERE
+<Div custom-style = "Normal_Notes">
+`r source_footnote`
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r method_footnote`
+3. `r interpret_footnote`
+</div>
+
+<br>
 
 COMMENTARY HERE
 
@@ -491,7 +547,17 @@ external_img(
 ```
 </Div>
 
-FOOTNOTES HERE
+<Div custom-style = "Normal_Notes">
+`r source_footnote`
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r method_footnote`
+3. `r interpret_footnote`
+</div>
+
+<br>
 
 Table 6 below presents the trend of percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Joint Board (IJB).
 
@@ -514,7 +580,17 @@ ijb_trend %>%
   )
 ```
 
-FOOTNOTES HERE
+<Div custom-style = "Normal_Notes">
+`r source_footnote`
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r method_footnote`
+3. `r interpret_footnote`
+</div>
+
+<br>
 
 COMMENTARY HERE
 
@@ -539,7 +615,16 @@ external_img(
 ```
 </Div>
 
-FOOTNOTES HERE
+<Div custom-style = "Normal_Notes">
+`r source_footnote`
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r age_footnote`
+</div>
+
+<br>
 
 COMMENTARY HERE
 
@@ -558,7 +643,16 @@ external_img(
 ```
 </Div>
 
-FOOTNOTES HERE
+<Div custom-style = "Normal_Notes">
+`r source_footnote`
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r age_footnote`
+</div>
+
+<br>
 
 COMMENTARY HERE
 
@@ -579,7 +673,16 @@ external_img(
 ```
 </Div>
 
-FOOTNOTES HERE
+<Div custom-style = "Normal_Notes">
+`r source_footnote`
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r simd_footnote`
+</div>
+
+<br>
 
 COMMENTARY HERE
 
@@ -598,7 +701,16 @@ external_img(
 ```
 </Div>
 
-FOOTNOTES HERE
+<Div custom-style = "Normal_Notes">
+`r source_footnote`
+
+**Notes**
+
+1. `r prov_footnote`
+2. `r simd_footnote`
+</div>
+
+<br>
 
 COMMENTARY HERE
 
@@ -650,9 +762,9 @@ Let us know what you think about this publication via the link at the bottom of 
 
 # Appendices
 
-## Appendix 1 - Background information
+## Appendix 1 - Background information{#background}
 
-### Local Delivery Plan (LDP) Standard
+### Local Delivery Plan (LDP) Standard{#ldp-standard}
 
 In order to effectively monitor performance of post-diagnostic support delivery, a national [Local Delivery Plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced in April 2013 for all those newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support.
 
