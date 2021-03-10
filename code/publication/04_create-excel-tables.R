@@ -26,8 +26,7 @@ pds <-
 
 expected <-
   read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
-  select(-health_board) %>%
-  mutate(lookup = paste0(fy, health_board_label), .before = everything())
+  select(-health_board)
 
 
 ### 3 - Restructure data ----
@@ -67,6 +66,10 @@ excel_data <-
   mutate(rate = numerator / referrals) %>%
   select(-numerator) %>%
   
+  # Add expected diagnoses
+  left_join(expected, by = c("fy", "category_split" = "health_board_label")) %>%
+  mutate(exp_rate = referrals / diagnoses) %>%
+  
   # Add lookup column
   mutate(lookup = paste0(fy, category, category_split), .before = everything())
 
@@ -79,11 +82,6 @@ wb <- loadWorkbook(here("reference-files",
 writeData(wb,
           "data",
           excel_data,
-          startCol = 1)
-
-writeData(wb,
-          "expected",
-          expected,
           startCol = 1)
 
 # Add some lookup values to calculation tab
@@ -130,14 +128,14 @@ link <-
 class(link) <- "hyperlink"
 
 writeData(wb, 
-          "Contents & Notes", 
+          "Notes", 
           startCol = "B",
-          startRow = 18,
+          startRow = 21,
           x = link)
 
 
 # Hide data sheets and calculation sheet
-sheetVisibility(wb)[8:10] <- "hidden"
+sheetVisibility(wb)[10:11] <- "hidden"
 
 saveWorkbook(wb,
              here("publication", "output", pub_date, 
