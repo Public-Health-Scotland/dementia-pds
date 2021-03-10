@@ -19,85 +19,53 @@ source(here::here("code", "publication", "00_setup-pub-environment.R"))
 ### 2 - Load data ----
 
 pds <-
-  read_rds(here("data", 
-                glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                glue("{fy}-{qt}_final-data.rds")))
+  read_rds(
+    here("data", "publication", glue("{pub_date}_pub-data.rds"))
+  ) %>%
+  filter(ijb != "Unknown")
 
 expected <-
-  read_csv(here("reference-files",
-                "expected-diagnoses.csv")) %>%
+  read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
   select(-health_board) %>%
   mutate(lookup = paste0(fy, health_board_label), .before = everything())
 
 
 ### 3 - Restructure data ----
 
-pds %<>%
-  filter(fy %in% fy_in_pub) %>%
-  mutate(health_board = substring(health_board, 3),
-         ijb = substring(ijb, 11))
-
-
 excel_data <-
   
   bind_rows(
     
     # Health Board
-    pds %>% 
-      group_by(fy, category = "hb", category_split = health_board, ldp) %>% 
-      summarise(referrals = sum(referrals), .groups = "drop") %>%
-      pivot_wider(names_from = ldp, 
-                  values_from = referrals,
-                  values_fill = list(referrals = 0)) %>%
-      arrange(fy, category, category_split),
-    
-    # Scotland Rows
-    pds %>% 
-      group_by(fy, category = "hb", category_split = "Scotland", ldp) %>% 
-      summarise(referrals = sum(referrals), .groups = "drop") %>% 
-      pivot_wider(names_from = ldp, 
-                  values_from = referrals, 
-                  values_fill = list(referrals = 0)),
-    
+    pds %>%
+      group_by(fy, category = "geog", category_split = health_board) %>%
+      summarise(across(complete:numerator, sum), .groups = "drop"),
+
     # IJB
-    pds %>% 
-      group_by(fy, category = "ijb", category_split = ijb, ldp) %>% 
-      summarise(referrals = sum(referrals), .groups = "drop") %>% 
-      pivot_wider(names_from = ldp, 
-                  values_from = referrals, 
-                  values_fill = list(referrals = 0)) %>%
-      arrange(fy, category, category_split),
+    pds %>%
+      group_by(fy, category = "geog", category_split = ijb) %>%
+      summarise(across(complete:numerator, sum), .groups = "drop"),
     
+    # Scotland
     pds %>% 
-      group_by(fy, category = "ijb", category_split = "Scotland", ldp) %>% 
-      summarise(referrals = sum(referrals), .groups = "drop") %>%
-      pivot_wider(names_from = ldp, 
-                  values_from = referrals,
-                  values_fill = list(referrals = 0)),
+      group_by(fy, category = "geog", category_split = "Scotland") %>%
+      summarise(across(complete:numerator, sum), .groups = "drop"),
     
     # Age Group
     pds %>% 
-      group_by(fy, category = "age", category_split = age_grp, ldp) %>% 
-      summarise(referrals = sum(referrals), .groups = "drop") %>%
-      pivot_wider(names_from = ldp, 
-                  values_from = referrals,
-                  values_fill = list(referrals = 0)) %>%
-      arrange(fy, category, category_split),
+      group_by(fy, category = "age", category_split = age_grp) %>%
+      summarise(across(complete:numerator, sum), .groups = "drop"),
     
-    # Deprivation
+    # SIMD
     pds %>% 
-      group_by(fy, category = "simd", category_split = simd, ldp) %>% 
-      summarise(referrals = sum(referrals), .groups = "drop") %>%
-      pivot_wider(names_from = ldp, 
-                  values_from = referrals,
-                  values_fill = list(referrals = 0)) %>%
-      arrange(fy, category, category_split)
+      group_by(fy, category = "simd", category_split = simd) %>%
+      summarise(across(complete:numerator, sum), .groups = "drop")
     
   ) %>%
-  
-  filter(!is.na(category_split)) %>%
-  mutate(referrals = reduce(select(., complete:ongoing), `+`),
-         rate = (complete + exempt) / (referrals - ongoing)) %>%
+
+  # Add rate column
+  mutate(rate = numerator / referrals) %>%
+  select(-numerator) %>%
   
   # Add lookup column
   mutate(lookup = paste0(fy, category, category_split), .before = everything())
