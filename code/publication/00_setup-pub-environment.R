@@ -20,7 +20,6 @@ library(readr)         # For reading in csv files
 library(janitor)       # For 'cleaning' variable names
 library(magrittr)      # For %<>% operator
 library(lubridate)     # For dates
-library(tidylog)       # For printing results of some dplyr functions
 library(tidyr)         # For data manipulation in the "tidy" way
 library(stringr)       # For string manipulation and matching
 library(here)          # For the here() function
