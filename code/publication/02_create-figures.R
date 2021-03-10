@@ -31,9 +31,9 @@ exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
   select(health_board = health_board_label, fy, diagnoses)
 
 
-### CHARTS FOR REPORT - All bar charts for latest year only ###
+### 3 - Create figures ----
 
-# 1 - Incidence by HB
+# Chart 1 - Incidence by Health Board
 
 c1_data <-
   basefile %>%
@@ -74,7 +74,8 @@ ggsave(
   device = "png"
 )
 
-# 2 - 12 months by HB
+
+# Chart 2 - One year PDS by Health Board
 
 c2_data <-
   basefile %>%
@@ -114,7 +115,8 @@ ggsave(
   device = "png"
 )
 
-# 3 - 12 months by IJB
+
+# Chart 3 - One year PDS by IJB
 
 c3_data <-
   basefile %>%
@@ -154,7 +156,8 @@ ggsave(
   device = "png"
 )
 
-# 4 - Referrals by age group
+
+# Chart 4 - Referrals by age
 
 c4_data <-
   basefile %>%
@@ -199,7 +202,8 @@ ggsave(
   dpi = 600
 )
 
-# 5 - 12 months by age
+
+# Chart 5 - One year PDS by age
 
 c5_data <-
   basefile %>%
@@ -238,7 +242,8 @@ ggsave(
   dpi = 600
 )
 
-# 6 - Referrals dist by SIMD
+
+# Chart 6 - Referrals by SIMD
 
 c6_data <-
   basefile %>%
@@ -283,7 +288,8 @@ ggsave(
   dpi = 600
 )
 
-# 7 - 12 months by SIMD
+
+# Chart 7 - One year PDS by SIMD
 
 c7_data <-
   basefile %>%
