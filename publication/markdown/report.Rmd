@@ -9,7 +9,8 @@ output:
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
 source(here("functions", "flextable_style.R"))
 
-latest_fy <- last(fy_in_pub)
+latest_fy  <- nth(fy_in_pub, -1)
+revised_fy <- nth(fy_in_pub, -2)
 
 pub_date_url <- 
   paste0("https://beta.isdscotland.org/find-publications-and-data/",
@@ -21,12 +22,30 @@ pds <-
     here("data", "publication", glue("{pub_date}_pub-data.rds"))
   ) %>%
   filter(ijb != "Unknown")
+
+exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
+  select(fy, health_board = health_board_label, diagnoses)
+```
+
+```{r summary-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+summary <-
+  pds %>%
+  filter(fy %in% c(latest_fy, revised_fy)) %>%
+  group_by(fy) %>%
+  summarise(across(referrals:numerator, sum), .groups = "drop") %>%
+  left_join(
+    exp %>% filter(health_board == "Scotland") %>% select(-health_board),
+    by = "fy"
+  ) %>%
+  mutate(
+    inc_perc = referrals / diagnoses * 100,
+    year_perc = numerator / referrals * 100
+  ) %>%
+  mutate(across(contains("perc"),
+                ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")))
 ```
 
 ```{r incidence-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
-exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
-  select(fy, health_board = health_board_label, diagnoses)
-
 incidence <-
   pds %>%
   filter(fy == max(fy_in_pub)) %>%
@@ -414,7 +433,7 @@ phs.otherformats@phs.scot
 
 # Introduction
 
-This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should have a minimum of one year’s post-diagnostic support. Data are presented by financial year of diagnosis and this report presents finalised figures for `r nth(fy_in_pub, -2)` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
+This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should have a minimum of one year’s post-diagnostic support. Data are presented by financial year of diagnosis and this report presents finalised figures for `r revised_fy` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
 
 The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnostic support a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all those newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support. 
 
@@ -446,6 +465,31 @@ Further information around data quality can be found in [Appendix 1](#data-quali
 \newpage
 
 # Main Points
+
+* There were `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.
+
+* Of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year's support. In `r revised_fy`, the percentage was `r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`.
+
+<Div custom-style = "TableChart title">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^P^</Div>
+
+<Div custom-style = "Figure_Style">
+```{r fig-summary, echo=FALSE}
+external_img(
+  here("publication", "output", pub_date, "figures", 
+       paste0(pub_date, "_12-months-hb.png")),
+  width = 6, height = 6,
+  alt = "alt text here"
+)
+```
+</Div>
+
+<Div custom-style = "Normal_Notes">
+`r prov_footnote`
+</div>
+
+<br>
+
+* In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.
 
 \newpage
 
