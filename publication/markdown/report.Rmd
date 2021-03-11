@@ -106,6 +106,32 @@ incidence_trend <-
   select(-c(referrals:perc)) %>%
   pivot_wider(names_from = fy, values_from = perc_formatted)
 
+inc_trend_1 <- 
+  pds %>%
+  group_by(fy) %>%
+  summarise(health_board = "Scotland",
+            referrals = sum(referrals), 
+            .groups = "drop") %>%
+  left_join(exp) %>%
+  mutate(perc = referrals / diagnoses * 100,
+         perc_diff = last(perc) - perc,
+         perc_dir  = case_when(
+           perc_diff >= 1 ~ "increased",
+           perc_diff <= -1 ~ "decreased",
+           TRUE ~ "similar to"
+         )) %>%
+  mutate(perc_diff = paste0(round_half_up(abs(perc_diff), 0), "%"))
+
+inc_trend_text <- glue(
+  "The {latest_fy} Scotland rate has {inc_trend_1 %>% ",
+  "filter(row_number() == n() - 1) %>% pull(perc_dir)} by {inc_trend_1 %>% ",
+  "filter(row_number() == n() - 1) %>% pull(perc_diff)} from {inc_trend_1 %>% ",
+  "filter(row_number() == n() - 1) %>% pull(fy)} but {inc_trend_1 %>% ",
+  "filter(row_number() == n() - 2) %>% pull(perc_dir)} by {inc_trend_1 %>% ",
+  "filter(row_number() == n() - 2) %>% pull(perc_diff)} from {inc_trend_1 %>% ",
+  "filter(row_number() == n() - 2) %>% pull(fy)}."
+)
+
 ```
 
 ```{r 12-months-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
@@ -528,8 +554,6 @@ incidence %>%
 2. `r incidence_footnote`
 </div>
 
-<br>
-
 `r inc_text`
 
 Figure 1 presents the percentage of people referred for dementia post-diagnostic support compared to the estimated number of people newly diagnosed with dementia by NHS Board in `r latest_fy`.
@@ -541,7 +565,7 @@ Figure 1 presents the percentage of people referred for dementia post-diagnostic
 external_img(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_incidence-hb.png")),
-  width = 6, height = 6,
+  width = 5.5, height = 5.5,
   alt = "alt text here"
 )
 ```
@@ -556,11 +580,9 @@ external_img(
 2. `r incidence_footnote`
 </div>
 
-<br>
+Table 2 presents the percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by financial year from `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
 
-Table 2 below presents the trend of Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board.
-
-<Div custom-style = "TableChart title">Table 2: Trend of percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board</Div>
+<Div custom-style = "TableChart title">Table 2: Trend of Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board</Div>
 
 ```{r table-2, echo = FALSE, ft.align = "left"}
 incidence_trend %>%
@@ -590,7 +612,9 @@ incidence_trend %>%
 
 <br>
 
-**COMMENTARY HERE**
+`r inc_trend_text`
+
+<br>
 
 ## 2. Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support
 
