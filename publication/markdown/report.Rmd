@@ -414,7 +414,7 @@ phs.otherformats@phs.scot
 
 # Introduction
 
-This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should have a minimum of one year’s post-diagnostic support. Data are presented by financial year of diagnosis and this report presents finalised figures for 2016/17 and provisional figures for 2017/18 which are subject to some service users completing their support.
+This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should have a minimum of one year’s post-diagnostic support. Data are presented by financial year of diagnosis and this report presents finalised figures for `r nth(fy_in_pub, -2)` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
 
 The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnostic support a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all those newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support. 
 
@@ -427,14 +427,19 @@ NHS Boards provide quarterly data submissions to PHS on individuals diagnosed an
 
 <br>
 
-## Comparability to previously published LDP standard figures
-Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) and reporting processes were effective from 1 April 2019 for all dementia diagnoses and referrals for post-diagnostic support from 1 April 2016 onwards. The revised definitions were designed in consultation with stakeholders to improve the quality and consistency of the data reported. 
+## Impact of COVID-19 on provision of dementia post-diagnostic support
 
-Due to the change in definitions, improvements in data quality and refinements to the method used to calculate the LDP standard, information presented in this publication is not comparable to previously published information relating to the dementia post-diagnostic support LDP standard.
+In December 2020, the Scottish Government published a national action plan: Dementia And COVID-19 - National Action Plan To Continue To Support Recovery For People With Dementia And Their Carers.
 
-The Scotland level error rate for both 2016/17 and 2017/18 is around 3%. Further information around data quality can be found in [Appendix 1](#data-quality).
+This plan is a partnership document with COSLA and a range of stakeholders and explains how the Scottish Government is working, and plans to work, with others to strengthen community resilience, support people with dementia and their families to continue to get the right care, treatment and support at the right time as we live with, and come through and recover from, the COVID-19 pandemic.
 
-**Review this section and add note on COVID effect.**
+Commitment 4 of the national action plan states:
+
+“We will continue to support our national commitment on post-diagnostic support, to increase access to this service and to the community support individuals need to continue living well as part of the wider community. As part of this, in partnership with COSLA, local partnerships, Alzheimer Scotland and other stakeholders we will take forward work in the first four months of 2021 to review and assess the provision and design of post-diagnostic services and identify both best practice and barriers to further expansion of the service. We will also establish a process to engage regularly with local delivery partners to assess progress and identify and help address local issues.”
+
+*Refine this - * Due to the pandemic some areas have reported difficulties in updating their data systems in relation to the dementia PDS dataset. Figures relating to 2018/19 are published as provisional due to incomplete data and to allow all service users to complete their support.
+
+Further information around data quality can be found in [Appendix 1](#data-quality).
 
 \newpage
 
