@@ -342,6 +342,10 @@ prov_footnote <-
   paste("Figures for", latest_fy, "are provisional (^P^) subject to all",
         "service users completing their support.")
 
+revised_footnote <-
+  paste("Figures for", revised_fy, "have been revised (^R^) and are",
+        "now final.")
+
 incidence_footnote <-
   paste0("The estimated number of people newly diagnosed with dementia is ",
         "subject to the limitations detailed within the [Estimated and ",
@@ -606,7 +610,8 @@ incidence_trend %>%
 **Notes**
 
 1. `r prov_footnote`
-2. `r incidence_footnote`
+2. `r revised_footnote`
+3. `r incidence_footnote`
 </div>
 
 <br>
@@ -708,8 +713,9 @@ hb_trend %>%
 **Notes**
 
 1. `r prov_footnote`
-2. `r method_footnote`
-3. `r interpret_footnote`
+2. `r revised_footnote`
+3. `r method_footnote`
+4. `r interpret_footnote`
 </div>
 
 <br>
@@ -809,8 +815,9 @@ ijb_trend %>%
 **Notes**
 
 1. `r prov_footnote`
-2. `r method_footnote`
-3. `r interpret_footnote`
+2. `r revised_footnote`
+3. `r method_footnote`
+4. `r interpret_footnote`
 </div>
 
 <br>
