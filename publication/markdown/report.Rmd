@@ -25,6 +25,19 @@ pds <-
 
 exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
   select(fy, health_board = health_board_label, diagnoses)
+
+err <- 
+  read_rds(
+    here("data", 
+         glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+         glue("{fy}-{qt}_error-summary.rds"))
+  ) %>%
+  filter(health_board == "Scotland" & fy %in% fy_in_pub) %>%
+  mutate(perc = total_errors / records * 100,
+         perc = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
+  ) %>%
+  select(fy, perc) %>%
+  mutate(text = glue("for {fy} was {perc}"))
 ```
 
 ```{r summary-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
@@ -1014,9 +1027,9 @@ $$
 
 Service users for whom it is not yet known if they have met the standard as their PDS is ongoing are excluded from the calculation and therefore figures for the latest year are currently provisional subject to all service users completing their support.
 
-### Comparability to previously published LDP standard figures
+### Comparability to LDP standard figures published prior to 2016/17
 
-Information presented in this publication is not comparable to previously published information relating to the dementia post-diagnostic support LDP standard. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
+Information presented in this publication is not comparable to dementia post-diagnostic support LDP standard information published prior to 2016/17. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
 
 ### Data Definitions and Reporting
 
@@ -1028,7 +1041,7 @@ Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Heal
 
 PHS undertake data quality checks and feedback data errors and queries to each Health Board, relating to the Dementia Post-Diagnostic Support dataset, following each data submission.
 
-As at the 31 December 2019 data submission, the Scotland level error rate for 2016/17 was 3.4% and for 2017/18 was 3.3%. This relates to the percentage of records with one or more error.
+As at the `r format(end_date, "%d %B %Y")` data submission, the Scotland level error rate `r glue_collapse(err$text, sep = ", ", last = " and ")`. This relates to the percentage of records with one or more error.
 
 For a relatively small number of individuals, multiple records were submitted and to avoid counting these service users more than once, the following rules were applied to select only one record per individual:
 
@@ -1084,7 +1097,7 @@ NHS Board Communication leads
 
 **Early Access for Management Information**
 
-These statistics will also have been made available to those who needed access to ‘management information’, ie as part of the delivery of health and care:
+These statistics will also have been made available to those who needed access to ‘management information’, i.e. as part of the delivery of health and care:
 
 \newpage
 
