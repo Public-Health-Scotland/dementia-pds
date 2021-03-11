@@ -61,7 +61,12 @@ c1 <-
   scale_fill_manual(values = c("#3F3685", "#9B4393")) +
   theme(panel.grid.major.y = element_blank()) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 100)) +
-  xlab("Percentage of Referrals Achieved LDP Standard") +
+  xlab(
+    str_wrap(
+      paste0("Percentage of Estimate Number of People Newly Diagnosed ",
+             "with Dementia Referred to PDS"),
+      width = 45)
+  ) +
   ylab("")
 
 ggsave(
