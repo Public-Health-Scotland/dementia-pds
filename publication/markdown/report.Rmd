@@ -429,7 +429,7 @@ NHS Boards provide quarterly data submissions to PHS on individuals diagnosed an
 
 ## Impact of COVID-19 on provision of dementia post-diagnostic support
 
-In December 2020, the Scottish Government published a national action plan: Dementia And COVID-19 - National Action Plan To Continue To Support Recovery For People With Dementia And Their Carers.
+In December 2020, the Scottish Government published a national action plan: [Dementia And COVID-19 - National Action Plan To Continue To Support Recovery For People With Dementia And Their Carers](https://www.gov.scot/publications/dementia-covid-19-national-action-plan-continue-support-recovery-people-dementia-carers/).
 
 This plan is a partnership document with COSLA and a range of stakeholders and explains how the Scottish Government is working, and plans to work, with others to strengthen community resilience, support people with dementia and their families to continue to get the right care, treatment and support at the right time as we live with, and come through and recover from, the COVID-19 pandemic.
 
@@ -438,6 +438,8 @@ Commitment 4 of the national action plan states:
 “We will continue to support our national commitment on post-diagnostic support, to increase access to this service and to the community support individuals need to continue living well as part of the wider community. As part of this, in partnership with COSLA, local partnerships, Alzheimer Scotland and other stakeholders we will take forward work in the first four months of 2021 to review and assess the provision and design of post-diagnostic services and identify both best practice and barriers to further expansion of the service. We will also establish a process to engage regularly with local delivery partners to assess progress and identify and help address local issues.”
 
 *Refine this - * Due to the pandemic some areas have reported difficulties in updating their data systems in relation to the dementia PDS dataset. Figures relating to 2018/19 are published as provisional due to incomplete data and to allow all service users to complete their support.
+
+*Mention Alz Scot [hidden impact report](https://www.alzscot.org/sites/default/files/2020-12/Coronavirus%20the%20hidden%20impact%20report%20final.pdf) here?*
 
 Further information around data quality can be found in [Appendix 1](#data-quality).
 
