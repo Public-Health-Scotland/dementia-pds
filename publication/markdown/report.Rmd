@@ -365,11 +365,11 @@ interpret_footnote <-
 
 age_footnote <-
   paste("Age is calculated as at the dementia diagnosis date. There are",
-        "a small number of records with and incomplete date of birth and",
+        "a small number of records with an incomplete date of birth and",
         "therefore the age is unknown.")
 
 simd_footnote <- 
-  paste("1.	Deprivation is calculated by matching postcodes to the",
+  paste("Deprivation is calculated by matching postcodes to the",
         "Scottish Index of Multiple Deprivation (SIMD) quintiles.	There are",
         "a small number of records with an incomplete postcode and therefore",
         "the deprivation quintile is unknown.")
@@ -580,9 +580,9 @@ external_img(
 2. `r incidence_footnote`
 </div>
 
-Table 2 presents the percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by financial year from `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
+Table 2 presents the percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
 
-<Div custom-style = "TableChart title">Table 2: Trend of Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board</Div>
+<Div custom-style = "TableChart title">Table 2: Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board</Div>
 
 ```{r table-2, echo = FALSE, ft.align = "left"}
 incidence_trend %>%
@@ -618,7 +618,7 @@ incidence_trend %>%
 
 ## 2. Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support
 
-This part of LDP standard reports on the number of people referred for dementia post-diagnostic support who received a minimum of one year’s support. Figures presented in this section should be interpreted in conjunction with [section 1](#section1).
+This part of LDP standard reports on the number of people referred for dementia post-diagnostic support who received a minimum of one year’s support. Figures presented in this section are available by NHS Board and Integration Joint Board, and should be interpreted in conjunction with [section 1](#section1).
 
 The criteria used to define this part of the LDP standard is detailed in [Appendix 1](#background).
 
@@ -682,9 +682,9 @@ external_img(
 
 <br>
 
-Table 4 below presents the trend of percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS Board.
+Table 4 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
 
-<Div custom-style = "TableChart title">Table 4: Trend of percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board</Div>
+<Div custom-style = "TableChart title">Table 4: Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board</Div>
 
 ```{r table-4, echo = FALSE, ft.align = "left"}
 hb_trend %>%
@@ -717,9 +717,11 @@ hb_trend %>%
 
 **COMMENTARY HERE**
 
+\newpage
+
 ### Integration Joint Board
 
-Table 5 below presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Joint Board (IJB).
+Table 5 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Joint Board (IJB).
 
 <Div custom-style = "TableChart title">Table 5: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board; `r latest_fy`^P^</Div>
 
@@ -752,6 +754,8 @@ ijb_12 %>%
 
 Figure 3 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support by IJB for `r latest_fy`.
 
+\newpage
+
 <Div custom-style = "TableChart title">Figure 3: Percentage of referrals who received a minimum of one year’s post-diagnostic support by Integration Joint Board; `r latest_fy`^P^</Div>
 
 <Div custom-style = "Figure_Style">
@@ -777,9 +781,11 @@ external_img(
 
 <br>
 
-Table 6 below presents the trend of percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Joint Board (IJB).
+Table 6 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for financial years `r fy_in_pub[1]` to `r latest_fy` by Integration Joint Board (IJB).
 
-<Div custom-style = "TableChart title">Table 6: Trend of percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board</Div>
+\newpage
+
+<Div custom-style = "TableChart title">Table 6: Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board</Div>
 
 ```{r table-6, echo = FALSE, ft.align = "left"}
 ijb_trend %>%
@@ -810,15 +816,13 @@ ijb_trend %>%
 
 <br>
 
-**COMMENTARY HERE**
-
 ## 3. Demographics and Inequalities
 
 This part of the report presents information on the demographics of individuals who have been referred for dementia post-diagnostic support. Age and deprivation have been identified as two of the main areas of interest. 
 
 ### Age
 
-Figure 4 below presents the age distribution of those referred for dementia post-diagnostic support for `r latest_fy`.
+Figure 4 presents the age distribution of those referred for dementia post-diagnostic support for `r latest_fy`.
 
 <Div custom-style = "TableChart title">Figure 4: Age distribution of referrals for dementia post-diagnostic support; `r latest_fy`^P^</Div>
 
@@ -846,7 +850,7 @@ external_img(
 
 `r age_referrals_text`
 
-Figure 5 below presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by age group for `r latest_fy`. 
+Figure 5 presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by age group for `r latest_fy`. 
 
 <Div custom-style = "TableChart title">Figure 5: Percentage of referrals who received a minimum of one year’s post-diagnostic support by age group; `r latest_fy`^P^</Div>
 
@@ -873,6 +877,8 @@ external_img(
 <br>
 
 `r age_ldp_text` 
+
+\newpage
 
 ### Deprivation
 
@@ -904,7 +910,9 @@ external_img(
 
 `r simd_referrals_text`
 
-Figure 7 below presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by deprivation quintile for `r latest_fy`. 
+Figure 7 presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by deprivation quintile for `r latest_fy`. 
+
+\newpage
 
 <Div custom-style = "TableChart title">Figure 7: Percentage of referrals who received a minimum of one year’s post-diagnostic support by deprivation quintile; `r latest_fy`^P^</Div>
 
