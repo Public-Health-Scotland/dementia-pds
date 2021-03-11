@@ -17,6 +17,17 @@ pub_date_url <-
          "conditions-and-diseases/dementia/dementia-post-diagnostic-support/",
          format(pub_date, "%e-%B-%Y") %>% str_trim())
 
+# Function to format percentages
+format_perc <- function(x, dp = 1){
+  x %>%
+    round_half_up(1) %>%
+    format(nsmall = dp) %>%
+    paste0("%") %>%
+    trimws()
+}
+
+# Read in data
+
 pds <- 
   read_rds(
     here("data", "publication", glue("{pub_date}_pub-data.rds"))
@@ -68,13 +79,8 @@ incidence <-
   adorn_totals(name = "Scotland") %>%
   left_join(exp %>% filter(fy == max(fy_in_pub)), 
             by = "health_board") %>%
-  mutate(
-    perc = case_when(
-      referrals == 0 ~ 0,
-      TRUE ~ referrals / diagnoses * 100),
-    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
-  ) %>%
-  select(health_board, diagnoses, referrals, perc = perc_formatted)
+  mutate(perc = format_perc(referrals / diagnoses * 100)) %>%
+  select(health_board, diagnoses, referrals, perc)
 
 inc_top3 <- 
   incidence %>% 
@@ -111,13 +117,9 @@ incidence_trend <-
   group_modify(~ adorn_totals(., name = "Scotland")) %>%
   left_join(exp, by = c("health_board", "fy")) %>%
   ungroup() %>%
-  mutate(
-    perc = case_when(
-      referrals == 0 ~ 0,
-      TRUE ~ referrals / diagnoses * 100),
-    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")) %>%
-  select(-c(referrals:perc)) %>%
-  pivot_wider(names_from = fy, values_from = perc_formatted)
+  mutate(perc = format_perc(referrals / diagnoses * 100)) %>%
+  select(-c(referrals:diagnoses)) %>%
+  pivot_wider(names_from = fy, values_from = perc)
 
 inc_trend_1 <- 
   pds %>%
@@ -156,13 +158,9 @@ hb_12 <-
             .groups = "drop") %>%
   adorn_totals(name = "Scotland") %>%
   mutate(
-    perc = case_when(
-      referrals == 0 ~ 0,
-      TRUE ~ numerator / referrals * 100),
-    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
-  ) %>%
+    perc = format_perc(numerator / referrals * 100)) %>%
   select(health_board, referrals, complete, exempt, 
-         ongoing, fail, perc = perc_formatted)
+         ongoing, fail, perc)
 
 top3_hb <- 
   hb_12 %>%
@@ -194,13 +192,9 @@ ijb_12 <-
             .groups = "drop") %>%
   adorn_totals(name = "Scotland") %>%
   mutate(
-    perc = case_when(
-      referrals == 0 ~ 0,
-      TRUE ~ numerator / referrals * 100),
-    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
-  ) %>%
+    perc = format_perc(numerator / referrals * 100)) %>%
   select(ijb, referrals, complete, exempt, 
-         ongoing, fail, perc = perc_formatted)
+         ongoing, fail, perc)
 
 top2_ijb <- 
   ijb_12 %>%
@@ -240,13 +234,9 @@ hb_trend <-
   group_by(fy) %>%
   group_modify(~ adorn_totals(., name = "Scotland")) %>%
   ungroup() %>%
-  mutate(
-    perc = case_when(
-      referrals == 0 ~ 0,
-      TRUE ~ numerator / referrals * 100),
-    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")) %>%
-  select(-c(referrals:perc)) %>%
-  pivot_wider(names_from = fy, values_from = perc_formatted)
+  mutate(perc = format_perc(numerator / referrals * 100)) %>%
+  select(-c(referrals:numerator)) %>%
+  pivot_wider(names_from = fy, values_from = perc)
 
 ijb_trend <-
   pds %>%
@@ -256,13 +246,9 @@ ijb_trend <-
   group_by(fy) %>%
   group_modify(~ adorn_totals(., name = "Scotland")) %>%
   ungroup() %>%
-  mutate(
-    perc = case_when(
-      referrals == 0 ~ 0,
-      TRUE ~ numerator / referrals * 100),
-    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")) %>%
-  select(-c(referrals:perc)) %>%
-  pivot_wider(names_from = fy, values_from = perc_formatted)
+  mutate(perc = format_perc(numerator / referrals * 100)) %>%
+  select(-c(referrals:numerator)) %>%
+  pivot_wider(names_from = fy, values_from = perc)
 ```
 
 ```{r demographics-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
