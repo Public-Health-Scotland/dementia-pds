@@ -119,6 +119,14 @@ writeData(
   startRow = 8
 )
 
+writeData(
+  wb,
+  "calculation",
+  nth(fy_in_pub, -2),
+  startCol = "F",
+  startRow = 9
+)
+
 # Add publication link to Notes page
 link <- 
   paste0("https://beta.isdscotland.org/find-publications-and-data/",
