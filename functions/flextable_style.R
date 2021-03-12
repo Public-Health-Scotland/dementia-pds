@@ -5,6 +5,9 @@ ft_dementia_style <- function(ft) {
   
   ft %>% 
     
+    # Replace NAs (zeros) with dash
+    colformat_num(na_str = "-") %>%
+    
     font(fontname = "Arial", part = "all") %>%
     fontsize(size = 11, part = "all") %>%
     
