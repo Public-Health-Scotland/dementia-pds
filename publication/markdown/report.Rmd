@@ -88,19 +88,19 @@ inc <-
 
 # Top 3 HBs
 inc_top3 <- 
-  incidence %>% 
+  inc %>% 
   arrange(desc(perc)) %>%
   filter(row_number() %in% 1:3)
 
 # Bottom 2 HBs
 inc_bot2 <- 
-  incidence %>% 
+  inc %>% 
   arrange(perc) %>%
   filter(row_number() %in% 1:2)
 
 # Commentary for latest year incidence data
 inc_text <- glue(
-  "In Scotland, {incidence %>% filter(health_board == 'Scotland') %>% ",
+  "In Scotland, {inc %>% filter(health_board == 'Scotland') %>% ",
   "pull(perc)} of those people estimated to be newly diagnosed ",
   "with dementia in {latest_fy} were referred for post-diagnostic ",
   "support. {inc_top3$health_board[1]} had the highest percentage ",
