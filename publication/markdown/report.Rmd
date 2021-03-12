@@ -20,23 +20,26 @@ pub_date_url <-
 # Function to format percentages
 format_perc <- function(x, dp = 1){
   x %>%
-    round_half_up(1) %>%
+    round_half_up(dp) %>%
     format(nsmall = dp) %>%
     paste0("%") %>%
     trimws()
 }
 
-# Read in data
+# Read in data ----
 
+# LDP Dataset
 pds <- 
   read_rds(
     here("data", "publication", glue("{pub_date}_pub-data.rds"))
   ) %>%
-  filter(ijb != "Unknown")
+  filter(ijb != "Unknown" & referrals > 0)
 
+# Expected Diagnoses (Incidence)
 exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
   select(fy, health_board = health_board_label, diagnoses)
 
+# Error rates 
 err <- 
   read_rds(
     here("data", 
@@ -44,8 +47,7 @@ err <-
          glue("{fy}-{qt}_error-summary.rds"))
   ) %>%
   filter(health_board == "Scotland" & fy %in% fy_in_pub) %>%
-  mutate(perc = total_errors / records * 100,
-         perc = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
+  mutate(perc = format_perc(total_errors / records * 100)
   ) %>%
   select(fy, perc) %>%
   mutate(text = glue("for {fy} was {perc}"))
@@ -70,7 +72,9 @@ summary <-
 ```
 
 ```{r incidence-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
-incidence <-
+
+# Incidence data for latest year
+inc <-
   pds %>%
   filter(fy == max(fy_in_pub)) %>%
   group_by(health_board) %>%
@@ -82,16 +86,19 @@ incidence <-
   mutate(perc = format_perc(referrals / diagnoses * 100)) %>%
   select(health_board, diagnoses, referrals, perc)
 
+# Top 3 HBs
 inc_top3 <- 
   incidence %>% 
   arrange(desc(perc)) %>%
   filter(row_number() %in% 1:3)
 
+# Bottom 2 HBs
 inc_bot2 <- 
   incidence %>% 
   arrange(perc) %>%
   filter(row_number() %in% 1:2)
 
+# Commentary for latest year incidence data
 inc_text <- glue(
   "In Scotland, {incidence %>% filter(health_board == 'Scotland') %>% ",
   "pull(perc)} of those people estimated to be newly diagnosed ",
@@ -108,7 +115,8 @@ inc_text <- glue(
   "respectively."
 )
 
-incidence_trend <-
+# Incidence data for all years
+inc_trend <-
   pds %>%
   group_by(health_board, fy) %>%
   summarise(across(c(referrals), sum),
@@ -117,40 +125,46 @@ incidence_trend <-
   group_modify(~ adorn_totals(., name = "Scotland")) %>%
   left_join(exp, by = c("health_board", "fy")) %>%
   ungroup() %>%
-  mutate(perc = format_perc(referrals / diagnoses * 100)) %>%
-  select(-c(referrals:diagnoses)) %>%
+  mutate(perc = referrals / diagnoses * 100) %>%
+  select(-c(referrals:diagnoses))
+
+# Data for incidence trend table
+inc_trend_table <-
+  inc_trend %>%
+  mutate(perc = format_perc(perc)) %>%
   pivot_wider(names_from = fy, values_from = perc)
 
-inc_trend_1 <- 
-  pds %>%
-  group_by(fy) %>%
-  summarise(health_board = "Scotland",
-            referrals = sum(referrals), 
-            .groups = "drop") %>%
-  left_join(exp) %>%
-  mutate(perc = referrals / diagnoses * 100,
-         perc_diff = last(perc) - perc,
-         perc_dir  = case_when(
-           perc_diff >= 1 ~ "increased",
-           perc_diff <= -1 ~ "decreased",
+# Data for incidence trend commentary
+inc_trend_comm <-
+  inc_trend %>%
+  filter(health_board == "Scotland") %>%
+  mutate(
+    perc_change = last(perc) - perc,
+    perc_dir  = case_when(
+           perc_change >= 1 ~ "increased",
+           perc_change <= -1 ~ "decreased",
            TRUE ~ "similar to"
-         )) %>%
-  mutate(perc_diff = paste0(round_half_up(abs(perc_diff), 0), "%"))
+         ),
+    perc_change = format_perc(abs(perc_change), 0)
+  )
 
+# Commentary for incidence trend
 inc_trend_text <- glue(
-  "The {latest_fy} Scotland rate has {inc_trend_1 %>% ",
-  "filter(row_number() == n() - 1) %>% pull(perc_dir)} by {inc_trend_1 %>% ",
-  "filter(row_number() == n() - 1) %>% pull(perc_diff)} from {inc_trend_1 %>% ",
-  "filter(row_number() == n() - 1) %>% pull(fy)} but {inc_trend_1 %>% ",
-  "filter(row_number() == n() - 2) %>% pull(perc_dir)} by {inc_trend_1 %>% ",
-  "filter(row_number() == n() - 2) %>% pull(perc_diff)} from {inc_trend_1 %>% ",
+  "The {latest_fy} Scotland rate has {inc_trend_comm %>% ",
+  "filter(row_number() == n() - 1) %>% pull(perc_dir)} by {inc_trend_comm %>% ",
+  "filter(row_number() == n() - 1) %>% pull(perc_change)} from {inc_trend_comm %>% ",
+  "filter(row_number() == n() - 1) %>% pull(fy)} but {inc_trend_comm %>% ",
+  "filter(row_number() == n() - 2) %>% pull(perc_dir)} by {inc_trend_comm %>% ",
+  "filter(row_number() == n() - 2) %>% pull(perc_change)} from {inc_trend_comm %>% ",
   "filter(row_number() == n() - 2) %>% pull(fy)}."
 )
 
 ```
 
 ```{r 12-months-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
-hb_12 <-
+
+# Latest year 12m PDS data by HB
+hb <-
   pds %>%
   filter(fy == max(fy_in_pub)) %>%
   group_by(health_board) %>%
@@ -158,22 +172,26 @@ hb_12 <-
             .groups = "drop") %>%
   adorn_totals(name = "Scotland") %>%
   mutate(
-    perc = format_perc(numerator / referrals * 100)) %>%
+    perc = format_perc(numerator / referrals * 100)
+  ) %>%
   select(health_board, referrals, complete, exempt, 
          ongoing, fail, perc)
 
+# Top 3 HBs
 top3_hb <- 
-  hb_12 %>%
+  hb %>%
   arrange(desc(perc)) %>%
   filter(row_number() %in% 1:3)
 
+# Bottom 2 HBs
 bot2_hb <-
-  hb_12 %>%
+  hb %>%
   arrange(perc) %>%
   filter(row_number() %in% 1:2)
 
+# Commentary for latest year HB 12m PDS
 text_hb <- glue(
-  "In Scotland, {hb_12 %>% filter(health_board == 'Scotland') %>% ",
+  "In Scotland, {hb %>% filter(health_board == 'Scotland') %>% ",
   "pull(perc)} of those people referred for dementia post-diagnostic ",
   "support received a minimum of one year's support. ",
   "{top3_hb$health_board[1]} had the highest percentage of people receiving ",
@@ -184,7 +202,8 @@ text_hb <- glue(
   "percentages with {glue_collapse(bot2_hb$perc, sep = ' and ')} respectively."
 )
 
-ijb_12 <-
+# Latest year 12m PDS by IJB
+ijb <-
   pds %>%
   filter(fy == max(fy_in_pub)) %>%
   group_by(ijb) %>%
@@ -196,16 +215,19 @@ ijb_12 <-
   select(ijb, referrals, complete, exempt, 
          ongoing, fail, perc)
 
+# Top 2 IJB
 top2_ijb <- 
-  ijb_12 %>%
+  ijb %>%
   arrange(desc(perc)) %>%
   filter(row_number() %in% 1:3)
 
+# Bottom 2 IJB
 bot2_ijb <-
-  ijb_12 %>%
+  ijb %>%
   arrange(perc) %>%
   filter(row_number() %in% 1:2)
 
+# Commentary for latest year IJB 12m PDS
 text_ijb <- glue(
   "In {latest_fy}, {top2_ijb$ijb[1]} Integration Joint Board had the highest ",
   "percentage of people receiving a minimum of one year's post-diagnostic ",
@@ -215,6 +237,7 @@ text_ijb <- glue(
   "sep = ' and ')} respectively."
 )
 
+# Headers for 12m PDS tables
 headers <-
   c("Number of People Referred to PDS",
     "Standard Met",
@@ -226,6 +249,7 @@ headers <-
 hb_headers <- c("NHS Board", headers)
 ijb_headers <- c("Integration Joint Board", headers)
 
+# Trend for 12m PDS by HB
 hb_trend <-
   pds %>%
   group_by(health_board, fy) %>%
@@ -234,11 +258,70 @@ hb_trend <-
   group_by(fy) %>%
   group_modify(~ adorn_totals(., name = "Scotland")) %>%
   ungroup() %>%
-  mutate(perc = format_perc(numerator / referrals * 100)) %>%
+  mutate(perc = numerator / referrals * 100)
+
+# Data for HB trend table
+hb_trend_table <-
+  hb_trend %>%
+  mutate(perc = format_perc(perc)) %>%
   select(-c(referrals:numerator)) %>%
   pivot_wider(names_from = fy, values_from = perc)
+  
+# Data for Scot trend commentary
+trend_comm <-
+  hb_trend %>%
+  filter(health_board == "Scotland") %>%
+  mutate(
+    perc_change = last(perc) - perc,
+    perc_dir  = case_when(
+           perc_change > 0 ~ "increased",
+           perc_change < 0 ~ "decreased",
+           perc_change == 0 ~ "stayed the same"
+         )
+  ) %>%
+  mutate(across(perc:perc_change, ~ format_perc(abs(.))))
 
-ijb_trend <-
+# Commentary for Scotland trend
+scot_trend_text <- glue(
+  "The Scotland rate {trend_comm %>% filter(row_number() == n() - 1) %>% ",
+  "pull(perc_dir)} to {trend_comm %>% filter(row_number() == n()) %>% ",
+  "pull(perc)} in {trend_comm %>% filter(row_number() == n()) %>% ",
+  "pull(fy)} from {trend_comm %>% filter(row_number() == n() - 1) %>% ",
+  "pull(perc)} in {trend_comm %>% filter(row_number() == n() - 1) %>% ",
+  "pull(fy)}, but showed a {trend_comm %>% filter(row_number() == n() - 2) ",
+  "%>% pull(perc_dir) %>% str_remove('d$')} when compared to {trend_comm %>% ",
+  "filter(row_number() == n() - 2) %>% pull(fy)} ({trend_comm %>% ",
+  "filter(row_number() == n() - 2) %>% pull(perc)})."
+)
+
+# Data for HB trend commentary
+hb_trend_comm <-
+  hb_trend %>%
+  filter(health_board != "Scotland" & fy %in% c(latest_fy, revised_fy)) %>%
+  group_by(health_board) %>%
+  arrange(fy) %>%
+  summarise(diff = diff(perc)) %>%
+  mutate(dir = case_when(
+    diff > 0 ~ 1,
+    TRUE ~ 0
+  )) %$%
+  sum(dir)
+
+dir <- 
+  case_when(
+  (hb_trend_comm / 14 ) == 0.5 ~ "half",
+  (hb_trend_comm / 14 ) > 0.5 ~ "more than half",
+  (hb_trend_comm / 14 ) < 0.5 ~ "less than half"
+)
+
+# Commentary for HB trend
+hb_trend_text <- glue(
+  "When comparing {revised_fy} and {latest_fy} figures, {dir} of the NHS ",
+  "Boards showed a higher rate in {latest_fy} than in {revised_fy}."
+)
+
+# Data for IJB trend table
+ijb_trend_table <-
   pds %>%
   group_by(ijb, fy) %>%
   summarise(across(c(referrals, numerator), sum),
@@ -249,6 +332,7 @@ ijb_trend <-
   mutate(perc = format_perc(numerator / referrals * 100)) %>%
   select(-c(referrals:numerator)) %>%
   pivot_wider(names_from = fy, values_from = perc)
+
 ```
 
 ```{r demographics-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
@@ -262,8 +346,7 @@ age <-
     ldp = numerator / referrals * 100
   ) %>%
   mutate(
-    across(c(ref_dist, ldp),
-           ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")),
+    across(c(ref_dist, ldp), format_perc),
     age_text = case_when(
       str_detect(age_grp, "to") ~ paste("between", age_grp, "years"),
       age_grp == "90+" ~ "90 years and over",
@@ -301,8 +384,7 @@ simd <-
     ldp = numerator / referrals * 100
   ) %>%
   mutate(
-    across(c(ref_dist, ldp),
-           ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")),
+    across(c(ref_dist, ldp), format_perc),
     simd = str_sub(simd, 1, 1)
   )
 
@@ -366,16 +448,26 @@ interpret_footnote <-
         "with dementia being referred to post-diagnostic support",
         "(see [section 1](#section1)).")
 
-age_footnote <-
-  paste("Age is calculated as at the dementia diagnosis date. There are",
-        "a small number of records with an incomplete date of birth and",
-        "therefore the age is unknown.")
+age_unknown <- 
+  pds %>% filter(fy == latest_fy) %>% count(age_grp)
 
-simd_footnote <- 
-  paste("Deprivation is calculated by matching postcodes to the",
-        "Scottish Index of Multiple Deprivation (SIMD) quintiles.	There are",
-        "a small number of records with an incomplete postcode and therefore",
-        "the deprivation quintile is unknown.")
+age_footnote <- glue(
+  "Age is calculated as at the dementia diagnosis date. {if_else('Unknown' ",
+  "%in% age_unknown$age_grp, 'There are a small number of records with an ",
+  "incomplete date of birth and therefore the age is unknown.', '')}"
+)
+
+simd_unknown <-
+  pds %>% filter(fy == latest_fy) %>% count(simd)
+
+simd_footnote <- glue(
+  "Deprivation is calculated by matching postcodes to the",
+  "Scottish Index of Multiple Deprivation (SIMD) quintiles. {if_else(",
+  "'Unknown' %in% simd_unknown$simd, 'There are a small number of records ",
+  "with an incomplete postcode and therefore the deprivation quintile is ",
+  "unknown.', '')}"
+)
+
 ```
 
 ```{r metadata, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
@@ -533,7 +625,8 @@ Table 1 presents the number and percentage of people referred for dementia post-
 <Div custom-style = "TableChart title">Table 1: Estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^P^</Div>
 
 ```{r table-1, echo = FALSE, ft.align = "left"}
-incidence %>%
+inc %>%
+  mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>% 
   ft_dementia_style() %>% 
   width(j = 1, width = 2.4) %>%
@@ -585,21 +678,21 @@ external_img(
 
 Table 2 presents the percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
 
-<Div custom-style = "TableChart title">Table 2: Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board</Div>
+<Div custom-style = "TableChart title">Table 2: Trend - Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board</Div>
 
 ```{r table-2, echo = FALSE, ft.align = "left"}
-incidence_trend %>%
+inc_trend_table %>%
   flextable() %>% 
   ft_dementia_style() %>% 
   width(j = 1, width = 2.4) %>%
   width(j = -1, width = 1.5) %>%
   set_header_labels(values = c(health_board = "NHS Board")) %>%
   compose(
-    j = ncol(hb_trend), part = "header",
+    j = ncol(inc_trend_table), part = "header",
     value = as_paragraph(latest_fy, as_sup("P"))
   ) %>%
   compose(
-    j = ncol(hb_trend) - 1, part = "header",
+    j = ncol(inc_trend_table) - 1, part = "header",
     value = as_paragraph(nth(fy_in_pub, -2), as_sup("R"))
   )
 ```
@@ -633,14 +726,15 @@ Table 3 presents the number and percentage of people referred for post-diagnosti
 <Div custom-style = "TableChart title">Table 3: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board; `r latest_fy`^P^</Div>
 
 ```{r table-3, echo = FALSE, ft.align = "left"}
-names(hb_headers) <- names(hb_12)
+names(hb_headers) <- names(hb)
 
-hb_12 %>%
+hb %>%
+  mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>% 
-  ft_dementia_style() %>% 
+  ft_dementia_style() %>%
   width(j = 1, width = 2.2) %>%
-  width(j = 2:(ncol(hb_12) - 1), width = 0.8) %>%
-  width(j = ncol(hb_12), width = 1) %>%
+  width(j = 2:(ncol(hb) - 1), width = 0.8) %>%
+  width(j = ncol(hb), width = 1) %>%
   fontsize(size = 10, part = "all") %>%
   set_header_labels(values = hb_headers)
 ```
@@ -688,21 +782,21 @@ external_img(
 
 Table 4 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
 
-<Div custom-style = "TableChart title">Table 4: Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board</Div>
+<Div custom-style = "TableChart title">Table 4: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board</Div>
 
 ```{r table-4, echo = FALSE, ft.align = "left"}
-hb_trend %>%
+hb_trend_table %>%
   flextable() %>% 
   ft_dementia_style() %>% 
   width(j = 1, width = 2.4) %>%
   width(j = -1, width = 1.5) %>%
   set_header_labels(values = c(health_board = "NHS Board")) %>%
   compose(
-    j = ncol(hb_trend), part = "header",
+    j = ncol(hb_trend_table), part = "header",
     value = as_paragraph(latest_fy, as_sup("P"))
   ) %>%
   compose(
-    j = ncol(hb_trend) - 1, part = "header",
+    j = ncol(hb_trend_table) - 1, part = "header",
     value = as_paragraph(nth(fy_in_pub, -2), as_sup("R"))
   )
 ```
@@ -720,7 +814,9 @@ hb_trend %>%
 
 <br>
 
-**COMMENTARY HERE**
+`r scot_trend_text`
+
+`r hb_trend_text`
 
 \newpage
 
@@ -731,14 +827,15 @@ Table 5 presents the number and percentage of people referred for post-diagnosti
 <Div custom-style = "TableChart title">Table 5: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board; `r latest_fy`^P^</Div>
 
 ```{r table-5, echo = FALSE, ft.align = "left"}
-names(ijb_headers) <- names(ijb_12)
+names(ijb_headers) <- names(ijb)
 
-ijb_12 %>%
+ijb %>%
+  mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>% 
   ft_dementia_style() %>% 
   width(j = 1, width = 2.2) %>%
-  width(j = 2:(ncol(ijb_12) - 1), width = 0.8) %>%
-  width(j = ncol(ijb_12), width = 1) %>%
+  width(j = 2:(ncol(ijb) - 1), width = 0.8) %>%
+  width(j = ncol(ijb), width = 1) %>%
   fontsize(size = 10, part = "all") %>%
   set_header_labels(values = ijb_headers)
 ```
@@ -790,21 +887,21 @@ Table 6 presents the percentage of people referred for post-diagnostic support w
 
 \newpage
 
-<Div custom-style = "TableChart title">Table 6: Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board</Div>
+<Div custom-style = "TableChart title">Table 6: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board</Div>
 
 ```{r table-6, echo = FALSE, ft.align = "left"}
-ijb_trend %>%
+ijb_trend_table %>%
   flextable() %>% 
   ft_dementia_style() %>% 
   width(j = 1, width = 2.4) %>%
   width(j = -1, width = 1.5) %>%
   set_header_labels(values = c(ijb = "Integration Joint Board")) %>%
   compose(
-    j = ncol(hb_trend), part = "header",
+    j = ncol(ijb_trend_table), part = "header",
     value = as_paragraph(latest_fy, as_sup("P"))
   ) %>%
   compose(
-    j = ncol(hb_trend) - 1, part = "header",
+    j = ncol(ijb_trend_table) - 1, part = "header",
     value = as_paragraph(nth(fy_in_pub, -2), as_sup("R"))
   )
 ```
@@ -951,7 +1048,7 @@ external_img(
 # Glossary
 
 **Incidence**  
-Incidence refers to the number of new cases of a particular illness or disease during a defined time period. For the purposes of this publication we are looking at the number of new diagnoses of dementia.
+The number of new cases of a particular illness or disease during a defined time period. For the purposes of this publication we are looking at the number of new diagnoses of dementia.
 
 **LDP Standard**  
 Formerly known as HEAT Targets, Local Delivery Plan (LDP) standards are priorities agreed between Scottish Government and NHS Boards. Performance on Dementia PDS is one of the current LDP Standards. Further information can be found on the [Scottish Government website](http://www.gov.scot/Topics/Health/Quality-Improvement-Performance/NHS-Performance-Targets).
