@@ -166,7 +166,7 @@ ggsave(
 
 c4_data <-
   basefile %>%
-  filter(fy == max(fy_in_pub) & age_grp != "Unknown") %>%
+  filter(fy == max(fy_in_pub) & referrals > 0) %>%
   group_by(age_grp) %>%
   summarise(across(c(referrals), sum),
             .groups = "drop") %>%
@@ -212,7 +212,7 @@ ggsave(
 
 c5_data <-
   basefile %>%
-  filter(fy == max(fy_in_pub) & age_grp != "Unknown") %>%
+  filter(fy == max(fy_in_pub) & referrals > 0) %>%
   group_by(age_grp) %>%
   summarise(across(c(referrals, numerator), sum),
             .groups = "drop") %>%
@@ -252,7 +252,7 @@ ggsave(
 
 c6_data <-
   basefile %>%
-  filter(fy == max(fy_in_pub) & simd != "Unknown") %>%
+  filter(fy == max(fy_in_pub) & referrals > 0) %>%
   group_by(simd) %>%
   summarise(across(c(referrals), sum),
             .groups = "drop") %>%
@@ -298,7 +298,7 @@ ggsave(
 
 c7_data <-
   basefile %>%
-  filter(fy == max(fy_in_pub) & simd != "Unknown") %>%
+  filter(fy == max(fy_in_pub) & referrals > 0) %>%
   group_by(simd) %>%
   summarise(across(c(referrals, numerator), sum),
             .groups = "drop") %>%
