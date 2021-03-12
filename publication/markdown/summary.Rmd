@@ -5,76 +5,52 @@ output:
     fig_caption: no
 ---
 
-
-```{r, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
-
-# Run setup environment script
+```{r set-up, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
+source(here("functions", "flextable_style.R"))
 
-latest_fy <- last(fy_in_pub)
-prev_fy   <- nth(fy_in_pub, -2)
+latest_fy  <- nth(fy_in_pub, -1)
+revised_fy <- nth(fy_in_pub, -2)
 
-# Read in data
+pub_date_url <- 
+  paste0("https://beta.isdscotland.org/find-publications-and-data/",
+         "conditions-and-diseases/dementia/dementia-post-diagnostic-support/",
+         format(pub_date, "%e-%B-%Y") %>% str_trim())
+
+# Function to format percentages
+format_perc <- function(x, dp = 1){
+  x %>%
+    round_half_up(dp) %>%
+    format(nsmall = dp) %>%
+    paste0("%") %>%
+    trimws()
+}
+
+# Read in data ----
+
+# LDP Dataset
 pds <- 
+  read_rds(
+    here("data", "publication", glue("{pub_date}_pub-data.rds"))
+  ) %>%
+  filter(ijb != "Unknown" & referrals > 0)
+
+# Expected Diagnoses (Incidence)
+exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
+  select(fy, health_board = health_board_label, diagnoses)
+
+# Error rates 
+err <- 
   read_rds(
     here("data", 
          glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-         glue("{fy}-{qt}_final-data.rds"))
+         glue("{fy}-{qt}_error-summary.rds"))
   ) %>%
-  
-  # Select only FY to be incuded in pub
-  filter(fy %in% fy_in_pub) %>%
-  
-  # Remove codes from board and IJB
-  mutate(health_board = str_sub(health_board, 3, -1),
-         ijb          = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
-
-# Load expected diagnoses reference file
-exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
-  filter(health_board == "Scotland" & fy %in% fy_in_pub)
-
-perc_complete <-
-  pds %>%
-  group_by(fy, ldp) %>% 
-  summarise(ref = sum(referrals), .groups = "drop") %>%
-  group_by(fy, x = ldp %in% c("complete", "exempt")) %>%
-  mutate(complete = sum(ref)) %>%
-  group_by(fy) %>%
-  mutate(all = sum(ref)) %>%
-  filter(x) %>%
-  distinct(fy, complete, all) %>%
-  mutate(perc = round_half_up(complete / all * 100, 1))
-
-age_data <-
-  pds %>%
-  filter(age_grp != "Unknown") %>%
-  group_by(fy, age_grp) %>%
-  summarise(ref = sum(referrals), .groups = "drop") %>%
-  group_by(fy) %>%
-  mutate(perc = ref / sum(ref) * 100) %>%
-  ungroup()
-
-incidence <-
-  pds %>% 
-  group_by(fy) %>%
-  summarise(ref = sum(referrals), .groups = "drop") %>%
-  left_join(exp, by = "fy") %>%
-  mutate(perc = round_half_up(ref / diagnoses * 100, 1))
-
-alt_text <-
-  paste0("Bar chart showing distribution of referrals to dementia ",
-         "post-diagnostic support by age group in financial year ",
-         latest_fy, ".")
-
-err <- read_rds(here("data", 
-                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                     glue("{fy}-{qt}_error-summary.rds"))) %>%
-  filter(fy %in% fy_in_pub) %>%
-  group_by(fy) %>%
-  summarise(across(where(is.numeric), sum), .groups = "drop") %>%
-  mutate(perc = round_half_up(total_errors/records * 100, 0))
+  filter(health_board == "Scotland" & fy %in% fy_in_pub) %>%
+  mutate(perc = format_perc(total_errors / records * 100)
+  ) %>%
+  select(fy, perc) %>%
+  mutate(text = glue("for {fy} was {perc}"))
 
 # Create contact information
 contact1 <- c("Lisa Reedie", 
@@ -87,11 +63,24 @@ contact2 <- c("Alice Byers",
               "")
 
 contact <- tibble(contact1, contact2)
+```
 
-pub_date_url <- 
-  paste0("https://beta.isdscotland.org/find-publications-and-data/",
-         "conditions-and-diseases/dementia/dementia-post-diagnostic-support/",
-         format(pub_date, "%e-%B-%Y") %>% str_trim())
+```{r summary-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+summary <-
+  pds %>%
+  filter(fy %in% c(latest_fy, revised_fy)) %>%
+  group_by(fy) %>%
+  summarise(across(referrals:numerator, sum), .groups = "drop") %>%
+  left_join(
+    exp %>% filter(health_board == "Scotland") %>% select(-health_board),
+    by = "fy"
+  ) %>%
+  mutate(
+    inc_perc = referrals / diagnoses * 100,
+    year_perc = numerator / referrals * 100
+  ) %>%
+  mutate(across(contains("perc"),
+                ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")))
 ```
 
 <Div custom-style = "Publication Title">Dementia Post-Diagnostic  
@@ -110,36 +99,37 @@ Support</Div>
 This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should receive a minimum of one year’s post-diagnostic support. The LDP standard is reported in two parts. The percentage of people estimated to be newly diagnosed with dementia who were referred for postdiagnostic support and, of those referred, the percentage who received a minimum of one year’s support. This report presents finalised figures for `r glue_collapse(setdiff(fy_in_pub, latest_fy), sep = ", ", last = " and ")` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
 
 ### Main Points
-* There were `r pds %>% filter(fy == latest_fy) %$% sum(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r pds %>% filter(fy != latest_fy) %>% group_by(fy) %>% summarise(ref = sum(referrals)) %>% pull(ref) %>% glue_collapse(sep = ", ", last = " and ")` in `r pds %>% filter(fy != latest_fy) %$% unique(fy) %>% glue_collapse(sep = ", ", last = " and ")` respectively.
 
-* Of those referred in `r latest_fy` for post-diagnostic support, `r perc_complete %>% filter(fy == latest_fy) %>% pull(perc)`% received a minimum of one year's support. In `r prev_fy`, the percentage was `r perc_complete %>% filter(fy == prev_fy) %>% pull(perc)`%.
+* There were `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.
 
-* In `r latest_fy`, those aged `r age_data %>% filter(fy == latest_fy) %>% filter(perc == max(perc)) %>% pull(age_grp)` years accounted for the largest percentage of people referred for post-diagnostic support (`r age_data %>% filter(fy == latest_fy) %$% max(perc) %>% round_half_up(1) %>% format(nsmall = 1)`%).
+* Of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year's support. In `r revised_fy`, the percentage was `r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`.
 
-<Div custom-style = "Chart Title">Age distribution of referrals to dementia post-diagnostic support; `r latest_fy`^p^</Div>
+<Div custom-style = "Chart title">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^P^</Div>
+
 <Div custom-style = "Figure_Style">
-```{r age-dist-chart, echo=FALSE}
+```{r fig-summary, echo=FALSE}
 external_img(
   here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_age-dist.png")),
-  width = 6.8, height = 3.5,
+       paste0(pub_date, "_12-months-hb.png")),
+  width = 4.2, height = 4.2,
   alt = "alt text here"
 )
 ```
 </Div>
 
-<Div custom-style = "Footnotes">^p^ Figures for `r latest_fy` are provisional subject to all service users completing their support.</div>
+<Div custom-style = "Normal_Notes">
+`r paste("Figures for", latest_fy, "are provisional (^P^) subject to all service users completing their support.")`
+</div>
 
-<br>
-
-* In Scotland, `r incidence %>% filter(fy == latest_fy) %>% pull(perc)`% of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support. 
+* In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.
 
 ### Background
+
 The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnostic support a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all those newly diagnosed with dementia to receive a minimum of one year’s postdiagnostic support.
 
 NHS Boards provide quarterly data submissions to Public Health Scotland on individuals diagnosed and referred for post-diagnostic support within their local areas and this dataset forms the basis of the LDP standard calculation.
 
-Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) and reporting processes were effective from 1 April 2019 and designed in consultation with stakeholders to improve the quality and consistency of the data reported. The Scotland level error rate for `r latest_fy` is `r err %>% filter(fy == latest_fy) %>% pull(perc)`%. **Add error rate for previous years here**.
+Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) and reporting processes were effective from 1 April 2019 and designed in consultation with stakeholders to improve the quality and consistency of the data reported. The Scotland level error rate `r glue_collapse(err$text, sep = ", ", last = " and ")`.
 
 Information presented in this publication is not comparable to previously published information relating to the dementia post-diagnostic support LDP standard. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
 
