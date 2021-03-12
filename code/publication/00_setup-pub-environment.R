@@ -55,6 +55,9 @@ if(exists("pub_date")){
     fin_year()
 }
 
+# Date of last publication
+last_pub_date <- dmy(31032020)
+
 
 ### 3 - Define file paths dependent on whether running on server or desktop ----
 
