@@ -13,8 +13,6 @@ create_report <- function(pub_date, latest_fy){
   
   officer::read_docx(here::here("publication", "output", pub_date,
                                 paste0(pub_date, "_temp-report.docx"))) %>%
-    officer::headers_replace_all_text("DATE HERE", 
-                                      format(pub_date, "%d/%m/%Y")) %>%
     officer::cursor_reach(keyword = "Introduction") %>%
     officer::body_add_toc(pos = "before") %>%
     officer::body_add_par("Contents", pos = "before", 
@@ -36,7 +34,8 @@ create_report <- function(pub_date, latest_fy){
     officer::body_replace_all_text(
       "DD Month YYYY", 
       stringr::str_trim(format(pub_date, "%e %B %Y"))) %>%
-    officer::body_replace_all_text("DATE HERE", format(pub_date, "%d/%m/%Y"))
+    officer::body_replace_all_text("DATE HERE", 
+                                   format(pub_date, "%d/%m/%Y"))
   
   # Combine Cover and Report
   cover_page %>%
@@ -45,6 +44,8 @@ create_report <- function(pub_date, latest_fy){
     officer::body_add_docx(
       here::here("publication", "output", pub_date,
                  paste0(pub_date, "_temp-report-2.docx"))) %>%
+    officer::headers_replace_all_text("DATE HERE",
+                                      format(pub_date, "%d/%m/%Y")) %>%
     print(here::here("publication", "output", pub_date, 
                      paste0(pub_date, "_report.docx")))
   
