@@ -720,7 +720,7 @@ Table 1 presents the number and percentage of people referred for dementia post-
 
 <Div custom-style = "TableChart title">Table 1: Estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^P^</Div>
 
-```{r table-1, echo = FALSE, ft.align = "left"}
+```{r table-1, echo = FALSE, ft.align = "center"}
 inc %>%
   mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>% 
@@ -776,7 +776,7 @@ Table 2 presents the percentage of estimated number of people newly diagnosed wi
 
 <Div custom-style = "TableChart title">Table 2: Trend - Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board</Div>
 
-```{r table-2, echo = FALSE, ft.align = "left"}
+```{r table-2, echo = FALSE, ft.align = "center"}
 inc_trend_table %>%
   flextable() %>% 
   ft_dementia_style() %>% 
@@ -821,7 +821,7 @@ Table 3 presents the number and percentage of people referred for post-diagnosti
 
 <Div custom-style = "TableChart title">Table 3: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board; `r latest_fy`^P^</Div>
 
-```{r table-3, echo = FALSE, ft.align = "left"}
+```{r table-3, echo = FALSE, ft.align = "center"}
 names(hb_headers) <- names(hb)
 
 hb %>%
@@ -880,7 +880,7 @@ Table 4 presents the percentage of people referred for post-diagnostic support w
 
 <Div custom-style = "TableChart title">Table 4: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board</Div>
 
-```{r table-4, echo = FALSE, ft.align = "left"}
+```{r table-4, echo = FALSE, ft.align = "center"}
 hb_trend_table %>%
   flextable() %>% 
   ft_dementia_style() %>% 
@@ -922,7 +922,7 @@ Table 5 presents the number and percentage of people referred for post-diagnosti
 
 <Div custom-style = "TableChart title">Table 5: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board; `r latest_fy`^P^</Div>
 
-```{r table-5, echo = FALSE, ft.align = "left"}
+```{r table-5, echo = FALSE, ft.align = "center"}
 names(ijb_headers) <- names(ijb)
 
 ijb %>%
@@ -985,7 +985,7 @@ Table 6 presents the percentage of people referred for post-diagnostic support w
 
 <Div custom-style = "TableChart title">Table 6: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board</Div>
 
-```{r table-6, echo = FALSE, ft.align = "left"}
+```{r table-6, echo = FALSE, ft.align = "center"}
 ijb_trend_table %>%
   flextable() %>% 
   ft_dementia_style() %>% 
@@ -1243,7 +1243,7 @@ There also exists a Service Level Agreement between NHS Highland and NHS Greater
 
 <br>
 
-```{r metadata-table, echo = FALSE, ft.align = "left"}
+```{r metadata-table, echo = FALSE, ft.align = "center"}
 metadata %>%
   flextable() %>%
   ft_dementia_style() %>%
