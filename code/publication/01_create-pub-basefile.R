@@ -45,7 +45,8 @@ basefile <-
   rowwise() %>%
   mutate(
     referrals = complete + exempt + fail + ongoing,
-    numerator = complete + exempt
+    numerator = complete + exempt,
+    denominator = referrals - ongoing
   ) %>%
   ungroup() %>%
 

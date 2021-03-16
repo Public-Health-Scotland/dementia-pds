@@ -70,14 +70,14 @@ summary <-
   pds %>%
   filter(fy %in% c(latest_fy, revised_fy)) %>%
   group_by(fy) %>%
-  summarise(across(referrals:numerator, sum), .groups = "drop") %>%
+  summarise(across(referrals:denominator, sum), .groups = "drop") %>%
   left_join(
     exp %>% filter(health_board == "Scotland") %>% select(-health_board),
     by = "fy"
   ) %>%
   mutate(
     inc_perc = referrals / diagnoses * 100,
-    year_perc = numerator / referrals * 100
+    year_perc = numerator / denominator * 100
   ) %>%
   mutate(across(contains("perc"),
                 ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")))
@@ -121,7 +121,7 @@ external_img(
 ```
 </Div>
 
-<Div custom-style = "Normal_Notes">
+<Div custom-style = "Footnotes">
 `r paste("Figures for", latest_fy, "are provisional (^P^) subject to all service users completing their support.")`
 </div>
 

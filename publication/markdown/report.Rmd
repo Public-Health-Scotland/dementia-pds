@@ -58,14 +58,14 @@ summary <-
   pds %>%
   filter(fy %in% c(latest_fy, revised_fy)) %>%
   group_by(fy) %>%
-  summarise(across(referrals:numerator, sum), .groups = "drop") %>%
+  summarise(across(referrals:denominator, sum), .groups = "drop") %>%
   left_join(
     exp %>% filter(health_board == "Scotland") %>% select(-health_board),
     by = "fy"
   ) %>%
   mutate(
     inc_perc = referrals / diagnoses * 100,
-    year_perc = numerator / referrals * 100
+    year_perc = numerator / denominator * 100
   ) %>%
   mutate(across(contains("perc"),
                 ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")))
@@ -168,11 +168,11 @@ hb <-
   pds %>%
   filter(fy == max(fy_in_pub)) %>%
   group_by(health_board) %>%
-  summarise(across(c(complete:numerator), sum),
+  summarise(across(complete:denominator, sum),
             .groups = "drop") %>%
   adorn_totals(name = "Scotland") %>%
   mutate(
-    perc = format_perc(numerator / referrals * 100)
+    perc = format_perc(numerator / denominator * 100)
   ) %>%
   select(health_board, referrals, complete, exempt, 
          ongoing, fail, perc)
@@ -207,11 +207,11 @@ ijb <-
   pds %>%
   filter(fy == max(fy_in_pub)) %>%
   group_by(ijb) %>%
-  summarise(across(c(complete:numerator), sum),
+  summarise(across(complete:denominator, sum),
             .groups = "drop") %>%
   adorn_totals(name = "Scotland") %>%
   mutate(
-    perc = format_perc(numerator / referrals * 100)) %>%
+    perc = format_perc(numerator / denominator * 100)) %>%
   select(ijb, referrals, complete, exempt, 
          ongoing, fail, perc)
 
@@ -253,18 +253,18 @@ ijb_headers <- c("Integration Joint Board", headers)
 hb_trend <-
   pds %>%
   group_by(health_board, fy) %>%
-  summarise(across(c(referrals, numerator), sum),
+  summarise(across(numerator:denominator, sum),
             .groups = "drop") %>%
   group_by(fy) %>%
   group_modify(~ adorn_totals(., name = "Scotland")) %>%
   ungroup() %>%
-  mutate(perc = numerator / referrals * 100)
+  mutate(perc = numerator / denominator * 100)
 
 # Data for HB trend table
 hb_trend_table <-
   hb_trend %>%
   mutate(perc = format_perc(perc)) %>%
-  select(-c(referrals:numerator)) %>%
+  select(-c(numerator:denominator)) %>%
   pivot_wider(names_from = fy, values_from = perc)
   
 # Data for Scot trend commentary
@@ -324,13 +324,13 @@ hb_trend_text <- glue(
 ijb_trend_table <-
   pds %>%
   group_by(ijb, fy) %>%
-  summarise(across(c(referrals, numerator), sum),
+  summarise(across(numerator:denominator, sum),
             .groups = "drop") %>%
   group_by(fy) %>%
   group_modify(~ adorn_totals(., name = "Scotland")) %>%
   ungroup() %>%
-  mutate(perc = format_perc(numerator / referrals * 100)) %>%
-  select(-c(referrals:numerator)) %>%
+  mutate(perc = format_perc(numerator / denominator * 100)) %>%
+  select(-c(numerator:denominator)) %>%
   pivot_wider(names_from = fy, values_from = perc)
 
 ```
@@ -340,10 +340,10 @@ age <-
   pds %>%
   filter(fy == latest_fy & age_grp != "Unknown") %>%
   group_by(age_grp) %>%
-  summarise(across(c(numerator, referrals), sum), .groups = "drop") %>%
+  summarise(across(referrals:denominator, sum), .groups = "drop") %>%
   mutate(
     ref_dist = referrals / sum(referrals) * 100,
-    ldp = numerator / referrals * 100
+    ldp = numerator / denominator * 100
   ) %>%
   mutate(
     across(c(ref_dist, ldp), format_perc),
@@ -378,10 +378,10 @@ simd <-
   pds %>%
   filter(fy == latest_fy & simd != "Unknown") %>%
   group_by(simd) %>%
-  summarise(across(c(numerator, referrals), sum), .groups = "drop") %>%
+  summarise(across(referrals:denominator, sum), .groups = "drop") %>%
   mutate(
     ref_dist = referrals / sum(referrals) * 100,
-    ldp = numerator / referrals * 100
+    ldp = numerator / denominator * 100
   ) %>%
   mutate(
     across(c(ref_dist, ldp), format_perc),

@@ -86,13 +86,13 @@ c2_data <-
   basefile %>%
   filter(fy == max(fy_in_pub)) %>%
   group_by(health_board) %>%
-  summarise(across(c(referrals, numerator), sum),
+  summarise(across(referrals:denominator, sum),
             .groups = "drop") %>%
   adorn_totals(name = "Scotland") %>%
   mutate(
     perc = case_when(
       referrals == 0 ~ 0,
-      TRUE ~ numerator / referrals * 100),
+      TRUE ~ numerator / denominator * 100),
     perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
   )
 
@@ -127,13 +127,13 @@ c3_data <-
   basefile %>%
   filter(fy == max(fy_in_pub) & ijb != "Unknown") %>%
   group_by(ijb) %>%
-  summarise(across(c(referrals, numerator), sum),
+  summarise(across(referrals:denominator, sum),
             .groups = "drop") %>%
   adorn_totals(name = "Scotland") %>%
   mutate(
     perc = case_when(
       referrals == 0 ~ 0,
-      TRUE ~ numerator / referrals * 100),
+      TRUE ~ numerator / denominator * 100),
     perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
   )
 
@@ -214,12 +214,12 @@ c5_data <-
   basefile %>%
   filter(fy == max(fy_in_pub) & referrals > 0) %>%
   group_by(age_grp) %>%
-  summarise(across(c(referrals, numerator), sum),
+  summarise(across(referrals:denominator, sum),
             .groups = "drop") %>%
   mutate(
     perc = case_when(
       referrals == 0 ~ 0,
-      TRUE ~ numerator / referrals * 100),
+      TRUE ~ numerator / denominator * 100),
     perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
   )
 
@@ -300,12 +300,12 @@ c7_data <-
   basefile %>%
   filter(fy == max(fy_in_pub) & referrals > 0) %>%
   group_by(simd) %>%
-  summarise(across(c(referrals, numerator), sum),
+  summarise(across(referrals:denominator, sum),
             .groups = "drop") %>%
   mutate(
     perc = case_when(
       referrals == 0 ~ 0,
-      TRUE ~ numerator / referrals * 100),
+      TRUE ~ numerator / denominator * 100),
     perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
   )
 
