@@ -411,7 +411,47 @@ simd_ldp_text <- glue(
 ```
 
 ```{r alt-text, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+# Figure 1 - incidence by HB
+f1_alt_text <- glue(
+  "Bar chart showing percentage of estimated number of people newly diagnosed ",
+  "with dementia referred for post-diagnostic support by NHS Board in ",
+  "financial year {latest_fy}."
+)
 
+f2_alt_text <- glue(
+  "Bar chart showing percentage of referrals who received a minimum of ",
+  "one year's post-diagnostic support by NHS Board in ",
+  "financial year {latest_fy}."
+)
+
+f3_alt_text <- glue(
+  "Bar chart showing percentage of referrals who received a minimum of ",
+  "one year's post-diagnostic support by Integration Joint Board in ",
+  "financial year {latest_fy}."
+)
+
+f4_alt_text <- glue(
+  "Bar chart showing distribution of referrals to dementia ",
+  "post-diagnostic support by age group in financial year {latest_fy}."
+)
+
+f5_alt_text <- glue(
+  "Bar chart showing percentage of referrals who received a minimum of ",
+  "one year's post-diagnostic support by age group in ",
+  "financial year {latest_fy}."
+)
+
+f6_alt_text <- glue(
+  "Bar chart showing distribution of referrals to dementia ",
+  "post-diagnostic support by deprivation quintile in ",
+  "financial year {latest_fy}."
+)
+
+f7_alt_text <- glue(
+  "Bar chart showing percentage of referrals who received a minimum of ",
+  "one year's post-diagnostic support by deprivation quintile in ",
+  "financial year {latest_fy}."
+)
 ```
 
 ```{r footnotes, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
@@ -655,7 +695,7 @@ external_img(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_12-months-hb.png")),
   width = 6, height = 6,
-  alt = "alt text here"
+  alt = f2_alt_text
 )
 ```
 </Div>
@@ -718,7 +758,7 @@ external_img(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_incidence-hb.png")),
   width = 5.5, height = 5.5,
-  alt = "alt text here"
+  alt = f1_alt_text
 )
 ```
 </Div>
@@ -819,7 +859,7 @@ external_img(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_12-months-hb.png")),
   width = 6, height = 6,
-  alt = "alt text here"
+  alt = f2_alt_text
 )
 ```
 </Div>
@@ -922,7 +962,7 @@ external_img(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_12-months-ijb.png")),
   width = 6, height = 9,
-  alt = "alt text here"
+  alt = f3_alt_text
 )
 ```
 </Div>
@@ -991,7 +1031,7 @@ external_img(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_age-dist.png")),
   width = 6.8, height = 3.5,
-  alt = "alt text here"
+  alt = f4_alt_text
 )
 ```
 </Div>
@@ -1019,7 +1059,7 @@ external_img(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_12-months-age.png")),
   width = 6.8, height = 3.5,
-  alt = "alt text here"
+  alt = f5_alt_text
 )
 ```
 </Div>
@@ -1051,7 +1091,7 @@ external_img(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_simd-dist.png")),
   width = 6.8, height = 3.5,
-  alt = "alt text here"
+  alt = f6_alt_text
 )
 ```
 </Div>
@@ -1081,7 +1121,7 @@ external_img(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_12-months-simd.png")),
   width = 6.8, height = 3.5,
-  alt = "alt text here"
+  alt = f7_alt_text
 )
 ```
 </Div>

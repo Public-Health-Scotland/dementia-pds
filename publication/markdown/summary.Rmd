@@ -112,7 +112,11 @@ external_img(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_12-months-hb.png")),
   width = 4.2, height = 4.2,
-  alt = "alt text here"
+  alt = glue(
+    "Bar chart showing percentage of referrals who received a minimum of ",
+    "one year's post-diagnostic support by NHS Board in ",
+    "financial year {latest_fy}."
+  )
 )
 ```
 </Div>
