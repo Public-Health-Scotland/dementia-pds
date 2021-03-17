@@ -63,7 +63,7 @@ c1 <-
   scale_x_continuous(expand = c(0, 0), limits = c(0, 100)) +
   xlab(
     str_wrap(
-      paste0("Percentage of Estimate Number of People Newly Diagnosed ",
+      paste0("Percentage of Estimated Number of People Newly Diagnosed ",
              "with Dementia Referred to PDS"),
       width = 45)
   ) +
@@ -113,6 +113,16 @@ c2 <-
 ggsave(
   here("publication", "output", pub_date, "figures", 
        paste0(pub_date, "_12-months-hb.png")),
+  plot = c2,
+  height = 6,
+  width = 6,
+  dpi = 600,
+  device = "png"
+)
+
+ggsave(
+  here("publication", "output", pub_date,
+       paste0(pub_date, "_dementia-pds_twitter-chart.png")),
   plot = c2,
   height = 6,
   width = 6,
