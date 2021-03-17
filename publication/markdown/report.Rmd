@@ -51,6 +51,18 @@ err <-
   ) %>%
   select(fy, perc) %>%
   mutate(text = glue("for {fy} was {perc}"))
+
+a_city_statement <-
+  paste("Aberdeen City Health & Social Care Partnership ceased its contract ",
+       "with Alzheimer Scotland during 2019 and introduced an in house ",
+       "Dementia Post-Diagnostic Support (PDS) service. This transition ",
+       "resulted in some PDS cases being terminated by Alzheimer Scotland ",
+       "earlier than 12 months and therefore not meeting the LDP standard. ",
+       "As part of the transition, individuals were contacted to ask if they ",
+       "still wanted to receive PDS which was then provided by the in house ",
+       "service, if required. This should be taken into account when ",
+       "interpreting figures for Aberdeen City in 2018/19.")
+  
 ```
 
 ```{r summary-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
@@ -341,7 +353,6 @@ age <-
     ldp = numerator / denominator * 100
   ) %>%
   mutate(
-    across(c(ref_dist, ldp), format_perc),
     age_text = case_when(
       str_detect(age_grp, "to") ~ paste("between", age_grp, "years"),
       age_grp == "90+" ~ "90 years and over",
@@ -349,24 +360,35 @@ age <-
     )
   )
 
-age_ref_top <- age %>% filter(ref_dist == max(ref_dist))
-age_ref_bot <- age %>% filter(ref_dist == min(ref_dist))
-
+age_ref <- age %>% 
+  filter(ref_dist %in% c(max(ref_dist), min(ref_dist))) %>%
+  arrange(ref_dist) %>%
+  mutate(ref_dist = format_perc(ref_dist))
+  
 age_referrals_text <- glue(
-  "People aged {age_ref_top$age_text} accounted for the largest percentage ",
+  "People aged {last(age_ref$age_text)} accounted for the largest percentage ",
   "of referrals for dementia post-diagnostic support in {latest_fy} ",
-  "({age_ref_top$ref_dist}). In contrast, the lowest percentage of referrals ",
-  "was for people aged {age_ref_bot$age_text} ({age_ref_bot$ref_dist})."
+  "({last(age_ref$ref_dist)}). In contrast, the lowest percentage of referrals ",
+  "was for people aged {first(age_ref$age_text)} ({first(age_ref$ref_dist)})."
 )
 
-age_ldp_top <- age %>% filter(ldp == max(ldp))
-age_ldp_bot <- age %>% filter(ldp == min(ldp))
+age_ldp <-
+  age %>%
+  filter(ldp %in% c(max(ldp), min(ldp))) %>%
+  arrange(ldp) %>%
+  mutate(ldp = format_perc(ldp))
+
+ldp_top_ref <-
+  age %>%
+  filter(ref_dist == max(ref_dist)) %>%
+  mutate(ldp = format_perc(ldp))
 
 age_ldp_text <- glue(
   "In {latest_fy}, the percentage of referrals receiving a minimum of one ",
-  "year's post-diagnostic support ranged from {age_ldp_bot$ldp} for those ",
-  "aged {age_ldp_bot$age_text}, to {age_ldp_top$ldp} for those aged ",
-  "{age_ldp_top$age_text}."
+  "year's post-diagnostic support ranged from {first(age_ldp$ldp)} for those ",
+  "aged {first(age_ldp$age_text)}, to {last(age_ldp$ldp)} for those aged ",
+  "{last(age_ldp$age_text)}. The percentage for those {ldp_top_ref$age_text} ",
+  "(age group with the highest number of referrals) was {ldp_top_ref$ldp}."
 )
 
 simd <-
@@ -511,7 +533,7 @@ simd_unknown <-
   pds %>% filter(fy == latest_fy) %>% count(simd)
 
 simd_footnote <- glue(
-  "Deprivation is calculated by matching postcodes to the",
+  "Deprivation is calculated by matching postcodes to the ",
   "Scottish Index of Multiple Deprivation (SIMD) quintiles. {if_else(",
   "'Unknown' %in% simd_unknown$simd, 'There are a small number of records ",
   "with an incomplete postcode and therefore the deprivation quintile is ",
@@ -549,7 +571,7 @@ metadata <- tribble(
   "Timeframe of data and timeliness",
   glue("This publication includes those diagnosed with dementia and referred ",
   "for dementia post-diagnostic support between 1 April ",
-  "{str_sub(fy_in_pub[1], 1, 4)} to 31 March {str_sub(latest_fy, 1, 4)}. \n",
+  "{str_sub(fy_in_pub[1], 1, 4)} to 31 March 20{str_sub(latest_fy, 6, 7)}. \n",
   "For diagnoses in {latest_fy}, it is possible some service users are ",
   "still receiving their post-diagnostic support and they are reported as ",
   "ongoing."),
@@ -560,7 +582,7 @@ metadata <- tribble(
   "effective from 1 April 2019 for all records with a dementia diagnosis ",
   "post 1 April 2016. \n Information presented in this publication is not ",
   "comparable to dementia post-diagnostic support LDP standard information ",
-  "published prior to 2016/17.  This is due to a combination of the ",
+  "published for time periods prior to 2016/17.  This is due to a combination of the ",
   "change in definitions, improvements to data quality and refinements to ",
   "the method used to calculate the standard."),
   "Revisions statement",
@@ -591,16 +613,20 @@ metadata <- tribble(
        "is accurate and correct. PHS conduct quality checks upon receipt of ",
        "data and feedback data queries to NHS Boards. \n As at the ",
        "{format(end_date, '%d %B %Y')} data submission, the Scotland level ",
-       "error rate {glue_collapse(err$text, sep = ', ', last = ' and ')}."),
+       "error rate {glue_collapse(err$text, sep = ', ', last = ' and ')}. \n",
+       a_city_statement),
   "Completeness",
   glue("Data submissions are received for all NHS Boards and include data ",
-       "for all Integration Joint Boards. \n *Add note here re COVID-19*"),
+       "for all Integration Joint Boards. \n As a result of the COVID-19 ",
+       "pandemic, some areas have reported difficulties in updating their ",
+       "data systems which are required to provide the dementia PDS dataset."),
   "Comparability",
   glue("Information presented in this publication is not ",
        "comparable to dementia post-diagnostic support LDP standard ",
-       "information published prior to 2016/17.  This is due to a combination ",
-       "of the change in definitions, improvements to data quality and ",
-       "refinements to the method used to calculate the standard. \n ",
+       "information published for time periods prior to 2016/17. This is due ",
+       "to a combination of the change in definitions, improvements to data ",
+       "quality and refinements to the method used to calculate the standard. ",
+       "\n ",
        "Comparability between NHS Boards / Integration Joint Boards should be ",
        "done so with caution as services can provide different models of ",
        "care & have varying resource issues."),
@@ -609,7 +635,7 @@ metadata <- tribble(
        "sites and products accessible according to [published guidelines]",
        "(https://beta.isdscotland.org/front-matter/accessibility-statement/). ",
        "Accessibility of the report and findings are of continuous ",
-       "consideration throught the report development and all figures ",
+       "consideration throughout the report development and all figures ",
        "have been assessed against the PHS accessibility guidelines."),
   "Coherence and clarity",
   glue("The summary and publication report are accessible via the [PHS website",
@@ -681,7 +707,7 @@ Commitment 4 of the national action plan states:
 
 “We will continue to support our national commitment on post-diagnostic support, to increase access to this service and to the community support individuals need to continue living well as part of the wider community. As part of this, in partnership with COSLA, local partnerships, Alzheimer Scotland and other stakeholders we will take forward work in the first four months of 2021 to review and assess the provision and design of post-diagnostic services and identify both best practice and barriers to further expansion of the service. We will also establish a process to engage regularly with local delivery partners to assess progress and identify and help address local issues.”
 
-*Mention Alz Scot [hidden impact report](https://www.alzscot.org/sites/default/files/2020-12/Coronavirus%20the%20hidden%20impact%20report%20final.pdf) here*
+In December 2020, Alzheimer Scotland published a [report](https://www.alzscot.org/news/covid-19-the-hidden-impact) looking into the impact of coronavirus on people with dementia, their families and carers who are living at home.
 \newpage
 
 # Main Points
@@ -1028,11 +1054,11 @@ ijb_trend_table %>%
 
 ## 3. Demographics and Inequalities
 
-This part of the report presents information on the demographics of individuals who have been referred for dementia post-diagnostic support. Age and deprivation have been identified as two of the main areas of interest. 
+This part of the report presents information on the demographics of individuals who have been referred for dementia post-diagnostic support in Scotland. Age and deprivation have been identified as two of the main areas of interest. 
 
 ### Age
 
-Figure 4 presents the age distribution of those referred for dementia post-diagnostic support for `r latest_fy`.
+Figure 4 presents the age distribution of those referred for dementia post-diagnostic support in Scotland for `r latest_fy`.
 
 <Div custom-style = "TableChart title">Figure 4: Age distribution of referrals for dementia post-diagnostic support; `r latest_fy`^P^</Div>
 
@@ -1094,7 +1120,7 @@ external_img(
 
 ### Deprivation
 
-Figure 6 presents the distribution of referrals for dementia post-diagnostic support by deprivation quintile for `r latest_fy`. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived) to 5 (least deprived). 
+Figure 6 presents the distribution of referrals for dementia post-diagnostic support by deprivation quintile for `r latest_fy`. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived) to 5 (least deprived). At Scotland level, approximately one fifth of the general population are within each deprivation quintile.
 
 <Div custom-style = "TableChart title">Figure 6: Distribution of referrals to dementia post-diagnostic support by deprivation quintile; `r latest_fy`^P^</Div>
 
@@ -1162,16 +1188,15 @@ external_img(
 The number of new cases of a particular illness or disease during a defined time period. For the purposes of this publication we are looking at the number of new diagnoses of dementia.
 
 **LDP Standard**  
-Formerly known as HEAT Targets, Local Delivery Plan (LDP) standards are priorities agreed between Scottish Government and NHS Boards. Performance on Dementia PDS is one of the current LDP Standards. Further information can be found on the [Scottish Government website](http://www.gov.scot/Topics/Health/Quality-Improvement-Performance/NHS-Performance-Targets).
+Formerly known as HEAT Targets, Local Delivery Plan (LDP) standards are priorities agreed between Scottish Government and NHS Boards. Performance on Dementia Post-Diagnostic Support is one of the current LDP Standards. Further information can be found on the [Scottish Government website](https://www.gov.scot/publications/nhsscotland-local-delivery-plan-guidance-2015-16/).
 
 **Post-Diagnostic Support (PDS)**  
 Support commissioned by the Scottish Government that everyone newly diagnosed with dementia is entitled to a minimum of one year’s post-diagnostic support. Further information on post-diagnostic support can be found on the [Alzheimer Scotland](https://www.alzscot.org/living-with-dementia/newly-diagnosed/accessing-post-diagnostic-support) website.
 
 **Referral**  
 When a person receives a new diagnosis of dementia, a referral is made to a service that provides post-diagnostic support and allocates a named person to work alongside the individual and those close to them. 
-
 **Deprivation Quintile**  
-The Scottish Index of Multiple Deprivation (SIMD) Quintiles. Deprivation for individuals is estimated from aggregate data derived from the census and other routine sources. These are used to estimate the deprivation of small geographical areas. The Scottish Index of Multiple Deprivation (SIMD) has seven domains (income, employment, education, housing, health, crime, and geographical access) at datazone level, which have been combined into an overall index to pick out area concentrations of multiple deprivation. Data in this report are analysed by the ‘Scotland level’ Scottish Index of Multiple Deprivation population weighted quintiles. Each quintile consists of approximately 20% of the population living in Scotland, with deprivation quintile 1 indicating the 20% of the population living in the most deprived areas and deprivation quintile 5 the 20% of the population living in the least deprived areas.
+The Scottish Index of Multiple Deprivation (SIMD) Quintiles. Deprivation for individuals is estimated from aggregate data derived from the census and other routine sources. These are used to estimate the deprivation of small geographical areas, called data zones. The Scottish Index of Multiple Deprivation (SIMD) has seven domains (income, employment, education, housing, health, crime, and geographical access) at data zone level, which have been combined into an overall index to pick out area concentrations of multiple deprivation. Data in this report are analysed by the ‘Scotland level’ Scottish Index of Multiple Deprivation population weighted quintiles. Each quintile consists of approximately 20% of the population living in Scotland, with deprivation quintile 1 indicating the 20% of the population living in the most deprived areas and deprivation quintile 5 the 20% of the population living in the least deprived areas.
 
 \newpage
 
@@ -1230,13 +1255,15 @@ Service users for whom it is not yet known if they have met the standard as thei
 
 ### Comparability to LDP standard figures published prior to 2016/17
 
-Information presented in this publication is not comparable to dementia post-diagnostic support LDP standard information published prior to 2016/17. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
+Information presented in this publication is not comparable to dementia post-diagnostic support LDP standard information published for the years prior to 2016/17. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
 
 ### Data Definitions and Reporting{#reporting}
 
 NHS Boards provide quarterly data submissions to PHS on individuals diagnosed and referred for post-diagnostic support within their local areas and this dataset forms the basis of the LDP standard calculation. 
 
 Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) and reporting processes were effective from 1 April 2019 for all referrals for post-diagnostic support from 1 April 2016 onwards. The revised definitions were designed in consultation with stakeholders to improve the quality and consistency of the data reported.
+
+`r a_city_statement`
 
 ### Data Quality
 
@@ -1301,7 +1328,7 @@ NHS Board Communication leads
 
 **Early Access for Management Information**
 
-These statistics will also have been made available to those who needed access to ‘management information’, i.e. as part of the delivery of health and care:
+These statistics will also have been made available to those who needed access to ‘management information’, i.e. as part of the delivery of health and care.
 
 \newpage
 
