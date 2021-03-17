@@ -508,6 +508,15 @@ incidence_footnote <-
         "Estimates for calendar year ", str_sub(latest_fy, 1, 4),
         " have been used.")
 
+incidence_footnote_trend <-
+  paste0("The estimated number of people newly diagnosed with dementia is ",
+        "subject to the limitations detailed within the [Estimated and ",
+        "Projected Diagnosis Rates for Dementia in Scotland: 2014-2020]",
+        "(http://www.gov.scot/Publications/2016/12/9363) publication. ",
+        "Estimates for calendar years ", 
+        glue_collapse(str_sub(fy_in_pub, 1, 4), sep = ", ", last = " and "),
+        " have been used.")
+
 method_footnote <-
   paste("For detailed information on how the percentage of LDP standard",
         "achieved is calculated, and how 'standard met', 'exempt from",
@@ -619,7 +628,9 @@ metadata <- tribble(
   glue("Data submissions are received for all NHS Boards and include data ",
        "for all Integration Joint Boards. \n As a result of the COVID-19 ",
        "pandemic, some areas have reported difficulties in updating their ",
-       "data systems which are required to provide the dementia PDS dataset."),
+       "data systems which are required to provide the dementia PDS dataset, ",
+       "however it is not anticipated that this has a large impact on the ",
+       "data presented in this report."),
   "Comparability",
   glue("Information presented in this publication is not ",
        "comparable to dementia post-diagnostic support LDP standard ",
@@ -629,7 +640,7 @@ metadata <- tribble(
        "\n ",
        "Comparability between NHS Boards / Integration Joint Boards should be ",
        "done so with caution as services can provide different models of ",
-       "care & have varying resource issues."),
+       "care and have varying resource issues."),
   "Accessibility",
   glue("It is the policy of Public Health Scotland (PHS) to make its web ",
        "sites and products accessible according to [published guidelines]",
@@ -827,7 +838,7 @@ inc_trend_table %>%
 
 1. `r prov_footnote`
 2. `r revised_footnote`
-3. `r incidence_footnote`
+3. `r incidence_footnote_trend`
 </div>
 
 <br>
@@ -1178,13 +1189,14 @@ external_img(
 The number of new cases of a particular illness or disease during a defined time period. For the purposes of this publication we are looking at the number of new diagnoses of dementia.
 
 **LDP Standard**  
-Formerly known as HEAT Targets, Local Delivery Plan (LDP) standards are priorities agreed between Scottish Government and NHS Boards. Performance on Dementia Post-Diagnostic Support is one of the current LDP Standards. Further information can be found on the [Scottish Government website](https://www.gov.scot/publications/nhsscotland-local-delivery-plan-guidance-2015-16/).
+Formerly known as HEAT Targets, Local Delivery Plan (LDP) standards are priorities agreed between Scottish Government and NHS Boards. Performance on Dementia Post-Diagnostic Support is one of the current LDP Standards. Further information can be found on the [Scottish Government website](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP).
 
 **Post-Diagnostic Support (PDS)**  
 Support commissioned by the Scottish Government that everyone newly diagnosed with dementia is entitled to a minimum of one year’s post-diagnostic support. Further information on post-diagnostic support can be found on the [Alzheimer Scotland](https://www.alzscot.org/living-with-dementia/newly-diagnosed/accessing-post-diagnostic-support) website.
 
 **Referral**  
-When a person receives a new diagnosis of dementia, a referral is made to a service that provides post-diagnostic support and allocates a named person to work alongside the individual and those close to them. 
+When a person receives a new diagnosis of dementia, a referral is made to a service that provides post-diagnostic support and allocates a named person to work alongside the individual and those close to them.
+
 **Deprivation Quintile**  
 The Scottish Index of Multiple Deprivation (SIMD) Quintiles. Deprivation for individuals is estimated from aggregate data derived from the census and other routine sources. These are used to estimate the deprivation of small geographical areas, called data zones. The Scottish Index of Multiple Deprivation (SIMD) has seven domains (income, employment, education, housing, health, crime, and geographical access) at data zone level, which have been combined into an overall index to pick out area concentrations of multiple deprivation. Data in this report are analysed by the ‘Scotland level’ Scottish Index of Multiple Deprivation population weighted quintiles. Each quintile consists of approximately 20% of the population living in Scotland, with deprivation quintile 1 indicating the 20% of the population living in the most deprived areas and deprivation quintile 5 the 20% of the population living in the least deprived areas.
 
@@ -1245,7 +1257,7 @@ Service users for whom it is not yet known if they have met the standard as thei
 
 ### Comparability to LDP standard figures published prior to 2016/17
 
-Information presented in this publication is not comparable to dementia post-diagnostic support LDP standard information published for the years prior to 2016/17. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
+Information presented in this publication is not comparable to dementia post-diagnostic support LDP standard information published for time periods prior to 2016/17. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
 
 ### Data Definitions and Reporting{#reporting}
 
@@ -1269,7 +1281,7 @@ For a relatively small number of individuals, multiple records were submitted an
 
 There also exists a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IJB. The support provided to these service users has been apportioned to NHS Highland in this report, as part of the LDP Standard is a population based measure, and so by not including these Argyll & Bute residents this figure may be skewed.
 
-As a result of the COVID-19 pandemic, some areas have reported difficulties in updating their data systems which are required to provide the dementia PDS dataset.
+As a result of the COVID-19 pandemic, some areas have reported difficulties in updating their data systems which are required to provide the dementia PDS dataset, however it is not anticipated that this has a large impact on the data presented in this report.
 
 \newpage
 
