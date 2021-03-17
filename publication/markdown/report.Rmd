@@ -468,6 +468,21 @@ revised_footnote <-
   paste("Figures for", revised_fy, "have been revised (^R^) and are",
         "now final.")
 
+a_city_footnote_hb <-
+  paste("2018/19 figures for NHS Grampian are affected by a change to the PDS",
+        "service provided by Aberdeen City. See [Appendix 1](#reporting) ",
+        "for further information.")
+
+a_city_footnote_ijb <-
+  paste("2018/19 figures for Aberdeen City are affected by a change to the PDS",
+        "service provided. See [Appendix 1](#reporting) ",
+        "for further information.")
+
+a_city_footnote_general <-
+  paste("2018/19 figures are affected by a change to the PDS",
+        "service provided by Aberdeen City. See [Appendix 1](#reporting) ",
+        "for further information.")
+
 incidence_footnote <-
   paste0("The estimated number of people newly diagnosed with dementia is ",
         "subject to the limitations detailed within the [Estimated and ",
@@ -701,7 +716,8 @@ external_img(
 </Div>
 
 <Div custom-style = "Normal_Notes">
-`r prov_footnote`
+1. `r prov_footnote`
+2. `r a_city_footnote_hb`
 </div>
 
 <br>
@@ -744,6 +760,7 @@ inc %>%
 
 1. `r prov_footnote`
 2. `r incidence_footnote`
+3. `r a_city_footnote_hb`
 </div>
 
 `r inc_text`
@@ -770,6 +787,7 @@ external_img(
 
 1. `r prov_footnote`
 2. `r incidence_footnote`
+3. `r a_city_footnote_hb`
 </div>
 
 Table 2 presents the percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
@@ -801,6 +819,7 @@ inc_trend_table %>%
 1. `r prov_footnote`
 2. `r revised_footnote`
 3. `r incidence_footnote`
+4. `r a_city_footnote_hb`
 </div>
 
 <br>
@@ -843,6 +862,7 @@ hb %>%
 1. `r prov_footnote`
 2. `r method_footnote`
 3. `r interpret_footnote`
+4. `r a_city_footnote_hb`
 </div>
 
 <br>
@@ -872,6 +892,7 @@ external_img(
 1. `r prov_footnote`
 2. `r method_footnote`
 3. `r interpret_footnote`
+4. `r a_city_footnote_hb`
 </div>
 
 <br>
@@ -906,6 +927,7 @@ hb_trend_table %>%
 2. `r revised_footnote`
 3. `r method_footnote`
 4. `r interpret_footnote`
+5. `r a_city_footnote_hb`
 </div>
 
 <br>
@@ -944,6 +966,7 @@ ijb %>%
 1. `r prov_footnote`
 2. `r method_footnote`
 3. `r interpret_footnote`
+4. `r a_city_footnote_ijb`
 </div>
 
 <br>
@@ -975,6 +998,7 @@ external_img(
 1. `r prov_footnote`
 2. `r method_footnote`
 3. `r interpret_footnote`
+4. `r a_city_footnote_ijb`
 </div>
 
 <br>
@@ -1011,6 +1035,7 @@ ijb_trend_table %>%
 2. `r revised_footnote`
 3. `r method_footnote`
 4. `r interpret_footnote`
+5. `r a_city_footnote_ijb`
 </div>
 
 <br>
@@ -1043,6 +1068,7 @@ external_img(
 
 1. `r prov_footnote`
 2. `r age_footnote`
+3. `r a_city_footnote_general`
 </div>
 
 <br>
@@ -1071,6 +1097,7 @@ external_img(
 
 1. `r prov_footnote`
 2. `r age_footnote`
+3. `r a_city_footnote_general`
 </div>
 
 <br>
@@ -1103,6 +1130,7 @@ external_img(
 
 1. `r prov_footnote`
 2. `r simd_footnote`
+3. `r a_city_footnote_general`
 </div>
 
 <br>
@@ -1133,6 +1161,7 @@ external_img(
 
 1. `r prov_footnote`
 2. `r simd_footnote`
+3. `r a_city_footnote_general`
 </div>
 
 <br>
@@ -1217,7 +1246,7 @@ Service users for whom it is not yet known if they have met the standard as thei
 
 Information presented in this publication is not comparable to dementia post-diagnostic support LDP standard information published prior to 2016/17. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
 
-### Data Definitions and Reporting
+### Data Definitions and Reporting{#reporting}
 
 NHS Boards provide quarterly data submissions to PHS on individuals diagnosed and referred for post-diagnostic support within their local areas and this dataset forms the basis of the LDP standard calculation. 
 
