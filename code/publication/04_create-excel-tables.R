@@ -38,33 +38,33 @@ excel_data <-
     # Health Board
     pds %>%
       group_by(fy, category = "geog", category_split = health_board) %>%
-      summarise(across(complete:numerator, sum), .groups = "drop"),
+      summarise(across(complete:denominator, sum), .groups = "drop"),
 
     # IJB
     pds %>%
       group_by(fy, category = "geog", category_split = ijb) %>%
-      summarise(across(complete:numerator, sum), .groups = "drop"),
+      summarise(across(complete:denominator, sum), .groups = "drop"),
     
     # Scotland
     pds %>% 
       group_by(fy, category = "geog", category_split = "Scotland") %>%
-      summarise(across(complete:numerator, sum), .groups = "drop"),
+      summarise(across(complete:denominator, sum), .groups = "drop"),
     
     # Age Group
     pds %>% 
       group_by(fy, category = "age", category_split = age_grp) %>%
-      summarise(across(complete:numerator, sum), .groups = "drop"),
+      summarise(across(complete:denominator, sum), .groups = "drop"),
     
     # SIMD
     pds %>% 
       group_by(fy, category = "simd", category_split = simd) %>%
-      summarise(across(complete:numerator, sum), .groups = "drop")
+      summarise(across(complete:denominator, sum), .groups = "drop")
     
   ) %>%
 
   # Add rate column
-  mutate(rate = numerator / referrals) %>%
-  select(-numerator) %>%
+  mutate(rate = numerator / denominator) %>%
+  select(-c(numerator:denominator)) %>%
   
   # Add expected diagnoses
   left_join(expected, by = c("fy", "category_split" = "health_board_label")) %>%
@@ -137,10 +137,16 @@ class(link) <- "hyperlink"
 
 writeData(wb, 
           "Notes", 
-          startCol = "B",
+          startCol = "C",
           startRow = 21,
           x = link)
 
+addStyle(wb = wb, 
+          sheet = "Notes", 
+          cols = "C",
+          rows = 21,
+          style = createStyle(fontName = "Arial", fontColour = "#0000ff",
+                              textDecoration = "underline"))
 
 # Hide data sheets and calculation sheet
 sheetVisibility(wb)[10:11] <- "hidden"
