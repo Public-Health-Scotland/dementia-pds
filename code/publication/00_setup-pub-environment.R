@@ -35,7 +35,7 @@ library(flextable)     # For formatted tables in publication output
 library(usethis)       # For creating folder structure
 library(rmarkdown)     # For render function
 library(officer)       # For adding cover page and toc to report
-
+library(english)       # For converting number to text
 
 ### 2 - Dates - UPDATE THIS SECTION ----
 

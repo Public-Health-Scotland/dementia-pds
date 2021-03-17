@@ -138,25 +138,17 @@ inc_trend_table <-
 inc_trend_comm <-
   inc_trend %>%
   filter(health_board == "Scotland") %>%
-  mutate(
-    perc_change = last(perc) - perc,
-    perc_dir  = case_when(
-           perc_change >= 1 ~ "increased",
-           perc_change <= -1 ~ "decreased",
-           TRUE ~ "similar to"
-         ),
-    perc_change = format_perc(abs(perc_change), 0)
-  )
+  mutate(perc = format_perc(perc)) %>%
+  arrange(perc)
 
 # Commentary for incidence trend
 inc_trend_text <- glue(
-  "The {latest_fy} Scotland rate has {inc_trend_comm %>% ",
-  "filter(row_number() == n() - 1) %>% pull(perc_dir)} by {inc_trend_comm %>% ",
-  "filter(row_number() == n() - 1) %>% pull(perc_change)} from {inc_trend_comm %>% ",
-  "filter(row_number() == n() - 1) %>% pull(fy)} but {inc_trend_comm %>% ",
-  "filter(row_number() == n() - 2) %>% pull(perc_dir)} by {inc_trend_comm %>% ",
-  "filter(row_number() == n() - 2) %>% pull(perc_change)} from {inc_trend_comm %>% ",
-  "filter(row_number() == n() - 2) %>% pull(fy)}."
+  "The percentage of the estimated number of people in Scotland newly ",
+  "diagnosed with dementia referred for post-diagnostic support has ",
+  "fluctuated slightly over the {english(length(fy_in_pub))} year period ",
+  "{first(fy_in_pub)} to {last(fy_in_pub)}, ranging from ",
+  "{first(inc_trend_comm$perc)} in {first(inc_trend_comm$fy)} to ",
+  "{last(inc_trend_comm$perc)} in {last(inc_trend_comm$fy)}."
 )
 
 ```
@@ -753,15 +745,13 @@ inc %>%
 
 1. `r prov_footnote`
 2. `r incidence_footnote`
-3. `r a_city_footnote_hb`
 </div>
 
 `r inc_text`
 
 Figure 1 presents the percentage of people referred for dementia post-diagnostic support compared to the estimated number of people newly diagnosed with dementia by NHS Board in `r latest_fy`.
 
-<Div custom-style = "TableChart title">Figure 1: Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^P^</Div>
-
+<Div custom-style = "TableChart title">Figure 1: Percentage of the estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^P^</Div>
 <Div custom-style = "Figure_Style">
 ```{r fig-1, echo=FALSE}
 external_img(
@@ -780,12 +770,11 @@ external_img(
 
 1. `r prov_footnote`
 2. `r incidence_footnote`
-3. `r a_city_footnote_hb`
 </div>
 
 Table 2 presents the percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
 
-<Div custom-style = "TableChart title">Table 2: Trend - Percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board</Div>
+<Div custom-style = "TableChart title">Table 2: Trend - Percentage of the estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board</Div>
 
 ```{r table-2, echo = FALSE, ft.align = "center"}
 inc_trend_table %>%
