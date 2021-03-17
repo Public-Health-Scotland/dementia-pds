@@ -263,54 +263,57 @@ hb_trend_table <-
 trend_comm <-
   hb_trend %>%
   filter(health_board == "Scotland") %>%
-  mutate(
-    perc_change = last(perc) - perc,
-    perc_dir  = case_when(
-           perc_change > 0 ~ "increased",
-           perc_change < 0 ~ "decreased",
-           perc_change == 0 ~ "stayed the same"
-         )
-  ) %>%
-  mutate(across(perc:perc_change, ~ format_perc(abs(.))))
+  mutate(perc = format_perc(perc)) %>%
+  arrange(perc)
 
 # Commentary for Scotland trend
 scot_trend_text <- glue(
-  "The Scotland rate {trend_comm %>% filter(row_number() == n() - 1) %>% ",
-  "pull(perc_dir)} to {trend_comm %>% filter(row_number() == n()) %>% ",
-  "pull(perc)} in {trend_comm %>% filter(row_number() == n()) %>% ",
-  "pull(fy)} from {trend_comm %>% filter(row_number() == n() - 1) %>% ",
-  "pull(perc)} in {trend_comm %>% filter(row_number() == n() - 1) %>% ",
-  "pull(fy)}, but showed a {trend_comm %>% filter(row_number() == n() - 2) ",
-  "%>% pull(perc_dir) %>% str_remove('d$')} when compared to {trend_comm %>% ",
-  "filter(row_number() == n() - 2) %>% pull(fy)} ({trend_comm %>% ",
-  "filter(row_number() == n() - 2) %>% pull(perc)})."
+  "The percentage of people in Scotland referred for post-diagnostic support ",
+  "who received a minimum of one year's support has ",
+  "fluctuated in the {english(length(fy_in_pub))} year period ",
+  "{first(fy_in_pub)} to {last(fy_in_pub)}, ranging from ",
+  "{first(trend_comm$perc)} in {first(trend_comm$fy)} to ",
+  "{last(trend_comm$perc)} in {last(trend_comm$fy)}."
 )
 
 # Data for HB trend commentary
 hb_trend_comm <-
   hb_trend %>%
-  filter(health_board != "Scotland" & fy %in% c(latest_fy, revised_fy)) %>%
+  filter(health_board != "Scotland") %>%
   group_by(health_board) %>%
   arrange(fy) %>%
-  summarise(diff = diff(perc)) %>%
-  mutate(dir = case_when(
-    diff > 0 ~ 1,
-    TRUE ~ 0
-  )) %$%
-  sum(dir)
-
-dir <- 
-  case_when(
-  (hb_trend_comm / 14 ) == 0.5 ~ "half",
-  (hb_trend_comm / 14 ) > 0.5 ~ "more than half",
-  (hb_trend_comm / 14 ) < 0.5 ~ "less than half"
-)
+  summarise(fy = fy,
+            fy1 = lag(fy),
+            fy2 = lag(fy, 2),
+            diff1 = perc - lag(perc),
+            diff2 = perc - lag(perc, n = 2),
+            .groups = "drop") %>%
+  filter(fy == latest_fy) %>%
+  group_by(fy1, fy2) %>%
+  summarise(across(
+    contains("diff"),
+    ~ case_when(
+      sum(. > 0) / n() == 0.5 ~ "half",
+      sum(. > 0) / n() > 0.5 ~ "more than half",
+      sum(. > 0) / n() < 0.5 ~ "less than half"
+    )
+  ),
+  .groups = "drop")
+  
 
 # Commentary for HB trend
 hb_trend_text <- glue(
-  "When comparing {revised_fy} and {latest_fy} figures, {dir} of the NHS ",
-  "Boards showed a higher rate in {latest_fy} than in {revised_fy}."
+  "When comparing percentages for {hb_trend_comm$fy1} and {latest_fy}, ",
+  "{hb_trend_comm$diff1} of the NHS Boards had a higher rate in {latest_fy} ",
+  "than in {hb_trend_comm$fy1}."
 )
+
+if(hb_trend_comm$diff1 == hb_trend_comm$diff2){
+  hb_trend_text <- glue(
+    "{hb_trend_text} This proportion remains the same when {hb_trend_comm$fy2}",
+    " and {latest_fy} are compared."
+  )
+}
 
 # Data for IJB trend table
 ijb_trend_table <-
@@ -819,7 +822,7 @@ The criteria used to define this part of the LDP standard is detailed in [Append
 
 ### NHS Board
 
-Table 3 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS board for `r latest_fy`.
+Table 3 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS board for `r latest_fy`. The percentage by NHS Board is also shown in Figure 2.
 
 <Div custom-style = "TableChart title">Table 3: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board; `r latest_fy`^P^</Div>
 
@@ -853,8 +856,6 @@ hb %>%
 <br>
 
 `r text_hb`
-
-Figure 2 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS board for `r latest_fy`.
 
 <Div custom-style = "TableChart title">Figure 2: Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^P^</Div>
 
@@ -916,8 +917,6 @@ hb_trend_table %>%
 5. `r a_city_footnote_hb`
 </div>
 
-<br>
-
 `r scot_trend_text`
 
 `r hb_trend_text`
@@ -926,7 +925,7 @@ hb_trend_table %>%
 
 ### Integration Joint Board
 
-Table 5 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Joint Board (IJB).
+Table 5 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Joint Board (IJB). The percentage by IJB is also shown in Figure 3.
 
 <Div custom-style = "TableChart title">Table 5: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board; `r latest_fy`^P^</Div>
 
@@ -960,8 +959,6 @@ ijb %>%
 <br>
 
 `r text_ijb`
-
-Figure 3 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support by IJB for `r latest_fy`.
 
 \newpage
 
