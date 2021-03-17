@@ -687,7 +687,6 @@ Commitment 4 of the national action plan states:
 “We will continue to support our national commitment on post-diagnostic support, to increase access to this service and to the community support individuals need to continue living well as part of the wider community. As part of this, in partnership with COSLA, local partnerships, Alzheimer Scotland and other stakeholders we will take forward work in the first four months of 2021 to review and assess the provision and design of post-diagnostic services and identify both best practice and barriers to further expansion of the service. We will also establish a process to engage regularly with local delivery partners to assess progress and identify and help address local issues.”
 
 *Mention Alz Scot [hidden impact report](https://www.alzscot.org/sites/default/files/2020-12/Coronavirus%20the%20hidden%20impact%20report%20final.pdf) here*
-
 \newpage
 
 # Main Points
@@ -716,8 +715,7 @@ external_img(
 
 <br>
 
-* In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.
-
+* In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.  
 \newpage
 
 # Results and Commentary
@@ -735,6 +733,7 @@ inc %>%
   mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>% 
   ft_dementia_style() %>% 
+  padding(j = -1, part = "body", padding.right = 40) %>%
   width(j = 1, width = 2.4) %>%
   width(j = -1, width = 1.5) %>%
   set_header_labels(
@@ -792,6 +791,7 @@ Table 2 presents the percentage of estimated number of people newly diagnosed wi
 inc_trend_table %>%
   flextable() %>% 
   ft_dementia_style() %>% 
+  align(j = -1, align = "center", part = "body") %>%
   width(j = 1, width = 2.4) %>%
   width(j = -1, width = 1.5) %>%
   set_header_labels(values = c(health_board = "NHS Board")) %>%
@@ -841,6 +841,8 @@ hb %>%
   mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>% 
   ft_dementia_style() %>%
+  padding(j = 2:6, part = "body", padding.right = 15) %>%
+  align(j = ncol(ijb), part = "body", align = "center") %>%
   width(j = 1, width = 2.2) %>%
   width(j = 2:(ncol(hb) - 1), width = 0.8) %>%
   width(j = ncol(hb), width = 1) %>%
@@ -899,6 +901,7 @@ Table 4 presents the percentage of people referred for post-diagnostic support w
 hb_trend_table %>%
   flextable() %>% 
   ft_dementia_style() %>% 
+  align(j = -1, align = "center", part = "body") %>%
   width(j = 1, width = 2.4) %>%
   width(j = -1, width = 1.5) %>%
   set_header_labels(values = c(health_board = "NHS Board")) %>%
@@ -945,6 +948,8 @@ ijb %>%
   mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>% 
   ft_dementia_style() %>% 
+  padding(j = 2:6, part = "body", padding.right = 15) %>%
+  align(j = ncol(ijb), part = "body", align = "center") %>%
   width(j = 1, width = 2.2) %>%
   width(j = 2:(ncol(ijb) - 1), width = 0.8) %>%
   width(j = ncol(ijb), width = 1) %>%
@@ -1007,6 +1012,7 @@ Table 6 presents the percentage of people referred for post-diagnostic support w
 ijb_trend_table %>%
   flextable() %>% 
   ft_dementia_style() %>% 
+  align(j = -1, align = "center", part = "body") %>%
   width(j = 1, width = 2.4) %>%
   width(j = -1, width = 1.5) %>%
   set_header_labels(values = c(ijb = "Integration Joint Board")) %>%
