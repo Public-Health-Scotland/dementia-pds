@@ -604,14 +604,14 @@ metadata <- tribble(
        "should receive a minimum of one year’s post-diagnostic support."),
   "Accuracy",
   glue("This is an Official Statistics publication and the UK Statistics ",
-       "Authority’s Code of Practice has been followed throughout. \n ",
+       "Authority’s Code of Practice has been followed throughout. \n",
        "NHS Boards have the responsibility of gathering and submitting ",
        "information on the delivery of Dementia post-diagnostic support for ",
        "all Integration Joint Boards to support the measurement of the LDP ",
        "standard. It is expected by PHS that quality assurance methods and ",
        "measures are in place locally and implemented to ensure information ",
        "is accurate and correct. PHS conduct quality checks upon receipt of ",
-       "data and feedback data queries to NHS Boards. \n As at the ",
+       "data and feedback data queries to NHS Boards. \nAs at the ",
        "{format(end_date, '%d %B %Y')} data submission, the Scotland level ",
        "error rate {glue_collapse(err$text, sep = ', ', last = ' and ')}. \n",
        a_city_statement),
@@ -699,16 +699,13 @@ NHS Boards provide quarterly data submissions to PHS on individuals diagnosed wi
 
 ## Impact of COVID-19 on provision of dementia post-diagnostic support
 
-In December 2020, the Scottish Government published a national action plan: [Dementia And COVID-19 - National Action Plan To Continue To Support Recovery For People With Dementia And Their Carers](https://www.gov.scot/publications/dementia-covid-19-national-action-plan-continue-support-recovery-people-dementia-carers/).
-
-This plan is a partnership document with COSLA and a range of stakeholders and explains how the Scottish Government is working, and plans to work, with others to strengthen community resilience, support people with dementia and their families to continue to get the right care, treatment and support at the right time as we live with, and come through and recover from, the COVID-19 pandemic.
+In December 2020, the Scottish Government published a national action plan: [Dementia And COVID-19 - National Action Plan To Continue To Support Recovery For People With Dementia And Their Carers](https://www.gov.scot/publications/dementia-covid-19-national-action-plan-continue-support-recovery-people-dementia-carers/). This plan is a partnership document with COSLA and a range of stakeholders and explains how the Scottish Government is working, and plans to work, with others to strengthen community resilience, support people with dementia and their families to continue to get the right care, treatment and support at the right time as we live with, and come through and recover from, the COVID-19 pandemic.
 
 Commitment 4 of the national action plan states:
 
 “We will continue to support our national commitment on post-diagnostic support, to increase access to this service and to the community support individuals need to continue living well as part of the wider community. As part of this, in partnership with COSLA, local partnerships, Alzheimer Scotland and other stakeholders we will take forward work in the first four months of 2021 to review and assess the provision and design of post-diagnostic services and identify both best practice and barriers to further expansion of the service. We will also establish a process to engage regularly with local delivery partners to assess progress and identify and help address local issues.”
 
 In December 2020, Alzheimer Scotland published a [report](https://www.alzscot.org/news/covid-19-the-hidden-impact) looking into the impact of coronavirus on people with dementia, their families and carers who are living at home.
-\newpage
 
 # Main Points
 
@@ -831,14 +828,13 @@ inc_trend_table %>%
 1. `r prov_footnote`
 2. `r revised_footnote`
 3. `r incidence_footnote`
-4. `r a_city_footnote_hb`
 </div>
 
 <br>
 
 `r inc_trend_text`
 
-<br>
+\newpage
 
 ## 2. Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support
 
@@ -878,8 +874,6 @@ hb %>%
 3. `r interpret_footnote`
 4. `r a_city_footnote_hb`
 </div>
-
-<br>
 
 `r text_hb`
 
@@ -946,8 +940,6 @@ hb_trend_table %>%
 `r scot_trend_text`
 
 `r hb_trend_text`
-
-\newpage
 
 ### Integration Joint Board
 
@@ -1080,7 +1072,6 @@ external_img(
 
 1. `r prov_footnote`
 2. `r age_footnote`
-3. `r a_city_footnote_general`
 </div>
 
 <br>
@@ -1142,7 +1133,6 @@ external_img(
 
 1. `r prov_footnote`
 2. `r simd_footnote`
-3. `r a_city_footnote_general`
 </div>
 
 <br>
