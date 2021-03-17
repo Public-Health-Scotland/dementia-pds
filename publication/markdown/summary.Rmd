@@ -136,7 +136,7 @@ NHS Boards provide quarterly data submissions to Public Health Scotland on indiv
 
 Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) and reporting processes were effective from 1 April 2019 and designed in consultation with stakeholders to improve the quality and consistency of the data reported. As a result, information presented in this publication is not comparable to information published prior to March 2020. For this report, the Scotland level error rate `r glue_collapse(err$text, sep = ", ", last = " and ")`.
 
-The COVID-19 pandemic has resulted in some areas reporting difficulties in updating the data systems which are required to record the Dementia PDS dataset.
+As a result of the COVID-19 pandemic, some areas have reported difficulties in updating their data systems which are required to provide the dementia PDS dataset.
 
 Part of the LDP standard calculation requires the number of referrals for post-diagnostic support to be compared against an estimated number of newly diagnosed dementia cases each year. Health Board level estimates of people newly diagnosed with dementia (incidence) used for this calculation are from the paper [‘Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020’](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) published by the Scottish Government in 2016.
 
