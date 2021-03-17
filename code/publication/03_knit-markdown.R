@@ -23,7 +23,7 @@ source(here("functions", "create_report.R"))
 render(
   input = here("publication", "markdown", "summary.Rmd"),
   output_file = here("publication", "output", pub_date,
-                     paste0(pub_date, "_summary.docx"))
+                     paste0(pub_date, "_dementia-pds_summary.docx"))
 )
 
 

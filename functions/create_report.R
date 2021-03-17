@@ -47,7 +47,7 @@ create_report <- function(pub_date, latest_fy){
     officer::headers_replace_all_text("DATE HERE",
                                       format(pub_date, "%d/%m/%Y")) %>%
     print(here::here("publication", "output", pub_date, 
-                     paste0(pub_date, "_report.docx")))
+                     paste0(pub_date, "_dementia-pds_report.docx")))
   
   # Remove Temporary Files
   unlink(here::here("publication", "output", pub_date,
