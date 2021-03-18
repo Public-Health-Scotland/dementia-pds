@@ -53,14 +53,14 @@ err <-
   mutate(text = glue("for {fy} was {perc}"))
 
 a_city_statement <-
-  paste("Aberdeen City Health & Social Care Partnership ceased its contract ",
-       "with Alzheimer Scotland during 2019 and introduced an in house ",
-       "Dementia Post-Diagnostic Support (PDS) service. This transition ",
-       "resulted in some PDS cases being terminated by Alzheimer Scotland ",
-       "earlier than 12 months and therefore not meeting the LDP standard. ",
-       "As part of the transition, individuals were contacted to ask if they ",
-       "still wanted to receive PDS which was then provided by the in house ",
-       "service, if required. This should be taken into account when ",
+  paste("Aberdeen City Health & Social Care Partnership ceased its contract",
+       "with Alzheimer Scotland during 2019 and introduced an in house",
+       "Dementia Post-Diagnostic Support (PDS) service. This transition",
+       "resulted in some PDS cases being terminated by Alzheimer Scotland",
+       "earlier than 12 months and therefore not meeting the LDP standard.",
+       "As part of the transition, individuals were contacted to ask if they",
+       "still wanted to receive PDS which was then provided by the in house",
+       "service, if required. This should be taken into account when",
        "interpreting figures for Aberdeen City in 2018/19.")
   
 ```
