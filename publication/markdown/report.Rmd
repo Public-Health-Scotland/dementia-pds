@@ -54,12 +54,12 @@ err <-
 
 a_city_statement <-
   paste("Aberdeen City Health & Social Care Partnership ceased its contract",
-       "with Alzheimer Scotland during 2019 and introduced an in house",
+       "with Alzheimer Scotland during 2019 and introduced an in-house",
        "Dementia Post-Diagnostic Support (PDS) service. This transition",
        "resulted in some PDS cases being terminated by Alzheimer Scotland",
        "earlier than 12 months and therefore not meeting the LDP standard.",
        "As part of the transition, individuals were contacted to ask if they",
-       "still wanted to receive PDS which was then provided by the in house",
+       "still wanted to receive PDS which was then provided by the in-house",
        "service, if required. This should be taken into account when",
        "interpreting figures for Aberdeen City in 2018/19.")
   
@@ -697,9 +697,9 @@ phs.otherformats@phs.scot
 
 # Introduction
 
-This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all those newly diagnosed with dementia should have a minimum of one year’s post-diagnostic support. Data are presented by financial year of diagnosis and this report presents finalised figures for `r revised_fy` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
+This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all people newly diagnosed with dementia should have a minimum of one year’s post-diagnostic support. Data are presented by financial year of diagnosis and this report presents finalised figures for `r revised_fy` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
 
-The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnostic support a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all those newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support. 
+The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnostic support a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all people newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support. 
 
 The LDP standard is reported in two parts, each addressing a separate element to the standard:
 
@@ -737,7 +737,9 @@ external_img(
 ```
 </Div>
 
-<Div custom-style = "Normal_Notes">
+<Div custom-style = "Normal_Notes_Summary">
+**Notes**
+
 1. `r prov_footnote`
 2. `r a_city_footnote_hb`
 </div>
@@ -1233,7 +1235,7 @@ Let us know what you think about this publication via the link at the bottom of 
 
 ### Local Delivery Plan (LDP) Standard{#ldp-standard}
 
-In order to effectively monitor performance of post-diagnostic support delivery, a national [Local Delivery Plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced in April 2013 for all those newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support.
+In order to effectively monitor performance of post-diagnostic support delivery, a national [Local Delivery Plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced in April 2013 for all people newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support.
 
 The LDP standard is defined and calculated as follows:
 
