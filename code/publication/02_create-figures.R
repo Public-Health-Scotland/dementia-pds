@@ -120,12 +120,34 @@ ggsave(
   device = "png"
 )
 
+# Save chart for twitter
 ggsave(
   here("publication", "output", pub_date,
        paste0(pub_date, "_dementia-pds_twitter-chart.png")),
   plot = c2,
   height = 6,
   width = 6,
+  dpi = 600,
+  device = "png"
+)
+
+# Adjust text size and file dimensions for summary chart
+summary <- c2
+summary$layers[[2]] <- NULL
+
+summary <-
+  summary +
+  geom_text(aes(x = perc, y = health_board, label = perc_formatted),
+            nudge_x = -10.5, colour = "white", size = 3) +
+  theme(axis.title.x = element_text(size = 7.5),
+        axis.text = element_text(size = 7.5))
+
+ggsave(
+  here("publication", "output", pub_date, "figures",
+       paste0(pub_date, "_summary-chart.png")),
+  plot = summary,
+  height = 3.8,
+  width = 4,
   dpi = 600,
   device = "png"
 )

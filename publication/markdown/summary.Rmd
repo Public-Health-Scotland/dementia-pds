@@ -85,11 +85,10 @@ summary <-
 
 <Div custom-style = "Publication Title">Dementia Post-Diagnostic  
 Support</Div>
-<!-- <Div custom-style = "Publication Title">Support</Div> -->
 <Div custom-style = "Publication subtitle">Local Delivery Plan Standard; Figures to `r latest_fy`</Div>
 <Div custom-style = "National stats">An Official Statistics publication for Scotland</Div>
 
-<br>
+<Div custom-style = "Normal-no-notes"><br></Div>
 
 **Publication date: `r format(pub_date, "%d %B %Y")`**
 
@@ -110,8 +109,8 @@ This release by Public Health Scotland (PHS) reports on the Scottish Governmentâ
 ```{r fig-summary, echo=FALSE}
 external_img(
   here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_12-months-hb.png")),
-  width = 3.8, height = 3.8,
+       paste0(pub_date, "_summary-chart.png")),
+  width = 4, height = 3.8,
   alt = glue(
     "Bar chart showing percentage of referrals who received a minimum of ",
     "one year's post-diagnostic support by NHS Board in ",
@@ -132,7 +131,7 @@ external_img(
 
 The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support (PDS). In order to effectively monitor the delivery of PDS a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all those newly diagnosed with dementia to receive a minimum of one yearâ€™s PDS.
 
-NHS Boards provide quarterly data submissions to PHS, in line with data definitions effective 1 April 2019 on individuals diagnosed with dementia and referred for post-diagnostic support within their local areas. This dataset forms the basis of the LDP standard calculation. For this report, the Scotland level error rate `r glue_collapse(err$text, sep = ", ", last = " and ")`.
+NHS Boards provide quarterly data submissions to PHS, in line with data definitions effective 1 April 2019, on individuals diagnosed with dementia and referred for post-diagnostic support within their local areas. This dataset forms the basis of the LDP standard calculation. For this report, the Scotland level error rate `r glue_collapse(err$text, sep = ", ", last = " and ")`.
 
 Aberdeen City Health & Social Care Partnership ceased its contract with Alzheimer Scotland during 2019 and introduced an in house dementia PDS service. This transition resulted in some PDS cases being terminated by Alzheimer Scotland earlier than 12 months and therefore not meeting the LDP standard.  As part of the transition, individuals were contacted to ask if they still wanted to receive PDS which was then provided by the in house service, if required. This should be taken into account when interpreting figures for 2018/19.
 
