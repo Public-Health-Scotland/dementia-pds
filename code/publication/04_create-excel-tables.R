@@ -148,6 +148,14 @@ addStyle(wb = wb,
           style = createStyle(fontName = "Arial", fontColour = "#0000ff",
                               textDecoration = "underline"))
 
+# Add embargo text
+writeData(wb,
+          "Notes",
+          paste("RESTRICTED STATISTICS: embargoed to 09:30", 
+                format(pub_date, "%d/%m/%Y")),
+          startCol = "B",
+          startRow = 1)
+
 # Hide data sheets and calculation sheet
 sheetVisibility(wb)[10:11] <- "hidden"
 
