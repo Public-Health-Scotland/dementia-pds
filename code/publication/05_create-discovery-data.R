@@ -32,25 +32,20 @@ ldp <-
   filter(fy %in% fy_in_pub) %>%
   
   group_by(fy, health_board) %>%
-  filter(ldp != "ongoing") %>%
-  mutate(denom = sum(referrals)) %>%
-  filter(ldp %in% c("complete", "exempt")) %>%
-  summarise(num = sum(referrals),
-            denom = max(denom),
-            .group = "drop") %>%
-  
-  bind_rows(
-    pds %>%
-      filter(fy %in% fy_in_pub) %>%
-      
-      group_by(fy, health_board = "Scotland") %>%
-      filter(ldp != "ongoing") %>%
-      mutate(denom = sum(referrals)) %>%
-      filter(ldp %in% c("complete", "exempt")) %>%
-      summarise(num = sum(referrals),
-                denom = max(denom),
-                .groups = "drop")
+  summarise(
+    num = sum(case_when(
+      ldp %in% c("complete", "exempt") ~ referrals,
+      TRUE ~ 0
+    )),
+    denom = sum(case_when(
+      ldp != "ongoing" ~ referrals,
+      TRUE ~ 0
+    )),
+    .groups = "drop"
   ) %>%
+  
+  group_by(fy) %>%
+  group_modify(~ adorn_totals(., name = "Scotland")) %>%
   
   mutate(fy = dmy(paste0("310320", substr(fy, 6, 7))),
          health_board = str_remove(health_board, "^[A-Za-z]\\s"),
@@ -60,14 +55,9 @@ ldp <-
          Indicator_Name = "Dementia Post Diagnostic Support",
          Standard_Level = "") %>%
   
-  rename(Period_End_Date = fy,
-         Organisation = health_board,
-         Numerator_Value = num,
-         Denominator_Value = denom) %>%
-  
-  select(Indicator_ID, Frequency, Period_End_Date,
-         Indicator_Name, Organisation, Numerator_Value,
-         Denominator_Value, Indicator, Standard_Level) %>%
+  select(Indicator_ID, Frequency, Period_End_Date = fy,
+         Indicator_Name, Organisation = health_board, Numerator_Value = num,
+         Denominator_Value = denom, Indicator, Standard_Level) %>%
   
   arrange(Period_End_Date, Organisation)
 
@@ -76,7 +66,7 @@ ldp <-
 
 write_csv(
   ldp,
-  here("publication", "output", glue("{pub_date}_ldp-data.csv"))
+  here("publication", "output", pub_date, glue("{pub_date}_ldp-data.csv"))
 )
 
 
