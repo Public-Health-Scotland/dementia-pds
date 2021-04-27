@@ -27,9 +27,6 @@ pds <-
   
   clean_names() %>%
   
-  # Remove empty 'x' variables (TEMP - move this to DM script)
-  select(-starts_with("x")) %>%
-  
   # Convert dates from character to date format
   mutate(across(contains("date"), ymd)) %>%
   
@@ -40,10 +37,15 @@ pds <-
   mutate(health_board = str_replace(health_board, " and ", " & ")) %>%
   
   # Remove records with missing diag date or outwith reporting period
-  filter(between(dementia_diagnosis_confirmed_date, start_date, end_date))
+  filter(between(dementia_diagnosis_confirmed_date, dmy(01042016), end_date))
 
 
-### 3 - Add on final data no longer submitted ----
+### 3 - Add finalised data ----
+
+finalised_years <- 
+  list.files(here("data", "final")) %>% 
+  str_sub(1, 7) %>%
+  str_replace("-", "/")
 
 pds <-
   
@@ -53,7 +55,12 @@ pds <-
   reduce(bind_rows) %>%
   
   # Add to latest submission data
-  bind_rows(pds)
+  bind_rows(
+    pds %>% 
+      # Remove any submitted data for finalised years
+      filter(!fin_year(dementia_diagnosis_confirmed_date) %in% 
+               finalised_years)
+  )
 
 
 ### 3 - Save out error summary

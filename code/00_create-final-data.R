@@ -15,10 +15,10 @@
 
 source(here::here("code", "00_setup-environment.R"))
 
-fy_final <- year(start_date) - 1
+fy_final <- "2017-18"
 
-start_final <- start_date - years(1)
-end_final   <- start_date - days(1)
+start_final <- dmy(paste0("0104", str_sub(fy_final, 1, 4)))
+end_final   <- dmy(paste0("310320", str_sub(fy_final, 6, 7)))
 
 
 ### 2 - Read in Q3 collated file from previous FY ----
@@ -26,7 +26,7 @@ end_final   <- start_date - days(1)
 pds <- 
   
   read_csv(glue("{stats}/dementia/03-Outputs/National/",
-                "{as.numeric(fy) - 1}-Q3_national.csv"),
+                "{fy}-Q{qt}_national.csv"),
            col_types = cols(.default = "c")) %>%
   
   clean_names() %>%
