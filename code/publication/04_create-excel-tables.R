@@ -82,49 +82,61 @@ wb <- loadWorkbook(here("reference-files",
 writeData(wb,
           "data",
           excel_data,
-          startCol = 1)
+          startCol = 1,
+          name = "data")
+
+fy_lookup <-
+  tibble(fy_in_pub) %>%
+  mutate(n = row_number(), .before = everything()) %>%
+  mutate(sup = case_when(
+    n == max(n) ~ paste0(fy_in_pub, "ᴾ"),
+    n == max(n) - 1 ~ paste0(fy_in_pub, "ᴿ"),
+    TRUE ~ fy_in_pub
+  ))
 
 # Add some lookup values to calculation tab
 writeData(
     wb,
     "calculation",
-    tibble(fy_in_pub) %>%
-      mutate(n = row_number(), .before = everything()),
-    startCol = 1,
+    fy_lookup,
+    startCol = "A",
     startRow = 2,
-    colNames = FALSE
+    colNames = FALSE,
+    name = "fy"
   )
 
 writeData(
   wb,
   "calculation",
+  fy_lookup$sup,
+  startCol = "D",
+  startRow = 2,
+  colNames = FALSE,
+  name = "fy_dropdown"
+)
+
+writeData(
+  wb,
+  "calculation",
   as.character(glue_collapse(fy_in_pub, sep = ", ", last = " and ")),
-  startCol = "F",
-  startRow = 5
+  startCol = "G",
+  startRow = 2
 )
 
 writeData(
   wb,
   "calculation",
   format(end_date, "'%d %B %Y"),
-  startCol = "F",
-  startRow = 6
+  startCol = "G",
+  startRow = 3
 )
 
 writeData(
   wb,
   "calculation",
   max(fy_in_pub),
-  startCol = "F",
-  startRow = 8
-)
-
-writeData(
-  wb,
-  "calculation",
-  nth(fy_in_pub, -2),
-  startCol = "F",
-  startRow = 9
+  startCol = "G",
+  startRow = 4
 )
 
 # Add publication link to Notes page
@@ -142,11 +154,38 @@ writeData(wb,
           x = link)
 
 addStyle(wb = wb, 
-          sheet = "Notes", 
-          cols = "C",
-          rows = 21,
-          style = createStyle(fontName = "Arial", fontColour = "#0000ff",
-                              textDecoration = "underline"))
+         sheet = "Notes", 
+         cols = "C",
+         rows = 21,
+         style = createStyle(fontName = "Arial", fontColour = "#0000ff",
+                             textDecoration = "underline"))
+
+# Add text re estimates used for each year
+estimates_year <- paste0(
+  "Estimates are used as follows: ",
+  glue_collapse(
+    glue("calendar year {str_sub(fy_in_pub, 1, 4)} estimates for {fy_in_pub}"),
+    sep = ", ",
+    last = " and "
+  ),
+  "."
+)
+
+writeData(
+  wb,
+  "Tab 6",
+  estimates_year,
+  startCol = "B",
+  startRow = 31
+)
+
+writeData(
+  wb,
+  "Tab 7",
+  estimates_year,
+  startCol = "B",
+  startRow = 29
+)
 
 # Add embargo text
 writeData(wb,
