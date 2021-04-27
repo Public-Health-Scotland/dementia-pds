@@ -45,19 +45,6 @@ library(officer)       # For adding cover page and toc to report
 # Last day in reporting period
 end_date   <- dmy(31122020)
 
-# Date of publication
-# Only used when running publication, can comment out otherwise
-pub_date <- dmy(30032021)
-
-# FYs included in pub
-if(exists("pub_date")){
-  fy_in_pub <-  
-    seq.Date(dmy(01042016), 
-             dmy(glue("0104{year(pub_date) - 3}")), 
-             "years") %>%
-    fin_year()
-}
-
 
 ### 3 - Define file paths dependent on whether running on server or desktop ----
 
@@ -73,16 +60,7 @@ cl_out <- case_when(
 )
 
 
-### 4 - Extract dates ----
-
-# Start date of time period to be submitted
-# Note that previous years are reported but no longer submitted
-start_date <- ymd(
-  paste0(if_else(month(end_date) >= 4,
-                 year(end_date) - 3,
-                 year(end_date) - 4),
-         "0401")
-)
+### 4 - Derive dates ----
 
 # Latest FY and Quarter
 fy <- fin_year(end_date) %>% substr(1, 4)
