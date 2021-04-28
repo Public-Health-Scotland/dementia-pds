@@ -95,8 +95,9 @@ use_directory(
   glue("data/{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}")
 )
 
-# Create output folders
-use_directory("management-report/output")
+# Create output folder
+use_directory(glue("management-report/output/",
+                   "{fy}-{substr(as.numeric(fy)+1, 3, 4)}"))
 
 
 ### END OF SCRIPT ###
