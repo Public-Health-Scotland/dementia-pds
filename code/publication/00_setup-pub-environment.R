@@ -43,17 +43,7 @@ library(english)       # For converting number to text
 end_date   <- dmy(31122020)
 
 # Date of publication
-# Only used when running publication, can comment out otherwise
 pub_date <- dmy(30032021)
-
-# FYs included in pub
-if(exists("pub_date")){
-  fy_in_pub <-  
-    seq.Date(dmy(01042016), 
-             dmy(glue("0104{year(pub_date) - 3}")), 
-             "years") %>%
-    fin_year()
-}
 
 # Date of last publication
 last_pub_date <- dmy(31032020)
@@ -75,18 +65,16 @@ cl_out <- case_when(
 
 ### 4 - Extract dates ----
 
-# Start date of time period to be submitted
-# Note that previous years are reported but no longer submitted
-start_date <- ymd(
-  paste0(if_else(month(end_date) >= 4,
-                 year(end_date) - 3,
-                 year(end_date) - 4),
-         "0401")
-)
-
 # Latest FY and Quarter
 fy <- fin_year(end_date) %>% substr(1, 4)
-qt <- quarter(end_date, fiscal_start = 4)     
+qt <- quarter(end_date, fiscal_start = 4)    
+
+# FYs included in pub
+fy_in_pub <-  
+  seq.Date(dmy(01042016), 
+           dmy(glue("0104{year(pub_date) - 3}")), 
+           "years") %>%
+  fin_year()
 
 
 ### 5 - Disable scientific notation ----
@@ -103,6 +91,11 @@ options(knitr.duplicate.label = "allow")
 knit_hooks$set(inline = function(x){
   if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
 })
+
+
+### 7 - Create folder for publication output ----
+
+use_directory(glue("publication/output/{pub_date}"))
 
 
 ### END OF SCRIPT ###
