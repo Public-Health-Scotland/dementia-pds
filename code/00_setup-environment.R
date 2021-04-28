@@ -88,24 +88,7 @@ knit_hooks$set(inline = function(x) {
 exempt_reasons <- c("03", "04", "05", "06")
 
 
-### 8 - SIMD Lookup ----
-
-simd <- function(){
-  read_rds(glue("{cl_out}/lookups/Unicode/",
-                "Deprivation/postcode_2020_2_simd2020v2.rds")) %>%
-    clean_names() %>%
-    select(pc7, simd = simd2020v2_sc_quintile) %>%
-    mutate(
-      simd = case_when(
-        simd == 1 ~ "1 - Most Deprived",
-        simd == 5 ~ "5 - Least Deprived",
-        TRUE ~ as.character(simd)
-      )
-    )
-}
-
-
-### 9 - Create folder structure ----
+### 8 - Create folder structure ----
 
 # Create data folder for FY and Qtr
 use_directory(
@@ -114,10 +97,6 @@ use_directory(
 
 # Create output folders
 use_directory("management-report/output")
-
-if(exists("pub_date")){
-  use_directory(glue("publication/output/{pub_date}/figures"))
-}
 
 
 ### END OF SCRIPT ###
