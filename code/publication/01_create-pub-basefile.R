@@ -11,9 +11,20 @@
 #########################################################################
 
 
-### 1 - Load environment file ----
+### 0 - Load environment file ----
 
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
+
+
+### 1 - Save finalised data file for revised FY ----
+
+source(here("functions", "create-final-data.R"))
+
+create_final_data(
+  fy_final = nth(fy_in_pub, -2),
+  collated_file = glue("{stats}/dementia/03-Outputs/National/",
+                       "{fy}-Q{qt}_national.csv")
+)
 
 
 ### 2 - Restructure data file ----
