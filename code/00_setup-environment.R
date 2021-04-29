@@ -16,7 +16,7 @@
 ### 0 - Dates - UPDATE THIS SECTION ----
 
 # Last day in reporting period
-end_date   <- dmy(31122020)
+end_date <- lubridate::dmy(31122020)
 
 
 ### 1 - Load packages ----
@@ -61,7 +61,24 @@ cl_out <- case_when(
 )
 
 
-### 3 - Derive dates ----
+### 3 - SIMD Lookup ----
+
+simd <- function(){
+  read_rds(glue("{cl_out}/lookups/Unicode/",
+                "Deprivation/postcode_2021_1_simd2020v2.rds")) %>%
+    clean_names() %>%
+    select(pc7, simd = simd2020v2_sc_quintile) %>%
+    mutate(
+      simd = case_when(
+        simd == 1 ~ "1 - Most Deprived",
+        simd == 5 ~ "5 - Least Deprived",
+        TRUE ~ as.character(simd)
+      )
+    )
+}
+
+
+### 4 - Derive dates ----
 
 # Latest FY and Quarter
 fy <- fin_year(end_date) %>% substr(1, 4)
@@ -71,12 +88,10 @@ qt <- quarter(end_date, fiscal_start = 4)
 start_date <- dmy(01042016)
 
 
-### 4 - Disable scientific notation ----
+### 5 - Set output/knitr options ----
 
+# Disable scientific notation
 options(scipen = 999)
-
-
-### 5 - Set knitr options ----
 
 # Allow duplicate labels
 options(knitr.duplicate.label = "allow")
