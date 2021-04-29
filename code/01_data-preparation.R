@@ -1,15 +1,14 @@
-#########################################################################
+################################################################################
 # Name of file - 01_data-preparation.R
-# Data release - Quarterly Dementia PDS Management Reports
+# Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019
 #
-# Written/run on - RStudio Desktop
+# Written/run on - RStudio Server
 # Version of R - 3.6.1
 #
-# Description - Read in data file from data management and prepare for
-# adding measures and producing outputs.
-#########################################################################
+# Description - Clean collated file and remove duplicates.
+################################################################################
 
 
 ### 1 - Load environment file ----
@@ -105,7 +104,7 @@ pds %<>%
   group_by(chi_number) %>%
   
   # Add duplicate flag
-  mutate(dupe = if_else(!is.na(chi_number) & n() > 1, 1 , 0)) %>%
+  mutate(dupe = if_else(!is.na(chi_number) & n() > 1, 1, 0)) %>%
   
   # Add flag for GGC/H duplicates
   mutate(ggc_h_dupe = 
@@ -129,12 +128,14 @@ pds %<>%
              dupe == 1 &
                # Select earliest diag date where different
                n_distinct(dementia_diagnosis_confirmed_date) > 1 &
-               dementia_diagnosis_confirmed_date == min(dementia_diagnosis_confirmed_date, na.rm = TRUE) ~ 1,
+               dementia_diagnosis_confirmed_date == 
+               min(dementia_diagnosis_confirmed_date, na.rm = TRUE) ~ 1,
              
              dupe == 1 &
                # Select earliest diag date where different
                n_distinct(dementia_diagnosis_confirmed_date) > 1 &
-               (!(dementia_diagnosis_confirmed_date == min(dementia_diagnosis_confirmed_date, na.rm = TRUE)) |
+               (!(dementia_diagnosis_confirmed_date == 
+                    min(dementia_diagnosis_confirmed_date, na.rm = TRUE)) |
                is.na(dementia_diagnosis_confirmed_date)) ~ 0,
              
              dupe == 1 &
@@ -150,12 +151,14 @@ pds %<>%
              dupe == 1 &
                # Select earliest contact date
                n_distinct(date_of_initial_first_contact) > 1 &
-               date_of_initial_first_contact == min(date_of_initial_first_contact, na.rm = TRUE) ~ 1,
+               date_of_initial_first_contact == 
+               min(date_of_initial_first_contact, na.rm = TRUE) ~ 1,
              
              dupe == 1 &
                # Select earliest contact date
                n_distinct(date_of_initial_first_contact) > 1 &
-               (!(date_of_initial_first_contact == min(date_of_initial_first_contact, na.rm = TRUE)) |
+               (!(date_of_initial_first_contact == 
+                    min(date_of_initial_first_contact, na.rm = TRUE)) |
                is.na(date_of_initial_first_contact)) ~ 0,
              
              dupe != 1 ~ 1
@@ -180,7 +183,8 @@ pds %<>%
   filter(dupe_keep == 1) %>%
   
   # Recode GGC duplicate as Argyll & Bute activity
-  mutate(health_board = if_else(ggc_h_dupe == 1, "H NHS Highland", health_board),
+  mutate(health_board = 
+           if_else(ggc_h_dupe == 1, "H NHS Highland", health_board),
          ijb = if_else(ggc_h_dupe == 1, "S37000004 Argyll and Bute", ijb)) %>%
   
   select(-contains("dupe"))

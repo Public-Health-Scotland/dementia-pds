@@ -1,16 +1,22 @@
-#########################################################################
+################################################################################
 # Name of file - 00_setup-environment.R
-# Data release - Dementia PDS Analytical Outputs
+# Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019
 #
-# Written/run on - RStudio Desktop
+# Written/run on - RStudio Server
 # Version of R - 3.6.1
 #
 # Description - Sets up environment required for running quarterly 
-#               management reports and publication. This is the only file 
+#               management reports. This is the only file 
 #               to be updated everytime the process is run.
-#########################################################################
+################################################################################
+
+
+### 0 - Dates - UPDATE THIS SECTION ----
+
+# Last day in reporting period
+end_date   <- dmy(31122020)
 
 
 ### 1 - Load packages ----
@@ -41,13 +47,7 @@ library(officer)       # For adding cover page and toc to report
 library(gluedown)      # For formatting character vectors in markdown
 
 
-### 2 - Dates - UPDATE THIS SECTION ----
-
-# Last day in reporting period
-end_date   <- dmy(31122020)
-
-
-### 3 - Define file paths dependent on whether running on server or desktop ----
+### 2 - Define file paths dependent on whether running on server or desktop ----
 
 stats <- case_when(
   sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ "/conf",
@@ -61,7 +61,7 @@ cl_out <- case_when(
 )
 
 
-### 4 - Derive dates ----
+### 3 - Derive dates ----
 
 # Latest FY and Quarter
 fy <- fin_year(end_date) %>% substr(1, 4)
@@ -71,12 +71,12 @@ qt <- quarter(end_date, fiscal_start = 4)
 start_date <- dmy(01042016)
 
 
-### 5 - Disable scientific notation ----
+### 4 - Disable scientific notation ----
 
 options(scipen = 999)
 
 
-### 6 - Set knitr options ----
+### 5 - Set knitr options ----
 
 # Allow duplicate labels
 options(knitr.duplicate.label = "allow")
@@ -87,12 +87,12 @@ knit_hooks$set(inline = function(x) {
 })
 
 
-### 7 - Define exempt termination reason codes ----
+### 6 - Define exempt termination reason codes ----
 
 exempt_reasons <- c("03", "04", "05", "06")
 
 
-### 8 - Create folder structure ----
+### 7 - Create folder structure ----
 
 # Create data folder for FY and Qtr
 use_directory(
