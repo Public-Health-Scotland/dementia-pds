@@ -38,19 +38,19 @@ pds %<>%
   mutate(
     
     # Date 12 months after diagnosis date
-    diag_12       = add_with_rollback(dementia_diagnosis_confirmed_date, 
-                                      months(12),
-                                      roll_to_first = TRUE),
+    diag_12 = add_with_rollback(dementia_diagnosis_confirmed_date, 
+                                months(12),
+                                roll_to_first = TRUE),
     
     # Date 11 months after date of first PDS contact     
-    pds_11        = add_with_rollback(date_of_initial_first_contact, 
-                                      months(11),
-                                      roll_to_first = TRUE),
+    pds_11 = add_with_rollback(date_of_initial_first_contact, 
+                               months(11),
+                               roll_to_first = TRUE),
     
     # Date 12 months after date of first PDS contact
-    pds_12        = add_with_rollback(date_of_initial_first_contact, 
-                                      months(12),
-                                      roll_to_first = TRUE)
+    pds_12 = add_with_rollback(date_of_initial_first_contact, 
+                               months(12),
+                               roll_to_first = TRUE)
     
   )
 
@@ -61,61 +61,61 @@ pds %<>%
   
   mutate(ldp = case_when(
     
-    ## COMPLETE ##
+    #### COMPLETE ####
     
     # Started PDS within 12m of diagnosis AND PDS still ongoing after 12m
     date_of_initial_first_contact < diag_12 & 
       end_date >= pds_12 &
-         is.na(termination_or_transition_date)
-    ~ "complete",
+      is.na(termination_or_transition_date)
+    ~ "complete - ongoing",
     
     # Started PDS within 12m of diagnosis AND PDS ended after 11m
     date_of_initial_first_contact < diag_12 &
       termination_or_transition_date >= pds_11
-    ~ "complete",
+    ~ "complete - ended",
     
-    ## FAIL ##
+    #### FAIL ####
     
     # PDS started more than 12m after diagnosis
     date_of_initial_first_contact >= diag_12
-    ~ "fail",
+    ~ "fail - started >12m after diag",
     
     # More than 12m since diagnosis and PDS not started
     end_date >= diag_12 & 
       is.na(date_of_initial_first_contact) &
-         is.na(termination_or_transition_date)
-    ~ "fail",
+      is.na(termination_or_transition_date)
+    ~ "fail - not started and >12m since diagnosis",
     
     # PDS terminated before 11 months from start date
     termination_or_transition_date < pds_11 &
       !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
-    ~ "fail",
+    ~ "fail - term <11m from first contact",
     
     # PDS terminated before first contact made
     is.na(date_of_initial_first_contact) & 
       !is.na(termination_or_transition_date) & 
-         !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
-    ~ "fail",
+      !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
+    ~ "fail - term before first contact",
     
-    ## EXEMPT ##
+    #### EXEMPT ####
     
     # Exempt termination reason; died/moved to other HB/refused/can't engage
     substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons
     ~ "exempt",
     
-    ## ONGOING ##
+    #### ONGOING ####
     
     # Less than 12m since diagnosis and PDS not started
     end_date < diag_12 & 
       is.na(date_of_initial_first_contact) & 
-         is.na(termination_or_transition_date)
-    ~ "ongoing",
+      is.na(termination_or_transition_date)
+    ~ "ongoing - not started",
     
     # PDS started within 12m of diagnosis but not yet ended
     date_of_initial_first_contact < diag_12 &
       end_date < pds_12 &
-         is.na(termination_or_transition_date)
-    ~ "ongoing"
+      is.na(termination_or_transition_date)
+    ~ "ongoing - still receiving"
     
   ))
 
@@ -150,11 +150,19 @@ pds %<>%
 
 ### 7 - Save individual level file for checking ----
 
+write_rds(
+  pds, 
+  here("data", 
+       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+       glue("{fy}-{qt}_individuals-with-ldp.csv")),
+  compress = "gz"
+)
+
 write_csv(
   pds, 
   here("data", 
        glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-       glue("{fy}-{qt}_check-data.csv"))
+       glue("{fy}-{qt}_individuals-with-ldp.csv"))
 )
 
 
@@ -187,12 +195,15 @@ pds %<>%
   # e.g. for Q1 reports, remove completed rows for July - March
   filter(substr(fy, 1, 4) < year(end_date) |
            (substr(fy, 1, 4) == year(end_date) & 
-              month %in% inc_months))
+              month %in% inc_months)) %>%
+  
+  # Remove LDP reason detail
+  mutate(ldp = word(ldp, 1))
 
 write_rds(
   pds, 
   here("data", 
-       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
+       glue("{fy}-{substr(as.numeric(fy) + 1, 3, 4)}/Q{qt}"),
        glue("{fy}-{qt}_final-data.rds")),
   compress = "gz"
 )
