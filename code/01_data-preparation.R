@@ -36,7 +36,7 @@ pds <-
   mutate(health_board = str_replace(health_board, " and ", " & ")) %>%
   
   # Remove records with missing diag date or outwith reporting period
-  filter(between(dementia_diagnosis_confirmed_date, dmy(01042016), end_date))
+  filter(between(dementia_diagnosis_confirmed_date, start_date, end_date))
 
 
 ### 3 - Add finalised data ----
@@ -91,16 +91,16 @@ err <- pds %>%
 
 pds %<>%
   mutate(health_board = 
-            case_when(
-               str_detect(ijb, "S37000035|S37000028") ~ "L NHS Lanarkshire",
-                          TRUE                        ~ health_board
-            ))
+           case_when(
+             str_detect(ijb, "S37000035|S37000028") ~ "L NHS Lanarkshire",
+             TRUE ~ health_board
+           ))
 
 
 ### 5 - Remove duplicate records ----
 
 pds %<>%
-
+  
   group_by(chi_number) %>%
   
   # Add duplicate flag
@@ -118,7 +118,7 @@ pds %<>%
   # Add priority flag for duplicates to keep
   # Earliest diagnosis date, Term reason 04, Earliest contact date
   mutate(dupe_keep = 
-
+           
            case_when(
              
              ggc_h_dupe == 1 & str_detect(health_board, "^G") ~ 1,
@@ -136,7 +136,7 @@ pds %<>%
                n_distinct(dementia_diagnosis_confirmed_date) > 1 &
                (!(dementia_diagnosis_confirmed_date == 
                     min(dementia_diagnosis_confirmed_date, na.rm = TRUE)) |
-               is.na(dementia_diagnosis_confirmed_date)) ~ 0,
+                  is.na(dementia_diagnosis_confirmed_date)) ~ 0,
              
              dupe == 1 &
                # Select termination reason 04 Moved to different Health Board
@@ -144,8 +144,8 @@ pds %<>%
                str_detect(termination_or_transition_reason, "^04") ~ 1,
              
              dupe == 1 &
-             # Select termination reason 04 Moved to different Health Board
-             n_distinct(termination_or_transition_reason) > 1 &
+               # Select termination reason 04 Moved to different Health Board
+               n_distinct(termination_or_transition_reason) > 1 &
                any(str_detect(termination_or_transition_reason, "^04")) ~ 0,
              
              dupe == 1 &
@@ -159,7 +159,7 @@ pds %<>%
                n_distinct(date_of_initial_first_contact) > 1 &
                (!(date_of_initial_first_contact == 
                     min(date_of_initial_first_contact, na.rm = TRUE)) |
-               is.na(date_of_initial_first_contact)) ~ 0,
+                  is.na(date_of_initial_first_contact)) ~ 0,
              
              dupe != 1 ~ 1
              
