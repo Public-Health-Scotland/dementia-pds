@@ -38,6 +38,7 @@ library(flextable)     # For formatted tables in publication output
 library(usethis)       # For creating folder structure
 library(rmarkdown)     # For render function
 library(officer)       # For adding cover page and toc to report
+library(gluedown)      # For formatting character vectors in markdown
 
 
 ### 2 - Dates - UPDATE THIS SECTION ----
@@ -64,7 +65,10 @@ cl_out <- case_when(
 
 # Latest FY and Quarter
 fy <- fin_year(end_date) %>% substr(1, 4)
-qt <- quarter(end_date, fiscal_start = 4)     
+qt <- quarter(end_date, fiscal_start = 4)
+
+# First date in reporting period 
+start_date <- dmy(01042016)
 
 
 ### 5 - Disable scientific notation ----

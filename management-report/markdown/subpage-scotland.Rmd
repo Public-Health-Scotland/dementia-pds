@@ -80,11 +80,28 @@ Sidebar {.sidebar}
 
 Select Financial Year
 
-|     `r paste0(if_else(sel_fy == "2020/21", "[**2020/21**]", "[2020/21]"), "(#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-4)")`
-|     `r paste0(if_else(sel_fy == "2019/20", "[**2019/20**]", "[2019/20]"), "(#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201920)")`
-|     `r paste0(if_else(sel_fy == "2018/19", "[**2018/19**]", "[2018/19]"), "(#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201819)")`
-|     `r paste0(if_else(sel_fy == "2017/18", "[**2017/18**]", "[2017/18]"), "(#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201718)")`
-|     `r paste0(if_else(sel_fy == "2016/17", "[**2016/17**]", "[2016/17]"), "(#", hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"), "-", "201617)")`
+```{r fy-page-links, results='asis'}
+fy_text <- case_when(
+  fy_list == sel_fy ~ md_bold(fy_list),
+  TRUE ~ fy_list
+)
+
+fy_url <- paste0(
+  "#",
+  hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"),
+  "-",
+  case_when(
+    fy_list == max(fy_list) ~ as.character(length(fy_list) - 1),
+    TRUE ~ str_remove_all(fy_list, "/")
+  )
+)
+
+md_link(
+  text = fy_text,
+  url = fy_url
+) %>%
+  md_list()
+```
 
 ***
 
