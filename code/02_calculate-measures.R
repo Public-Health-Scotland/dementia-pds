@@ -67,7 +67,7 @@ pds %<>%
     date_of_initial_first_contact < diag_12 & 
       end_date >= pds_12 &
       is.na(termination_or_transition_date)
-    ~ "complete - ongoing",
+    ~ "complete - still receiving",
     
     # Started PDS within 12m of diagnosis AND PDS ended after 11m
     date_of_initial_first_contact < diag_12 &
@@ -154,7 +154,7 @@ write_rds(
   pds, 
   here("data", 
        glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-       glue("{fy}-{qt}_individuals-with-ldp.csv")),
+       glue("{fy}-{qt}_individuals-with-ldp.rds")),
   compress = "gz"
 )
 
