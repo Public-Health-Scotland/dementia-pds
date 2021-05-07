@@ -6,15 +6,35 @@
 # 'data' folder #
 data/
 
-# 'figures' folder #
-publication/markdown/figures
-
 # 'output' folders #
-publication/output/
+*/output/
+
+# Common text files that may contain data #
+*.[cC][sS][vV]
+*.[tT][xX][tT]
+
+# Excel files #
+*.[xX][lL][sS]*
+
+# R data files #
+*.[rR][dD][aA][tT][aA]
+*.[rR][dD][sS]
+
+# Word documents #
+*.[dD][oO][cC][xX]
 
 # html files #
-*.html
+*.[hH][tT][mM][lL]
 
-# Markdown output #
-publication/markdown/report.docx
-publication/markdown/summary.docx
+# Images
+*.png
+*.jpg
+*.jpeg
+
+# Allow templates and logo
+!reference-files/excel-template.xlsx
+!reference-files/expected-diagnoses.csv
+!publication/markdown/templates/report-cover-page.docx
+!publication/markdown/templates/report-template.docx
+!publication/markdown/templates/summary-template.docx
+!management-report/markdown/phs-logo.png
