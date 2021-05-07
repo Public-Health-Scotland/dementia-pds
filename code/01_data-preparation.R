@@ -121,46 +121,48 @@ pds %<>%
            
            case_when(
              
-             ggc_h_dupe == 1 & str_detect(health_board, "^G") ~ 1,
+             # Keep GGC record where GGC/Highland duplicate record
              
+             ggc_h_dupe == 1 & str_detect(health_board, "^G") ~ 1,
              ggc_h_dupe == 1 & !str_detect(health_board, "^G") ~ 0,
              
+             # Keep earliest diag date where different
+             
              dupe == 1 &
-               # Select earliest diag date where different
                n_distinct(dementia_diagnosis_confirmed_date) > 1 &
                dementia_diagnosis_confirmed_date == 
                min(dementia_diagnosis_confirmed_date, na.rm = TRUE) ~ 1,
              
              dupe == 1 &
-               # Select earliest diag date where different
                n_distinct(dementia_diagnosis_confirmed_date) > 1 &
                (!(dementia_diagnosis_confirmed_date == 
                     min(dementia_diagnosis_confirmed_date, na.rm = TRUE)) |
                   is.na(dementia_diagnosis_confirmed_date)) ~ 0,
              
+             # Keep termination reason 04 Moved to different Health Board
+             
              dupe == 1 &
-               # Select termination reason 04 Moved to different Health Board
                n_distinct(termination_or_transition_reason) > 1 &
                str_detect(termination_or_transition_reason, "^04") ~ 1,
              
              dupe == 1 &
-               # Select termination reason 04 Moved to different Health Board
                n_distinct(termination_or_transition_reason) > 1 &
                any(str_detect(termination_or_transition_reason, "^04")) ~ 0,
              
+             # Keep earliest contact date
+             
              dupe == 1 &
-               # Select earliest contact date
                n_distinct(date_of_initial_first_contact) > 1 &
                date_of_initial_first_contact == 
                min(date_of_initial_first_contact, na.rm = TRUE) ~ 1,
              
              dupe == 1 &
-               # Select earliest contact date
                n_distinct(date_of_initial_first_contact) > 1 &
                (!(date_of_initial_first_contact == 
                     min(date_of_initial_first_contact, na.rm = TRUE)) |
                   is.na(date_of_initial_first_contact)) ~ 0,
              
+             # Keep all records that aren't duplicates
              dupe != 1 ~ 1
              
            )) %>%
