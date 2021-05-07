@@ -180,3 +180,7 @@ For further information, please see the [Dementia Post-Diagnostic Support](https
 For information on the Dementia Benchmarking toolkit, please see the publication [web page](https://beta.isdscotland.org/find-publications-and-data/conditions-and-diseases/dementia/dementia-benchmarking-toolkit/). For related topics, please see the [mental health](https://www.isdscotland.org/Health-Topics/Mental-Health/) and [health and social community care](http://www.isdscotland.org/Health-Topics/Health-and-Social-Community-Care/) web pages.
 
 The next release of this publication will be in `r format(pub_date + years(1), "%B %Y")`.
+
+Other formats of this publication are available on request at:  
+0131 314 5300  
+[phs.otherformats@phs.scot](mailto:phs.otherformats@phs.scot)
