@@ -42,7 +42,7 @@ set_env <- function(data = pds,
   assign("sel_fy", year, subpage_env)
   assign("max_fy", max(sort(unique(data$fy))), subpage_env)
   assign("min_fy", min(sort(unique(data$fy))), subpage_env)
-  assign("all_fy", setdiff(unique(data$fy), year), subpage_env)
+  assign("all_fy", sort(unique(data$fy)), subpage_env)
   assign("exp", subpage_exp, subpage_env)
   assign("qt", quarter, subpage_env)
   assign("start_date", start_date, subpage_env)

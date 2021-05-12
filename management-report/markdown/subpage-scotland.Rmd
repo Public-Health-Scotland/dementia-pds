@@ -82,8 +82,8 @@ Select Financial Year
 
 ```{r fy-page-links, results='asis'}
 fy_text <- case_when(
-  fy_list == sel_fy ~ md_bold(fy_list),
-  TRUE ~ fy_list
+  all_fy == sel_fy ~ md_bold(all_fy),
+  TRUE ~ all_fy
 )
 
 fy_url <- paste0(
@@ -91,8 +91,8 @@ fy_url <- paste0(
   hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"),
   "-",
   case_when(
-    fy_list == max(fy_list) ~ as.character(length(fy_list) - 1),
-    TRUE ~ str_remove_all(fy_list, "/")
+    all_fy == max(all_fy) ~ as.character(length(all_fy) - 1),
+    TRUE ~ str_remove_all(all_fy, "/")
   )
 )
 
