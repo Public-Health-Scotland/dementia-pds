@@ -1,3 +1,3 @@
-## Dementia Post-Diagnostic Support
+## Dementia Post-Diagnostic Support (PDS)
 
 This git repository contains the [Reproducible Analytical Pipeline (RAP)](https://www.isdscotland.org/About-ISD/Methodologies/_docs/Reproducible_Analytical_Pipelines_paper_v1.4.pdf) to produce the annual Public Health Scotland [Dementia Post-Diagnostic Support (PDS) publication](https://beta.isdscotland.org/find-publications-and-data/conditions-and-diseases/dementia/dementia-post-diagnostic-support/).
