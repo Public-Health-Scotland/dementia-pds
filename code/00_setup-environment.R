@@ -13,9 +13,9 @@
 ################################################################################
 
 
-### 0 - Dates - UPDATE THIS SECTION ----
+### 0 - Manual Variable(s) - TO UPDATE ----
 
-# Last day in reporting period
+# UPDATE - Last day in reporting period (ddmmyyyy)
 end_date <- lubridate::dmy(31122020)
 
 

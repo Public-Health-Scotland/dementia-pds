@@ -13,6 +13,18 @@
 #########################################################################
 
 
+### 0 - Manual Variable(s) - TO UPDATE ----
+
+# UPDATE - Last day in reporting period (ddmmyyyy)
+end_date <- lubridate::dmy(31122020)
+
+# UPDATE - Date of publication (ddmmyyyy)
+pub_date <- lubridate::dmy(30032021)
+
+# UPDATE - Date of last publication (ddmmyyyy)
+last_pub_date <- lubridate::dmy(31032020)
+
+
 ### 1 - Load packages ----
 
 library(dplyr)         # For data manipulation in the "tidy" way
@@ -37,19 +49,8 @@ library(rmarkdown)     # For render function
 library(officer)       # For adding cover page and toc to report
 library(english)       # For converting number to text
 
-### 2 - Dates - UPDATE THIS SECTION ----
 
-# Last day in reporting period
-end_date   <- dmy(31122020)
-
-# Date of publication
-pub_date <- dmy(30032021)
-
-# Date of last publication
-last_pub_date <- dmy(31032020)
-
-
-### 3 - Define file paths dependent on whether running on server or desktop ----
+### 2 - Define file paths dependent on whether running on server or desktop ----
 
 stats <- case_when(
   sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ "/conf",
@@ -63,7 +64,7 @@ cl_out <- case_when(
 )
 
 
-### 4 - Extract dates ----
+### 3 - Extract dates ----
 
 # Latest FY and Quarter
 fy <- fin_year(end_date) %>% substr(1, 4)
@@ -77,12 +78,12 @@ fy_in_pub <-
   fin_year()
 
 
-### 5 - Disable scientific notation ----
+### 4 - Disable scientific notation ----
 
 options(scipen = 999)
 
 
-### 6 - Set knitr options ----
+### 5 - Set knitr options ----
 
 # Allow duplicate labels
 options(knitr.duplicate.label = "allow")
@@ -93,7 +94,7 @@ knit_hooks$set(inline = function(x){
 })
 
 
-### 7 - Create folder for publication output ----
+### 6 - Create folder for publication output ----
 
 use_directory(glue("publication/output/{pub_date}"))
 
