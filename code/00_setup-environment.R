@@ -108,6 +108,16 @@ exempt_reasons <- c("03", "04", "05", "06")
 
 ### 7 - Create folder structure ----
 
+
+# Path to final files
+final_data_path <- function(){
+  
+  final_data_dir <- dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", "final"))
+
+  return(final_data_dir)
+  }
+
+# Create data folder for FY and Qtr
 mi_data_path <- function(type = c("error_data", 
                                   "dupe_data", 
                                   "clean_data", 
