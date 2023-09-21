@@ -166,15 +166,4 @@ mi_output_path <- function(){
 }
 
 
-
-# Create data folder for FY and Qtr
-use_directory(
-  glue("data/{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}")
-)
-
-# Create output folder
-use_directory(glue("management-report/output/",
-                   "{fy}-{substr(as.numeric(fy)+1, 3, 4)}"))
-
-
 ### END OF SCRIPT ###
