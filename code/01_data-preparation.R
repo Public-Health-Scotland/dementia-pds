@@ -57,7 +57,7 @@ pds <-
   bind_rows(
     pds %>% 
       # Remove any submitted data for finalised years
-      filter(!fin_year(dementia_diagnosis_confirmed_date) %in% 
+      filter(!extract_fin_year(dementia_diagnosis_confirmed_date) %in% 
                finalised_years)
   )
 
@@ -68,7 +68,7 @@ err <- pds %>%
   mutate(health_board = if_else(is.na(health_board),
                                 "Missing",
                                 substring(health_board, 3))) %>%
-  mutate(fy = fin_year(dementia_diagnosis_confirmed_date)) %>%
+  mutate(fy = extract_fin_year(dementia_diagnosis_confirmed_date)) %>%
   group_by(fy, health_board, ijb) %>%
   summarise(total_errors     = sum(as.integer(error_flag)),
             records          = n(),
