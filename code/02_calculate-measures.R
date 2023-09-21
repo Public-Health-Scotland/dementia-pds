@@ -27,7 +27,7 @@ pds <- read_rds(here("data",
 ### 3 - Add FY and months labels ----
 
 pds %<>%
-  mutate(fy    = fin_year(dementia_diagnosis_confirmed_date),
+  mutate(fy    = extract_fin_year(dementia_diagnosis_confirmed_date),
          month = month(dementia_diagnosis_confirmed_date))
 
 
@@ -143,7 +143,7 @@ pds %<>%
              age >= 90      ~ "90+"
            )) %>%
   
-  mutate(postcode = postcode(postcode)) %>%
+  mutate(postcode = format_postcode(postcode)) %>%
   left_join(simd(), by = c("postcode" = "pc7")) %>%
   mutate(simd = replace_na(simd, "Unknown"))
           
