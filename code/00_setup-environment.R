@@ -44,6 +44,7 @@ library(usethis)       # For creating folder structure
 library(rmarkdown)     # For render function
 library(officer)       # For adding cover page and toc to report
 library(gluedown)      # For formatting character vectors in markdown
+library(fs)            # For setting up directories 
 
 
 ### 2 - Define file paths dependent on whether running on server or desktop ----
@@ -106,6 +107,35 @@ exempt_reasons <- c("03", "04", "05", "06")
 
 
 ### 7 - Create folder structure ----
+
+mi_data_path <- function(type = c("error_data", 
+                                  "dupe_data", 
+                                  "clean_data", 
+                                  "ldp_data", 
+                                  "final_data"
+                                  ),
+                         ext = c("rds", 
+                                 "csv")
+                         ) {
+  year_dir <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}")
+  
+  mi_dir <- dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", {year_dir}))
+  
+  file_name <- file_name <- dplyr::case_match(
+    type,
+    "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary.{ext}"),
+    "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes.{ext}"), 
+    "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data{ext}"),
+    "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp.{ext}"), 
+    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data.{ext}")
+    )
+    
+  mi_path <- stringr::str_glue("{mi_dir}/{file_name}")
+
+  return(mi_path)
+}
+
+
 
 # Create data folder for FY and Qtr
 use_directory(
