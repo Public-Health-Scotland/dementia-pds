@@ -19,10 +19,8 @@ source(here::here("code", "00_setup-environment.R"))
 
 ### 2 - Load data ----
 
-pds <- read_rds(here("data", 
-                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                     glue("{fy}-{qt}_clean-data.rds")))
-
+pds <- read_rds(mi_data_path("clean_data", "rds"))
+  
 
 ### 3 - Add FY and months labels ----
 
@@ -149,21 +147,11 @@ pds %<>%
           
 
 ### 7 - Save individual level file for checking ----
+pds %>% 
+write_rds(mi_data_path("ldp_data", "rds"), compress = "gz")
 
-write_rds(
-  pds, 
-  here("data", 
-       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-       glue("{fy}-{qt}_individuals-with-ldp.rds")),
-  compress = "gz"
-)
-
-write_csv(
-  pds, 
-  here("data", 
-       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-       glue("{fy}-{qt}_individuals-with-ldp.csv"))
-)
+pds %>% 
+write_csv(mi_data_path("ldp_data", "csv"))
 
 
 ### 8 - Create final output file ----
@@ -200,13 +188,8 @@ pds %<>%
   # Remove LDP reason detail
   mutate(ldp = word(ldp, 1))
 
-write_rds(
-  pds, 
-  here("data", 
-       glue("{fy}-{substr(as.numeric(fy) + 1, 3, 4)}/Q{qt}"),
-       glue("{fy}-{qt}_final-data.rds")),
-  compress = "gz"
-)
-
+# write final data
+pds %>% 
+write_rds(mi_data_path("final_data", "rds"), compress = "gz")
 
 ### END OF SCRIPT ###
