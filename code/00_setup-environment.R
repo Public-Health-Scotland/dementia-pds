@@ -123,14 +123,14 @@ mi_data_path <- function(type = c("error_data",
   
   file_name <- file_name <- dplyr::case_match(
     type,
-    "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary.{ext}"),
-    "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes.{ext}"), 
-    "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data{ext}"),
-    "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp.{ext}"), 
-    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data.{ext}")
+    "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
+    "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"), 
+    "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
+    "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"), 
+    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data")
     )
     
-  mi_path <- stringr::str_glue("{mi_dir}/{file_name}")
+  mi_path <- stringr::str_glue("{mi_dir}/{file_name}.{ext}")
 
   return(mi_path)
 }
