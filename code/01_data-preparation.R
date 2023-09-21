@@ -18,11 +18,9 @@ source(here::here("code", "00_setup-environment.R"))
 
 ### 2 - Read and clean collated file ----
 
-pds <- 
-  
-  read_csv(glue("{stats}/dementia/03-Outputs/National/",
-                "{fy}-Q{qt}_national.csv"),
-           col_types = cols(.default = "c")) %>%
+pds <- read_csv(collated_file_path(),
+                col_types = cols(.default = "c")
+                )%>%
   
   clean_names() %>%
   
