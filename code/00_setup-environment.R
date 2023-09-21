@@ -13,11 +13,10 @@
 ################################################################################
 
 
-### 0 - Dates - UPDATE THIS SECTION ----
+### 0 - Manual Variable(s) - TO UPDATE 
 
-# Last day in reporting period
-end_date <- lubridate::dmy(31122020)
-
+# UPDATE - Last day in reporting period (ddmmyyyy)
+end_date <- lubridate::dmy(30062023)
 
 ### 1 - Load packages ----
 
