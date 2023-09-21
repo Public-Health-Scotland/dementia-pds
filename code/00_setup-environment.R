@@ -108,6 +108,18 @@ exempt_reasons <- c("03", "04", "05", "06")
 
 ### 7 - Create folder structure ----
 
+# Path to final files
+collated_file_path <- function(){
+  
+  collated_file_dir <- path("/", "conf", "dementia", "03-Outputs", "National")
+  
+  file_name <- stringr::str_glue("{fy}-Q{qt}_national.csv")
+  
+  collated_file_path <- stringr::str_glue("{collated_file_dir}/{file_name}")
+  
+  return(collated_file_path)
+}
+
 
 # Path to final files
 final_data_path <- function(){
@@ -116,6 +128,7 @@ final_data_path <- function(){
 
   return(final_data_dir)
   }
+
 
 # Create data folder for FY and Qtr
 mi_data_path <- function(type = c("error_data", 
