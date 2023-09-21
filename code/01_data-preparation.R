@@ -42,14 +42,14 @@ pds <-
 ### 3 - Add finalised data ----
 
 finalised_years <- 
-  list.files(here("data", "final")) %>% 
+  list.files(final_data_path()) %>% 
   str_sub(1, 7) %>%
   str_replace("-", "/")
 
 pds <-
   
   # Read in and bind all previous finalised years data
-  list.files(here("data", "final"), full.names = TRUE) %>%
+  list.files(final_data_path(), full.names = TRUE) %>%
   map(read_rds) %>%
   reduce(bind_rows) %>%
   
