@@ -80,13 +80,12 @@ simd <- function(){
 ### 4 - Derive dates ----
 
 # Latest FY and Quarter
-fy <- fin_year(end_date) %>% substr(1, 4)
+fy <- extract_fin_year(end_date) %>% substr(1, 4)
 qt <- quarter(end_date, fiscal_start = 4)
 
 # First date in reporting period 
 start_date <- dmy(01042016)
-
-
+  
 ### 5 - Set output/knitr options ----
 
 # Disable scientific notation
