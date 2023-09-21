@@ -154,6 +154,17 @@ mi_data_path <- function(type = c("error_data",
 }
 
 
+# Create MI output folder
+mi_output_path <- function(){
+ 
+  year_dir <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}")
+  mi_dir <- dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "output", {year_dir}))
+  file_name <- stringr::str_glue("{end_date}_management-report.html")
+  mi_output_path <- stringr::str_glue("{mi_dir}/{file_name}")
+ 
+  return(mi_output_path)
+}
+
 
 
 # Create data folder for FY and Qtr
