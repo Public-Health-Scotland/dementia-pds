@@ -22,7 +22,7 @@ rmarkdown::render(
   input = here("management-report", "markdown", 
                "management-report.Rmd"),
   output_file = here("management-report", "output", 
-                     fin_year(end_date) %>% str_replace("/", "-"),
+                     extract_fin_year(end_date) %>% str_replace("/", "-"),
                      glue("{end_date}_management-report.html"))
 )
 
