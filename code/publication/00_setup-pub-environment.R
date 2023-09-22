@@ -48,6 +48,7 @@ library(usethis)       # For creating folder structure
 library(rmarkdown)     # For render function
 library(officer)       # For adding cover page and toc to report
 library(english)       # For converting number to text
+library(captioner)
 
 
 ### 2 - Define file paths dependent on whether running on server or desktop ----
