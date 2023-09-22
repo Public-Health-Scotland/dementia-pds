@@ -203,10 +203,13 @@ The following steps are taken to ensure the data is of sufficient quality for an
 
 ### **Number of Expected Diagnoses**
 
+<span style="color:purple"> **Currently, the estimated and projected diagnosis rates for dementia in Scotland are only available for years 2014-2020. Therefore, the percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support cannot be calculated for 2021/22 at this time.** </span>
+
 In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/). Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. 
 Information on the methodology used to calculate these figures and the limitations of this are available in the report.
 
 Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018.
+
 
 
 ### **Removal of Duplicate Records**
