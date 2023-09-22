@@ -221,7 +221,7 @@ valueBox(paste0(round_half_up(pds_rate, 1), "%"),
 
 `r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
 
-`r ifelse(complete_year == TRUE, glue("<span style='color:CornflowerBlue'>**{num_format}**</span> of referrals either met or were exempt from the LDP standard. This is divided by <span style='color:CornflowerBlue'>**{den_format}**</span>, the total number of referrals (excluding those whose support is ongoing)."), "")`
+`r ifelse(complete_year == TRUE, glue("<span style='color:CornflowerBlue'>**{num_format}**</span> referrals either met or were exempt from the LDP standard. This is divided by <span style='color:CornflowerBlue'>**{den_format}**</span>, the total number of referrals (excluding those whose support is ongoing)."), "")`
 
 
 Row
