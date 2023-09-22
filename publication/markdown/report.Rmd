@@ -1,11 +1,16 @@
 ---
 output: 
-  officedown::rdocx_document:
-    reference_docx: "templates/report-template.docx"
+  phstemplates::phs_report_docx:    
+    reference_docx: "templates/phs-offstats-report.docx"
     fig_caption: no
+    cover_page: "templates/phs-offstats-cover.docx"
+    cover_title: "Dementia Post-Diagnostic Support"
+    cover_subtitle: "Local Delivery Plan Standard - Figures to 2020/21"
+    cover_date: "28/03/2023"
+    toc_depth: 3
 ---
+```{r TableData, include = FALSE}
 
-```{r set-up, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
 source(here("functions", "flextable_style.R"))
 
@@ -13,9 +18,9 @@ latest_fy  <- nth(fy_in_pub, -1)
 revised_fy <- nth(fy_in_pub, -2)
 
 pub_date_url <- 
-  paste0("https://beta.isdscotland.org/find-publications-and-data/",
-         "conditions-and-diseases/dementia/dementia-post-diagnostic-support/",
-         format(pub_date, "%e-%B-%Y") %>% str_trim())
+  paste0("https://publichealthscotland.scot/publications/",
+         "dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-",
+         (latest_fy))
 
 # Function to format percentages
 format_perc <- function(x, dp = 1){
