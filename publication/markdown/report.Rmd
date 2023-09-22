@@ -191,21 +191,22 @@ hb <-
             .groups = "drop") %>%
   adorn_totals(name = "Scotland") %>%
   mutate(
+    calc = (numerator / denominator * 100),
     perc = format_perc(numerator / denominator * 100)
   ) %>%
   select(health_board, referrals, complete, exempt, 
-         ongoing, fail, perc)
+         ongoing, fail, calc, perc)
 
 # Top 3 HBs
 top3_hb <- 
   hb %>%
-  arrange(desc(perc)) %>%
+  arrange(desc(calc)) %>%
   filter(row_number() %in% 1:3)
-
+ 
 # Bottom 2 HBs
 bot2_hb <-
   hb %>%
-  arrange(perc) %>%
+  arrange(calc) %>%
   filter(row_number() %in% 1:2)
 
 # Commentary for latest year HB 12m PDS
