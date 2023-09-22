@@ -58,15 +58,22 @@ err <-
   mutate(text = glue("for {fy} was {perc}"))
 
 a_city_statement <-
-  paste("Aberdeen City Health & Social Care Partnership ceased its contract",
-       "with Alzheimer Scotland during 2019 and introduced an in-house",
-       "Dementia Post-Diagnostic Support (PDS) service. This transition",
-       "resulted in some PDS cases being terminated by Alzheimer Scotland",
-       "earlier than 12 months and therefore not meeting the LDP standard.",
-       "As part of the transition, individuals were contacted to ask if they",
-       "still wanted to receive PDS which was then provided by the in-house",
-       "service, if required. This should be taken into account when",
-       "interpreting figures for Aberdeen City in 2018/19.")
+  paste("Aberdeen City Health & Social Care Partnership ceased its contract ", 
+        "with Alzheimer Scotland during 2019 and introduced an in-house ", 
+        "Dementia Post-Diagnostic Support (PDS) service. This transition ", 
+        "resulted in some PDS cases being terminated by Alzheimer Scotland ", 
+        "earlier than 12 months and therefore not meeting the LDP standard.", 
+        "As part of the transition, individuals were contacted to ask if they ", 
+        "still wanted to receive PDS which was then provided by the in-house ", 
+        "service, if required. This should be taken into account when ", 
+        "interpreting figures for Aberdeen City in 2018/19. Although figures ", 
+        "for 2019/20 and 2020/21 include the total number of people referred ", 
+        "to PDS across all Integration Authority areas in NHS Grampian, data ", 
+        "for Aberdeen City is not included in the measurement figures for the ",
+        "LDP standard. This is due to data quality issues and missing dates ", 
+        "meaning it is not possible to accurately measure these referrals ", 
+        "against the LDP standard.")
+        
   
 ```
 
