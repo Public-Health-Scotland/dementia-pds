@@ -97,7 +97,7 @@ knit_hooks$set(inline = function(x){
 
 ### 6 - Create folder for publication output ----
 
-use_directory(glue("publication/output/{pub_date}"))
+use_directory(glue("publication/output/{pub_date}/figures"))
 
 
 ### END OF SCRIPT ###
