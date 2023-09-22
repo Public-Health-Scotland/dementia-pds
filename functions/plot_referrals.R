@@ -66,7 +66,7 @@ plot_referrals <- function(data,
     
     ggplot(aes(x = month_abbr,
                y = referrals,
-               group = if(ijb_group == TRUE){ijb}else{1},
+               group = ifelse(ijb_group, ijb, 1),
                colour = if(ijb_group == TRUE){ijb}else{health_board},
                text = paste0(if(ijb_group == TRUE){ijb}else{health_board}, "<br>",
                              month_full, " ", year, "<br>",
