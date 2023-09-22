@@ -65,8 +65,24 @@ basefile <-
   mutate(health_board = str_sub(health_board, 3, -1),
          ijb          = if_else(is.na(ijb),
                                 "Unknown",
-                                str_sub(ijb, 11, -1)))
-
+                                 str_sub(ijb, 11, -1))) %>% 
+  # 
+  # # Exclude Aberdeen city from calculating the standard but keep the number of referrals
+  # # Comment this out in the future if we want to include Aberdeen City again
+  # 2019/20
+  mutate(complete = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, complete),
+         exempt = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, exempt),
+         fail = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, fail),
+         ongoing = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, ongoing),
+         numerator = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, numerator),
+         denominator = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, denominator)) %>% 
+  # 20/21
+  mutate(complete = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, complete),
+         exempt = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, exempt),
+         fail = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, fail),
+         ongoing = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, ongoing),
+         numerator = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, numerator),
+         denominator = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, denominator))
 
 ### 3 - Save file ----
 
