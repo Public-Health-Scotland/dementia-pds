@@ -59,6 +59,69 @@ table_title <-
           "",
           paste0(" - up to Q", qt))
 
+# Estimated dementia diagnosis dates note
+est_date1 <- dmy(01042021)
+est_date2 <- dmy(01042022)
+est_date3 <- dmy(01042023)
+
+  est_text <-  
+    case_when(sel_fy == fin_year(est_date1) | sel_fy == fin_year(est_date2) | sel_fy == fin_year(est_date3) ~
+      paste0("",
+             "**Please note:** ",
+             "*Currently, the estimated and projected diagnosis rates for dementia in ",
+             "Scotland are only available for years 2014-2020. ",
+             "Therefore, the percentage of people estimated to be newly diagnosed with dementia ",
+             "who were referred for post-diagnostic support ",
+             "cannot be calculated for 2021/22, 2022/23 and 2023/24 at this time.* "),
+      TRUE ~ paste0(""))
+  
+
+# Data quality notes - Aberdeen City
+  ac_date1 <- dmy(01042019)
+  ac_date2 <- dmy(01042020)
+
+  ac_text <-  
+    case_when(sel_fy == fin_year(ac_date1) | sel_fy == fin_year(ac_date2) ~
+      paste0(" ",
+             "**Please note:** ",
+             "When interpreting figures for Aberdeen City and NHS Grampian, ",
+             "please take into account the following statement from Aberdeen ",
+             "City Health & Social Care Partnership about their data.",
+             " *“Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 ",
+             "to an inhouse hybrid model. This change in model and process of receiving referrals ",
+             "and recording, resulted in the numbers of patient’s recorded as receiving PDS being ",
+             "less than what was actually the case.”*"), TRUE ~ paste0(""))
+  
+  
+    # Data quality notes - Perth & Kinross
+  tay_date1 <- dmy(01042018)
+  tay_date2 <- dmy(01042019)
+  
+  tay_text <-  
+    case_when(sel_fy == fin_year(tay_date1) | sel_fy == fin_year(tay_date2) ~
+    paste0(" ", 
+           "**Please note:** ",
+           "*NHS Tayside experienced challenges in capturing and reporting on electronic system data ",
+           "within Perth & Kinross over the period 2018/19 to 2019/20. Despite local work undertaken to ",
+           "uncover the missing data, it has not been possible to fill this gap.",
+           " Subsequent measures put in place have successfully allowed NHS Tayside ",
+           "to improve on data reporting from 2019 onwards.*"), TRUE ~ paste0(""))
+
+  
+  # Data quality notes - Scotland Q1 2022/23
+  
+  scot_date1 <- dmy(01042022)
+  scot_date2 <- dmy(01042023)
+  
+  scot_text <-  
+    case_when(sel_fy == fin_year(scot_date1) | sel_fy == fin_year(scot_date2) ~
+    paste0(" ", 
+           "**Please note:** ",
+           "*Due to staffing issues the 2022/23 and 2023/24 Scotland figure does not include data from ",
+           "the following areas for the stated quarters : NHS Orkney 2022/23 (Q3 and Q4) and 2023/24 (Q1)*"), 
+            TRUE ~ paste0(""))
+   
+ 
 ```
 
 
@@ -122,6 +185,14 @@ Row
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**
 
 `r completeness_text`
+
+`r est_text`
+
+`r ac_text`
+
+`r tay_text`
+
+`r scot_text`
 
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
