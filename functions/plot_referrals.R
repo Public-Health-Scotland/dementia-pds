@@ -92,17 +92,17 @@ plot_referrals <- function(data,
           legend.position = ifelse(ijb_group == FALSE, "none", "top"),
           axis.text.x = element_text(angle=45))
   
-  ggplotly(plot, tooltip = "text") %>%
-    
-    config(displayModeBar = TRUE,
-           modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
-                                         'zoomOut2d', 'autoScale2d', 
-                                         'toggleSpikelines', 
-                                         'hoverCompareCartesian', 
-                                         'hoverClosestCartesian'), 
-           displaylogo = F, editable = F) %>%
-    
-    layout(legend = list(orientation = "h", x = 0.2 , y = -0.6,
-                         xanchor = "center", yanchor = "bottom"))
+   ggplotly(plot, tooltip = "text") %>%
+     
+     config(displayModeBar = TRUE,
+            modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                          'zoomOut2d', 'autoScale2d', 
+                                          'toggleSpikelines', 
+                                          'hoverCompareCartesian', 
+                                          'hoverClosestCartesian'), 
+            displaylogo = F, editable = F) %>%
+     
+     layout(legend = list(orientation = "h", x = 0.2 , y = -0.6,
+                          xanchor = "center", yanchor = "bottom"))
   
 }
