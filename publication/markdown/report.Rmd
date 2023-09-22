@@ -301,7 +301,9 @@ scot_trend_text <- glue(
   "fluctuated in the {english(length(fy_in_pub))} year period ",
   "{first(fy_in_pub)} to {last(fy_in_pub)}, ranging from ",
   "{first(trend_comm$perc)} in {first(trend_comm$fy)} to ",
-  "{last(trend_comm$perc)} in {last(trend_comm$fy)}."
+  "{last(trend_comm$perc)} in {last(trend_comm$fy)}.", 
+  "The effects of measures relating to the COVID-19 pandemic ", 
+  "are likely to have affected the 2019/20 and 2020/21 figures."
 )
 
 # Data for HB trend commentary
