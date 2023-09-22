@@ -29,16 +29,19 @@ qt_text <-
     }
   }
 
+
 # Text to explain incomplete years / referrals still ongoing
+latest_final_year <- dmy(01042018)
+
 completeness_text <-
   case_when(
-    str_sub(sel_fy, 1, 4) < year(start_date) ~
+    str_sub(sel_fy, 1, 4) < year(latest_final_year) ~
       paste0("Data for ", sel_fy, " are now final and will not change in ",
              "future versions of this report."),
     complete_year == FALSE ~ 
       paste0("LDP Standard performance figures are not provided ",
              "until data is available for the full financial year."),
-    sel_fy == fin_year(start_date) ~ 
+    sel_fy == fin_year(latest_final_year) ~ 
       paste0("The figures shown are now complete for this ",
              "financial year and should not change in future ",
              "versions of these reports. However, slight ",
