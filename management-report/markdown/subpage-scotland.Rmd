@@ -224,24 +224,10 @@ valueBox(paste0(round_half_up(pds_rate, 1), "%"),
 `r ifelse(complete_year == TRUE, glue("<span style='color:CornflowerBlue'>**{num_format}**</span> referrals either met or were exempt from the LDP standard. This is divided by <span style='color:CornflowerBlue'>**{den_format}**</span>, the total number of referrals (excluding those whose support is ongoing)."), "")`
 
 
-Row
-----------------------------------------------------------------------
-
-### **Number of Individuals relating to LDP Standard**: Financial Year `r paste0(sel_fy, table_title)`
-
-```{r ldp-table}
-
-ldp_table(subpage_data,
-          scotland = TRUE,
-          include_pc = complete_year)
-
-```
-
-
 Row {.data-height=1000}
 ----------------------------------------------------------------------
 
-### **Number of Individuals Diagnosed and Referred for PDS** {data-width=800}
+### **Scotland - Number of Individuals Diagnosed and Referred for PDS** {data-width=800}
 
 ```{r referrals-plot}
 
@@ -252,5 +238,32 @@ plot_referrals(subpage_data,
 ```
 
 
-Row
------------------------------------------------------------------------
+Row 
+----------------------------------------------------------------------
+
+### **Scotland/Health Board - Number of Individuals relating to LDP Standard**: Financial Year `r paste0(sel_fy, table_title)`
+
+```{r ldp-table}
+
+ldp_table(subpage_data,
+          scotland = TRUE,
+          ijb = FALSE,
+          include_pc = complete_year)
+
+```
+
+
+Row 
+----------------------------------------------------------------------
+
+### **IJB - Number of Individuals relating to LDP Standard**: Financial Year `r paste0(sel_fy, table_title)`
+
+```{r ldp-table}
+
+ldp_table(subpage_data,
+          scotland = FALSE,
+          ijb = TRUE,
+          include_pc = complete_year)
+
+```
+
