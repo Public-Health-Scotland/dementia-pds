@@ -68,7 +68,7 @@ cl_out <- case_when(
 ### 3 - Extract dates ----
 
 # Latest FY and Quarter
-fy <- fin_year(end_date) %>% substr(1, 4)
+fy <- extract_fin_year(end_date) %>% substr(1, 4)
 qt <- quarter(end_date, fiscal_start = 4)    
 
 # FYs included in pub
@@ -76,7 +76,7 @@ fy_in_pub <-
   seq.Date(dmy(01042016), 
            dmy(glue("0104{year(pub_date) - 3}")), 
            "years") %>%
-  fin_year()
+  extract_fin_year()
 
 
 ### 4 - Disable scientific notation ----
