@@ -235,9 +235,10 @@ err %>%
   kable() %>%
   kable_styling(full_width = FALSE) %>%
   row_spec(15, bold = TRUE) %>%
+  # Add header above table 
   add_header_above(
         c(" " = 1,
-          "Financial Year of Diagnosis" = 5,
+          "Financial Year of Diagnosis" = 8,
           " " = 1)) %>%
   add_footnote(label = paste("A dash (\\-) indicates no records were submitted",
                              "for diagnoses in this year."),
