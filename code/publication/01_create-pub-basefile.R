@@ -22,8 +22,7 @@ source(here("functions", "create-final-data.R"))
 
 create_final_data(
   fy_final = nth(fy_in_pub, -2),
-  collated_file = glue("{stats}/dementia/03-Outputs/National/",
-                       "{fy}-Q{qt}_national.csv")
+  collated_file = collated_file_path()
 )
 
 
