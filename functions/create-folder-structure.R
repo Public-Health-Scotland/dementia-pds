@@ -25,11 +25,9 @@ mi_data_path <- function(type = c("error_data",
                                   "dupe_data", 
                                   "clean_data", 
                                   "ldp_data", 
-                                  "final_data"
-),
-ext = c("rds", 
-        "csv")
-) {
+                                  "final_data"),
+                         ext = c("rds", "csv")) {
+  
   year_dir <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}")
   mi_dir <- dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", {year_dir}))
   file_name <- file_name <- dplyr::case_match(
