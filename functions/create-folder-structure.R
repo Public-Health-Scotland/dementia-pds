@@ -20,6 +20,14 @@ final_data_path <- function(){
 }
 
 
+pub_figures_path <- function(){
+  
+  figures_dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "publication", "output", {pub_date}, "figures"))
+  
+  return(figures_dir)
+}
+
+
 # setup directory
 setup_dir <- function(directory = c("mi", "publication"), 
                       folder = c("data", "output")
