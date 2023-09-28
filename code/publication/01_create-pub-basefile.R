@@ -80,12 +80,9 @@ basefile <- read_rds(data_path(directory = "mi",
          denominator = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, denominator))
 
 ### 3 - Save file ----
-
-write_rds(
-  basefile,
-  here("data", "publication", glue("{pub_date}_pub-data.rds")),
-  compress = "gz"
-)
-
+basefile %>% 
+write_rds(data_path(directory = "publication", 
+                    type = "pub_data", 
+                    ext = "rds"), compress = "gz")
 
 ### END OF SCRIPT ###
