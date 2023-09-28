@@ -53,6 +53,11 @@ c1_data <-
             .groups = "drop") %>%
   adorn_totals(name = "Scotland") %>%
   left_join(exp, by = "health_board") %>%
+  # Update the number of referrals using aberdeen city lookup for publication
+  left_join(ac_lookup_hb, by = c("health_board", "fy")) %>% 
+  mutate(referrals = if_else(health_board == "NHS Grampian", pub_referrals, referrals), 
+         referrals = if_else(health_board == "Scotland", pub_referrals, referrals)) %>% 
+  select(-pub_referrals) %>% 
   mutate(
     perc = case_when(
       referrals == 0 ~ 0,
@@ -167,7 +172,7 @@ ggsave(
 
 c3_data <-
   basefile %>%
-  filter(fy == max(fy_in_pub) & ijb != "Unknown") %>%
+  filter(fy == max(fy_in_pub) & ijb != "Unknown" & ijb != "Aberdeen City") %>%
   group_by(ijb) %>%
   summarise(across(referrals:denominator, sum),
             .groups = "drop") %>%
@@ -212,6 +217,18 @@ c4_data <-
   group_by(age_grp) %>%
   summarise(across(c(referrals), sum),
             .groups = "drop") %>%
+  # Update the number of referrals using aberdeen city lookup for publication
+  left_join(ac_lookup_age_group, by = c("age_grp")) %>% 
+  mutate(referrals = case_when(age_grp == '59 and Under' ~ pub_referrals,  
+                               age_grp == '60 to 64' ~ pub_referrals, 
+                               age_grp == '65 to 69' ~ pub_referrals,
+                               age_grp == '70 to 74' ~ pub_referrals,
+                               age_grp == '75 to 79' ~ pub_referrals,
+                               age_grp == '80 to 84' ~ pub_referrals,
+                               age_grp == '85 to 89' ~ pub_referrals,
+                               age_grp == '90+' ~ pub_referrals,
+                               age_grp == 'Unknown' ~ pub_referrals)) %>% 
+  select(-c("fy", "pub_referrals")) %>% 
   mutate(
     perc = case_when(
       referrals == 0 ~ 0,
@@ -258,6 +275,36 @@ c5_data <-
   group_by(age_grp) %>%
   summarise(across(referrals:denominator, sum),
             .groups = "drop") %>%
+  # Update the number of referrals using aberdeen city lookup for publication
+  left_join(ac_lookup_age_group, by = c("age_grp")) %>% 
+  mutate(referrals = case_when(age_grp == '59 and Under' ~ pub_referrals,  
+                               age_grp == '60 to 64' ~ pub_referrals, 
+                               age_grp == '65 to 69' ~ pub_referrals,
+                               age_grp == '70 to 74' ~ pub_referrals,
+                               age_grp == '75 to 79' ~ pub_referrals,
+                               age_grp == '80 to 84' ~ pub_referrals,
+                               age_grp == '85 to 89' ~ pub_referrals,
+                               age_grp == '90+' ~ pub_referrals,
+                               age_grp == 'Unknown' ~ pub_referrals), 
+         numerator = case_when(age_grp == '59 and Under' ~ pub_numerator,  
+                                 age_grp == '60 to 64' ~ pub_numerator, 
+                                 age_grp == '65 to 69' ~ pub_numerator,
+                                 age_grp == '70 to 74' ~ pub_numerator,
+                                 age_grp == '75 to 79' ~ pub_numerator,
+                                 age_grp == '80 to 84' ~ pub_numerator,
+                                 age_grp == '85 to 89' ~ pub_numerator,
+                                 age_grp == '90+' ~ pub_numerator,
+                                 age_grp == 'Unknown' ~ pub_numerator),
+         denominator = case_when(age_grp == '59 and Under' ~ pub_denominator,  
+                               age_grp == '60 to 64' ~ pub_denominator, 
+                               age_grp == '65 to 69' ~ pub_denominator,
+                               age_grp == '70 to 74' ~ pub_denominator,
+                               age_grp == '75 to 79' ~ pub_denominator,
+                               age_grp == '80 to 84' ~ pub_denominator,
+                               age_grp == '85 to 89' ~ pub_denominator,
+                               age_grp == '90+' ~ pub_denominator,
+                               age_grp == 'Unknown' ~ pub_denominator)) %>% 
+  select(-c("pub_referrals", "pub_numerator", "pub_denominator")) %>% 
   mutate(
     perc = case_when(
       referrals == 0 ~ 0,
@@ -298,6 +345,16 @@ c6_data <-
   group_by(simd) %>%
   summarise(across(c(referrals), sum),
             .groups = "drop") %>%
+  # Update the number of referrals using aberdeen city lookup for publication
+  left_join(ac_lookup_simd, by = c("simd")) %>% 
+  mutate(
+    referrals = case_when(simd == '1 - Most Deprived' ~ pub_referrals, 
+                          simd == '2' ~ pub_referrals, 
+                          simd == '3' ~ pub_referrals,
+                          simd == '4' ~ pub_referrals,
+                          simd == '5 - Least Deprived' ~ pub_referrals,
+                          simd == 'Unknown' ~ pub_referrals)) %>% 
+  select(-c("pub_referrals", "pub_numerator", "pub_denominator")) %>% 
   mutate(
     perc = case_when(
       referrals == 0 ~ 0,
@@ -344,6 +401,28 @@ c7_data <-
   group_by(simd) %>%
   summarise(across(referrals:denominator, sum),
             .groups = "drop") %>%
+  # Update the number of referrals using aberdeen city lookup for publication
+  left_join(ac_lookup_simd, by = c("simd")) %>% 
+  mutate(
+    referrals = case_when(simd == '1 - Most Deprived' ~ pub_referrals, 
+                          simd == '2' ~ pub_referrals, 
+                          simd == '3' ~ pub_referrals,
+                          simd == '4' ~ pub_referrals,
+                          simd == '5 - Least Deprived' ~ pub_referrals,
+                          simd == 'Unknown' ~ pub_referrals),
+    numerator = case_when(simd == '1 - Most Deprived' ~ pub_numerator, 
+                          simd == '2' ~ pub_numerator, 
+                          simd == '3' ~ pub_numerator,
+                          simd == '4' ~ pub_numerator,
+                          simd == '5 - Least Deprived' ~ pub_numerator,
+                          simd == 'Unknown' ~ pub_numerator),
+    denominator = case_when(simd == '1 - Most Deprived' ~ pub_denominator, 
+                          simd == '2' ~ pub_denominator, 
+                          simd == '3' ~ pub_denominator,
+                          simd == '4' ~ pub_denominator,
+                          simd == '5 - Least Deprived' ~ pub_denominator,
+                          simd == 'Unknown' ~ pub_denominator)) %>% 
+  select(-c("pub_referrals", "pub_numerator", "pub_denominator")) %>% 
   mutate(
     perc = case_when(
       referrals == 0 ~ 0,
