@@ -49,6 +49,7 @@ library(rmarkdown)     # For render function
 library(officer)       # For adding cover page and toc to report
 library(english)       # For converting number to text
 library(captioner)
+library(fs)
 
 
 ### 2 - Define file paths dependent on whether running on server or desktop ----
@@ -97,7 +98,8 @@ knit_hooks$set(inline = function(x){
 
 ### 6 - Create folder for publication output ----
 
-use_directory(glue("publication/output/{pub_date}/figures"))
+# Load functions
+source(here::here("functions/create-folder-structure.R"))
 
 
 ### END OF SCRIPT ###
