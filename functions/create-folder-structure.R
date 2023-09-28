@@ -44,15 +44,31 @@ mi_data_path <- function(type = c("error_data",
 }
 
 
-# Create MI output folder
-mi_output_path <- function(){
+# Create output folder - parameter for MI and publication outputs
+output_path <- function(directory = c("mi", "publication"), 
+                        output_name = c("mi_report", "pub_summary", "pub_report")
+                        ){
   
   year_dir <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}")
-  mi_dir <- dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "output", {year_dir}))
-  file_name <- stringr::str_glue("{end_date}_management-report.html")
-  mi_output_path <- stringr::str_glue("{mi_dir}/{file_name}")
   
-  return(mi_output_path)
+  if(directory == "mi"){
+    
+    dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "output", {year_dir}))
+  }
+  
+  if(directory == "publication"){
+
+    dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "publication", "output", {pub_date}))
+  }
+  
+  file_name <- file_name <- dplyr::case_match(output_name,
+    "mi_report" ~ stringr::str_glue("{end_date}_management-report.html"),
+    "pub_summary" ~ stringr::str_glue("{pub_date}_dementia-pds_summary.docx"), 
+    "pub_report" ~ stringr::str_glue("{pub_date}_dementia-pds_report.docx"))
+
+  output_path <- stringr::str_glue("{dir}/{file_name}")
+  
+  return(output_path)
 }
 
 
