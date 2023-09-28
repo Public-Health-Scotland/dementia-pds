@@ -20,16 +20,26 @@ source(here("functions", "ggplot_themes.R"))
 
 ### 2 - Read in data ----
 
-basefile <-
-  read_rds(
-    here("data", "publication", glue("{pub_date}_pub-data.rds"))
-  )
+basefile <- read_rds(data_path(directory = "publication", 
+                               type = "pub_data", 
+                               ext = "rds"))
+
 
 # Load expected diagnoses reference file
 exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
   filter(fy == max(fy_in_pub)) %>%
   select(health_board = health_board_label, fy, diagnoses)
 
+
+# Aberdeen city lookup
+ac_lookup_hb <- read_xlsx(ac_lookup_path(), sheet = 'health_board') %>% 
+  filter(fy == "2020/21")
+
+ac_lookup_simd <- read_xlsx(ac_lookup_path(), sheet = "simd") %>% 
+  filter(fy == "2020/21")
+
+ac_lookup_age_group <- read_xlsx(ac_lookup_path(), sheet = "age_group") %>% 
+  filter(fy == "2020/21")
 
 ### 3 - Create figures ----
 
