@@ -84,9 +84,7 @@ c1 <-
   ) +
   ylab("")
 
-ggsave(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_incidence-hb.png")),
+ggsave(pub_figures_path(type = "c1"),
   plot = c1,
   height = 6,
   width = 6,
@@ -125,9 +123,7 @@ c2 <-
   xlab("Percentage of Referrals Achieved LDP Standard") +
   ylab("")
 
-ggsave(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_12-months-hb.png")),
+ggsave(pub_figures_path(type = "c2"),
   plot = c2,
   height = 6,
   width = 6,
@@ -157,9 +153,7 @@ summary <-
   theme(axis.title.x = element_text(size = 7.5),
         axis.text = element_text(size = 7.5))
 
-ggsave(
-  here("publication", "output", pub_date, "figures",
-       paste0(pub_date, "_summary-chart.png")),
+ggsave(pub_figures_path(type = "summary"),
   plot = summary,
   height = 3.8,
   width = 4,
@@ -198,9 +192,7 @@ c3 <-
   xlab("Percentage of Referrals Achieved LDP Standard") +
   ylab("")
 
-ggsave(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_12-months-ijb.png")),
+ggsave(pub_figures_path(type = "c3"),
   plot = c3,
   height = 9,
   width = 6,
@@ -256,9 +248,7 @@ c4 <-
   ylab(str_wrap("Percentage of total referrals", width = 10))
 
 # Save chart to output folder
-ggsave(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_age-dist.png")),
+ggsave(pub_figures_path(type = "c4"),
   plot = c4,
   width = 6.8,
   height = 3.5,
@@ -326,9 +316,7 @@ c5 <-
   ylab(str_wrap("Percentage of Referrals Achieved LDP Standard", width = 10))
 
 # Save chart to output folder
-ggsave(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_12-months-age.png")),
+ggsave(pub_figures_path(type = "c5"),
   plot = c5,
   width = 6.8,
   height = 3.5,
@@ -382,9 +370,7 @@ c6 <-
   ylab(str_wrap("Percentage of total referrals", width = 10))
 
 # Save chart to output folder
-ggsave(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_simd-dist.png")),
+ggsave(pub_figures_path(type = "c6"),
   plot = c6,
   width = 6.8,
   height = 3.5,
@@ -444,9 +430,7 @@ c7 <-
   ylab(str_wrap("Percentage of Referrals Achieved LDP Standard", width = 10))
 
 # Save chart to output folder
-ggsave(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_12-months-simd.png")),
+ggsave(pub_figures_path(type = "c7"),
   plot = c7,
   width = 6.8,
   height = 3.5,
