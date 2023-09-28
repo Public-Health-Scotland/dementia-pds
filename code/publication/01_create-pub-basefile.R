@@ -29,13 +29,9 @@ create_final_data(
 
 ### 2 - Restructure data file ----
 
-basefile <- 
-  
-  read_rds(
-    here("data", 
-         glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-         glue("{fy}-{qt}_final-data.rds"))
-  ) %>%
+basefile <- read_rds(data_path(directory = "mi",
+                               type = "final_data", 
+                               ext = "rds")) %>% 
   
   # Select only FY to be included in pub
   filter(fy %in% fy_in_pub) %>%
