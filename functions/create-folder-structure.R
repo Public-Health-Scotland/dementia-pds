@@ -20,46 +20,62 @@ final_data_path <- function(){
 }
 
 
-# Create data folder for FY and Qtr
-mi_data_path <- function(type = c("error_data", 
-                                  "dupe_data", 
-                                  "clean_data", 
-                                  "ldp_data", 
-                                  "final_data"),
-                         ext = c("rds", "csv")) {
+# setup directory
+setup_dir <- function(directory = c("mi", "publication"), 
+                      folder = c("data", "output")
+                      ){
   
   year_dir <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}")
-  mi_dir <- dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", {year_dir}))
+  
+  if(directory == "mi"){
+    
+    dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", {folder}, {year_dir}))
+  }
+  
+  if(directory == "publication"){
+    
+    dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "publication", {folder}, {pub_date}))
+  }
+  
+  return(dir)
+}
+
+
+# Create data directories for MI report and publication
+data_path <- function(directory = c("mi", "publication"),
+                      type = c("error_data", 
+                               "dupe_data", 
+                               "clean_data", 
+                               "ldp_data", 
+                               "final_data", 
+                               "pub_data"),
+                      ext = c("rds", "csv")) {
+  
+  
+  dir <- setup_dir(directory, "data")
+  
   file_name <- file_name <- dplyr::case_match(
     type,
     "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
     "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"), 
     "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
     "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"), 
-    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data")
+    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data"), 
+    "pub_data" ~ stringr::str_glue("{pub_date}_pub-data")
   )
-  mi_path <- stringr::str_glue("{mi_dir}/{file_name}.{ext}")
   
-  return(mi_path)
+  path <- stringr::str_glue("{dir}/{file_name}.{ext}")
+  
+  return(path)
 }
 
 
 # Create output folder - parameter for MI and publication outputs
-output_path <- function(directory = c("mi", "publication"), 
+output_path <- function(directory = c("mi", "publication"),
                         output_name = c("mi_report", "pub_summary", "pub_report")
                         ){
-  
-  year_dir <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}")
-  
-  if(directory == "mi"){
     
-    dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "output", {year_dir}))
-  }
-  
-  if(directory == "publication"){
-
-    dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "publication", "output", {pub_date}))
-  }
+    dir <- setup_dir(directory, "output")
   
   file_name <- file_name <- dplyr::case_match(output_name,
     "mi_report" ~ stringr::str_glue("{end_date}_management-report.html"),
