@@ -10,6 +10,17 @@ collated_file_path <- function(){
   return(collated_file_path)
 }
 
+'/conf/dementia/A&I/Outputs/publication/aberdeen_city_lookup.xlsx'
+
+# Path to Aberdeen city lookup
+ac_lookup_path <- function(){
+  
+  ac_lookup_dir <- path("/", "conf", "dementia", "A&I", "Outputs", "publication", "lookups")
+  file_name <- stringr::str_glue("aberdeen_city_lookup.xlsx")
+  ac_lookup_path <- stringr::str_glue("{ac_lookup_dir}/{file_name}")
+  
+  return(ac_lookup_path)
+}
 
 # Path to final files
 final_data_path <- function(){
