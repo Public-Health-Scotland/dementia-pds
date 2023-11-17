@@ -118,7 +118,7 @@ est_date3 <- dmy(01042023)
     paste0(" ", 
            "**Please note:** ",
            "*Due to staffing issues the 2022/23 and 2023/24 Scotland figure does not include data from ",
-           "the following areas for the stated quarters : NHS Orkney 2022/23 (Q3 and Q4) and 2023/24 (Q1)*"), 
+           "the following areas for the stated quarters : NHS Orkney 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2)*"), 
             TRUE ~ paste0(""))
    
  
