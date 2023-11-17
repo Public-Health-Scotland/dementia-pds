@@ -3,36 +3,35 @@ ft_dementia_style <- function(ft) {
   cols <- ncol(ft$body[["dataset"]])
   rows <- nrow(ft$body[["dataset"]])
   
-  ft %>% 
-    
-    # Replace NAs (zeros) with dash
-    colformat_num(na_str = "-") %>%
-    
-    font(fontname = "Arial", part = "all") %>%
-    fontsize(size = 11, part = "all") %>%
-    
-    # Format header
-    bold(part = "header") %>% 
-    bg(bg = "#964091", part = "header") %>% 
-    color(color = "white", part = "header") %>% 
+   ft %>% 
+     
+     # Replace NAs (zeros) with dash
+     colformat_num(na_str = "-") %>%
+     colformat_num(big.mark = "") %>%
+     font(fontname = "Arial", part = "all") %>%
+     fontsize(size = 12, part = "all") %>%
+     
+     # Format header
+     bold(part = "header") %>% 
+     bg(bg = "#43358B", part = "header") %>% 
+     color(color = "white", part = "header") %>% 
+     fontsize(size = 11, part = "header") %>% 
+   
+     # Alignment
+     align(align = "left", part = "header") %>%
+     valign(valign = "center", part = "header") %>%
+     valign(valign = "top", part = "body") %>%
+   
+     # Bold Scotland row
+     bold(i = rows) %>% 
+     
+     # Row height
+     padding(padding.top = 2, padding.bottom = 2, part = "all") %>%
+     height_all(height = 8) %>%
+   
+     # Borders
+     border(border = fp_border_default(color = "#000000", width = 0.5),
+            part = "all")
 
-    # Alignment
-    valign(valign = "center", part = "all") %>% 
-    align(j = 1, align = "left", part = "all") %>%
-    align(j = 2:cols, align = "right", part = "all") %>% 
-    align(j = 2:cols, align = "center", part = "header") %>% 
-
-    # Bold Scotland row
-    bold(i = rows) %>% 
-    
-    # Row height
-    padding(padding.top = 2, padding.bottom = 2, part = "all") %>%
-    height_all(height = 8) %>%
-
-    # Borders
-    border_outer(border = fp_border()) %>% 
-    border(i = rows - 1, border.bottom = fp_border(), part = "body") %>%
-    # border(j = c(1, 4, cols), border.right = fp_border(), part = "all") %>%
-    border_inner_v(border = fp_border("black"), part = "all")
   
 }

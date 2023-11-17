@@ -1,6 +1,7 @@
 
 ldp_table <- function(data, 
                       scotland = FALSE,
+                      ijb = FALSE,
                       include_pc = TRUE){
   
   if(scotland == TRUE){
@@ -11,7 +12,7 @@ ldp_table <- function(data,
                          ijb          = "All")) %>%
       group_by(health_board, ijb, fy, ldp) %>%
       summarise(referrals = sum(referrals), .groups = "drop")
-   }
+  }
   
   # 12 Months Complete - IJB level for table
   num_ijb <- data %>% filter(ldp %in% c("complete", "exempt")) %>% group_by(ijb) %>% summarise(num = sum(referrals), .groups = "drop") %>%
@@ -71,12 +72,28 @@ ldp_table <- function(data,
       
       kable(col.names = c("", names(.)[-1]),
             align = c("l", rep("r", length(names(.)) - 1))
-        ) %>%
+      ) %>%
       kable_styling(full_width = FALSE) %>%
       column_spec(1, bold = T) %>%
       column_spec(if_else(include_pc, 7, 6), bold = include_pc)
     
-  }else{
+  }else if(ijb == TRUE){
+    
+    table %>%
+      select(!starts_with("NHS")) %>% 
+      pivot_longer(cols = !starts_with("ldp"),
+                   names_to = "ijb",
+                   values_to = "value") %>%
+      pivot_wider(names_from = ldp,
+                  values_from = value)%>%
+      
+      kable(col.names = c("", names(.)[-1]),
+            align = c("l", rep("r", length(names(.)) - 1))
+      ) %>%
+      kable_styling(full_width = FALSE) %>%
+      column_spec(1, bold = T) %>%
+      column_spec(if_else(include_pc, 7, 6), bold = include_pc)
+  } else {
     
     table %>%
       kable(col.names = c("", unique(data$health_board), sort(unique(data$ijb))),
@@ -90,6 +107,4 @@ ldp_table <- function(data,
       row_spec(if_else(include_pc, 6, 5), bold = include_pc)
     
   }
-
-  
 }

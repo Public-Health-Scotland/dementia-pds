@@ -18,11 +18,9 @@ source(here::here("code", "00_setup-environment.R"))
 
 ### 2 - Read and clean collated file ----
 
-pds <- 
-  
-  read_csv(glue("{stats}/dementia/03-Outputs/National/",
-                "{fy}-Q{qt}_national.csv"),
-           col_types = cols(.default = "c")) %>%
+pds <- read_csv(collated_file_path(),
+                col_types = cols(.default = "c")
+                )%>%
   
   clean_names() %>%
   
@@ -42,14 +40,14 @@ pds <-
 ### 3 - Add finalised data ----
 
 finalised_years <- 
-  list.files(here("data", "final")) %>% 
+  list.files(final_data_path()) %>% 
   str_sub(1, 7) %>%
   str_replace("-", "/")
 
 pds <-
   
   # Read in and bind all previous finalised years data
-  list.files(here("data", "final"), full.names = TRUE) %>%
+  list.files(final_data_path(), full.names = TRUE) %>%
   map(read_rds) %>%
   reduce(bind_rows) %>%
   
@@ -57,7 +55,7 @@ pds <-
   bind_rows(
     pds %>% 
       # Remove any submitted data for finalised years
-      filter(!fin_year(dementia_diagnosis_confirmed_date) %in% 
+      filter(!extract_fin_year(dementia_diagnosis_confirmed_date) %in% 
                finalised_years)
   )
 
@@ -68,7 +66,7 @@ err <- pds %>%
   mutate(health_board = if_else(is.na(health_board),
                                 "Missing",
                                 substring(health_board, 3))) %>%
-  mutate(fy = fin_year(dementia_diagnosis_confirmed_date)) %>%
+  mutate(fy = extract_fin_year(dementia_diagnosis_confirmed_date)) %>%
   group_by(fy, health_board, ijb) %>%
   summarise(total_errors     = sum(as.integer(error_flag)),
             records          = n(),
@@ -82,10 +80,10 @@ err <- pds %>%
   ) %>%
   ungroup() %>%
   arrange(fy, health_board, ijb) %T>%
-  write_rds(here("data", 
-                 glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                 glue("{fy}-{qt}_error-summary.rds")))
-
+  write_rds(data_path(directory = "mi",
+                      type = "error_data", 
+                      ext = "rds"))
+    
 
 ### 4 - Recode Lanarkshire IJB records ----
 
@@ -174,9 +172,9 @@ pds %<>%
 dupes <- 
   pds %>% 
   filter(dupe == 1) %T>%
-  write_csv(here("data", 
-                 glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                 glue("{fy}-{qt}_dupes.csv")))
+  write_csv(data_path(directory = "mi",
+                      type = "dupe_data",
+                      ext = "csv"))
 
 
 # Remove duplicate records
@@ -194,13 +192,10 @@ pds %<>%
 
 ### 6 - Save data ---
 
-write_rds(
-  pds, 
-  here("data", 
-       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-       glue("{fy}-{qt}_clean-data.rds")),
-  compress = "gz"
-)
-
+pds %>% 
+write_rds(data_path(directory = "mi",  
+                    type = "clean_data", 
+                    ext = "rds"), compress = "gz")
+  
 
 ### END OF SCRIPT ###

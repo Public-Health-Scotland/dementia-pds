@@ -16,13 +16,13 @@
 ### 0 - Manual Variable(s) - TO UPDATE ----
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(31122020)
+end_date <- lubridate::dmy(31122022) 
 
 # UPDATE - Date of publication (ddmmyyyy)
-pub_date <- lubridate::dmy(30032021)
+pub_date <- lubridate::dmy(28032023)
 
 # UPDATE - Date of last publication (ddmmyyyy)
-last_pub_date <- lubridate::dmy(31032020)
+last_pub_date <- lubridate::dmy(29032022)
 
 
 ### 1 - Load packages ----
@@ -48,6 +48,9 @@ library(usethis)       # For creating folder structure
 library(rmarkdown)     # For render function
 library(officer)       # For adding cover page and toc to report
 library(english)       # For converting number to text
+library(captioner)
+library(fs)
+library(readxl)        # For reading xlsx workbooks
 
 
 ### 2 - Define file paths dependent on whether running on server or desktop ----
@@ -67,7 +70,7 @@ cl_out <- case_when(
 ### 3 - Extract dates ----
 
 # Latest FY and Quarter
-fy <- fin_year(end_date) %>% substr(1, 4)
+fy <- extract_fin_year(end_date) %>% substr(1, 4)
 qt <- quarter(end_date, fiscal_start = 4)    
 
 # FYs included in pub
@@ -75,7 +78,7 @@ fy_in_pub <-
   seq.Date(dmy(01042016), 
            dmy(glue("0104{year(pub_date) - 3}")), 
            "years") %>%
-  fin_year()
+  extract_fin_year()
 
 
 ### 4 - Disable scientific notation ----
@@ -96,7 +99,8 @@ knit_hooks$set(inline = function(x){
 
 ### 6 - Create folder for publication output ----
 
-use_directory(glue("publication/output/{pub_date}"))
+# Load functions
+source(here::here("functions/create-folder-structure.R"))
 
 
 ### END OF SCRIPT ###

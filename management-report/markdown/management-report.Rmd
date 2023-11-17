@@ -29,9 +29,9 @@ detach("package:tidylog", unload = TRUE)
 walk(dir(here::here("functions"), full.names = TRUE), source)
 
 # Load PDS data
-pds <- read_rds(here("data", 
-                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                     glue("{fy}-{qt}_final-data.rds"))) %>%
+pds <- read_rds(data_path(directory = "mi", 
+                    type = "final_data",
+                    ext = "rds")) %>% 
   
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),
@@ -40,12 +40,14 @@ pds <- read_rds(here("data",
                                 str_sub(ijb, 11, -1)))
 
 # Load expected diagnoses reference file
-exp <- read_csv(here("reference-files", "expected-diagnoses.csv"))
+exp <- read_csv(exp_diagnoses_path())
+
 
 # Load error summary
-err <- read_rds(here("data", 
-                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                     glue("{fy}-{qt}_error-summary.rds"))) %>%
+err <- read_rds(data_path(directory = "mi",
+                      type = "error_data", 
+                      ext = "rds")) %>% 
+
   mutate(ijb = if_else(is.na(ijb),
                                 "Unknown",
                                 str_sub(ijb, 11, -1)))
@@ -80,7 +82,7 @@ Row
 
 ### **About the LDP Standard**
 
-The Local Delivery Plan (LDP) standard is that *everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker*. Perfromance is reported in two parts:
+The Local Delivery Plan (LDP) standard is that *everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker, including the building of a person-centred support plan*. Performance is reported in two parts:
 
 <style>
 div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
@@ -89,13 +91,36 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 1. The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support.
 
-2. The percentage of people referred who received a minimum of one year’s support.
+2. The percentage of people referred who received a minimum of one year’s worth of post-diagnostic support coordinated by a Link Worker, including the building of a person-centred support plan.
 
 </div> <br>
 
 For more detail on how the above is calculated, please see the [methodology](#methodology) page.
 
-Further information regarding the Dementia PDS dataset and submission process can be found on the [Dementia PDS pages](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support) of the [PHS website](https://www.isdscotland.org/).
+Further information regarding the Dementia PDS dataset and submission process can be found on the [Dementia PDS pages](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support).
+
+
+Row
+-------------------------------------------------
+
+### **Additional Notes**
+
+*Please note the following:*
+
+**Scotland** – Due to staffing issues the *2022/23* and *2023/24* Scotland figure does not include data from the following areas for the stated quarters : NHS Orkney 2022/23 (*Q3 and Q4*) and 2023/24 (*Q1*). 
+
+**NHS Highland** – Due to staffing issues the Health Board are experiencing a wait to get a diagnosis for some patients and therefore there has been a delay in adding them to the PDS dataset in *Q1 2023/24.*
+
+**NHS Orkney** – Due to ongoing staffing issues NHS Orkney were unable to provide data for 2022/23 (*Q3*, *Q4*) and 2023/24 (*Q1*).
+
+**NHS Shetland** - NHS Shetland do not have a PDS worker in post for *2022/23* *Q2, Q3* and *Q4*, and *2023/24 Q1*. Therefore, NHS Shetland are unable to provide PDS allocation and contact dates for referrals in these quarters.  This explains the large increase seen in their query rate in *2022/23* as the waiting list will exceed 6 months for many. Once a PDS worker has been assigned these dates will be completed.
+
+**NHS Grampian** - Due to staffing issues and system changes, Aberdeen City have reported that they are finding it difficult to collate and report their data timeously and that there will be a lag in the numbers reported. Therefore the numbers presented for recent quarters will be an underestimate of the true number of referrals and likely to be revised in subsequent quarters. Due to changes in service provider the figures for Aberdeen City in 2019/20 and 2020/21 have been affected.
+
+**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. 
+
+
+The figures for the number of people estimated to be newly diagnosed with dementia are not currently available for *2021/22*, *2022/23* and *2023/24*.
 
 
 <!-- Scotland -->
@@ -180,10 +205,13 @@ The following steps are taken to ensure the data is of sufficient quality for an
 
 ### **Number of Expected Diagnoses**
 
+<span style="color:purple"> **Currently, the estimated and projected diagnosis rates for dementia in Scotland are only available for years 2014-2020. Therefore, the percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support cannot be calculated for 2021/22 at this time.** </span>
+
 In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/). Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. 
 Information on the methodology used to calculate these figures and the limitations of this are available in the report.
 
 Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018.
+
 
 
 ### **Removal of Duplicate Records**
@@ -235,9 +263,10 @@ err %>%
   kable() %>%
   kable_styling(full_width = FALSE) %>%
   row_spec(15, bold = TRUE) %>%
+  # Add header above table 
   add_header_above(
         c(" " = 1,
-          "Financial Year of Diagnosis" = 5,
+          "Financial Year of Diagnosis" = 8,
           " " = 1)) %>%
   add_footnote(label = paste("A dash (\\-) indicates no records were submitted",
                              "for diagnoses in this year."),
