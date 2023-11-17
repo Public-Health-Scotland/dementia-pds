@@ -697,7 +697,7 @@ inc_trend_table %>%
   ft_dementia_style() %>%
     set_header_labels(
     values = c(health_board = "NHS Board")) %>% 
-  set_table_properties(layout = "autofit") #%>% 
+  set_table_properties(layout = "autofit") %>% 
   compose(
     j = ncol(inc_trend_table), part = "header",
     value = as_paragraph(latest_fy, as_sup("P"))
@@ -790,7 +790,7 @@ hb_trend_table  %>%
    flextable() %>% 
   ft_dementia_style() %>% 
   set_header_labels(values = c(health_board = "NHS Board")) %>% 
-  set_table_properties(layout = "autofit") #%>% 
+  set_table_properties(layout = "autofit") %>% 
   compose(
     j = ncol(hb_trend_table), part = "header",
     value = as_paragraph(latest_fy, as_sup("P"))
