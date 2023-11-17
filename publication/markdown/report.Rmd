@@ -565,44 +565,28 @@ simd_unknown <-
 
 simd_footnote <- glue(
   "Deprivation is calculated by matching postcodes to the ",
-  "Scottish Index of Multiple Deprivation (SIMD) quintiles. {if_else(",
-  "'Unknown' %in% simd_unknown$simd, 'There are a small number of records ",
-  "with an incomplete postcode and therefore the deprivation quintile is ",
-  "unknown.', '')}"
-)
+  "Scottish Index of Multiple Deprivation (SIMD) quintiles. There are a ", 
+  "small number of records (16) where it was not possible to assign ", 
+  "deprivation category based on the postcode information available.")
 
+interpretation_text <- glue("**---Manual adjustment required here---**")
 ```
 
-<Div custom-style = "Publication subtitle">This is an Official Statistics Publication</Div>
-
-Public Health Scotland has authority to produce official statistics on any matter in accordance with [The Official Statistics (Scotland) Order 2008](http://www.legislation.gov.uk/ssi/2008/131/contents/made), [The Official Statistics (Scotland) Amendment Order 2019](http://www.legislation.gov.uk/ssi/2019/416/made) and the [Statistics and Registration Service Act 2007](https://www.legislation.gov.uk/ukpga/2007/18/contents).
-
-All official statistics should comply with the UK Statistics Authority’s Code of Practice which promotes the production and dissemination of official statistics that inform decision making. They can be formally assessed by the UK Statistics Authority’s regulatory arm for National Statistics status.
-
-Find out more about the Code of Practice on the [UK Statistics Authority website](https://code.statisticsauthority.gov.uk/). 
-
-Find out more about Official Statistics on the [UK Statistics Authority website](https://code.statisticsauthority.gov.uk/glossary/#official-statistics).
-
-<br>
-
-Other formats of this publication are available on request at:  
-0131 314 5300  
-phs.otherformats@phs.scot
-
-\newpage
-
 # Introduction
+This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker, including the building of a person-centred support plan.
+Data are presented by financial year of diagnosis and this report presents finalised figures for `r revised_fy` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
 
-This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all people newly diagnosed with dementia should have a minimum of one year’s post-diagnostic support. Data are presented by financial year of diagnosis and this report presents finalised figures for `r revised_fy` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
-
-The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnostic support a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all people newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support. 
+The Scottish Government published their [third national dementia strategy](https://www.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnostic support a national [local delivery plan (LDP) standard](https://www.gov.scot/publications/nhsscotland-performance-against-ldp-standards/pages/introduction/) was introduced for all people newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support. 
 
 The LDP standard is reported in two parts, each addressing a separate element to the standard:
 
 1.	The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support.
-2.	The percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support.
+2.	The percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support coordinated by a link worker, including the 
+building of a person-centred support plan.
 
 NHS Boards provide quarterly data submissions to PHS on individuals diagnosed with dementia and referred for post-diagnostic support within their local areas and this dataset forms the basis of the LDP standard calculation. 
+
+\newpage
 
 ## Impact of COVID-19 on provision of dementia post-diagnostic support
 
@@ -614,111 +598,108 @@ Commitment 4 of the national action plan states:
 
 In December 2020, Alzheimer Scotland published a [report](https://www.alzscot.org/news/covid-19-the-hidden-impact) looking into the impact of coronavirus on people with dementia, their families and carers who are living at home.
 
+The COVID-19 pandemic and the infection control measures put in place are likely to 
+have had an impact on the number of people being diagnosed and referred, 
+particularly in 2020/21.
+
+Some areas have reported difficulties in the COVID-19 pandemic affecting their 
+ability and capacity to update their data systems which are required to provide the dementia PDS dataset, however it is not anticipated that this has a large impact on 
+the data presented in this report.
+
+\newpage
+
 # Main Points
+<Div custom-style = "Bullet 1">There were `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`. The effects of measures relating to the COVID-19 pandemic are likely to have contributed to this reduction.</Div>
+<Div custom-style = "Bullet 1">Of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year's support. In `r revised_fy`, the percentage was `r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`.</Div>
+<Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1,2^</Div>
 
-* There were `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.
-
-* Of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year's support. In `r revised_fy`, the percentage was `r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`.
-
-<Div custom-style = "TableChart title">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^P^</Div>
 
 <Div custom-style = "Figure_Style">
-```{r fig-summary, echo=FALSE}
-external_img(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_12-months-hb.png")),
-  width = 6, height = 6,
-  alt = f2_alt_text
-)
+```{r fig-summary, echo= FALSE, fig.cap= `f2_alt_text`, out.width = 600}
+# Figure summary
+include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_12-months-hb.png")))
+
 ```
 </Div>
 
-<Div custom-style = "Normal_Notes_Summary">
-**Notes**
-
+<Div custom-style = "Footnote Text">
 1. `r prov_footnote`
 2. `r a_city_footnote_hb`
-</div>
+</Div>
 
-<br>
+<Div custom-style = "Bullet 1">In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`. The effects of measures relating to the COVID-19 pandemic are likely to have contributed to this reduction.</Div>
 
-* In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.  
 \newpage
 
 # Results and Commentary
 
 ## 1. Number and percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support{#section1}
 
-This part of the LDP standard requires the number of referrals for post-diagnostic support to be compared against an estimated number of people newly diagnosed with dementia each year. Health Board level estimates of the number of people newly diagnosed with dementia (incidence) used for this calculation are from the paper [Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020](http://www.gov.scot/Publications/2016/12/9363) published by the Scottish Government in 2016. 
+This part of the LDP standard requires the number of referrals for post-diagnostic support to be compared against an estimated number of people newly diagnosed with dementia each year. Health Board level estimates of the number of people newly diagnosed with dementia (incidence) used for this calculation are from the paper [Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) published by the Scottish Government in 2016. 
 
 Table 1 presents the number and percentage of people referred for dementia post-diagnostic support compared to the estimated number of people newly diagnosed with dementia in `r latest_fy` by NHS Board. 
 
-<Div custom-style = "TableChart title">Table 1: Estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^P^</Div>
+<Div custom-style = "Table or chart caption">Table 1: Estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^1,2,3^</Div>
+
+<br>
 
 ```{r table-1, echo = FALSE, ft.align = "center"}
 inc %>%
   mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
-  flextable() %>% 
-  ft_dementia_style() %>% 
-  padding(j = -1, part = "body", padding.right = 40) %>%
-  width(j = 1, width = 2.4) %>%
-  width(j = -1, width = 1.5) %>%
-  set_header_labels(
+  flextable() %>%
+  ft_dementia_style() %>%
+    set_header_labels(
     values = c(
       health_board = "NHS Board",
       diagnoses = "Estimated Number of People Newly Diagnosed with Dementia",
       referrals = "Number of People Referred to PDS",
       perc = paste("Percentage of Estimated Number of People",
                    "Diagnosed with Dementia Referred to PDS")
-    ))
+    )) %>% 
+    align(j = 2, align = "right", part = "body") %>%
+    height(height = 0.236, part = "body") %>%
+    hrule(rule = "atleast", part = "body") %>%
+    width(width = 1.55)
+  
+
 ```
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote` Estimated and Projected Diagnosis Rates of Dementia in Scotland: 2014-2020.
-
-**Notes**
-
-1. `r prov_footnote`
-2. `r incidence_footnote`
-</div>
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r incidence_footnote`
+</Div>
 
 `r inc_text`
 
 Figure 1 presents the percentage of people referred for dementia post-diagnostic support compared to the estimated number of people newly diagnosed with dementia by NHS Board in `r latest_fy`.
 
-<Div custom-style = "TableChart title">Figure 1: Percentage of the estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^P^</Div>
+<Div custom-style = "Table or chart caption">Figure 1: Percentage of the estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^1,2,3^</Div> 
 <Div custom-style = "Figure_Style">
-```{r fig-1, echo=FALSE}
-external_img(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_incidence-hb.png")),
-  width = 5.5, height = 5.5,
-  alt = f1_alt_text
-)
+```{r fig-1, echo= FALSE, fig.cap= `f1_alt_text`, out.width = 420}
+# Figure 1
+include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_incidence-hb.png")))
+
 ```
+
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r incidence_footnote`
 </Div>
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote` Estimated and Projected Diagnosis Rates of Dementia in Scotland: 2014-2020.
+Table 2 presents the trend in the percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
 
-**Notes**
-
-1. `r prov_footnote`
-2. `r incidence_footnote`
-</div>
-
-Table 2 presents the percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
-
-<Div custom-style = "TableChart title">Table 2: Trend - Percentage of the estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board</Div>
+<Div custom-style = "Table or chart caption">Table 2: Trend - Percentage of the estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board ^1,2,3,4^ </Div>
 
 ```{r table-2, echo = FALSE, ft.align = "center"}
+# Table 2
 inc_trend_table %>%
-  flextable() %>% 
-  ft_dementia_style() %>% 
-  align(j = -1, align = "center", part = "body") %>%
-  width(j = 1, width = 2.4) %>%
-  width(j = -1, width = 1.5) %>%
-  set_header_labels(values = c(health_board = "NHS Board")) %>%
+  flextable() %>%
+  ft_dementia_style() %>%
+    set_header_labels(
+    values = c(health_board = "NHS Board")) %>% 
+  set_table_properties(layout = "autofit") #%>% 
   compose(
     j = ncol(inc_trend_table), part = "header",
     value = as_paragraph(latest_fy, as_sup("P"))
@@ -729,25 +710,21 @@ inc_trend_table %>%
   )
 ```
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote` Estimated and Projected Diagnosis Rates of Dementia in Scotland: 2014-2020.
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r revised_footnote`
+4. `r incidence_footnote_trend`
+</Div>
 
-**Notes**
-
-1. `r prov_footnote`
-2. `r revised_footnote`
-3. `r incidence_footnote_trend`
-</div>
-
-<br>
 
 `r inc_trend_text`
 
 \newpage
 
-## 2. Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support
+## Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support
 
-This part of LDP standard reports on the number of people referred for dementia post-diagnostic support who received a minimum of one year’s support. Figures presented in this section are available by NHS Board and Integration Joint Board, and should be interpreted in conjunction with [section 1](#section1).
+This part of LDP standard reports on the number of people referred for dementia post-diagnostic support who received a minimum of one year’s support. Figures presented in this section are available by NHS Board and Integration Authority area, and should be interpreted in conjunction with [section 1](#section1).
 
 The criteria used to define this part of the LDP standard is detailed in [Appendix 1](#background).
 
@@ -755,75 +732,67 @@ The criteria used to define this part of the LDP standard is detailed in [Append
 
 Table 3 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS board for `r latest_fy`. The percentage by NHS Board is also shown in Figure 2.
 
-<Div custom-style = "TableChart title">Table 3: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board; `r latest_fy`^P^</Div>
+<Div custom-style = "Table or chart caption">Table 3: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board; `r latest_fy`^1,2,3,4,5^</Div>
 
 ```{r table-3, echo = FALSE, ft.align = "center"}
-names(hb_headers) <- names(hb)
+# Table 3 
+names(hb_headers) <-  names(hb %>%
+          select(health_board, referrals, complete, exempt, 
+         ongoing, fail, perc))
 
 hb %>%
   mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>% 
   ft_dementia_style() %>%
-  padding(j = 2:6, part = "body", padding.right = 15) %>%
-  align(j = ncol(ijb), part = "body", align = "center") %>%
-  width(j = 1, width = 2.2) %>%
-  width(j = 2:(ncol(hb) - 1), width = 0.8) %>%
-  width(j = ncol(hb), width = 1) %>%
-  fontsize(size = 10, part = "all") %>%
-  set_header_labels(values = hb_headers)
+  set_header_labels(values = hb_headers) %>% 
+  set_table_properties(layout = "autofit")
+
 ```
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote`
 
-**Notes**
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r method_footnote`
+4. `r interpret_footnote`
+5. `r a_city_footnote_hb`
+</Div>
 
-1. `r prov_footnote`
-2. `r method_footnote`
-3. `r interpret_footnote`
-4. `r a_city_footnote_hb`
-</div>
+`r interpretation_text`
 
 `r text_hb`
 
-<Div custom-style = "TableChart title">Figure 2: Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^P^</Div>
+<Div custom-style = "Table or chart caption">Figure 2: Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1,2,3,4,5^</Div>
 
 <Div custom-style = "Figure_Style">
-```{r fig-2, echo=FALSE}
-external_img(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_12-months-hb.png")),
-  width = 6, height = 6,
-  alt = f2_alt_text
-)
+```{r fig-2, echo=FALSE, fig.cap= `f2_alt_text`, out.width = 600}
+# Figure 2 
+include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_12-months-hb.png")))
+
 ```
+
+
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r method_footnote`
+4. `r interpret_footnote`
+5. `r a_city_footnote_hb`
 </Div>
-
-<Div custom-style = "Normal_Notes">
-`r source_footnote`
-
-**Notes**
-
-1. `r prov_footnote`
-2. `r method_footnote`
-3. `r interpret_footnote`
-4. `r a_city_footnote_hb`
-</div>
 
 <br>
 
-Table 4 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
+Table 4 presents the trend in the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
 
-<Div custom-style = "TableChart title">Table 4: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board</Div>
+<Div custom-style = "Table or chart caption">Table 4: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board ^1,2,3,4,5,6^ </Div>
 
 ```{r table-4, echo = FALSE, ft.align = "center"}
-hb_trend_table %>%
-  flextable() %>% 
+# Table 4 
+hb_trend_table  %>%
+   flextable() %>% 
   ft_dementia_style() %>% 
-  align(j = -1, align = "center", part = "body") %>%
-  width(j = 1, width = 2.4) %>%
-  width(j = -1, width = 1.5) %>%
-  set_header_labels(values = c(health_board = "NHS Board")) %>%
+  set_header_labels(values = c(health_board = "NHS Board")) %>% 
+  set_table_properties(layout = "autofit") #%>% 
   compose(
     j = ncol(hb_trend_table), part = "header",
     value = as_paragraph(latest_fy, as_sup("P"))
@@ -834,101 +803,86 @@ hb_trend_table %>%
   )
 ```
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote`
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r revised_footnote`
+4. `r method_footnote`
+5. `r interpret_footnote`
+6. `r a_city_footnote_hb`
+</Div>
 
-**Notes**
-
-1. `r prov_footnote`
-2. `r revised_footnote`
-3. `r method_footnote`
-4. `r interpret_footnote`
-5. `r a_city_footnote_hb`
-</div>
+`r interpretation_text`
 
 `r scot_trend_text`
 
 `r hb_trend_text`
 
-### Integration Joint Board
+### Integration Authority area
 
-Table 5 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Joint Board (IJB). The percentage by IJB is also shown in Figure 3.
+Table 5 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Authority area. The percentage by Integration Authority area is also shown in Figure 3.
 
-<Div custom-style = "TableChart title">Table 5: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board; `r latest_fy`^P^</Div>
+<Div custom-style = "Table or chart caption">Table 5: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Authority area; `r latest_fy`^1,2,3,4,5^</Div>
 
 ```{r table-5, echo = FALSE, ft.align = "center"}
+#Table 5 
 names(ijb_headers) <- names(ijb)
 
 ijb %>%
   mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>% 
   ft_dementia_style() %>% 
-  padding(j = 2:6, part = "body", padding.right = 15) %>%
-  align(j = ncol(ijb), part = "body", align = "center") %>%
-  width(j = 1, width = 2.2) %>%
-  width(j = 2:(ncol(ijb) - 1), width = 0.8) %>%
-  width(j = ncol(ijb), width = 1) %>%
-  fontsize(size = 10, part = "all") %>%
-  set_header_labels(values = ijb_headers)
+  set_header_labels(values = ijb_headers) %>% 
+set_table_properties(layout = "autofit")
+
 ```
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote`
 
-**Notes**
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r method_footnote`
+4. `r interpret_footnote`
+5. `r a_city_footnote_ijb`
+</Div>
 
-1. `r prov_footnote`
-2. `r method_footnote`
-3. `r interpret_footnote`
-4. `r a_city_footnote_ijb`
-</div>
-
-<br>
+`r interpretation_text`
 
 `r text_ijb`
 
 \newpage
 
-<Div custom-style = "TableChart title">Figure 3: Percentage of referrals who received a minimum of one year’s post-diagnostic support by Integration Joint Board; `r latest_fy`^P^</Div>
+<Div custom-style = "Table or chart caption">Figure 3: Percentage of people referred who received a minimum of one year’s post-diagnostic support by Integration Authority area; `r latest_fy`^1,2,3,4,5^</Div>
 
 <Div custom-style = "Figure_Style">
-```{r fig-3, echo=FALSE}
-external_img(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_12-months-ijb.png")),
-  width = 6, height = 9,
-  alt = f3_alt_text
-)
+```{r fig-3, echo=FALSE, fig.cap= `f3_alt_text`, out.width = 420}
+# Figure 3 
+include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_12-months-ijb.png")))
+
 ```
+
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r method_footnote`
+4. `r interpret_footnote`
+5. `r a_city_footnote_ijb`
 </Div>
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote`
 
-**Notes**
-
-1. `r prov_footnote`
-2. `r method_footnote`
-3. `r interpret_footnote`
-4. `r a_city_footnote_ijb`
-</div>
-
-<br>
-
-Table 6 presents the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for financial years `r fy_in_pub[1]` to `r latest_fy` by Integration Joint Board (IJB).
+Table 6 presents the trend in the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for financial years `r fy_in_pub[1]` to `r latest_fy` by Integration Authority area.
 
 \newpage
 
-<Div custom-style = "TableChart title">Table 6: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Joint Board</Div>
+<Div custom-style = "Table or chart caption">Table 6: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Authority area ^1,2,3,4,5,6^</Div>
 
 ```{r table-6, echo = FALSE, ft.align = "center"}
+# Table 6
 ijb_trend_table %>%
-  flextable() %>% 
+   flextable() %>% 
   ft_dementia_style() %>% 
-  align(j = -1, align = "center", part = "body") %>%
-  width(j = 1, width = 2.4) %>%
-  width(j = -1, width = 1.5) %>%
-  set_header_labels(values = c(ijb = "Integration Joint Board")) %>%
+  set_header_labels(values = c(ijb = "Integration Authority area")) %>% 
+  set_table_properties(layout = "autofit") %>% 
   compose(
     j = ncol(ijb_trend_table), part = "header",
     value = as_paragraph(latest_fy, as_sup("P"))
@@ -939,19 +893,16 @@ ijb_trend_table %>%
   )
 ```
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote`
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r revised_footnote`
+4. `r method_footnote`
+5. `r interpret_footnote`
+6. `r a_city_footnote_ijb`
+</Div>
 
-**Notes**
-
-1. `r prov_footnote`
-2. `r revised_footnote`
-3. `r method_footnote`
-4. `r interpret_footnote`
-5. `r a_city_footnote_ijb`
-</div>
-
-<br>
+\newpage
 
 ## 3. Demographics and Inequalities
 
@@ -961,59 +912,41 @@ This part of the report presents information on the demographics of individuals 
 
 Figure 4 presents the age distribution of those referred for dementia post-diagnostic support in Scotland for `r latest_fy`.
 
-<Div custom-style = "TableChart title">Figure 4: Age distribution of referrals for dementia post-diagnostic support; `r latest_fy`^P^</Div>
+<Div custom-style = "Table or chart caption">Figure 4: Age distribution of referrals for dementia post-diagnostic support; `r latest_fy`^1,2,3^</Div>
 
 <Div custom-style = "Figure_Style">
-```{r fig-4, echo=FALSE}
-external_img(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_age-dist.png")),
-  width = 6.8, height = 3.5,
-  alt = f4_alt_text
-)
+```{r fig-4, echo=FALSE, fig.cap= `f4_alt_text`, out.width = 600}
+# Figure 4 
+include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_age-dist.png")))
 ```
+
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r age_footnote`
 </Div>
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote`
-
-**Notes**
-
-1. `r prov_footnote`
-2. `r age_footnote`
-</div>
-
-<br>
-
+`r interpretation_text`
 `r age_referrals_text`
 
 Figure 5 presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by age group for `r latest_fy`. 
 
-<Div custom-style = "TableChart title">Figure 5: Percentage of referrals who received a minimum of one year’s post-diagnostic support by age group; `r latest_fy`^P^</Div>
+<Div custom-style = "Table or chart caption">Figure 5: Percentage of referrals who received a minimum of one year’s post-diagnostic support by age group; `r latest_fy`^1,2,3,4^</Div>
 
 <Div custom-style = "Figure_Style">
-```{r fig-5, echo=FALSE}
-external_img(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_12-months-age.png")),
-  width = 6.8, height = 3.5,
-  alt = f5_alt_text
-)
+```{r fig-5, echo=FALSE, fig.cap= f5_alt_text, out.width = 600}
+# Figure 5 
+include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_12-months-age.png")))
 ```
+
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r age_footnote`
+4. `r a_city_footnote_general`
 </Div>
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote`
-
-**Notes**
-
-1. `r prov_footnote`
-2. `r age_footnote`
-3. `r a_city_footnote_general`
-</div>
-
-<br>
-
+`r interpretation_text`
 `r age_ldp_text` 
 
 \newpage
@@ -1022,66 +955,47 @@ external_img(
 
 Figure 6 presents the distribution of referrals for dementia post-diagnostic support by deprivation quintile for `r latest_fy`. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived) to 5 (least deprived). At Scotland level, approximately one fifth of the general population are within each deprivation quintile.
 
-<Div custom-style = "TableChart title">Figure 6: Distribution of referrals to dementia post-diagnostic support by deprivation quintile; `r latest_fy`^P^</Div>
+<Div custom-style = "Table or chart caption">Figure 6: Distribution of referrals to dementia post-diagnostic support by deprivation quintile; `r latest_fy`^1,2,3^</Div>
 
 <Div custom-style = "Figure_Style">
-```{r fig-6, echo=FALSE}
-external_img(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_simd-dist.png")),
-  width = 6.8, height = 3.5,
-  alt = f6_alt_text
-)
+```{r fig-6, echo=FALSE, fig.cap= `f6_alt_text`, out.width = 600}
+# Figure 6
+include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_simd-dist.png")))
+
 ```
+
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r simd_footnote`
 </Div>
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote`
-
-**Notes**
-
-1. `r prov_footnote`
-2. `r simd_footnote`
-</div>
-
-<br>
-
+`r interpretation_text`
 `r simd_referrals_text`
 
 Figure 7 presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by deprivation quintile for `r latest_fy`. 
 
-\newpage
-
-<Div custom-style = "TableChart title">Figure 7: Percentage of referrals who received a minimum of one year’s post-diagnostic support by deprivation quintile; `r latest_fy`^P^</Div>
+<Div custom-style = "Table or chart caption">Figure 7: Percentage of referrals who received a minimum of one year’s post-diagnostic support by deprivation quintile; `r latest_fy`^1,2,3,4^</Div>
 
 <Div custom-style = "Figure_Style">
-```{r fig-7, echo=FALSE}
-external_img(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_12-months-simd.png")),
-  width = 6.8, height = 3.5,
-  alt = f7_alt_text
-)
+```{r fig-7, echo=FALSE, fig.cap= f7_alt_text, out.width = 600}
+# Figure 7 
+include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_12-months-simd.png")))
 ```
+
+<Div custom-style = "Footnote Text">
+1. `r source_footnote`
+2. `r prov_footnote`
+3. `r simd_footnote`
+4. `r a_city_footnote_general`
 </Div>
 
-<Div custom-style = "Normal_Notes">
-`r source_footnote`
-
-**Notes**
-
-1. `r prov_footnote`
-2. `r simd_footnote`
-3. `r a_city_footnote_general`
-</div>
-
-<br>
-
+`r interpretation_text`
 `r simd_ldp_text`
 
 \newpage
 
-# Glossary
+# Glossary  
 
 **Incidence**  
 The number of new cases of a particular illness or disease during a defined time period. For the purposes of this publication we are looking at the number of new diagnoses of dementia.
@@ -1090,7 +1004,7 @@ The number of new cases of a particular illness or disease during a defined time
 Formerly known as HEAT Targets, Local Delivery Plan (LDP) standards are priorities agreed between Scottish Government and NHS Boards. Performance on Dementia Post-Diagnostic Support is one of the current LDP Standards. Further information can be found on the [Scottish Government website](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP).
 
 **Post-Diagnostic Support (PDS)**  
-Support commissioned by the Scottish Government that everyone newly diagnosed with dementia is entitled to a minimum of one year’s post-diagnostic support. Further information on post-diagnostic support can be found on the [Alzheimer Scotland](https://www.alzscot.org/living-with-dementia/newly-diagnosed/accessing-post-diagnostic-support) website.
+Support commissioned by the Scottish Government that everyone newly diagnosed with dementia is entitled to a minimum of one year’s post-diagnostic support. Further information on post-diagnostic support can be found on the [Alzheimer Scotland](https://www.alzscot.org/pds) website.
 
 **Referral**  
 When a person receives a new diagnosis of dementia, a referral is made to a service that provides post-diagnostic support and allocates a named person to work alongside the individual and those close to them.
@@ -1101,37 +1015,32 @@ The Scottish Index of Multiple Deprivation (SIMD) Quintiles. Deprivation for ind
 \newpage
 
 # Contact
-**Alice Byers, Senior Information Analyst**  
+**Zeg Ashraf, Principal Information Analyst**  
 Health & Social Care  
-0131 314 1725  
+0131 314 1737  
+[phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
-**Lisa Reedie, Principal Information Analyst**   
+**Jennifer Thom, Information Analyst**  
 Health & Social Care  
-0131 275 6117  
+0131 275 1754  
+[phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
-phs.dementiapds@phs.scot
-
-<br>
+For all media enquiries please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 0131 275 6105.
 
 # Further Information
-Further information and data for this publication are available from the [publication page](`r pub_date_url`) on our website.
+Further information and data for this publication are available from the [publication page](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-202021/) on our website.
 
 The next release of this publication will be in `r format(pub_date + years(1), "%B %Y")`.
 
-<br>
 
 # Rate this publication
-Let us know what you think about this publication via the link at the bottom of this [publication page](`r pub_date_url`) on the PHS website.
+Let us know what you think about this publication via. the link at the bottom of this [publication page](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-202021/) on the PHS website.
 
 \newpage
 
 # Appendices
-
-## Appendix 1 - Background information{#background}
-
-### Local Delivery Plan (LDP) Standard{#ldp-standard}
-
-In order to effectively monitor performance of post-diagnostic support delivery, a national [Local Delivery Plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced in April 2013 for all people newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support.
+## Appendix 1 - Background information
+To effectively monitor performance of post-diagnostic support delivery, a national [Local Delivery Plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced in April 2013 for all people newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support.
 
 The LDP standard is defined and calculated as follows:
 
@@ -1149,13 +1058,13 @@ This part of the LDP standard is calculated as:
 $$
 \text{LDP Standard Achieved (%)} = \frac{\text{LDP Standard met + Exempt from LDP Standard}}{\text{LDP Standard met + Exempt + LDP Standard not met}} \times \text{100}
 $$
-</Div>
 
 Service users for whom it is not yet known if they have met the standard as their PDS is ongoing are excluded from the calculation and therefore figures for the latest year are currently provisional subject to all service users completing their support.
 
 ### Comparability to LDP standard figures published prior to 2016/17
 
-Information presented in this publication is not comparable to dementia post-diagnostic support LDP standard information published for time periods prior to 2016/17. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard which are detailed in the main publication report.
+Information presented in this publication is not comparable to dementia post-diagnostic support LDP standard information published for time periods prior to 2016/17. This is due to a combination of a change in data definitions and reporting, 
+and improvements to data quality which are detailed below.
 
 ### Data Definitions and Reporting{#reporting}
 
@@ -1163,7 +1072,6 @@ NHS Boards provide quarterly data submissions to PHS on individuals diagnosed an
 
 Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) and reporting processes were effective from 1 April 2019 for all referrals for post-diagnostic support from 1 April 2016 onwards. The revised definitions were designed in consultation with stakeholders to improve the quality and consistency of the data reported.
 
-`r a_city_statement`
 
 ### Data Quality
 
@@ -1181,78 +1089,84 @@ There also exists a Service Level Agreement between NHS Highland and NHS Greater
 
 As a result of the COVID-19 pandemic, some areas have reported difficulties in updating their data systems which are required to provide the dementia PDS dataset, however it is not anticipated that this has a large impact on the data presented in this report.
 
+### Data Quality - Aberdeen City
+
+Aberdeen City Health & Social Care Partnership ceased its contract with Alzheimer 
+Scotland during 2019 and introduced an in-house Dementia Post-Diagnostic Support 
+(PDS) service. This transition resulted in some PDS cases being terminated by 
+Alzheimer Scotland earlier than 12 months and therefore not meeting the LDP 
+standard. As part of the transition, individuals were contacted to ask if they still 
+wanted to receive PDS which was then provided by the in-house service, if required. 
+This should be taken into account when interpreting figures for Aberdeen City in 
+2018/19. Although figures for 2019/20 and 2020/21 include the total number of people referred to PDS across all Integration Authority areas in NHS Grampian, data 
+for Aberdeen City is not included in the measurement figures for the LDP standard. 
+This is due to data quality issues and missing dates meaning it is not possible to 
+accurately measure these referrals against the LDP standard.
+
+### Data Quality - Perth & Kinross
+
+NHS Tayside experienced challenges in capturing and reporting on electronic 
+systems data within Perth & Kinross over the period 2018/19 to December 
+2019. Despite local work undertaken to uncover the missing data, it has not been 
+possible to fill this data gap. Subsequent measures put in place have successfully 
+allowed NHS Tayside to improve on data reporting from 2019 onwards.
+
+
 \newpage
 
-## Appendix 2 - Publication Metadata
+## Appendix 2 - Publication metadata
 
-<br>
+**Publication title**  
+[Dementia Post-Diagnostic Support: Local Delivery Plan (LDP) standard - Figures to `r latest_fy`]
 
-**Publication title**
+**Description**  
+[This publication reports on the [LDP standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) that those people newly diagnosed with dementia should receive a minimum of one year's post-diagnostic support.]
 
-Dementia Post-Diagnostic Support: Local Delivery Plan (LDP) standard - Figures to `r latest_fy`
-
-**Description**
-
-This publication reports on the [LDP standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) that those people newly diagnosed with dementia should receive a minimum of one year's post-diagnostic support.
-
-**Theme**
-
+**Theme**  
 Health and Social Care
 
-**Topic**
-
+**Topic**  
 Dementia Post-Diagnostic Support
 
-**Format**
-
+**Format**  
 PDF Report with Excel Tables
 
-**Data source(s)**
-
+**Data source(s)**  
 Public Health Scotland (PHS) Dementia Post-diagnostic support data submission from NHS Boards
 
-**Date that data are acquired**
+[Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) 
 
-Data submission as at `r format(end_date, "%d %B %Y")`
+**Date that data are acquired**  
+Public Health Scotland (PHS) Dementia Post-diagnostic support data submission from NHS Boards as at `r format(end_date, "%d %B %Y")`
 
-**Release date**
-
+**Release date**  
 `r format(pub_date, "%d %B %Y")`
 
-**Frequency**
-
+**Frequency**  
 Annual
 
-**Timeframe of data and timeliness**
+**Timeframe of data and timeliness**  
+This publication includes those diagnosed with dementia and referred for dementia post-diagnostic support between 1 April `r str_sub(fy_in_pub[1], 1, 4)` to 31 March 20`r str_sub(latest_fy, 6, 7)`. For diagnoses in `r latest_fy`, it is possible some service users are still receiving their post-diagnostic support and they are reported as ongoing.
 
-This publication includes those diagnosed with dementia and referred for dementia post-diagnostic support between 1 April `r str_sub(fy_in_pub[1], 1, 4)` to 31 March 20`r str_sub(latest_fy, 6, 7)`.
-
-For diagnoses in `r latest_fy`, it is possible some service users are still receiving their post-diagnostic support and they are reported as ongoing.
-
-**Continuity of data**
-
+**Continuity of data**  
 Initial data collection for Dementia post-diagnostic support began in April 2013, however due to data completeness and quality issues the definitions and recording processes were revised during 2018/19 and were effective from 1 April 2019 for all records with a dementia diagnosis post 1 April 2016.
 
 Information presented in this publication is not comparable to dementia post-diagnostic support LDP standard information published for time periods prior to 2016/17.  This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard.
 
-**Revisions statement**
-
+**Revisions statement**  
 Public Health Scotland (PHS) aims to continually improve the interpretation of the data and therefore analysis methods are regularly reviewed and may be updated in the future.
 
-**Revisions relevant to this publication**
+**Revisions relevant to this publication**  
 
 This publication presents finalised figures for `r revised_fy` and provisional figures for `r latest_fy` subject to some service users still receiving post-diagnostic support.
 
-**Concepts and definitions**
-
+**Concepts and definitions**  
 The Data Definitions and Recording Guidance effective 01 April 2019 can be found on the [PHS website](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf).
 
-**Relevance and key uses of the statistics**
-
+**Relevance and key uses of the statistics**  
 The data presented in this release supports the Scottish Government’s LDP standard relating to those people newly diagnosed with dementia should receive a minimum of one year’s post-diagnostic support.
 
-**Accuracy**
-
+**Accuracy**  
 This is an Official Statistics publication and the UK Statistics Authority’s Code of Practice has been followed throughout.
 
 NHS Boards have the responsibility of gathering and submitting information on the delivery of Dementia post-diagnostic support for all Integration Joint Boards to support the measurement of the LDP standard. It is expected by PHS that quality assurance methods and measures are in place locally and implemented to ensure information is accurate and correct. PHS conduct quality checks upon receipt of data and feedback data queries to NHS Boards. 
@@ -1261,75 +1175,62 @@ As at the `r format(end_date, '%d %B %Y')` data submission, the Scotland level e
 
 `r a_city_statement`
 
-**Completeness**
-
+**Completeness**  
 Data submissions are received for all NHS Boards and include data for all Integration Joint Boards. 
 
 As a result of the COVID-19 pandemic, some areas have reported difficulties in updating their data systems which are required to provide the dementia PDS dataset, however it is not anticipated that this has a large impact on the data presented in this report.
 
-**Comparability**
-
+**Comparability**  
 Information presented in this publication is not comparable to dementia post-diagnostic support LDP standard information published for time periods prior to 2016/17. This is due to a combination of the change in definitions, improvements to data quality and refinements to the method used to calculate the standard.
 
 Comparability between NHS Boards / Integration Joint Boards should be done so with caution as services can provide different models of care and have varying resource issues.
 
-**Accessibility**
-
+**Accessibility**  
 It is the policy of Public Health Scotland (PHS) to make its web sites and products accessible according to [published guidelines](https://beta.isdscotland.org/front-matter/accessibility-statement/). Accessibility of the report and findings are of continuous consideration throughout the report development and all figures have been assessed against the PHS accessibility guidelines.
 
-**Coherence and clarity**
+**Coherence and clarity**  
+The summary and publication report are accessible via the [PHS website]
+  ("https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-202021/")
+Tables and charts are presented within an Excel workbook with drop down boxes.
 
-The summary and publication report are accessible via the [PHS website](https://beta.isdscotland.org/find-publications-and-data/conditions-and-diseases/dementia/dementia-post-diagnostic-support/). Tables and charts are presented within an Excel workbook with drop down boxes.
-
-**Value type and unit of measurement**
-
+**Value type and unit of measurement**  
 Numbers, percentages
 
-**Disclosure**
-
+**Disclosure**  
 The [PHS protocol on Statistical Disclosure](https://beta.isdscotland.org/media/4191/public-health-scotland-statistical-disclosure-control-protocol.pdf) is followed.
 
-**Official Statistics designation**
-
+**Official Statistics designation**  
 Official Statistics
 
-**UK Statistics Authority Assessment**
+**UK Statistics Authority Assessment**  
+[N/A]
 
-N/A
-
-**Last published**
-
+**Last published**  
 `r format(last_pub_date, "%d %B %Y")`
 
-**Next published**
-
+**Next published**  
 `r paste("March", year(pub_date) + 1)`
 
-**Date of first publication**
-
+**Date of first publication**  
 24 January 2017
 
-**Help email**
+**Help email**  
+phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+<br>
 
-phs.dementiapds@phs.scot
 
-**Date form completed**
-
+**Date form completed**  
 `r format(today(), "%d %B %Y")`
 
 \newpage
 
 ## Appendix 3 - Early access details
 
-<br>
-
-**Pre-Release Access**
+### Pre-Release Access
 
 Under terms of the "Pre-Release Access to Official Statistics (Scotland) Order 2008", PHS is obliged to publish information on those receiving Pre-Release Access ("Pre-Release Access" refers to statistics in their final form prior to publication). The standard maximum Pre-Release Access is five working days. Shown below are details of those receiving standard Pre-Release Access.
 
-<br>
-
-**Standard Pre-Release Access:**
+### Standard Pre-Release Access
 
 Scottish Government Health Department
 
@@ -1337,32 +1238,12 @@ NHS Board Chief Executives
 
 NHS Board Communication leads
 
-<br>
 
-**Early Access for Management Information**
-
-These statistics will also have been made available to those who needed access to ‘management information’, i.e. as part of the delivery of health and care:
-
-Scottish Government Dementia Policy Team
-	
-NHS Board Chief Executives 
-	
-Chief Officers of Integrated Joint Boards formed under the [Public Bodies (Joint Working) (Scotland) Act 2014](http://www.legislation.gov.uk/asp/2014/9/contents/enacted)
-	
-Dementia Post-Diagnostic Support (PDS) Leads
-
-NHS Board Dementia Post-Diagnostic Support (PDS) data submitters
-
-Healthcare Improvement Scotland (HIS) Focus on Dementia team
-
-Alzheimer Scotland
 
 \newpage
 
 ## Appendix 4 – PHS and Official Statistics
 
-<br>
+### About Public Health Scotland (PHS)
 
-**About Public Health Scotland (PHS)**
-
-PHS is a knowledge-based and intelligence driven organisation with a critical reliance on data and information to enable it to be an independent voice for the public’s health, leading collaboratively and effectively across the Scottish public health system, accountable at local and national levels, and providing leadership and focus for achieving better health and wellbeing outcomes for the population. Our statistics comply with the [Code of Practice for Statistics](https://www.statisticsauthority.gov.uk/code-of-practice/the-code/) in terms of trustworthiness, high quality and public value. This also means that we keep data secure at all stages, through collection, processing, analysis and output production, and adhere to the ‘[five safes](https://blog.ons.gov.uk/2017/01/27/the-five-safes-data-privacy-at-ons/)’.
+PHS is a knowledge-based and intelligence driven organisation with a critical reliance on data and information to enable it to be an independent voice for the public's health, leading collaboratively and effectively across the Scottish public health system, accountable at local and national levels, and providing leadership and focus for achieving better health and wellbeing outcomes for the population. Our statistics comply with the [Code of Practice for Statistics](https://www.statisticsauthority.gov.uk/code-of-practice/the-code/) in terms of trustworthiness, high quality and public value. This also means that we keep data secure at all stages, through collection, processing, analysis and output production, and adhere to the '[five safes](https://blog.ons.gov.uk/2017/01/27/the-five-safes-data-privacy-at-ons/)'.
