@@ -26,7 +26,7 @@ basefile <- read_rds(data_path(directory = "publication",
 
 
 # Load expected diagnoses reference file
-exp <- read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
+exp <- read_csv(exp_diagnoses_path()) %>% 
   filter(fy == max(fy_in_pub)) %>%
   select(health_board = health_board_label, fy, diagnoses)
 
