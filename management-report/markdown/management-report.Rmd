@@ -29,9 +29,9 @@ detach("package:tidylog", unload = TRUE)
 walk(dir(here::here("functions"), full.names = TRUE), source)
 
 # Load PDS data
-pds <- read_rds(here("data", 
-                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                     glue("{fy}-{qt}_final-data.rds"))) %>%
+pds <- read_rds(data_path(directory = "mi", 
+                    type = "final_data",
+                    ext = "rds")) %>% 
   
   # Remove codes from board and IJB
   mutate(health_board = str_sub(health_board, 3, -1),
@@ -40,12 +40,14 @@ pds <- read_rds(here("data",
                                 str_sub(ijb, 11, -1)))
 
 # Load expected diagnoses reference file
-exp <- read_csv(here("reference-files", "expected-diagnoses.csv"))
+exp <- read_csv(exp_diagnoses_path())
+
 
 # Load error summary
-err <- read_rds(here("data", 
-                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                     glue("{fy}-{qt}_error-summary.rds"))) %>%
+err <- read_rds(data_path(directory = "mi",
+                      type = "error_data", 
+                      ext = "rds")) %>% 
+
   mutate(ijb = if_else(is.na(ijb),
                                 "Unknown",
                                 str_sub(ijb, 11, -1)))
