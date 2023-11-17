@@ -496,7 +496,7 @@ source_footnote <-
         format(end_date, "%d %B %Y"), ".")
 
 prov_footnote <- 
-  paste("Figures for", latest_fy, "are provisional (^P^) subject to all",
+  paste("Figures for", latest_fy, "are provisional subject to all",
         "service users completing their support.")
 
 revised_footnote <-
@@ -504,25 +504,29 @@ revised_footnote <-
         "now final.")
 
 a_city_footnote_hb <-
-  paste("2018/19 figures for NHS Grampian are affected by a change to the PDS",
-        "service provided by Aberdeen City. See [Appendix 1](#reporting) ",
-        "for further information.")
-
+  paste("The 2020/21 figures do not include Aberdeen City. Their figures are ",
+        "affected by a change in service provision of PDS during 2019 that ",
+        "has resulted in data quality issues. This will impact on the figures ",
+        "for NHS Grampian and Scotland.",
+        "See [Appendix 1](#reporting) for further information.")
+        
 a_city_footnote_ijb <-
-  paste("2018/19 figures for Aberdeen City are affected by a change to the PDS",
-        "service provided. See [Appendix 1](#reporting) ",
-        "for further information.")
+  paste("The total number of people referred to PDS in Aberdeen City for 2020/21 is ",
+        "included in the table, however there are no LDP standard figures shown. ", 
+        " This is due to a change during 2019 to the PDS service provided ", 
+        "by Aberdeen City which has resulted in data quality issues. ",
+        "See [Appendix 1](#reporting) for further information.")
+    
 
 a_city_footnote_general <-
-  paste("2018/19 figures are affected by a change to the PDS",
-        "service provided by Aberdeen City. See [Appendix 1](#reporting) ",
-        "for further information.")
+  paste("Aberdeen City are excluded from this chart due to data quality issues.",
+        "See [Appendix 1](#reporting) for further information.")
 
 incidence_footnote <-
   paste0("The estimated number of people newly diagnosed with dementia is ",
         "subject to the limitations detailed within the [Estimated and ",
         "Projected Diagnosis Rates for Dementia in Scotland: 2014-2020]",
-        "(http://www.gov.scot/Publications/2016/12/9363) publication. ",
+        "(https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) publication. ",
         "Estimates for calendar year ", str_sub(latest_fy, 1, 4),
         " have been used.")
 
@@ -530,15 +534,15 @@ incidence_footnote_trend <-
   paste0("The estimated number of people newly diagnosed with dementia is ",
         "subject to the limitations detailed within the [Estimated and ",
         "Projected Diagnosis Rates for Dementia in Scotland: 2014-2020]",
-        "(http://www.gov.scot/Publications/2016/12/9363) publication. ",
-        "Estimates for calendar years ", 
-        glue_collapse(str_sub(fy_in_pub, 1, 4), sep = ", ", last = " and "),
-        " have been used.")
+        "(https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) publication. ",
+        "Estimates are used as follows: calendar year 2016 estimates for 2016/17, ",
+        "calendar year 2017 estimates for 2017/18, calendar year 2018 estimates ", 
+        "for 2018/19, calendar year 2019 estimates for 2019/20 and calendar year ",
+        "2020 estimates for 2020/21.")
 
 method_footnote <-
   paste("For detailed information on how the percentage of LDP standard",
-        "achieved is calculated, and how 'standard met', 'exempt from",
-        "standard', 'PDS ongoing' and 'standard not met' are defined,",
+        "achieved is calculated, ",
         "please see the [Background section](#background) of this report.")
 
 interpret_footnote <-
