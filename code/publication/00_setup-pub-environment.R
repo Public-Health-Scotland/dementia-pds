@@ -50,6 +50,7 @@ library(officer)       # For adding cover page and toc to report
 library(english)       # For converting number to text
 library(captioner)
 library(fs)
+library(readxl)        # For reading xlsx workbooks
 
 
 ### 2 - Define file paths dependent on whether running on server or desktop ----
