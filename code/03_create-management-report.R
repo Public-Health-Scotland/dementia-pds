@@ -21,10 +21,8 @@ source(here::here("code", "00_setup-environment.R"))
 rmarkdown::render(
   input = here("management-report", "markdown", 
                "management-report.Rmd"),
-  output_file = here("management-report", "output", 
-                     fin_year(end_date) %>% str_replace("/", "-"),
-                     glue("{end_date}_management-report.html"))
-)
+  output_file = output_path(directory = "mi", 
+                            output_name = "mi_report"))
 
 
 ### END OF SCRIPT ###

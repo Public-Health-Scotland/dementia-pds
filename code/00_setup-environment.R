@@ -13,11 +13,14 @@
 ################################################################################
 
 
-### 0 - Manual Variable(s) - TO UPDATE ----
+### 0 - Manual Variable(s) - TO UPDATE 
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
 end_date <- lubridate::dmy(30092023)
 
+# UPDATE - Most recent Date of publication (ddmmyyyy)
+# Need this for set up of some folder structure
+pub_date <- lubridate::dmy(28032023)
 
 ### 1 - Load packages ----
 
@@ -45,6 +48,7 @@ library(usethis)       # For creating folder structure
 library(rmarkdown)     # For render function
 library(officer)       # For adding cover page and toc to report
 library(gluedown)      # For formatting character vectors in markdown
+library(fs)            # For setting up directories 
 
 
 ### 2 - Define file paths dependent on whether running on server or desktop ----
@@ -65,7 +69,7 @@ cl_out <- case_when(
 
 simd <- function(){
   read_rds(glue("{cl_out}/lookups/Unicode/",
-                "Deprivation/postcode_2021_1_simd2020v2.rds")) %>%
+                "Deprivation/postcode_2023_1_simd2020v2.rds")) %>%
     clean_names() %>%
     select(pc7, simd = simd2020v2_sc_quintile) %>%
     mutate(
@@ -81,13 +85,12 @@ simd <- function(){
 ### 4 - Derive dates ----
 
 # Latest FY and Quarter
-fy <- fin_year(end_date) %>% substr(1, 4)
+fy <- extract_fin_year(end_date) %>% substr(1, 4)
 qt <- quarter(end_date, fiscal_start = 4)
 
 # First date in reporting period 
 start_date <- dmy(01042016)
-
-
+  
 ### 5 - Set output/knitr options ----
 
 # Disable scientific notation
@@ -109,14 +112,7 @@ exempt_reasons <- c("03", "04", "05", "06")
 
 ### 7 - Create folder structure ----
 
-# Create data folder for FY and Qtr
-use_directory(
-  glue("data/{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}")
-)
-
-# Create output folder
-use_directory(glue("management-report/output/",
-                   "{fy}-{substr(as.numeric(fy)+1, 3, 4)}"))
-
+# Load functions
+source(here::here("functions/create-folder-structure.R"))
 
 ### END OF SCRIPT ###

@@ -49,16 +49,11 @@ create_final_data <- function(fy_final, collated_file){
     dplyr::mutate(health_board = 
                     stringr::str_replace(health_board, " and ", " & ")) %>%
     
-    # Rename 'Gender' to 'Sex'
-    dplyr::rename_with(~ "sex", tidyselect::matches("gender")) %>%
-    
     # Extract records with diagnosis date before start date
     dplyr::filter(dplyr::between(dementia_diagnosis_confirmed_date, 
                                  start_final, end_final))
   
-  final_file <- 
-    here::here("data", "final",
-               glue::glue("{stringr::str_replace(fy_final, '/', '-')}",
+  final_file <- paste0(final_data_path(), glue::glue("{stringr::str_replace(fy_final, '/', '-')}",
                           "_final-data.rds"))
   
   # Check if file already exists

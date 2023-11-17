@@ -19,15 +19,15 @@ source(here::here("code", "00_setup-environment.R"))
 
 ### 2 - Load data ----
 
-pds <- read_rds(here("data", 
-                     glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-                     glue("{fy}-{qt}_clean-data.rds")))
-
+pds <- read_rds(data_path(directory = "mi", 
+                          type = "clean_data",
+                          ext = "rds"))
+  
 
 ### 3 - Add FY and months labels ----
 
 pds %<>%
-  mutate(fy    = fin_year(dementia_diagnosis_confirmed_date),
+  mutate(fy    = extract_fin_year(dementia_diagnosis_confirmed_date),
          month = month(dementia_diagnosis_confirmed_date))
 
 
@@ -143,27 +143,21 @@ pds %<>%
              age >= 90      ~ "90+"
            )) %>%
   
-  mutate(postcode = postcode(postcode)) %>%
+  mutate(postcode = format_postcode(postcode)) %>%
   left_join(simd(), by = c("postcode" = "pc7")) %>%
   mutate(simd = replace_na(simd, "Unknown"))
           
 
 ### 7 - Save individual level file for checking ----
+pds %>% 
+write_rds(data_path(directory = "mi",
+                    type = "ldp_data", 
+                    ext = "rds"), compress = "gz")
 
-write_rds(
-  pds, 
-  here("data", 
-       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-       glue("{fy}-{qt}_individuals-with-ldp.rds")),
-  compress = "gz"
-)
-
-write_csv(
-  pds, 
-  here("data", 
-       glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}"),
-       glue("{fy}-{qt}_individuals-with-ldp.csv"))
-)
+pds %>% 
+write_csv(data_path(directory = "mi", 
+                    type = "ldp_data",
+                    ext = "csv"))
 
 
 ### 8 - Create final output file ----
@@ -200,13 +194,10 @@ pds %<>%
   # Remove LDP reason detail
   mutate(ldp = word(ldp, 1))
 
-write_rds(
-  pds, 
-  here("data", 
-       glue("{fy}-{substr(as.numeric(fy) + 1, 3, 4)}/Q{qt}"),
-       glue("{fy}-{qt}_final-data.rds")),
-  compress = "gz"
-)
-
+# write final data
+pds %>% 
+write_rds(data_path(directory = "mi", 
+                    type = "final_data",
+                    ext = "rds"), compress = "gz")
 
 ### END OF SCRIPT ###

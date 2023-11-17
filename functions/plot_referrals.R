@@ -66,7 +66,7 @@ plot_referrals <- function(data,
     
     ggplot(aes(x = month_abbr,
                y = referrals,
-               group = if(ijb_group == TRUE){ijb}else{1},
+               group = ifelse(ijb_group, ijb, 1),
                colour = if(ijb_group == TRUE){ijb}else{health_board},
                text = paste0(if(ijb_group == TRUE){ijb}else{health_board}, "<br>",
                              month_full, " ", year, "<br>",
@@ -77,6 +77,9 @@ plot_referrals <- function(data,
     geom_line() + 
     
     scale_y_continuous(limits = c(0, NA)) +
+    
+    scale_colour_discrete(name = NULL) +
+    #phsstyles::scale_colour_discrete_phs(name = NULL) +
     
     # Custom labels on x tick marks
     scale_x_discrete(labels = paste(levels(data$month_abbr),
@@ -89,17 +92,17 @@ plot_referrals <- function(data,
           legend.position = ifelse(ijb_group == FALSE, "none", "top"),
           axis.text.x = element_text(angle=45))
   
-  ggplotly(plot, tooltip = "text") %>%
-    
-    config(displayModeBar = TRUE,
-           modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
-                                         'zoomOut2d', 'autoScale2d', 
-                                         'toggleSpikelines', 
-                                         'hoverCompareCartesian', 
-                                         'hoverClosestCartesian'), 
-           displaylogo = F, editable = F) %>%
-    
-    layout(legend = list(orientation = "h", x = 0.2 , y = -0.6,
-                         xanchor = "center", yanchor = "bottom"))
+   ggplotly(plot, tooltip = "text") %>%
+     
+     config(displayModeBar = TRUE,
+            modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                          'zoomOut2d', 'autoScale2d', 
+                                          'toggleSpikelines', 
+                                          'hoverCompareCartesian', 
+                                          'hoverClosestCartesian'), 
+            displaylogo = F, editable = F) %>%
+     
+     layout(legend = list(orientation = "h", x = 0.2 , y = -0.6,
+                          xanchor = "center", yanchor = "bottom"))
   
 }
