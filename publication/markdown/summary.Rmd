@@ -1,21 +1,28 @@
 ---
+title: "Dementia Post-Diagnostic Support"
 output: 
-  officedown::rdocx_document:
-    reference_docx: "templates/summary-template.docx"
+  word_document:
+    reference_docx: "templates/phs-offstats-summary.docx"
     fig_caption: no
 ---
 
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, dpi = 300)
+library(ggplot2)
+```
+
 ```{r set-up, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
-source(here("functions", "flextable_style.R"))
 
 latest_fy  <- nth(fy_in_pub, -1)
 revised_fy <- nth(fy_in_pub, -2)
 
 pub_date_url <- 
-  paste0("https://beta.isdscotland.org/find-publications-and-data/",
-         "conditions-and-diseases/dementia/dementia-post-diagnostic-support/",
-         format(pub_date, "%e-%B-%Y") %>% str_trim())
+  paste0("https://publichealthscotland.scot/publications/",
+         "dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-",
+         (latest_fy))
+
+fig_alttext <- glue("Bar chart showing percentage of referrals who received a minimum of one year's post-diagnostic support by NHS Board in financial year {latest_fy}.")
 
 # Function to format percentages
 format_perc <- function(x, dp = 1){
@@ -51,18 +58,6 @@ err <-
   ) %>%
   select(fy, perc) %>%
   mutate(text = glue("for {fy} was {perc}"))
-
-# Create contact information
-contact1 <- c("Lisa Reedie", 
-              "Principal Information Analyst", 
-              "0131 275 6117",
-              "phs.dementiapds@phs.scot")
-contact2 <- c("Alice Byers", 
-              "Senior Information Analyst", 
-              "0131 314 1725",
-              "")
-
-contact <- tibble(contact1, contact2)
 ```
 
 ```{r summary-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
@@ -83,44 +78,30 @@ summary <-
                 ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")))
 ```
 
-<Div custom-style = "Publication Title">Dementia Post-Diagnostic  
-Support</Div>
 <Div custom-style = "Publication subtitle">Local Delivery Plan Standard; Figures to `r latest_fy`</Div>
-<Div custom-style = "National stats">An Official Statistics release for Scotland</Div>
+<Div custom-style = "Stats designation">An Official Statistics release for Scotland</Div>
+<Div custom-style = "Publication date">Publication date: `r format(pub_date, "%d %B %Y")`</Div>
+<Div custom-style = "Restricted Stats">RESTRICTED STATISTICS: embargoed to 09:30 `r format(pub_date, "%d/%m/%Y")`</Div>
 
-<Div custom-style = "Normal-no-notes"><br></Div>
+# About this release
+This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker, including the building of a person-centred support plan. Performance is reported in two parts: 1. The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support. 2. The percentage of people referred who received a minimum of one year’s support coordinated by a link worker, including the building of a person-centred support plan. This report presents finalised figures for `r glue_collapse(setdiff(fy_in_pub, latest_fy), sep = ", ", last = " and ")` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
 
-**Publication date: `r format(pub_date, "%d %B %Y")`**
+# Main Points
 
-<Div custom-style = "RestrictedStats">RESTRICTED STATISTICS: embargoed to 09:30 `r format(pub_date, "%d/%m/%Y")`</Div>
+<Div custom-style = "Bullet 1">There were `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.</Div>
 
-### About this release
-This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that all people newly diagnosed with dementia should receive a minimum of one year’s post-diagnostic support. The LDP standard is reported in two parts: the percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support; and, of those referred, the percentage who received a minimum of one year’s support. This report presents finalised figures for `r glue_collapse(setdiff(fy_in_pub, latest_fy), sep = ", ", last = " and ")` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
+<Div custom-style = "Bullet 1">Of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year's support. In `r revised_fy`, the percentage was `r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`.</Div>
 
-### Main Points
+<Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^P^</Div>
 
-* There were `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.
-
-* Of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year's support. In `r revised_fy`, the percentage was `r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`.
-
-<Div custom-style = "Chart title">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^P^</Div>
-
-<Div custom-style = "Figure_Style">
-```{r fig-summary, echo=FALSE}
-external_img(
+```{r chart, fig.width=7.18, fig.height=3.31, fig.cap=fig_alttext}
+knitr::include_graphics(
   here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_summary-chart.png")),
-  width = 4, height = 3.8,
-  alt = glue(
-    "Bar chart showing percentage of referrals who received a minimum of ",
-    "one year's post-diagnostic support by NHS Board in ",
-    "financial year {latest_fy}."
-  )
+       paste0(pub_date, "_summary-chart.png"))
 )
 ```
-</Div>
 
-<Div custom-style = "Footnotes">
+<Div custom-style = "Footnote Text">
 **Notes**
 
 1. Figures for `r latest_fy` are provisional (^P^) subject to all service users completing their support.
@@ -128,9 +109,9 @@ external_img(
 2. Figures for NHS Grampian are affected by a change in service provision of PDS within Aberdeen City during 2019. See background for further information.
 </div>
 
-* In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.
+<Div custom-style = "Bullet 1">In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.</Div>
 
-### Background
+# Background
 
 The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support (PDS). In order to effectively monitor the delivery of PDS a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all people newly diagnosed with dementia to receive a minimum of one year’s PDS.
 
@@ -142,37 +123,15 @@ Information presented in this publication is not comparable to information publi
 
 Part of the LDP standard calculation requires the number of referrals for PDS to be compared against an estimated number of newly diagnosed dementia cases each year. Health Board level estimates of people newly diagnosed with dementia (incidence) used for this calculation are from the paper [‘Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020’](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) published by the Scottish Government in 2016.
 
-### Contact
+# Contact
 
-```{r contact-table, echo = FALSE, ft.align = "left"}
-set_flextable_defaults(
-  font.family = "Arial", 
-  font.size = 12,
-  font.color = "black"
-)
+Zeg Ashraf | Principal Information Analyst |  [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
-contact %>%
-  flextable() %>%
-  compose(i = 4, j = 1,
-          value = as_paragraph(
-            hyperlink_text(x = contact$contact1[4],
-                           url = paste0("mailto:", contact$contact1[4]),
-                           props = fp_text(color = "#964091",
-                                           underlined = TRUE,
-                                           font.size = 12))
-          )) %>%
-  delete_part(part = "header") %>%
-  bold(i = 1) %>%
-  align(align = "left") %>%
-  border_remove() %>%
-  height_all(height = 0.01) %>%
-  width(width = 2.5) %>%
-  line_spacing(part = "body", space = 0.5)
-```
+Jennifer Thom | Information Analyst | 0131 314 1754 | [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
-For all media enquires, please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 07500 854 574.
+For all media enquires, please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 0131 275 6105.
 
-### Further Information
+# Further Information
 Data from this publication, along with the full report, are available from the [publication page](`r pub_date_url`) on our website.
 
 For further information, please see the [Dementia Post-Diagnostic Support](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/) web page. 
@@ -181,6 +140,4 @@ For information on the Dementia Benchmarking toolkit, please see the publication
 
 The next release of this publication will be in `r format(pub_date + years(1), "%B %Y")`.
 
-Other formats of this publication are available on request at:  
-0131 314 5300  
-[phs.otherformats@phs.scot](mailto:phs.otherformats@phs.scot)
+Other formats of this publication are available on request by calling 0131 314 5300 or emailing phs.otherformats@phs.scot.
