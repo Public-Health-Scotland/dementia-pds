@@ -3,9 +3,11 @@
 # Data release - Dementia PDS Analytical Outputs
 # Original Authors - Alice Byers
 # Original Date - March 2021
+# Updated by - Jennifer Thom
+# Date - November 2023
 #
-# Written/run on - RStudio Desktop
-# Version of R - 3.6.1
+# Written/run on - R Posit
+# Version of R - 4.1.2
 #
 # Description - Sets up environment required for running annual 
 #               publication. This is the only file 
