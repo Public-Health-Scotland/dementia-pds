@@ -44,7 +44,14 @@ final_data_path <- function(){
 }
 
 # Path to expected diagnoses file
-exp_diagnoses_path <- 
+exp_diagnoses_path <- function(){
+  
+  ref_files_dir <- path("/", "conf", "dementia", "A&I", "Outputs", "reference-files")
+  file_name <- stringr::str_glue("expected-diagnoses.csv")
+  ref_file_path <- stringr::str_glue("{ref_files_dir}/{file_name}")
+  
+  return(ref_file_path)
+}
 
 
 ### 2 - Set up directories ----
