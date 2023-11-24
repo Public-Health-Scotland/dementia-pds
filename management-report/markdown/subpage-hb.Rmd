@@ -137,7 +137,8 @@ est_date3 <- dmy(01042023)
     case_when(hb == "NHS Orkney" & sel_fy == fin_year(date22_23) | hb == "NHS Orkney" & sel_fy == fin_year(date23_24) ~ 
               paste0("",
              "**Please note:** ",
-             "*Due to staffing issues NHS Orkney were unable to provide data for ",
+             "*Due to IT staff issues in 2022/23 and lack of access to a Consultant Psychiatrist",
+             " in 2023/24, NHS Orkney were unable to provide data for ",
              "2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2).*"),
               hb == "NHS Grampian" & sel_fy == fin_year(date22_23) ~
                paste0("",
@@ -147,7 +148,7 @@ est_date3 <- dmy(01042023)
              "that there will be a lag in the numbers reported. Therefore the numbers presented ",
              "for recent quarters will be an underestimate of the true number of referrals and ",
              "likely to be revised in subsequent quarters.*"),
-             hb == "NHS Shetland" & sel_fy == fin_year(date22_23) ~
+             hb == "NHS Shetland" & sel_fy == fin_year(date22_23) | hb == "NHS Shetland" & sel_fy == fin_year(date23_24) ~
                paste0("",
              "**Please note:** ",
              "*NHS Shetland do not have a PDS worker in post for 2022/23 Q2 and Q3",
