@@ -137,8 +137,8 @@ est_date3 <- dmy(01042023)
     case_when(hb == "NHS Orkney" & sel_fy == fin_year(date22_23) | hb == "NHS Orkney" & sel_fy == fin_year(date23_24) ~ 
               paste0("",
              "**Please note:** ",
-             "*Due to IT staff issues in 2022/23 and lack of access to a Consultant Psychiatrist",
-             " in 2023/24, NHS Orkney were unable to provide data for ",
+             "*Due to IT staff issues and lack of access to a Consultant Psychiatrist",
+             " in 2022/23 and 2023/24, NHS Orkney were unable to provide data for ",
              "2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2).*"),
               hb == "NHS Grampian" & sel_fy == fin_year(date22_23) ~
                paste0("",
