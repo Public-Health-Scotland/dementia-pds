@@ -107,6 +107,7 @@ est_date3 <- dmy(01042023)
   # Data quality notes - Perth & Kinross
   tay_date1 <- dmy(01042018)
   tay_date2 <- dmy(01042019)
+  tay_date3 <- dmy(01042023)
   
   tay_text <-  
     case_when(hb == "NHS Tayside" & sel_fy == fin_year(tay_date1)  ~
@@ -125,6 +126,13 @@ est_date3 <- dmy(01042023)
            "uncover the missing data, it has not been possible to fill this gap.",
            " Subsequent measures put in place have successfully allowed NHS Tayside ",
            "to improve on data reporting from 2019 onwards.*"),
+    hb == "NHS Tayside" & sel_fy == fin_year(tay_date3) ~
+        paste0(" ", 
+           "**Please note:** ",
+           "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, which ",
+           "has resulted in some records showing as having met the standard at the end of Q2.",
+           "PHS will work with the Health Board to try and rectify this data issue in future ",
+           "submissions.*"),
     TRUE ~ paste0(""))
   
   
