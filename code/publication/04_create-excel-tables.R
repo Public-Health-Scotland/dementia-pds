@@ -18,14 +18,11 @@ source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 ### 2 - Load data ----
 
-pds <-
-  read_rds(
-    here("data", "publication", glue("{pub_date}_pub-data.rds"))
-  ) %>%
-  filter(ijb != "Unknown")
+pds <- read_rds(data_path(directory = "publication", 
+                          type = "pub_data", 
+                          ext = "rds"))
 
-expected <-
-  read_csv(here("reference-files", "expected-diagnoses.csv")) %>%
+expected <- read_csv(exp_diagnoses_path()) %>%
   select(-health_board)
 
 
@@ -76,8 +73,7 @@ excel_data <-
 
 ### 4 - Save data to excel template ----
 
-wb <- loadWorkbook(here("reference-files",
-                        "excel-template.xlsx"))
+wb <- loadWorkbook(excel_template_path())
 
 writeData(wb,
           "data",
@@ -141,9 +137,11 @@ writeData(
 
 # Add publication link to Notes page
 link <- 
-  paste0("https://beta.isdscotland.org/find-publications-and-data/",
-         "conditions-and-diseases/dementia/dementia-post-diagnostic-support/",
-         format(pub_date, "%e-%B-%Y") %>% str_trim())
+  paste0("https://publichealthscotland.scot/publications/",
+         "dementia-post-diagnostic-support/dementia-post-",
+         "diagnostic-support-local-delivery-plan-standard-figures-to-", 
+         (latest_fy))
+
 # names(link) <- "See Appendix 2 of the full report for more information."
 class(link) <- "hyperlink"
 
@@ -199,8 +197,8 @@ writeData(wb,
 sheetVisibility(wb)[10:11] <- "hidden"
 
 saveWorkbook(wb,
-             here("publication", "output", pub_date, 
-                  glue("{pub_date}_dementia-pds_excel-tables.xlsx")),
+             output_path(directory = "publication", 
+                         output = "excel_tables"),
              overwrite = TRUE)
 
 

@@ -14,9 +14,6 @@ output:
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
 source(here("functions", "flextable_style.R"))
 
-latest_fy  <- nth(fy_in_pub, -1)
-revised_fy <- nth(fy_in_pub, -2)
-
 pub_date_url <- 
   paste0("https://publichealthscotland.scot/publications/",
          "dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-",

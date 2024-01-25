@@ -49,11 +49,21 @@ exp_diagnoses_path <- function(){
   
   ref_files_dir <- path("/", "conf", "dementia", "A&I", "Outputs", "reference-files")
   file_name <- stringr::str_glue("expected-diagnoses.csv")
-  ref_file_path <- stringr::str_glue("{ref_files_dir}/{file_name}")
+  diagnoses_file_path <- stringr::str_glue("{ref_files_dir}/{file_name}")
   
-  return(ref_file_path)
+  return(diagnoses_file_path)
 }
 
+# excel template file 
+excel_template_path <- function(){
+  
+  ref_files_dir <- path("/", "conf", "dementia", "A&I", "Outputs", "reference-files")
+  file_name <- stringr::str_glue("excel-template.xlsx")
+  excel_template_file_path <- stringr::str_glue("{ref_files_dir}/{file_name}")
+  
+  return(excel_template_file_path)  
+
+}
 
 ### 2 - Set up directories ----
 
@@ -119,7 +129,8 @@ output_path <- function(directory = c("mi", "publication"),
   file_name <- file_name <- dplyr::case_match(output_name,
     "mi_report" ~ stringr::str_glue("{end_date}_management-report.html"),
     "pub_summary" ~ stringr::str_glue("{pub_date}_dementia-pds_summary.docx"), 
-    "pub_report" ~ stringr::str_glue("{pub_date}_dementia-pds_report.docx"))
+    "pub_report" ~ stringr::str_glue("{pub_date}_dementia-pds_report.docx"), 
+    "excel_tables" ~ stringr::str_glue("{pub_date}_dementia-pds_excel-tables.xlsx") )
 
   output_path <- stringr::str_glue("{dir}/{file_name}")
   
