@@ -117,8 +117,19 @@ est_date3 <- dmy(01042023)
     case_when(sel_fy == fin_year(scot_date1) | sel_fy == fin_year(scot_date2) ~
     paste0(" ", 
            "**Please note:** ",
-           "*Due to staffing issues the 2022/23 and 2023/24 Scotland figure does not include data from ",
-           "the following areas for the stated quarters : NHS Orkney 2022/23 (Q3 and Q4) and 2023/24 (Q1)*"), 
+           "*Due to staffing issues the 2022/23 and 2023/24 Scotland figure does not include ",
+           "data from the following areas for the stated quarters : NHS Orkney 2022/23 ",
+           "(Q3 and Q4) and 2023/24 (Q1 and Q2)*"), 
+            TRUE ~ paste0(""))
+  
+  scot_text2 <- 
+    case_when(sel_fy == fin_year(scot_date2) ~
+              paste0(" ", 
+              "**Please note:** ",
+              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ",
+              "which has resulted in some records showing as having met the standard at the end ",
+              "of Q2. PHS will work with the Health Board to try and rectify this data issue ",
+              "in future submissions.*"), 
             TRUE ~ paste0(""))
    
  
@@ -193,6 +204,8 @@ Row
 `r tay_text`
 
 `r scot_text`
+
+`r scot_text2`
 
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 

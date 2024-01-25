@@ -3,10 +3,12 @@
 # Data release - Annual Dementia PDS Publication
 # Original Authors - Alice Byers
 # Original Date - December 2020
-# Updated - Jennifer Thom, November 2023 
+# Updated by - Jennifer Thom
+# Date - November 2023
 #
-# Written/run on - RStudio Server.
+# Written/run on - R Posit
 # Version of R - 4.1.2
+#
 # Description - Knit markdown documents to create summary and report.
 #########################################################################
 

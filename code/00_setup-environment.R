@@ -3,9 +3,11 @@
 # Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019
+# Updated by - Jennifer Thom
+# Date - November 2023
 #
-# Written/run on - RStudio Server
-# Version of R - 3.6.1
+# Written/run on - R Posit
+# Version of R - 4.1.2
 #
 # Description - Sets up environment required for running quarterly 
 #               management reports. This is the only file 
@@ -16,7 +18,7 @@
 ### 0 - Manual Variable(s) - TO UPDATE 
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(30062023)
+end_date <- lubridate::dmy(30092023)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure

@@ -3,9 +3,11 @@
 # Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019
+# Updated by - Jennifer Thom
+# Date - November 2023
 #
-# Written/run on - RStudio Server
-# Version of R - 3.6.1
+# Written/run on - R Posit
+# Version of R - 4.1.2
 #
 # Description - Clean collated file and remove duplicates.
 ################################################################################

@@ -3,9 +3,11 @@
 # Data release - Quarterly Dementia PDS Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019
+# Updated by - Jennifer Thom
+# Date - November 2023
 #
-# Written/run on - RStudio Desktop
-# Version of R - 3.6.1
+# Written/run on - R Posit
+# Version of R - 4.1.2
 #
 # Description - Add LDP Standard classification and other measures to be
 # included in reports.
