@@ -130,7 +130,8 @@ output_path <- function(directory = c("mi", "publication"),
     "mi_report" ~ stringr::str_glue("{end_date}_management-report.html"),
     "pub_summary" ~ stringr::str_glue("{pub_date}_dementia-pds_summary.docx"), 
     "pub_report" ~ stringr::str_glue("{pub_date}_dementia-pds_report.docx"), 
-    "excel_tables" ~ stringr::str_glue("{pub_date}_dementia-pds_excel-tables.xlsx") )
+    "excel_tables" ~ stringr::str_glue("{pub_date}_dementia-pds_excel-tables.xlsx"), 
+    "discovery_data" ~ stringr::str_glue("{pub_date}_ldp-data.csv"))
 
   output_path <- stringr::str_glue("{dir}/{file_name}")
   
