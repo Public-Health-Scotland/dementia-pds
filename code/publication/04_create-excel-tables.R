@@ -137,9 +137,11 @@ writeData(
 
 # Add publication link to Notes page
 link <- 
-  paste0("https://beta.isdscotland.org/find-publications-and-data/",
-         "conditions-and-diseases/dementia/dementia-post-diagnostic-support/",
-         format(pub_date, "%e-%B-%Y") %>% str_trim())
+  paste0("https://publichealthscotland.scot/publications/",
+         "dementia-post-diagnostic-support/dementia-post-",
+         "diagnostic-support-local-delivery-plan-standard-figures-to-", 
+         (latest_fy))
+
 # names(link) <- "See Appendix 2 of the full report for more information."
 class(link) <- "hyperlink"
 
