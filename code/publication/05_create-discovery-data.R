@@ -18,10 +18,9 @@ source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 ### 2 - Load data ----
 
-pds <-
-  read_rds(
-    here("data", "publication", glue("{pub_date}_pub-data.rds"))
-  )
+pds <- read_rds(data_path(directory = "publication", 
+                         type = "pub_data", 
+                         ext = "rds"))
 
 
 ### 3 - Restructure data ----
@@ -56,8 +55,8 @@ discovery <-
 
 write_csv(
   discovery,
-  here("publication", "output", pub_date, glue("{pub_date}_ldp-data.csv"))
-)
+  output_path(directory = "publication", 
+              output = "discovery_data"))
 
 
 ### END OF SCRIPT ###
