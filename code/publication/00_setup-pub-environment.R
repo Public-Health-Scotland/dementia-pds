@@ -21,10 +21,10 @@
 end_date <- lubridate::dmy(31122022) 
 
 # UPDATE - Date of publication (ddmmyyyy)
-pub_date <- lubridate::dmy(28032023)
+pub_date <- lubridate::dmy(26032024)
 
 # UPDATE - Date of last publication (ddmmyyyy)
-last_pub_date <- lubridate::dmy(29032022)
+last_pub_date <- lubridate::dmy(28032023)
 
 
 ### 1 - Load packages ----
