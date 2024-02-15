@@ -75,16 +75,16 @@ cl_out <- case_when(
 fy <- extract_fin_year(end_date) %>% substr(1, 4)
 qt <- quarter(end_date, fiscal_start = 4)    
 
-# Publication years
-latest_fy  <- nth(fy_in_pub, -1)
-revised_fy <- nth(fy_in_pub, -2)
-
 # FYs included in pub
 fy_in_pub <-  
   seq.Date(dmy(01042016), 
            dmy(glue("0104{year(pub_date) - 3}")), 
            "years") %>%
   extract_fin_year()
+
+# Publication years
+latest_fy  <- nth(fy_in_pub, -1)
+revised_fy <- nth(fy_in_pub, -2)
 
 
 ### 4 - Disable scientific notation ----
