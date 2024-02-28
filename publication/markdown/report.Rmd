@@ -612,7 +612,7 @@ the data presented in this report.
 <Div custom-style = "Figure_Style">
 ```{r fig-summary, echo= FALSE, fig.cap= `f2_alt_text`, out.width = 600}
 # Figure summary
-include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_12-months-hb.png")))
+include_graphics(pub_figures_path(type = "c2"))
 
 ```
 </Div>
@@ -673,7 +673,7 @@ Figure 1 presents the percentage of people referred for dementia post-diagnostic
 <Div custom-style = "Figure_Style">
 ```{r fig-1, echo= FALSE, fig.cap= `f1_alt_text`, out.width = 420}
 # Figure 1
-include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_incidence-hb.png")))
+include_graphics(pub_figures_path(type = "c1"))
 
 ```
 
@@ -762,7 +762,7 @@ hb %>%
 <Div custom-style = "Figure_Style">
 ```{r fig-2, echo=FALSE, fig.cap= `f2_alt_text`, out.width = 600}
 # Figure 2 
-include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_12-months-hb.png")))
+include_graphics(pub_figures_path(type = "c2"))
 
 ```
 
@@ -852,7 +852,7 @@ set_table_properties(layout = "autofit")
 <Div custom-style = "Figure_Style">
 ```{r fig-3, echo=FALSE, fig.cap= `f3_alt_text`, out.width = 420}
 # Figure 3 
-include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_12-months-ijb.png")))
+include_graphics(pub_figures_path(type = "c3"))
 
 ```
 
@@ -912,7 +912,7 @@ Figure 4 presents the age distribution of those referred for dementia post-diagn
 <Div custom-style = "Figure_Style">
 ```{r fig-4, echo=FALSE, fig.cap= `f4_alt_text`, out.width = 600}
 # Figure 4 
-include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_age-dist.png")))
+include_graphics(pub_figures_path(type = "c4"))
 ```
 
 <Div custom-style = "Footnote Text">
@@ -931,7 +931,7 @@ Figure 5 presents the percentage of those referred for dementia post-diagnostic 
 <Div custom-style = "Figure_Style">
 ```{r fig-5, echo=FALSE, fig.cap= f5_alt_text, out.width = 600}
 # Figure 5 
-include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_12-months-age.png")))
+include_graphics(pub_figures_path(type = "c5"))
 ```
 
 <Div custom-style = "Footnote Text">
@@ -955,7 +955,7 @@ Figure 6 presents the distribution of referrals for dementia post-diagnostic sup
 <Div custom-style = "Figure_Style">
 ```{r fig-6, echo=FALSE, fig.cap= `f6_alt_text`, out.width = 600}
 # Figure 6
-include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_simd-dist.png")))
+include_graphics(pub_figures_path(type = "c6"))
 
 ```
 
@@ -975,7 +975,7 @@ Figure 7 presents the percentage of those referred for dementia post-diagnostic 
 <Div custom-style = "Figure_Style">
 ```{r fig-7, echo=FALSE, fig.cap= f7_alt_text, out.width = 600}
 # Figure 7 
-include_graphics(here("publication", "output", pub_date, "figures", paste0(pub_date, "_12-months-simd.png")))
+include_graphics(pub_figures_path(type = "c7"))
 ```
 
 <Div custom-style = "Footnote Text">
