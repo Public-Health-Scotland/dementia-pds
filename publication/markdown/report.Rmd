@@ -1,12 +1,12 @@
 ---
 output: 
   phstemplates::phs_report_docx:    
-    reference_docx: "templates/phs-offstats-report.docx"
+    reference_docx: "/conf/dementia/A&I/Outputs/publication/templates/phs-offstats-report.docx"
     fig_caption: no
-    cover_page: "templates/phs-offstats-cover.docx"
+    cover_page: "/conf/dementia/A&I/Outputs/publication/templates/phs-offstats-cover.docx"
     cover_title: "Dementia Post-Diagnostic Support"
-    cover_subtitle: "Local Delivery Plan Standard - Figures to 2020/21"
-    cover_date: "28/03/2023"
+    cover_subtitle: "Local Delivery Plan Standard - Figures to 2021/22"
+    cover_date: "26/03/2024"
     toc_depth: 3
 ---
 ```{r TableData, include = FALSE}
