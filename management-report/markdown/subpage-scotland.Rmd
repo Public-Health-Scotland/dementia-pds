@@ -128,7 +128,7 @@ est_date3 <- dmy(01042023)
               "**Please note:** ",
               "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ",
               "which has resulted in some records showing as having met the standard at the end ",
-              "of Q2. PHS will work with the Health Board to try and rectify this data issue ",
+              "of Q3. PHS will work with the Health Board to try and rectify this data issue ",
               "in future submissions.*"), 
             TRUE ~ paste0(""))
    
