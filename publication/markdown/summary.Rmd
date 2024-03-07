@@ -74,7 +74,7 @@ summary <-
 ```
 
 <Div custom-style = "Publication subtitle">Local Delivery Plan Standard; Figures to `r latest_fy`</Div>
-<Div custom-style = "Stats designation">An Official Statistics release for Scotland</Div>
+<Div custom-style = "Stats designation">An Official statistics release for Scotland</Div>
 <Div custom-style = "Publication date">Publication date: `r format(pub_date, "%d %B %Y")`</Div>
 <Div custom-style = "Restricted Stats">RESTRICTED STATISTICS: embargoed to 09:30 `r format(pub_date, "%d/%m/%Y")`</Div>
 
@@ -109,7 +109,10 @@ The Scottish Government published their [third national dementia strategy](https
 
 NHS Boards provide quarterly data submissions to PHS, in line with data definitions effective 1 April 2019, on individuals diagnosed with dementia and referred for post-diagnostic support within their local areas. This dataset forms the basis of the LDP standard calculation. For this report, the Scotland level error rate `r glue_collapse(err$text, sep = ", ", last = " and ")`.
 
-Aberdeen City Health & Social Care Partnership ceased its contract with Alzheimer Scotland during 2019 and introduced an in-house dementia PDS service. This transition resulted in some PDS cases being terminated by Alzheimer Scotland earlier than 12 months and therefore not meeting the LDP standard.  As part of the transition, individuals were contacted to ask if they still wanted to receive PDS which was then provided by the in-house service, if required. This should be taken into account when interpreting figures for 2018/19.
+The figures presented for 2019/20 and 2020/21 include the total number of people referred to 
+PDS across all partnership areas however due to data quality issues Aberdeen City data is not 
+included in the measurement figures for the LDP standard as it is not possible to accurately 
+measure these referrals against the standard.
 
 Information presented in this publication is not comparable to information published for time periods prior to 2016/17. 
 
@@ -128,10 +131,14 @@ For all media enquires, please email [phs.comms@phs.scot](mailto:phs.comms@phs.s
 # Further Information
 Data from this publication, along with the full report, are available from the [publication page](`r pub_date_url`) on our website.
 
-For further information, please see the [Dementia Post-Diagnostic Support](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/) web page. 
+Our statistical practice is regulated by the Office for Statistics Regulation (OSR).
 
-For information on the Dementia Benchmarking toolkit, please see the publication [web page](https://beta.isdscotland.org/find-publications-and-data/conditions-and-diseases/dementia/dementia-benchmarking-toolkit/). For related topics, please see the [mental health](https://www.isdscotland.org/Health-Topics/Mental-Health/) and [health and social community care](http://www.isdscotland.org/Health-Topics/Health-and-Social-Community-Care/) web pages.
+Visit our website for [further information about our statistics and PHS as an Official Statistics producer.](https://publichealthscotland.scot/our-organisation/about-our-statistics/official-statistics/)
 
 The next release of this publication will be in `r format(pub_date + years(1), "%B %Y")`.
 
 Other formats of this publication are available on request by calling 0131 314 5300 or emailing phs.otherformats@phs.scot.
+
+# NHS Performs
+A selection of information from this publication is included in [NHS Performs](http://www.nhsperforms.scot). NHS Performs is a website that brings together a range of information on how hospitals and NHS Boards within NHSScotland are performing.
+
