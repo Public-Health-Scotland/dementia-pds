@@ -204,6 +204,10 @@ bot2_hb <-
   arrange(calc) %>%
   filter(row_number() %in% 1:2)
 
+hb <- hb %>%  
+    select(health_board, referrals, complete, exempt, 
+         ongoing, fail, perc)
+
 # Commentary for latest year HB 12m PDS
 text_hb <- glue(
   "In Scotland, {hb %>% filter(health_board == 'Scotland') %>% ",
