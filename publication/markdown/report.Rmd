@@ -1029,13 +1029,13 @@ Health & Social Care
 For all media enquiries please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 0131 275 6105.
 
 # Further Information
-Further information and data for this publication are available from the [publication page](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-202021/) on our website.
+Further information and data for this publication are available from the [publication page](`r pub_date_url`) on our website.
 
 The next release of this publication will be in `r format(pub_date + years(1), "%B %Y")`.
 
 
 # Rate this publication
-Let us know what you think about this publication via. the link at the bottom of this [publication page](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-202021/) on the PHS website.
+Let us know what you think about this publication via. the link at the bottom of this [publication page](`r pub_date_url`) on the PHS website.
 
 \newpage
 
@@ -1190,8 +1190,7 @@ Comparability between NHS Boards / Integration Joint Boards should be done so wi
 It is the policy of Public Health Scotland (PHS) to make its web sites and products accessible according to [published guidelines](https://publichealthscotland.scot/accessibility/). Accessibility of the report and findings are of continuous consideration throughout the report development and all figures have been assessed against the PHS accessibility guidelines.
 
 **Coherence and clarity**  
-The summary and publication report are accessible via the [PHS website]
-  ("https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-202021/")
+The summary and publication report are accessible via the [PHS website](`r pub_date_url`)
 Tables and charts are presented within an Excel workbook with drop down boxes.
 
 **Value type and unit of measurement**  
@@ -1216,7 +1215,7 @@ Official statistics
 24 January 2017
 
 **Help email**  
-phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+[phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 <br>
 
 
