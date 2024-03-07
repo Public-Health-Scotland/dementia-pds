@@ -1065,7 +1065,7 @@ and improvements to data quality which are detailed below.
 
 NHS Boards provide quarterly data submissions to PHS on individuals diagnosed and referred for post-diagnostic support within their local areas and this dataset forms the basis of the LDP standard calculation. 
 
-Revised [data definitions](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf) and reporting processes were effective from 1 April 2019 for all referrals for post-diagnostic support from 1 April 2016 onwards. The revised definitions were designed in consultation with stakeholders to improve the quality and consistency of the data reported.
+Revised [data definitions](https://publichealthscotland.scot/media/20921/2023-12-14-dementia-pds-definitions-and-recording-guidance-v14.pdf) and reporting processes were effective from 1 April 2019 for all referrals for post-diagnostic support from 1 April 2016 onwards. The revised definitions were designed in consultation with stakeholders to improve the quality and consistency of the data reported.
 
 
 ### Data Quality
@@ -1156,7 +1156,7 @@ Public Health Scotland (PHS) aims to continually improve the interpretation of t
 This publication presents finalised figures for `r revised_fy` and provisional figures for `r latest_fy` subject to some service users still receiving post-diagnostic support.
 
 **Concepts and definitions**  
-The Data Definitions and Recording Guidance effective 01 April 2019 can be found on the [PHS website](https://www.isdscotland.org/Health-Topics/Mental-Health/Dementia-Post-diagnostic-Support/_docs/Dementia-PDS-Definitions-and-Recording-Guidance.pdf).
+The Data Definitions and Recording Guidance effective 01 April 2019 can be found on the [PHS website](https://publichealthscotland.scot/media/20921/2023-12-14-dementia-pds-definitions-and-recording-guidance-v14.pdf).
 
 **Relevance and key uses of the statistics**  
 The data presented in this release supports the Scottish Government’s LDP standard relating to those people newly diagnosed with dementia should receive a minimum of one year’s post-diagnostic support.
