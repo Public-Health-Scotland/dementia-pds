@@ -1190,7 +1190,7 @@ Information presented in this publication is not comparable to dementia post-dia
 Comparability between NHS Boards / Integration Joint Boards should be done so with caution as services can provide different models of care and have varying resource issues.
 
 **Accessibility**  
-It is the policy of Public Health Scotland (PHS) to make its web sites and products accessible according to [published guidelines](https://beta.isdscotland.org/front-matter/accessibility-statement/). Accessibility of the report and findings are of continuous consideration throughout the report development and all figures have been assessed against the PHS accessibility guidelines.
+It is the policy of Public Health Scotland (PHS) to make its web sites and products accessible according to [published guidelines](https://publichealthscotland.scot/accessibility/). Accessibility of the report and findings are of continuous consideration throughout the report development and all figures have been assessed against the PHS accessibility guidelines.
 
 **Coherence and clarity**  
 The summary and publication report are accessible via the [PHS website]
@@ -1203,10 +1203,10 @@ Numbers, percentages
 **Disclosure**  
 The [PHS protocol on Statistical Disclosure](https://beta.isdscotland.org/media/4191/public-health-scotland-statistical-disclosure-control-protocol.pdf) is followed.
 
-**Official Statistics designation**  
-Official Statistics
+**Official statistics accreditation**  
+Official statistics
 
-**UK Statistics Authority Assessment**  
+**UK Statistics Authority assessment**  
 [N/A]
 
 **Last published**  
@@ -1230,24 +1230,24 @@ phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
 ## Appendix 3 - Early access details
 
-### Pre-Release Access
+### Pre-release access
 
-Under terms of the "Pre-Release Access to Official Statistics (Scotland) Order 2008", PHS is obliged to publish information on those receiving Pre-Release Access ("Pre-Release Access" refers to statistics in their final form prior to publication). The standard maximum Pre-Release Access is five working days. Shown below are details of those receiving standard Pre-Release Access.
+Under terms of the 'Pre-release access to Official Statistics (Scotland) Order 2008', PHS is obliged to publish information on those receiving pre-release access ("pre-release access" refers to statistics in their final form prior to publication). The standard maximum pre-release access is five working days. Shown below are details of those receiving standard pre-release access.
 
-### Standard Pre-Release Access
+### Standard pre-release access
 
-Scottish Government Health Department
+Scottish Government Department of Health and Social Care (DHSC)
 
-NHS Board Chief Executives
+NHS board chief executives
 
-NHS Board Communication leads
+NHS board communication leads
 
 
 
 \newpage
 
-## Appendix 4 – PHS and Official Statistics
+## Appendix 4 – PHS and official Statistics
 
 ### About Public Health Scotland (PHS)
 
-PHS is a knowledge-based and intelligence driven organisation with a critical reliance on data and information to enable it to be an independent voice for the public's health, leading collaboratively and effectively across the Scottish public health system, accountable at local and national levels, and providing leadership and focus for achieving better health and wellbeing outcomes for the population. Our statistics comply with the [Code of Practice for Statistics](https://www.statisticsauthority.gov.uk/code-of-practice/the-code/) in terms of trustworthiness, high quality and public value. This also means that we keep data secure at all stages, through collection, processing, analysis and output production, and adhere to the '[five safes](https://blog.ons.gov.uk/2017/01/27/the-five-safes-data-privacy-at-ons/)'.
+PHS is a knowledge-based and intelligence driven organisation with a critical reliance on data and information to enable it to be an independent voice for the public's health, leading collaboratively and effectively across the Scottish public health system, accountable at local and national levels, and providing leadership and focus for achieving better health and wellbeing outcomes for the population. Our statistics comply with the [Code of Practice for Statistics](https://www.statisticsauthority.gov.uk/code-of-practice/the-code/) in terms of trustworthiness, high quality and public value. This also means that we keep data secure at all stages, through collection, processing, analysis and output production, and adhere to the Office for National Statistics '[Five Safes](https://blog.ons.gov.uk/2017/01/27/the-five-safes-data-privacy-at-ons/)' of data privacy.
