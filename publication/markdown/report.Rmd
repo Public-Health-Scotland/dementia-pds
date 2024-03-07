@@ -726,8 +726,6 @@ inc_trend_table %>%
 
 `r inc_trend_text`
 
-\newpage
-
 ## Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support
 
 This part of LDP standard reports on the number of people referred for dementia post-diagnostic support who received a minimum of one year’s support. Figures presented in this section are available by NHS Board and Integration Authority area, and should be interpreted in conjunction with [section 1](#section1).
