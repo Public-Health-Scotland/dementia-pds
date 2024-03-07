@@ -2,7 +2,7 @@
 title: "Dementia Post-Diagnostic Support"
 output: 
   word_document:
-    reference_docx: "templates/phs-offstats-summary.docx"
+    reference_docx: "/conf/dementia/A&I/Outputs/publication/templates/phs-offstats-summary.docx"
     fig_caption: no
 ---
 
