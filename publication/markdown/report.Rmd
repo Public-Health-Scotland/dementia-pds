@@ -736,7 +736,7 @@ The criteria used to define this part of the LDP standard is detailed in [Append
 
 Table 3 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS board for `r latest_fy`. The percentage by NHS Board is also shown in Figure 2.
 
-<Div custom-style = "Table or chart caption">Table 3: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board; `r latest_fy`^1,2,3,4,5^</Div>
+<Div custom-style = "Table or chart caption">Table 3: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board; `r latest_fy`^1,2,3,4^</Div>
 
 ```{r table-3, echo = FALSE, ft.align = "center"}
 # Table 3 
@@ -765,7 +765,7 @@ hb %>%
 
 `r text_hb`
 
-<Div custom-style = "Table or chart caption">Figure 2: Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1,2,3,4,5^</Div>
+<Div custom-style = "Table or chart caption">Figure 2: Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1,2,3,4^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-2, echo=FALSE, fig.cap= `f2_alt_text`, out.width = 600}
@@ -786,7 +786,7 @@ include_graphics(pub_figures_path(type = "c2"))
 
 Table 4 presents the trend in the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
 
-<Div custom-style = "Table or chart caption">Table 4: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board ^1,2,3,4,5,6^ </Div>
+<Div custom-style = "Table or chart caption">Table 4: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board ^1,2,3,4,5^ </Div>
 
 ```{r table-4, echo = FALSE, ft.align = "center"}
 # Table 4 
@@ -823,7 +823,7 @@ hb_trend_table  %>%
 
 Table 5 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Authority area. The percentage by Integration Authority area is also shown in Figure 3.
 
-<Div custom-style = "Table or chart caption">Table 5: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Authority area; `r latest_fy`^1,2,3,4,5^</Div>
+<Div custom-style = "Table or chart caption">Table 5: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Authority area; `r latest_fy`^1,2,3,4^</Div>
 
 ```{r table-5, echo = FALSE, ft.align = "center"}
 #Table 5 
@@ -852,7 +852,7 @@ set_table_properties(layout = "autofit")
 
 \newpage
 
-<Div custom-style = "Table or chart caption">Figure 3: Percentage of people referred who received a minimum of one year’s post-diagnostic support by Integration Authority area; `r latest_fy`^1,2,3,4,5^</Div>
+<Div custom-style = "Table or chart caption">Figure 3: Percentage of people referred who received a minimum of one year’s post-diagnostic support by Integration Authority area; `r latest_fy`^1,2,3,4^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-3, echo=FALSE, fig.cap= `f3_alt_text`, out.width = 420}
@@ -873,7 +873,7 @@ Table 6 presents the trend in the percentage of people referred for post-diagnos
 
 \newpage
 
-<Div custom-style = "Table or chart caption">Table 6: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Authority area ^1,2,3,4,5,6^</Div>
+<Div custom-style = "Table or chart caption">Table 6: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Authority area ^1,2,3,4,5^</Div>
 
 ```{r table-6, echo = FALSE, ft.align = "center"}
 # Table 6
@@ -929,7 +929,7 @@ include_graphics(pub_figures_path(type = "c4"))
 
 Figure 5 presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by age group for `r latest_fy`. 
 
-<Div custom-style = "Table or chart caption">Figure 5: Percentage of referrals who received a minimum of one year’s post-diagnostic support by age group; `r latest_fy`^1,2,3,4^</Div>
+<Div custom-style = "Table or chart caption">Figure 5: Percentage of referrals who received a minimum of one year’s post-diagnostic support by age group; `r latest_fy`^1,2,3^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-5, echo=FALSE, fig.cap= f5_alt_text, out.width = 600}
@@ -972,7 +972,7 @@ include_graphics(pub_figures_path(type = "c6"))
 
 Figure 7 presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by deprivation quintile for `r latest_fy`. 
 
-<Div custom-style = "Table or chart caption">Figure 7: Percentage of referrals who received a minimum of one year’s post-diagnostic support by deprivation quintile; `r latest_fy`^1,2,3,4^</Div>
+<Div custom-style = "Table or chart caption">Figure 7: Percentage of referrals who received a minimum of one year’s post-diagnostic support by deprivation quintile; `r latest_fy`^1,2,3^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-7, echo=FALSE, fig.cap= f7_alt_text, out.width = 600}
