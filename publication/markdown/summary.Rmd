@@ -90,10 +90,7 @@ This release by Public Health Scotland (PHS) reports on the Scottish Governmentâ
 <Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one yearâ€™s post-diagnostic support by NHS Board; `r latest_fy`^P^</Div>
 
 ```{r chart, fig.width=7.18, fig.height=3.31, fig.cap=fig_alttext}
-knitr::include_graphics(
-  here("publication", "output", pub_date, "figures", 
-       paste0(pub_date, "_summary-chart.png"))
-)
+include_graphics(pub_figures_path(type = "summary"))
 ```
 
 <Div custom-style = "Footnote Text">
