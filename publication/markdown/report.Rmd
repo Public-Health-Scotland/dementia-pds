@@ -658,7 +658,7 @@ inc %>%
     align(j = 2, align = "right", part = "body") %>%
     height(height = 0.236, part = "body") %>%
     hrule(rule = "atleast", part = "body") %>%
-    width(width = 2.1) %>% 
+    width(width = 1.55) %>% 
     append_chunks(
     part = "body", i = 3, j = 1,
      as_chunk(" text + hyperlink", 
