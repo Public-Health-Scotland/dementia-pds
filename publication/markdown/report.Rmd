@@ -502,24 +502,32 @@ revised_footnote <-
   paste("Figures for", revised_fy, "have been revised (^R^) and are",
         "now final.")
 
-a_city_footnote_hb <-
-  paste("The 2020/21 figures do not include Aberdeen City. Their figures are ",
-        "affected by a change in service provision of PDS during 2019 that ",
-        "has resulted in data quality issues. This will impact on the figures ",
-        "for NHS Grampian and Scotland.",
-        "See [Appendix 1](#reporting) for further information.")
-        
-a_city_footnote_ijb <-
-  paste("The total number of people referred to PDS in Aberdeen City for 2020/21 is ",
-        "included in the table, however there are no LDP standard figures shown. ", 
-        " This is due to a change during 2019 to the PDS service provided ", 
-        "by Aberdeen City which has resulted in data quality issues. ",
-        "See [Appendix 1](#reporting) for further information.")
-    
+###
+# Exclude Aberdeen City notes from 21/22 publication onwards.
+# Notes only affect years 2019/20 and 2020/21. 
+# Retain code for records
+###
 
-a_city_footnote_general <-
-  paste("Aberdeen City are excluded from this chart due to data quality issues.",
-        "See [Appendix 1](#reporting) for further information.")
+# a_city_footnote_hb <-
+#   paste("The 2020/21 figures do not include Aberdeen City. Their figures are ",
+#         "affected by a change in service provision of PDS during 2019 that ",
+#         "has resulted in data quality issues. This will impact on the figures ",
+#         "for NHS Grampian and Scotland.",
+#         "See [Appendix 1](#reporting) for further information.")
+#         
+# a_city_footnote_ijb <-
+#   paste("The total number of people referred to PDS in Aberdeen City for 2020/21 is ",
+#         "included in the table, however there are no LDP standard figures shown. ", 
+#         " This is due to a change during 2019 to the PDS service provided ", 
+#         "by Aberdeen City which has resulted in data quality issues. ",
+#         "See [Appendix 1](#reporting) for further information.")
+#     
+# 
+# a_city_footnote_general <-
+#   paste("Aberdeen City are excluded from this chart due to data quality issues.",
+#         "See [Appendix 1](#reporting) for further information.")
+
+##
 
 incidence_footnote <-
   paste0("The estimated number of people newly diagnosed with dementia is ",
@@ -623,7 +631,6 @@ include_graphics(pub_figures_path(type = "c2"))
 
 <Div custom-style = "Footnote Text">
 1. `r prov_footnote`
-2. `r a_city_footnote_hb`
 </Div>
 
 <Div custom-style = "Bullet 1">In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`. The effects of measures relating to the COVID-19 pandemic are likely to have contributed to this reduction.</Div>
@@ -754,7 +761,6 @@ hb %>%
 2. `r prov_footnote`
 3. `r method_footnote`
 4. `r interpret_footnote`
-5. `r a_city_footnote_hb`
 </Div>
 
 `r interpretation_text`
@@ -776,7 +782,6 @@ include_graphics(pub_figures_path(type = "c2"))
 2. `r prov_footnote`
 3. `r method_footnote`
 4. `r interpret_footnote`
-5. `r a_city_footnote_hb`
 </Div>
 
 <br>
@@ -808,7 +813,6 @@ hb_trend_table  %>%
 3. `r revised_footnote`
 4. `r method_footnote`
 5. `r interpret_footnote`
-6. `r a_city_footnote_hb`
 </Div>
 
 `r interpretation_text`
@@ -842,7 +846,6 @@ set_table_properties(layout = "autofit")
 2. `r prov_footnote`
 3. `r method_footnote`
 4. `r interpret_footnote`
-5. `r a_city_footnote_ijb`
 </Div>
 
 `r interpretation_text`
@@ -865,7 +868,6 @@ include_graphics(pub_figures_path(type = "c3"))
 2. `r prov_footnote`
 3. `r method_footnote`
 4. `r interpret_footnote`
-5. `r a_city_footnote_ijb`
 </Div>
 
 
@@ -898,7 +900,6 @@ ijb_trend_table %>%
 3. `r revised_footnote`
 4. `r method_footnote`
 5. `r interpret_footnote`
-6. `r a_city_footnote_ijb`
 </Div>
 
 \newpage
@@ -942,7 +943,6 @@ include_graphics(pub_figures_path(type = "c5"))
 1. `r source_footnote`
 2. `r prov_footnote`
 3. `r age_footnote`
-4. `r a_city_footnote_general`
 </Div>
 
 `r interpretation_text`
@@ -986,7 +986,6 @@ include_graphics(pub_figures_path(type = "c7"))
 1. `r source_footnote`
 2. `r prov_footnote`
 3. `r simd_footnote`
-4. `r a_city_footnote_general`
 </Div>
 
 `r interpretation_text`
