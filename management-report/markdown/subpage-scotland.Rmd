@@ -40,7 +40,7 @@ completeness_text <-
     complete_year == FALSE ~ 
       paste0("LDP Standard performance figures are not provided ",
              "until data is available for the full financial year."),
-    sel_fy == fin_year(latest_final_year) ~ 
+    sel_fy == extract_fin_year(latest_final_year) ~ 
       paste0("The figures shown are now complete for this ",
              "financial year and should not change in future ",
              "versions of these reports. However, slight ",
@@ -65,7 +65,7 @@ est_date2 <- dmy(01042022)
 est_date3 <- dmy(01042023)
 
   est_text <-  
-    case_when(sel_fy == fin_year(est_date1) | sel_fy == fin_year(est_date2) | sel_fy == fin_year(est_date3) ~
+    case_when(sel_fy == extract_fin_year(est_date1) | sel_fy == extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) ~
       paste0("",
              "**Please note:** ",
              "*Currently, the estimated and projected diagnosis rates for dementia in ",
@@ -81,7 +81,7 @@ est_date3 <- dmy(01042023)
   ac_date2 <- dmy(01042020)
 
   ac_text <-  
-    case_when(sel_fy == fin_year(ac_date1) | sel_fy == fin_year(ac_date2) ~
+    case_when(sel_fy == extract_fin_year(ac_date1) | sel_fy == extract_fin_year(ac_date2) ~
       paste0(" ",
              "**Please note:** ",
              "When interpreting figures for Aberdeen City and NHS Grampian, ",
@@ -98,7 +98,7 @@ est_date3 <- dmy(01042023)
   tay_date2 <- dmy(01042019)
   
   tay_text <-  
-    case_when(sel_fy == fin_year(tay_date1) | sel_fy == fin_year(tay_date2) ~
+    case_when(sel_fy == extract_fin_year(tay_date1) | sel_fy == extract_fin_year(tay_date2) ~
     paste0(" ", 
            "**Please note:** ",
            "*NHS Tayside experienced challenges in capturing and reporting on electronic system data ",
@@ -114,7 +114,7 @@ est_date3 <- dmy(01042023)
   scot_date2 <- dmy(01042023)
   
   scot_text <-  
-    case_when(sel_fy == fin_year(scot_date1) | sel_fy == fin_year(scot_date2) ~
+    case_when(sel_fy == extract_fin_year(scot_date1) | sel_fy == extract_fin_year(scot_date2) ~
     paste0(" ", 
            "**Please note:** ",
            "*Due to staffing issues the 2022/23 and 2023/24 Scotland figure does not include ",
@@ -123,12 +123,12 @@ est_date3 <- dmy(01042023)
             TRUE ~ paste0(""))
   
   scot_text2 <- 
-    case_when(sel_fy == fin_year(scot_date2) ~
+    case_when(sel_fy == extract_fin_year(scot_date2) ~
               paste0(" ", 
               "**Please note:** ",
               "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ",
               "which has resulted in some records showing as having met the standard at the end ",
-              "of Q2. PHS will work with the Health Board to try and rectify this data issue ",
+              "of Q3. PHS will work with the Health Board to try and rectify this data issue ",
               "in future submissions.*"), 
             TRUE ~ paste0(""))
    

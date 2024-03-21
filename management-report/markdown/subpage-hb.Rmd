@@ -41,7 +41,7 @@ completeness_text <-
     complete_year == FALSE ~ 
       paste0("LDP Standard performance figures are not provided ",
              "until data is available for the full financial year."),
-    sel_fy == fin_year(latest_final_year) ~ 
+    sel_fy == extract_fin_year(latest_final_year) ~ 
       paste0("The figures shown are now complete for this ",
              "financial year and should not change in future ",
              "versions of these reports. However, slight ",
@@ -67,7 +67,7 @@ est_date2 <- dmy(01042022)
 est_date3 <- dmy(01042023)
 
   est_text <-  
-    case_when(sel_fy == fin_year(est_date1) | sel_fy == fin_year(est_date2) | sel_fy == fin_year(est_date3) ~
+    case_when(sel_fy == extract_fin_year(est_date1) | sel_fy == extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) ~
       paste0("",
              "**Please note:** ",
              "*Currently, the estimated and projected diagnosis rates for dementia in ",
@@ -82,7 +82,7 @@ est_date3 <- dmy(01042023)
   ac_date2 <- dmy(01042020)
 
   ac_text <-  
-    case_when(hb == "NHS Grampian" & sel_fy == fin_year(ac_date1) ~
+    case_when(hb == "NHS Grampian" & sel_fy == extract_fin_year(ac_date1) ~
       paste0("",
              "**Please note:** ",
              "When interpreting figures for Aberdeen City and NHS Grampian, ",
@@ -92,7 +92,7 @@ est_date3 <- dmy(01042023)
              "to an inhouse hybrid model. This change in model and process of receiving referrals ",
              "and recording, resulted in the numbers of patient’s recorded as receiving PDS being ",
              "less than what was actually the case.”*"),
-      hb == "NHS Grampian" & sel_fy == fin_year(ac_date2) ~ 
+      hb == "NHS Grampian" & sel_fy == extract_fin_year(ac_date2) ~ 
               paste0("",
              "**Please note:** ",
              "When interpreting figures for Aberdeen City and NHS Grampian, ",
@@ -110,7 +110,7 @@ est_date3 <- dmy(01042023)
   tay_date3 <- dmy(01042023)
   
   tay_text <-  
-    case_when(hb == "NHS Tayside" & sel_fy == fin_year(tay_date1)  ~
+    case_when(hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date1)  ~
     paste0(" ", 
            "**Please note:** ",
            "*NHS Tayside experienced challenges in capturing and reporting on electronic system data ",
@@ -118,7 +118,7 @@ est_date3 <- dmy(01042023)
            "uncover the missing data, it has not been possible to fill this gap.",
            " Subsequent measures put in place have successfully allowed NHS Tayside ",
            "to improve on data reporting from 2019 onwards.*"),
-    hb == "NHS Tayside" & sel_fy == fin_year(tay_date2) ~
+    hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date2) ~
         paste0(" ", 
            "**Please note:** ",
            "*NHS Tayside experienced challenges in capturing and reporting on electronic system data ",
@@ -126,11 +126,11 @@ est_date3 <- dmy(01042023)
            "uncover the missing data, it has not been possible to fill this gap.",
            " Subsequent measures put in place have successfully allowed NHS Tayside ",
            "to improve on data reporting from 2019 onwards.*"),
-    hb == "NHS Tayside" & sel_fy == fin_year(tay_date3) ~
+    hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date3) ~
         paste0(" ", 
            "**Please note:** ",
            "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, which ",
-           "has resulted in some records showing as having met the standard at the end of Q2.",
+           "has resulted in some records showing as having met the standard at the end of Q3.",
            "PHS will work with the Health Board to try and rectify this data issue in future ",
            "submissions.*"),
     TRUE ~ paste0(""))
@@ -142,13 +142,13 @@ est_date3 <- dmy(01042023)
   date23_24 <- dmy(01042023)
 
   text22_23 <-  
-    case_when(hb == "NHS Orkney" & sel_fy == fin_year(date22_23) | hb == "NHS Orkney" & sel_fy == fin_year(date23_24) ~ 
+    case_when(hb == "NHS Orkney" & sel_fy == extract_fin_year(date22_23) | hb == "NHS Orkney" & sel_fy == extract_fin_year(date23_24) ~ 
               paste0("",
              "**Please note:** ",
              "*Due to IT staff issues and lack of access to a Consultant Psychiatrist",
              " in 2022/23 and 2023/24, NHS Orkney were unable to provide data for ",
              "2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2).*"),
-              hb == "NHS Grampian" & sel_fy == fin_year(date22_23) ~
+              hb == "NHS Grampian" & sel_fy == extract_fin_year(date22_23) ~
                paste0("",
              "**Please note:** ",
              "*Due to staffing issues and system changes, Aberdeen City have reported that ",
@@ -156,7 +156,7 @@ est_date3 <- dmy(01042023)
              "that there will be a lag in the numbers reported. Therefore the numbers presented ",
              "for recent quarters will be an underestimate of the true number of referrals and ",
              "likely to be revised in subsequent quarters.*"),
-             hb == "NHS Shetland" & sel_fy == fin_year(date22_23) | hb == "NHS Shetland" & sel_fy == fin_year(date23_24) ~
+             hb == "NHS Shetland" & sel_fy == extract_fin_year(date22_23) | hb == "NHS Shetland" & sel_fy == extract_fin_year(date23_24) ~
                paste0("",
              "**Please note:** ",
              "*NHS Shetland do not have a PDS worker in post for 2022/23 Q2 and Q3",
