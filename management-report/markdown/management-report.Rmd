@@ -115,7 +115,7 @@ Row
 
 **NHS Grampian** - Due to staffing issues and system changes, Aberdeen City have reported that they are finding it difficult to collate and report their data timeously and that there will be a lag in the numbers reported. Therefore the numbers presented for recent quarters will be an underestimate of the true number of referrals and likely to be revised in subsequent quarters. Due to changes in service provider the figures for Aberdeen City in 2019/20 and 2020/21 have been affected.
 
-**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, which has resulted in some records showing as having met the standard at the end of Q2.  PHS will work with the Health Board to try and rectify this data issue in future submissions.
+**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, which has resulted in some records showing as having met the standard at the end of Q3.  PHS will work with the Health Board to try and rectify this data issue in future submissions.
 
 The figures for the number of people estimated to be newly diagnosed with dementia are not currently available for *2021/22*, *2022/23* and *2023/24*.
 

@@ -72,9 +72,15 @@ setup_dir <- function(directory = c("mi", "publication"),
                       folder = c("data", "output")
                       ){
   
-  year_dir <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}/Q{qt}")
+  year_dir <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}")
+  qtr_dir <- stringr::str_glue("Q{qt}")
   
   if(directory == "mi"){
+    
+    dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", {folder}, {year_dir}, {qtr_dir}))
+  }
+  
+  if(directory == "mi" & folder == "output"){
     
     dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", {folder}, {year_dir}))
   }
