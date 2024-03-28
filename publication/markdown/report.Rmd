@@ -749,6 +749,13 @@ hb %>%
   flextable() %>% 
   ft_dementia_style() %>%
   set_header_labels(values = hb_headers) %>% 
+  padding(j = 2:6, part = "body", padding.right = 15) %>%
+  align(j = ncol(ijb), part = "body", align = "center") %>%
+  width(j = 1, width = 2.2) %>%
+  width(j = 2:(ncol(ijb) - 1), width = 0.8) %>%
+  width(j = ncol(ijb), width = 1) %>%
+  fontsize(size = 10.5, part = "header") %>% 
+  fontsize(size = 11, part = "body") %>% 
   set_table_properties(layout = "autofit")
 
 ```
@@ -834,7 +841,14 @@ ijb %>%
   flextable() %>% 
   ft_dementia_style() %>% 
   set_header_labels(values = ijb_headers) %>% 
-set_table_properties(layout = "autofit")
+  padding(j = 2:6, part = "body", padding.right = 15) %>%
+  align(j = ncol(ijb), part = "body", align = "center") %>%
+  width(j = 1, width = 2.2) %>%
+  width(j = 2:(ncol(ijb) - 1), width = 0.8) %>%
+  width(j = ncol(ijb), width = 1) %>%
+  fontsize(size = 10.5, part = "header") %>% 
+  fontsize(size = 11, part = "body") %>% 
+  set_table_properties(layout = "autofit")
 
 ```
 
