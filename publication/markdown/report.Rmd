@@ -684,7 +684,7 @@ Figure 1 presents the percentage of people referred for dementia post-diagnostic
 
 <Div custom-style = "Table or chart caption">Figure 1: Percentage of the estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^1,2,3^</Div> 
 <Div custom-style = "Figure_Style">
-```{r fig-1, echo= FALSE, fig.cap= `f1_alt_text`, out.width = 420}
+```{r fig-1, echo= FALSE, fig.cap= `f1_alt_text`, out.width = 600}
 # Figure 1
 include_graphics(pub_figures_path(type = "c1"))
 
