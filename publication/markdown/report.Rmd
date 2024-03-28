@@ -664,6 +664,7 @@ inc %>%
                    "Diagnosed with Dementia Referred to PDS")
     )) %>% 
     align(j = 2, align = "right", part = "body") %>%
+    align(j = 4, align = "right", part = "body") %>%
     height(height = 0.236, part = "body") %>%
     hrule(rule = "atleast", part = "body") %>%
     width(width = 1.55)
@@ -706,6 +707,9 @@ inc_trend_table %>%
   ft_dementia_style() %>%
     set_header_labels(
     values = c(health_board = "NHS Board")) %>% 
+  # check here the number of columns in the table for next year. 
+  # The 2:7 may need updating for the number of columns.
+  align(j = 2:7, align = "right", part = "body") %>%
   set_table_properties(layout = "autofit") %>% 
   compose(
     j = ncol(inc_trend_table), part = "header",
@@ -752,12 +756,12 @@ hb %>%
   set_header_labels(values = hb_headers) %>% 
   padding(j = 2:6, part = "body", padding.right = 15) %>%
   align(j = ncol(hb), part = "body", align = "right") %>%
-  width(j = 1, width = 2.5) %>%
+  width(j = 1, width = 2.3) %>%
   width(j = 2:(ncol(hb) - 1), width = 0.8) %>%
   #width(j = ncol(hb), width = 1) %>%
   fontsize(size = 10.5, part = "header") %>% 
-  fontsize(size = 11, part = "body") #%>% 
-  #set_table_properties(layout = "autofit")
+  fontsize(size = 11, part = "body") %>% 
+  set_table_properties(layout = "autofit")
 
 ```
 
@@ -802,6 +806,9 @@ hb_trend_table  %>%
    flextable() %>% 
   ft_dementia_style() %>% 
   set_header_labels(values = c(health_board = "NHS Board")) %>% 
+  # check here the number of columns in the table for next year. 
+  # The 2:7 may need updating for the number of columns.
+  align(j = 2:7, align = "right", part = "body") %>%
   set_table_properties(layout = "autofit") %>% 
   compose(
     j = ncol(hb_trend_table), part = "header",
@@ -843,7 +850,7 @@ ijb %>%
   ft_dementia_style() %>% 
   set_header_labels(values = ijb_headers) %>% 
   padding(j = 2:6, part = "body", padding.right = 15) %>%
-  align(j = ncol(ijb), part = "body", align = "center") %>%
+  align(j = ncol(ijb), part = "body", align = "right") %>%
   width(j = 1, width = 2.2) %>%
   width(j = 2:(ncol(ijb) - 1), width = 0.8) %>%
   width(j = ncol(ijb), width = 1) %>%
@@ -896,6 +903,7 @@ ijb_trend_table %>%
    flextable() %>% 
   ft_dementia_style() %>% 
   set_header_labels(values = c(ijb = "Integration Authority area")) %>% 
+  align(j = 2:7, align = "right", part = "body") %>%
   set_table_properties(layout = "autofit") %>% 
   compose(
     j = ncol(ijb_trend_table), part = "header",
