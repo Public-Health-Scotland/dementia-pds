@@ -353,7 +353,8 @@ ijb_trend_table <-
   group_by(fy) %>%
   group_modify(~ adorn_totals(., name = "Scotland")) %>%
   ungroup() %>%
-  mutate(perc = format_perc(numerator / denominator * 100)) %>%
+  mutate(perc = numerator / denominator * 100,
+         perc = if_else(is.nan(perc), '-', format_perc(perc))) %>%
   select(-c(numerator:denominator)) %>%
   pivot_wider(names_from = fy, values_from = perc)
 
