@@ -162,8 +162,8 @@ summary <-
 
 ggsave(pub_figures_path(type = "summary"),
   plot = summary,
-  height = 3.8,
-  width = 4,
+  height = 5,
+  width = 5,
   dpi = 600,
   device = "png"
 )
@@ -173,7 +173,9 @@ ggsave(pub_figures_path(type = "summary"),
 
 c3_data <-
   basefile %>%
-  filter(fy == max(fy_in_pub) & ijb != "Unknown" & ijb != "Aberdeen City") %>%
+  filter(fy == max(fy_in_pub)) %>% 
+  # Remove Aberdeen city filter
+  #filter(fy == max(fy_in_pub) & ijb != "Unknown" & ijb != "Aberdeen City") %>%
   group_by(ijb) %>%
   summarise(across(referrals:denominator, sum),
             .groups = "drop") %>%
@@ -439,7 +441,7 @@ c7 <-
             vjust = -0.5,
             size = 3) +
   theme_dementia() +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 110)) +
   scale_x_discrete(labels = str_wrap(c7_data$simd, width = 8)) +
   xlab("Deprivation Quintile") +
   ylab(str_wrap("Percentage of Referrals Achieved LDP Standard", width = 10))
