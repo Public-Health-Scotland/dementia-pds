@@ -70,12 +70,12 @@ est_date3 <- dmy(01042023)
     case_when(sel_fy == extract_fin_year(est_date1) | sel_fy == extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) ~
       paste0("",
              "**Please note:** ",
-             "For financial years *2021/22, 2022/23 and 2023/24,* the estimated and projected diagnosis rates "
-             "referenced in the report published by the Scottish Government "
-             "[Estimated and Projected Diagnosis Rates for Dementia in Scotland:2014-2020] "
-             "(https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) "
-             "were used to create national, age specific rates of dementia incidence "
-             "per 1,000 population which were then applied to the National Records of Scotland (NRS) "
+             "For financial years *2021/22, 2022/23 and 2023/24,* the estimated and projected diagnosis rates ",
+             "referenced in the report published by the Scottish Government ",
+             "[Estimated and Projected Diagnosis Rates for Dementia in Scotland:2014-2020] ",
+             "(https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) ",
+             "were used to create national, age specific rates of dementia incidence ",
+             "per 1,000 population which were then applied to the National Records of Scotland (NRS) ",
              "Mid-2021 Population Estimates to obtain the incidence estimates."),
       TRUE ~ paste0(""))
   
@@ -167,7 +167,7 @@ est_date3 <- dmy(01042023)
              "hence they have been recorded as not having met the standard. A PDS worker has recently been ",
              "assigned to post and the PDS service in Shetland will resume. Currently due to the lack of the ",
              "required information to calculate the standard it is not possible to calculate the standard for ",
-             "2023/24 year. It is anticipated that the necessary information will be available in future submissions "
+             "2023/24 year. It is anticipated that the necessary information will be available in future submissions ",
              "and figures for 2023/24 will then be revised."),
       TRUE ~ paste0(""))
   
