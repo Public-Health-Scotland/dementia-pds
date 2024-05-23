@@ -70,11 +70,14 @@ est_date3 <- dmy(01042023)
     case_when(sel_fy == extract_fin_year(est_date1) | sel_fy == extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) ~
       paste0("",
              "**Please note:** ",
-             "*Currently, the estimated and projected diagnosis rates for dementia in ",
-             "Scotland are only available for years 2014-2020. ",
-             "Therefore, the percentage of people estimated to be newly diagnosed with dementia ",
-             "who were referred for post-diagnostic support ",
-             "cannot be calculated for 2021/22, 2022/23 and 2023/24 at this time.* "), TRUE ~ paste0(""))
+             "For financial years *2021/22, 2022/23 and 2023/24,* the estimated and projected diagnosis rates "
+             "referenced in the report published by the Scottish Government "
+             "[Estimated and Projected Diagnosis Rates for Dementia in Scotland:2014-2020] "
+             "(https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) "
+             "were used to create national, age specific rates of dementia incidence "
+             "per 1,000 population which were then applied to the National Records of Scotland (NRS) "
+             "Mid-2021 Population Estimates to obtain the incidence estimates."),
+      TRUE ~ paste0(""))
   
 
 # Data quality notes - Aberdeen City
