@@ -131,6 +131,19 @@ est_date3 <- dmy(01042023)
               "of Q3. PHS will work with the Health Board to try and rectify this data issue ",
               "in future submissions.*"), 
             TRUE ~ paste0(""))
+  
+    scot_text3 <- 
+    case_when(sel_fy == extract_fin_year(scot_date2) ~
+              paste0(" ", 
+              "**Please note:** ",
+             "*NHS Shetland have not had a PDS worker in post since 2022/23 Q1. As a result 38 people ",
+             "referred to PDS could not be allocated or contacted by a PDS worker within 12 months of diagnosis ", 
+             "hence they have been recorded as not having met the standard. A PDS worker has recently been ",
+             "assigned to post and the PDS service in Shetland will resume. Currently due to the lack of the ",
+             "required information to calculate the standard it is not possible to calculate the standard for ",
+             "2023/24 year. It is anticipated that the necessary information will be available in future submissions "
+             "and figures for 2023/24 will then be revised.*"), 
+            TRUE ~ paste0(""))
    
  
 ```
@@ -206,6 +219,8 @@ Row
 `r scot_text`
 
 `r scot_text2`
+
+` r scot_text3`
 
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
