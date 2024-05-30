@@ -138,7 +138,8 @@ est_date3 <- dmy(01042023)
             TRUE ~ paste0(""))
   
     scot_text3 <- 
-    case_when(sel_fy == extract_fin_year(scot_date4) ~
+    case_when(sel_fy == extract_fin_year(scot_date3) |
+              sel_fy == extract_fin_year(scot_date4) ~
               paste0(" ", 
               "**Please note:** ",
              "*NHS Shetland have not had a PDS worker in post since 2022/23 Q1. As a result 38 people ",
