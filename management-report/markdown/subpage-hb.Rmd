@@ -31,7 +31,7 @@ qt_text <-
 
 
 # Text to explain incomplete years / referrals still ongoing
-latest_final_year <- dmy(01042018)
+latest_final_year <- dmy(01042020)
 
 completeness_text <-
   case_when(
