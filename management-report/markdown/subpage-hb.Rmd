@@ -133,25 +133,36 @@ est_date3 <- dmy(01042023)
         paste0(" ", 
            "**Please note:** ",
            "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, which ",
-           "has resulted in some records showing as having met the standard at the end of Q3.",
-           "PHS will work with the Health Board to try and rectify this data issue in future ",
+           "has resulted in some records showing as incorrectly having met the standard.",
+           "PHS are working with the Health Board to try and rectify this data issue in future ",
            "submissions.*"),
     TRUE ~ paste0(""))
   
   
+    # Data Quality notes - Q1 2022/23
+    date20_21 <- dmy(01042020)
+    date21_22 <- dmy(01042021)  
+    date22_23 <- dmy(01042022)
+    date23_24 <- dmy(01042023)
+  
+  orkney_text <- case_when(hb == "NHS Orkney" & sel_fy == extract_fin_year(date20_21) | 
+            hb == "NHS Orkney" & sel_fy == extract_fin_year(date21_22) | 
+            hb == "NHS Orkney" & sel_fy == extract_fin_year(date22_23) | 
+            hb == "NHS Orkney" & sel_fy == extract_fin_year(date23_24) ~ 
+              paste0("",
+             "**Please note:** ",
+             "*PHS PDS Data Management Team are working with NHS Orkney to identify and fix issues ",
+             "with their data submissions. Currently these issues affect data for years 2020/21 to 2023/24.*"),
+    TRUE ~ paste0(""))
+    
+    
   # Data Quality notes - Q1 2022/23
   
   date22_23 <- dmy(01042022)
   date23_24 <- dmy(01042023)
 
   text22_23 <-  
-    case_when(hb == "NHS Orkney" & sel_fy == extract_fin_year(date22_23) | hb == "NHS Orkney" & sel_fy == extract_fin_year(date23_24) ~ 
-              paste0("",
-             "**Please note:** ",
-             "*Due to IT staff issues and lack of access to a Consultant Psychiatrist",
-             " in 2022/23 and 2023/24, NHS Orkney were unable to provide data for ",
-             "2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2).*"),
-              hb == "NHS Grampian" & sel_fy == extract_fin_year(date22_23) ~
+    case_when(hb == "NHS Grampian" & sel_fy == extract_fin_year(date22_23) ~
                paste0("",
              "**Please note:** ",
              "*Due to staffing issues and system changes, Aberdeen City have reported that ",
@@ -240,6 +251,8 @@ Row
 `r tay_text`
 
 `r text22_23`
+
+`r orkney_text`
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
 ----------------------------------------------------------------------
