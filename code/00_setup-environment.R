@@ -106,6 +106,11 @@ knit_hooks$set(inline = function(x) {
   prettyNum(x, big.mark=",")
 })
 
+finalised_years <- 
+  list.files(final_data_path()) %>% 
+  str_sub(1, 7) %>%
+  str_replace("-", "/")
+
 
 ### 6 - Define exempt termination reason codes ----
 
