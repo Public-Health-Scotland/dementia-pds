@@ -103,8 +103,8 @@ ldp_table <- function(data,
       add_header_above(
         c(" " = 1,
           "Health Board" = 1,
-          "Integration Joint Board (IJB)" = length(unique(data$ijb)))) #%>%
-      #row_spec(if_else(include_pc, 6, 5), bold = include_pc)
+          "Integration Joint Board (IJB)" = length(unique(data$ijb)))) %>%
+      row_spec(if_else(include_pc, 6, 5), bold = include_pc)
     
   }
 }

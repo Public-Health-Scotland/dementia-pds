@@ -179,11 +179,13 @@ pds %<>%
   group_by(health_board, ijb, fy, month, ldp, age_grp, simd) %>%
   summarise(referrals = n(), .groups = "drop") %>%
   
+  # Remove LDP reason detail
+  mutate(ldp = word(ldp, 1)) %>% 
+  
   # Add rows where no referrals were made
   # Doing this will make sure zeros are still shown in reports
-  complete(nesting(health_board, ijb), fy, month,
+  complete(nesting(health_board, ijb), fy, month, ldp,
            fill = list(referrals = 0,
-                       ldp = "complete",
                        age_grp = "Unknown",
                        simd = "Unknown")) %>%
 
@@ -191,11 +193,8 @@ pds %<>%
   # e.g. for Q1 reports, remove completed rows for July - March
   filter(substr(fy, 1, 4) < year(end_date) |
            (substr(fy, 1, 4) == year(end_date) & 
-              month %in% inc_months)) %>%
+              month %in% inc_months))
   
-  # Remove LDP reason detail
-  mutate(ldp = word(ldp, 1))
-
 # write final data
 pds %>% 
 write_rds(data_path(directory = "mi", 
