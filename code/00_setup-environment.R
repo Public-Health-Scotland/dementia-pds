@@ -106,11 +106,6 @@ knit_hooks$set(inline = function(x) {
   prettyNum(x, big.mark=",")
 })
 
-finalised_years <- 
-  list.files(final_data_path()) %>% 
-  str_sub(1, 7) %>%
-  str_replace("-", "/")
-
 
 ### 6 - Define exempt termination reason codes ----
 
@@ -121,5 +116,12 @@ exempt_reasons <- c("03", "04", "05", "06")
 
 # Load functions
 source(here::here("functions/create-folder-structure.R"))
+
+#Define years in which data has been made final
+finalised_years <- 
+  list.files(final_data_path()) %>% 
+  str_sub(1, 7) %>%
+  str_replace("-", "/")
+
 
 ### END OF SCRIPT ###
