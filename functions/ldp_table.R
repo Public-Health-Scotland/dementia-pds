@@ -21,10 +21,9 @@ ldp_table <- function(data,
     bind_rows(data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% group_by(ijb = health_board) %>% summarise(den = sum(referrals), .groups = "drop"))
   pds_rate_ijb <- 
     full_join(num_ijb, den_ijb, by = "ijb") %>%
-    mutate(rate = (num / den) * 100,
-           rate = replace_na(rate, 0)) %>%
+    mutate(rate = (num / den) * 100) %>% 
     select(-num, -den) %>%
-    mutate(rate = paste0(format(round_half_up(rate, 1), big.mark = ","), "%")) %>%
+    mutate(rate = if_else(!is.na(rate),paste0(format(round_half_up(rate, 1)), "%"), "NA")) %>%
     mutate(ldp = "% Met Standard/Exempt") %>%
     pivot_wider(names_from = ijb, values_from = rate)
   
