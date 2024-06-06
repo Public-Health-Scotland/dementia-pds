@@ -35,17 +35,12 @@ latest_final_year <- dmy(paste0("0104",substr(finalised_years[length(finalised_y
 
 completeness_text <-
   case_when(
-    str_sub(sel_fy, 1, 4) < year(latest_final_year) ~
+    str_sub(sel_fy, 1, 4) <= year(latest_final_year) ~
       paste0("Data for ", sel_fy, " are now final and will not change in ",
              "future versions of this report."),
     complete_year == FALSE ~ 
       paste0("LDP Standard performance figures are not provided ",
              "until data is available for the full financial year."),
-    sel_fy == extract_fin_year(latest_final_year) ~ 
-      paste0("The figures shown are now complete for this ",
-             "financial year and should not change in future ",
-             "versions of these reports. However, slight ",
-             "variations may be seen as data errors are resolved."),
     TRUE ~ 
       paste0("As PDS for some referrals in ", sel_fy, " is still ",
              "ongoing, it is not known yet whether or not they ",
