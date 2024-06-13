@@ -85,6 +85,12 @@ err <- pds %>%
   write_rds(data_path(directory = "mi",
                       type = "error_data", 
                       ext = "rds"))
+
+  # Set the correct permissions
+  fs::file_chmod(path = data_path(directory = "mi",
+                                  type = "error_data", 
+                                  ext = "rds"), 
+                 mode = "660")
     
 
 ### 4 - Recode Lanarkshire IJB records ----
@@ -178,6 +184,11 @@ dupes <-
                       type = "dupe_data",
                       ext = "csv"))
 
+# Set the correct permissions
+fs::file_chmod(path = data_path(directory = "mi",
+                                type = "dupe_data", 
+                                ext = "csv"), 
+               mode = "660")
 
 # Remove duplicate records
 pds %<>%
@@ -199,5 +210,10 @@ write_rds(data_path(directory = "mi",
                     type = "clean_data", 
                     ext = "rds"), compress = "gz")
   
+# Set the correct permissions
+fs::file_chmod(path = data_path(directory = "mi",
+                                type = "clean_data", 
+                                ext = "rds"), 
+               mode = "660")
 
 ### END OF SCRIPT ###

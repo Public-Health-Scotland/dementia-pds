@@ -41,6 +41,9 @@ final_data_path <- function(){
   final_data_dir <- dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", "final"))
   path <- stringr::str_glue("{final_data_dir}/")
   
+  # Set the correct permissions
+  fs::file_chmod(path = path, mode = "660")
+  
   return(path)
 }
 
@@ -90,6 +93,9 @@ setup_dir <- function(directory = c("mi", "publication"),
     dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "publication", {folder}, {pub_date}))
   }
   
+  # Set the correct permissions
+  fs::file_chmod(path = dir, mode = "660")
+  
   return(dir)
 }
 
@@ -119,6 +125,9 @@ data_path <- function(directory = c("mi", "publication"),
   
   path <- stringr::str_glue("{dir}/{file_name}.{ext}")
   
+  # Set the correct permissions
+  fs::file_chmod(path = path, mode = "660")
+  
   return(path)
 }
 
@@ -140,6 +149,9 @@ output_path <- function(directory = c("mi", "publication"),
     "discovery_data" ~ stringr::str_glue("{pub_date}_ldp-data.csv"))
 
   output_path <- stringr::str_glue("{dir}/{file_name}")
+  
+  # Set the correct permissions
+  fs::file_chmod(path = output_path, mode = "660")
   
   return(output_path)
 }
@@ -171,6 +183,9 @@ pub_figures_path <- function(type = c("c1",
   )
   
   path <- stringr::str_glue("{figures_dir}/{file_name}")
+  
+  # Set the correct permissions
+  fs::file_chmod(path = path, mode = "660")
   
   return(path)
 }
