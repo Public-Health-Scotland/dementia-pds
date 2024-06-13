@@ -18,7 +18,7 @@
 ### 0 - Manual Variable(s) - TO UPDATE 
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(31122023)
+end_date <- lubridate::dmy(31032024)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure
@@ -116,5 +116,12 @@ exempt_reasons <- c("03", "04", "05", "06")
 
 # Load functions
 source(here::here("functions/create-folder-structure.R"))
+
+#Define years in which data has been made final
+finalised_years <- 
+  list.files(final_data_path()) %>% 
+  str_sub(1, 7) %>%
+  str_replace("-", "/")
+
 
 ### END OF SCRIPT ###
