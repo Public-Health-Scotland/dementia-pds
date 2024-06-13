@@ -82,16 +82,9 @@ err <- pds %>%
   ) %>%
   ungroup() %>%
   arrange(fy, health_board, ijb) %T>%
-  write_rds(data_path(directory = "mi",
+  write_file(path = data_path(directory = "mi",
                       type = "error_data", 
                       ext = "rds"))
-
-  # Set the correct permissions
-  fs::file_chmod(path = data_path(directory = "mi",
-                                  type = "error_data", 
-                                  ext = "rds"), 
-                 mode = "660")
-    
 
 ### 4 - Recode Lanarkshire IJB records ----
 
@@ -180,15 +173,10 @@ pds %<>%
 dupes <- 
   pds %>% 
   filter(dupe == 1) %T>%
-  write_csv(data_path(directory = "mi",
+  write_file(path = data_path(directory = "mi",
                       type = "dupe_data",
                       ext = "csv"))
 
-# Set the correct permissions
-fs::file_chmod(path = data_path(directory = "mi",
-                                type = "dupe_data", 
-                                ext = "csv"), 
-               mode = "660")
 
 # Remove duplicate records
 pds %<>%
@@ -206,14 +194,9 @@ pds %<>%
 ### 6 - Save data ---
 
 pds %>% 
-write_rds(data_path(directory = "mi",  
+write_file(path = data_path(directory = "mi",  
                     type = "clean_data", 
                     ext = "rds"), compress = "gz")
-  
-# Set the correct permissions
-fs::file_chmod(path = data_path(directory = "mi",
-                                type = "clean_data", 
-                                ext = "rds"), 
-               mode = "660")
+
 
 ### END OF SCRIPT ###

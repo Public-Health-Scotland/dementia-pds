@@ -26,10 +26,5 @@ rmarkdown::render(
   output_file = output_path(directory = "mi", 
                             output_name = "mi_report"))
 
-# Set the correct permissions
-fs::file_chmod(path = output_path(directory = "mi", 
-                                  output_name = "mi_report"), 
-               mode = "660")
-
 
 ### END OF SCRIPT ###
