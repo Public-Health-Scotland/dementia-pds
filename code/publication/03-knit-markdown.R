@@ -31,7 +31,7 @@ source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 rmarkdown::render(
   input = here("publication", "markdown", "report.Rmd"),
-  output_dir = output_path(
+  output_file = output_path(
     directory = "publication",
     output_name = "pub_report"
   )
