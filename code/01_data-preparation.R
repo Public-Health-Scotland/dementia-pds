@@ -196,7 +196,7 @@ pds %<>%
 pds %>% 
 write_file(path = data_path(directory = "mi",  
                     type = "clean_data", 
-                    ext = "rds"), compress = "gz")
+                    ext = "rds"))
 
 
 ### END OF SCRIPT ###
