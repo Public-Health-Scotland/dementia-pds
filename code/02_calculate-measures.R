@@ -152,12 +152,12 @@ pds %<>%
 
 ### 7 - Save individual level file for checking ----
 pds %>% 
-write_rds(data_path(directory = "mi",
+write_file(path = data_path(directory = "mi",
                     type = "ldp_data", 
-                    ext = "rds"), compress = "gz")
+                    ext = "rds"))
 
 pds %>% 
-write_csv(data_path(directory = "mi", 
+write_file(path = data_path(directory = "mi", 
                     type = "ldp_data",
                     ext = "csv"))
 
@@ -197,8 +197,9 @@ pds %<>%
   
 # write final data
 pds %>% 
-write_rds(data_path(directory = "mi", 
+write_file(path = data_path(directory = "mi", 
                     type = "final_data",
-                    ext = "rds"), compress = "gz")
+                    ext = "rds"))
+
 
 ### END OF SCRIPT ###

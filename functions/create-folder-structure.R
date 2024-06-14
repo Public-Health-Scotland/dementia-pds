@@ -39,8 +39,8 @@ ac_lookup_path <- function(){
 final_data_path <- function(){
   
   final_data_dir <- dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", "final"))
-  path <- stringr::str_glue("{final_data_dir}/")
-  
+  path <- stringr::str_glue("{final_data_dir}")
+
   return(path)
 }
 
