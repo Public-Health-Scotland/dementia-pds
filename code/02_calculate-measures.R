@@ -39,6 +39,11 @@ pds %<>%
   
   mutate(
     
+    # Date 11 months after diagnosis date
+    diag_11 = add_with_rollback(dementia_diagnosis_confirmed_date, 
+                                months(11),
+                                roll_to_first = TRUE),
+    
     # Date 12 months after diagnosis date
     diag_12 = add_with_rollback(dementia_diagnosis_confirmed_date, 
                                 months(12),
@@ -66,14 +71,25 @@ pds %<>%
     #### COMPLETE ####
     
     # Started PDS within 12m of diagnosis AND PDS still ongoing after 12m
-    date_of_initial_first_contact < diag_12 & 
+    date_of_initial_first_contact >= dementia_diagnosis_confirmed_date &
+      date_of_initial_first_contact < diag_12 & 
       end_date >= pds_12 &
-      is.na(termination_or_transition_date)
+      is.na(termination_or_transition_date) 
+    ~ "complete - still receiving",
+    
+    date_of_initial_first_contact < dementia_diagnosis_confirmed_date &
+      end_date >= diag_12 &
+      is.na(termination_or_transition_date) 
     ~ "complete - still receiving",
     
     # Started PDS within 12m of diagnosis AND PDS ended after 11m
-    date_of_initial_first_contact < diag_12 &
+    date_of_initial_first_contact >= dementia_diagnosis_confirmed_date &
+      date_of_initial_first_contact < diag_12 &
       termination_or_transition_date >= pds_11
+    ~ "complete - ended",
+    
+    date_of_initial_first_contact < dementia_diagnosis_confirmed_date &
+      termination_or_transition_date >= diag_11
     ~ "complete - ended",
     
     #### FAIL ####
@@ -89,7 +105,13 @@ pds %<>%
     ~ "fail - not started and >12m since diagnosis",
     
     # PDS terminated before 11 months from start date
-    termination_or_transition_date < pds_11 &
+    date_of_initial_first_contact >= dementia_diagnosis_confirmed_date &
+      termination_or_transition_date < pds_11 &
+      !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
+    ~ "fail - term <11m from first contact",
+    
+    date_of_initial_first_contact < dementia_diagnosis_confirmed_date &
+      termination_or_transition_date < diag_11 &
       !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
     ~ "fail - term <11m from first contact",
     
@@ -114,12 +136,26 @@ pds %<>%
     ~ "ongoing - not started",
     
     # PDS started within 12m of diagnosis but not yet ended
-    date_of_initial_first_contact < diag_12 &
+    date_of_initial_first_contact >= dementia_diagnosis_confirmed_date &
+      date_of_initial_first_contact < diag_12 &
       end_date < pds_12 &
       is.na(termination_or_transition_date)
+    ~ "ongoing - still receiving",
+    
+    date_of_initial_first_contact < dementia_diagnosis_confirmed_date &
+      end_date < diag_12 &
+      is.na(termination_or_transition_date) 
     ~ "ongoing - still receiving"
     
   ))
+
+#add flag for initial contact before diagnosis date for checking purposes
+pds %<>%
+  
+  mutate(contact_before_diag = if_else(
+    date_of_initial_first_contact < dementia_diagnosis_confirmed_date, 1, 0)
+  )
+
 
 
 ### 6 - Add Age Group and Deprivation ----
