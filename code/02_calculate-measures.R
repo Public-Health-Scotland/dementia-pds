@@ -61,10 +61,83 @@ pds %<>%
     
   )
 
-
-### 5 - Add LDP standard classification ----
-
+#add flag for initial contact before diagnosis date for checking purposes
 pds %<>%
+  
+  mutate(contact_before_diag = if_else(
+    date_of_initial_first_contact < dementia_diagnosis_confirmed_date, 1, 0)
+  )
+
+
+### 5a - Add LDP standard classification for finalised years ----
+
+pds_finalised <- pds %>%  filter(fy %in% finalised_years) %>% 
+  
+  mutate(ldp = case_when(
+    
+    #### COMPLETE ####
+    
+    # Started PDS within 12m of diagnosis AND PDS still ongoing after 12m
+    date_of_initial_first_contact < diag_12 & 
+      end_date >= pds_12 &
+      is.na(termination_or_transition_date)
+    ~ "complete - still receiving",
+    
+    # Started PDS within 12m of diagnosis AND PDS ended after 11m
+    date_of_initial_first_contact < diag_12 &
+      termination_or_transition_date >= pds_11
+    ~ "complete - ended",
+    
+    #### FAIL ####
+    
+    # PDS started more than 12m after diagnosis
+    date_of_initial_first_contact >= diag_12
+    ~ "fail - started >12m after diag",
+    
+    # More than 12m since diagnosis and PDS not started
+    end_date >= diag_12 & 
+      is.na(date_of_initial_first_contact) &
+      is.na(termination_or_transition_date)
+    ~ "fail - not started and >12m since diagnosis",
+    
+    # PDS terminated before 11 months from start date
+    termination_or_transition_date < pds_11 &
+      !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
+    ~ "fail - term <11m from first contact",
+    
+    # PDS terminated before first contact made
+    is.na(date_of_initial_first_contact) & 
+      !is.na(termination_or_transition_date) & 
+      !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
+    ~ "fail - term before first contact",
+    
+    #### EXEMPT ####
+    
+    # Exempt termination reason; died/moved to other HB/refused/can't engage
+    substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons
+    ~ "exempt",
+    
+    #### ONGOING ####
+    
+    # Less than 12m since diagnosis and PDS not started
+    end_date < diag_12 & 
+      is.na(date_of_initial_first_contact) & 
+      is.na(termination_or_transition_date)
+    ~ "ongoing - not started",
+    
+    # PDS started within 12m of diagnosis but not yet ended
+    date_of_initial_first_contact < diag_12 &
+      end_date < pds_12 &
+      is.na(termination_or_transition_date)
+    ~ "ongoing - still receiving"
+    
+  ))
+
+
+
+### 5b - Add LDP standard classification with new methodology to non-finalised years----
+
+pds_new_method <- pds %>% filter(!fy %in% finalised_years) %>% 
   
   mutate(ldp = case_when(
     
@@ -149,14 +222,9 @@ pds %<>%
     
   ))
 
-#add flag for initial contact before diagnosis date for checking purposes
-pds %<>%
+#bind rows
   
-  mutate(contact_before_diag = if_else(
-    date_of_initial_first_contact < dementia_diagnosis_confirmed_date, 1, 0)
-  )
-
-
+pds<- bind_rows(pds_finalised,pds_new_method)
 
 ### 6 - Add Age Group and Deprivation ----
 
@@ -187,13 +255,13 @@ pds %<>%
           
 
 ### 7 - Save individual level file for checking ----
-pds %>% 
+pds %>%
 write_file(path = data_path(directory = "mi",
-                    type = "ldp_data", 
+                    type = "ldp_data",
                     ext = "rds"))
 
-pds %>% 
-write_file(path = data_path(directory = "mi", 
+pds %>%
+write_file(path = data_path(directory = "mi",
                     type = "ldp_data",
                     ext = "csv"))
 
@@ -230,10 +298,10 @@ pds %<>%
   filter(substr(fy, 1, 4) < year(end_date) |
            (substr(fy, 1, 4) == year(end_date) & 
               month %in% inc_months))
-  
-# write final data
-pds %>% 
-write_file(path = data_path(directory = "mi", 
+
+#write final data
+pds %>%
+write_file(path = data_path(directory = "mi",
                     type = "final_data",
                     ext = "rds"))
 
