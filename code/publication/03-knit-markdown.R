@@ -19,10 +19,7 @@ source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 render(
   input = here("publication", "markdown", "summary.Rmd"),
-  output_file = output_path(
-    directory = "publication",
-    output_name = "pub_summary"
-  )
+  output_file = get_pub_output_path(output_name = "pub_summary")
 )
 
 ### 2 - load environment file and load functions then knit REPORT ----
@@ -31,10 +28,7 @@ source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 rmarkdown::render(
   input = here("publication", "markdown", "report.Rmd"),
-  output_file = output_path(
-    directory = "publication",
-    output_name = "pub_report"
-  )
+  output_file = get_pub_output_path(output_name = "pub_report")
 )
 
 ### END OF SCRIPT ###

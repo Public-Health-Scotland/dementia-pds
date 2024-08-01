@@ -106,7 +106,7 @@ knit_hooks$set(inline = function(x){
 ### 6 - Create folder for publication output ----
 
 # Load functions
-source(here::here("functions/create-folder-structure.R"))
+source(here::here("functions/setup_directories.R"))
 
 
 ### END OF SCRIPT ###
