@@ -38,7 +38,7 @@ ac_lookup_path <- function(){
 # When a year becomes final this then becomes a static file
 final_data_path <- function(){
   
-  final_data_dir <- path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", "final")
+  final_data_dir <- dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", "final"))
   path <- stringr::str_glue("{final_data_dir}")
 
   return(path)
@@ -77,17 +77,17 @@ setup_dir <- function(directory = c("mi", "publication"),
   
   if(directory == "mi"){
     
-    dir <- path("/", "conf", "dementia", "A&I", "Outputs", "management-report", {folder}, {year_dir}, {qtr_dir})
+    dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", {folder}, {year_dir}, {qtr_dir}))
   }
   
   if(directory == "mi" & folder == "output"){
     
-    dir <- path("/", "conf", "dementia", "A&I", "Outputs", "management-report", {folder}, {year_dir})
+    dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "management-report", {folder}, {year_dir}))
   }
   
   if(directory == "publication"){
     
-    dir <- path("/", "conf", "dementia", "A&I", "Outputs", "publication", {folder}, {pub_date})
+    dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "publication", {folder}, {pub_date}))
   }
   
   return(dir)
@@ -156,7 +156,7 @@ pub_figures_path <- function(type = c("c1",
                                       "summary")
                                       ){
   
-  figures_dir <- path("/", "conf", "dementia", "A&I", "Outputs", "publication", "output", {pub_date}, "figures")
+  figures_dir <- fs::dir_create(path("/", "conf", "dementia", "A&I", "Outputs", "publication", "output", {pub_date}, "figures"))
   
   file_name <- file_name <- dplyr::case_match(
     type,
