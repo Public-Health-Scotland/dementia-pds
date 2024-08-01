@@ -121,7 +121,7 @@ source(here::here("functions/write_file.R"))
 
 #Define years in which data has been made final
 finalised_years <- 
-  list.files(final_data_path()) %>% 
+  list.files(get_final_data_dir()) %>% 
   str_sub(1, 7) %>%
   str_replace("-", "/")
 

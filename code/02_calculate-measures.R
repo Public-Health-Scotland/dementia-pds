@@ -21,9 +21,7 @@ source(here::here("code", "00_setup-environment.R"))
 
 ### 2 - Load data ----
 
-pds <- read_rds(data_path(directory = "mi", 
-                          type = "clean_data",
-                          ext = "rds"))
+pds <- read_rds(get_mi_data_path("clean_data", ext = "rds"))
   
 
 ### 3 - Add FY and months labels ----
@@ -158,14 +156,10 @@ pds %<>%
 
 ### 7 - Save individual level file for checking ----
 pds %>% 
-write_file(path = data_path(directory = "mi",
-                    type = "ldp_data", 
-                    ext = "rds"))
-
+write_file(path = get_mi_data_path("ldp_data", ext = "rds"))
+             
 pds %>% 
-write_file(path = data_path(directory = "mi", 
-                    type = "ldp_data",
-                    ext = "csv"))
+write_file(path = get_mi_data_path("ldp_data", ext = "csv"))
 
 
 ### 8 - Create final output file ----
@@ -203,9 +197,7 @@ pds %<>%
   
 # write final data
 pds %>% 
-write_file(path = data_path(directory = "mi", 
-                    type = "final_data",
-                    ext = "rds"))
+write_file(path = get_mi_data_path("final_data", ext = "rds"))
 
 
 ### END OF SCRIPT ###

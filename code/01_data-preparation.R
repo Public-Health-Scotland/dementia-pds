@@ -20,7 +20,7 @@ source(here::here("code", "00_setup-environment.R"))
 
 ### 2 - Read and clean collated file ----
 
-pds <- read_csv(collated_file_path(),
+pds <- read_csv(get_national_data_path(),
                 col_types = cols(.default = "c")
                 )%>%
   
@@ -42,14 +42,14 @@ pds <- read_csv(collated_file_path(),
 ### 3 - Add finalised data ----
 
 finalised_years <- 
-  list.files(final_data_path()) %>% 
+  list.files(get_final_data_dir()) %>% 
   str_sub(1, 7) %>%
   str_replace("-", "/")
 
 pds <-
   
   # Read in and bind all previous finalised years data
-  list.files(final_data_path(), full.names = TRUE) %>%
+  list.files(get_final_data_dir(), full.names = TRUE) %>%
   map(read_rds) %>%
   reduce(bind_rows) %>%
   
@@ -82,9 +82,7 @@ err <- pds %>%
   ) %>%
   ungroup() %>%
   arrange(fy, health_board, ijb) %T>%
-  write_file(path = data_path(directory = "mi",
-                      type = "error_data", 
-                      ext = "rds"))
+  write_file(path = get_mi_data_path("error_data", ext = "rds"))
 
 ### 4 - Recode Lanarkshire IJB records ----
 
@@ -173,9 +171,7 @@ pds %<>%
 dupes <- 
   pds %>% 
   filter(dupe == 1) %T>%
-  write_file(path = data_path(directory = "mi",
-                      type = "dupe_data",
-                      ext = "csv"))
+  write_file(path = get_mi_data_path("dupe_data", ext = "csv"))
 
 
 # Remove duplicate records
@@ -194,9 +190,6 @@ pds %<>%
 ### 6 - Save data ---
 
 pds %>% 
-write_file(path = data_path(directory = "mi",  
-                    type = "clean_data", 
-                    ext = "rds"))
-
+write_file(path = get_mi_data_path("clean_data", ext = "rds"))
 
 ### END OF SCRIPT ###
