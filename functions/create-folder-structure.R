@@ -117,7 +117,7 @@ data_path <- function(directory = c("mi", "publication"),
   
   dir <- setup_dir(directory, "data")
   
-  file_name <- file_name <- dplyr::case_match(
+  file_name <- dplyr::case_match(
     type,
     "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
     "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"), 
