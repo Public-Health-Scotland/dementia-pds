@@ -115,7 +115,7 @@ exempt_reasons <- c("03", "04", "05", "06")
 ### 7 - Create folder structure ----
 
 # Load functions
-source(here::here("functions/create-folder-structure.R"))
+source(here::here("functions/setup_directories.R"))
 
 source(here::here("functions/write_file.R"))
 
