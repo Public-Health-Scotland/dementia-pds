@@ -1,14 +1,14 @@
 ################################################################################
-# Name of file - general_setup.R
+# Name of file - setup_general.R
 # Original Authors - Jennifer Thom
-# Original Date - November 2023
-# Update - August 2024
+# Original Date - August 2024
 #
 # Written/run on - RStudio Server
 # Version of R - 4.1.2
 #
-# Description - Functions to set up working directory and declare file paths for
-#               use in MI and Publication reports.
+# Description - Functions to set up reading files from a working directory. Deals
+#               with checking for read/write permissions. Find latest file function
+#               used for automating the selection of the simd file.
 ################################################################################
 
 
