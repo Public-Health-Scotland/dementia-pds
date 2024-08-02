@@ -46,11 +46,16 @@ get_mi_dir <- function() {
 #' @return the path to the management report year specific folder. 
 #' 
 #'
-get_mi_year_dir <- function(folder = c("data", "output")) {
+get_mi_year_dir <- function(folder = c("data", "output"), test_output = FALSE) {
   year <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}")
   qtr <- stringr::str_glue("Q{qt}")
+  test <- "test"
   
+  if ((test_output)){
+  year_dir <- fs::path(get_mi_dir(), {{ folder }}, year, qtr, test)
+  }else{
   year_dir <- fs::path(get_mi_dir(), {{ folder }}, year, qtr)
+  }
   
   if (!fs::dir_exists(year_dir)) {
     fs::dir_create(year_dir)
@@ -80,7 +85,8 @@ get_mi_data_path <- function(type = c(
   "ldp_data",
   "final_data"
 ),
-ext = c("rds", "csv")) {
+ext = c("rds", "csv"), 
+test_output = FALSE) {
   file_name <- dplyr::case_match(
     type,
     "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
@@ -91,7 +97,7 @@ ext = c("rds", "csv")) {
   )
   
   mi_data_path <- get_file_path(
-    directory = get_mi_year_dir("data"),
+    directory = get_mi_year_dir("data", test_output = test_output),
     file_name = file_name,
     ext = ext
   )
@@ -108,11 +114,11 @@ ext = c("rds", "csv")) {
 #' @return the file path to the final mi report output in html format.
 #' 
 #' 
-get_mi_output_path <- function() {
+get_mi_output_path <- function(test_output = FALSE) {
   file_name <- stringr::str_glue("{end_date}_management-report.html")
   
   mi_output_path <- get_file_path(
-    directory = get_mi_year_dir("output"),
+    directory = get_mi_year_dir("output", test_output = test_output),
     file_name = file_name
   )
   
@@ -147,9 +153,17 @@ get_pub_dir <- function() {
 #' @return the path to the annual publication date folder
 #'
 #' 
-get_pub_date_dir <- function(folder = c("data", "output")) {
+get_pub_date_dir <- function(folder = c("data", "output"), test_output = FALSE) {
+  
+  test <- "test"
+  
+  if ((test_output)){
   pub_date_dir <- fs::path("/","conf","dementia","A&I","Outputs","publication", 
-                           {folder}, {pub_date})
+                           {folder}, {pub_date}, test)
+  }else{
+  pub_date_dir <- fs::path("/","conf","dementia","A&I","Outputs","publication", 
+                           {folder}, {pub_date})  
+  }
   
   if (!fs::dir_exists(pub_date_dir)) {
     fs::dir_create(pub_date_dir)
@@ -169,11 +183,11 @@ get_pub_date_dir <- function(folder = c("data", "output")) {
 #' @return the path to the finalised publication data
 #'
 #'
-get_pub_data_path <- function() {
+get_pub_data_path <- function(test_output = FALSE) {
   file_name <- stringr::str_glue("{pub_date}_pub-data")
   
   pub_data_path <- get_file_path(
-    directory = get_pub_date_dir("data"),
+    directory = get_pub_date_dir("data", test_output = test_output),
     file_name = file_name,
     ext = "rds"
   )
@@ -192,7 +206,9 @@ get_pub_data_path <- function() {
 #' @return the path to the output produced for the annual publication
 #'
 #' 
-get_pub_output_path <- function(output_name = c("pub_summary", "pub_report", "excel_tables", "discovery_data")) {
+get_pub_output_path <- function(output_name = c("pub_summary", "pub_report", 
+                                                "excel_tables", "discovery_data"),
+                                test_output = FALSE) {
   file_name <- dplyr::case_match(
     output_name,
     "pub_summary" ~ stringr::str_glue("{pub_date}_dementia-pds_summary.docx"),
@@ -202,7 +218,7 @@ get_pub_output_path <- function(output_name = c("pub_summary", "pub_report", "ex
   )
   
   pub_output_path <- get_file_path(
-    directory = get_pub_date_dir("output"),
+    directory = get_pub_date_dir("output", test_output = test_output),
     file_name = file_name
   )
   
@@ -227,7 +243,8 @@ get_pub_figures_path <- function(type = c("c1",
                                           "c5",
                                           "c6",
                                           "c7",
-                                          "summary")) {
+                                          "summary"), 
+                                 test_output = FALSE) {
   
   file_name <- dplyr::case_match(
     type,
@@ -238,11 +255,12 @@ get_pub_figures_path <- function(type = c("c1",
     "c5" ~ stringr::str_glue("{pub_date}_12-months-age.png"),
     "c6" ~ stringr::str_glue("{pub_date}_simd-dist.png"),
     "c7" ~ stringr::str_glue("{pub_date}_12-months-simd.png"),
-    "summary" ~ stringr::str_glue("{pub_date}_summary-chart.png")
+    "summary" ~ stringr::str_glue("{pub_date}_summary-chart.png"), 
+    "twitter" ~ stringr::str_glue("{pub_date}_dementia-pds_twitter-chart.png")
   )
   
   pub_output_path <- get_file_path(
-    directory = fs::path(get_pub_date_dir("output"), "figures"),
+    directory = fs::path(get_pub_date_dir("output", test_output = test_output), "figures"),
     file_name = file_name
   )
   
