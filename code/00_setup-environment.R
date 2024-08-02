@@ -117,7 +117,6 @@ exempt_reasons <- c("03", "04", "05", "06")
 # Load functions
 source(here::here("functions/setup_directories.R"))
 
-source(here::here("functions/write_file.R"))
 
 #Define years in which data has been made final
 finalised_years <- 

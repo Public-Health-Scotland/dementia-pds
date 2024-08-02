@@ -13,8 +13,11 @@
 
 ## Generic setup ##-------------------------------------------------------------
 
+# Use general file path functions
 source(here::here("functions/setup_general.R"))
 
+# Use write file function for writing files to disk and setting correct permissions
+source(here::here("functions/write_file.R"))
 
 ### MI directory setup ###------------------------------------------------------
 
