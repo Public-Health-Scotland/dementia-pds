@@ -13,7 +13,7 @@
 
 ## Generic setup ##-------------------------------------------------------------
 
-source(here::here("functions/general_setup.R"))
+source(here::here("functions/setup_general.R"))
 
 
 ### MI directory setup ###------------------------------------------------------
