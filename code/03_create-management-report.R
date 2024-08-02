@@ -23,7 +23,7 @@ source(here::here("code", "00_setup-environment.R"))
 rmarkdown::render(
   input = here("management-report", "markdown", 
                "management-report.Rmd"),
-  output_file = get_mi_output_path())
+  output_file = get_mi_output_path(test_output = test_output))
 
 
 ### END OF SCRIPT ###

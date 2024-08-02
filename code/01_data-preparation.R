@@ -82,7 +82,7 @@ err <- pds %>%
   ) %>%
   ungroup() %>%
   arrange(fy, health_board, ijb) %T>%
-  write_file(path = get_mi_data_path("error_data", ext = "rds"))
+  write_file(path = get_mi_data_path("error_data", ext = "rds", test_output = test_output))
 
 ### 4 - Recode Lanarkshire IJB records ----
 
@@ -171,7 +171,7 @@ pds %<>%
 dupes <- 
   pds %>% 
   filter(dupe == 1) %T>%
-  write_file(path = get_mi_data_path("dupe_data", ext = "csv"))
+  write_file(path = get_mi_data_path("dupe_data", ext = "csv", test_output = test_output))
 
 
 # Remove duplicate records
@@ -190,6 +190,6 @@ pds %<>%
 ### 6 - Save data ---
 
 pds %>% 
-write_file(path = get_mi_data_path("clean_data", ext = "rds"))
+write_file(path = get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
 
 ### END OF SCRIPT ###
