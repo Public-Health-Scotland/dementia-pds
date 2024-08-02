@@ -222,4 +222,31 @@ find the latest file with {.arg file_name_regexp}",
     return(file_path)
   }
 
+#' SIMD File Path
+#'
+#' @description Get the path to the centrally held Scottish Index of Multiple
+#' Deprivation (SIMD) file.
+#'
+#' @inheritParams get_file_path
+#'
+#' @return An [fs::path()] to the SIMD file
+#' @export
+#'
+#' @family lookup file paths
+get_simd_path <- function(file_name = NULL, ext = "rds") {
+  simd_dir <-
+    fs::path("/", "conf", "linkage", "output", "lookups", "Unicode", "Deprivation")
+  
+  simd_path <- get_file_path(
+    directory = simd_dir,
+    file_name = file_name,
+    ext = ext,
+    file_name_regexp = stringr::str_glue(
+      "postcode_\\d\\d\\d\\d_\\d_simd\\d\\d\\d\\d.*?\\.{ext}"
+    )
+  )
+  
+  return(simd_path)
+}
+
 ### End of Script ###
