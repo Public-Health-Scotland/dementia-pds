@@ -18,7 +18,7 @@ source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 ### 2 - Load data ----
 
-pds <- read_rds(get_pub_data_path())
+pds <- read_rds(get_pub_data_path(test_output = test_output))
 
 expected <- read_csv(get_exp_diagnoses_path()) %>%
   select(-health_board)
@@ -195,7 +195,7 @@ writeData(wb,
 sheetVisibility(wb)[10:11] <- "hidden"
 
 saveWorkbook(wb,
-             get_pub_output_path(output_name = "excel_tables"),
+             get_pub_output_path(output_name = "excel_tables", test_output = test_output),
              overwrite = TRUE)
 
 

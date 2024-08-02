@@ -22,7 +22,7 @@ source(here("functions", "ggplot_themes.R"))
 
 ### 2 - Read in data ----
 
-basefile <- read_rds(get_pub_data_path())
+basefile <- read_rds(get_pub_data_path(test_output = test_output))
 
 
 # Load expected diagnoses reference file
@@ -89,7 +89,7 @@ c1 <-
   ) +
   ylab("")
 
-ggsave(get_pub_figures_path(type = "c1"),
+ggsave(get_pub_figures_path(type = "c1", test_output = test_output),
   plot = c1,
   height = 6,
   width = 6,
@@ -128,7 +128,7 @@ c2 <-
   xlab("Percentage of Referrals Achieved LDP Standard") +
   ylab("")
 
-ggsave(get_pub_figures_path(type = "c2"),
+ggsave(get_pub_figures_path(type = "c2", test_output = test_output),
   plot = c2,
   height = 6,
   width = 6,
@@ -137,9 +137,7 @@ ggsave(get_pub_figures_path(type = "c2"),
 )
 
 # Save chart for twitter
-ggsave(
-  here("publication", "output", pub_date,
-       paste0(pub_date, "_dementia-pds_twitter-chart.png")),
+ggsave(get_pub_figures_path(type = "twitter", test_output = test_output),
   plot = c2,
   height = 6,
   width = 6,
@@ -158,7 +156,7 @@ summary <-
   theme(axis.title.x = element_text(size = 7.5),
         axis.text = element_text(size = 7.5))
 
-ggsave(get_pub_figures_path(type = "summary"),
+ggsave(get_pub_figures_path(type = "summary", test_output = test_output),
   plot = summary,
   height = 5,
   width = 5,
@@ -199,7 +197,7 @@ c3 <-
   xlab("Percentage of Referrals Achieved LDP Standard") +
   ylab("")
 
-ggsave(get_pub_figures_path(type = "c3"),
+ggsave(get_pub_figures_path(type = "c3", test_output = test_output),
   plot = c3,
   height = 9,
   width = 6,
@@ -257,7 +255,7 @@ c4 <-
   ylab(str_wrap("Percentage of total referrals", width = 10))
 
 # Save chart to output folder
-ggsave(get_pub_figures_path(type = "c4"),
+ggsave(get_pub_figures_path(type = "c4", test_output = test_output),
   plot = c4,
   width = 6.8,
   height = 3.5,
@@ -327,7 +325,7 @@ c5 <-
   ylab(str_wrap("Percentage of Referrals Achieved LDP Standard", width = 10))
 
 # Save chart to output folder
-ggsave(get_pub_figures_path(type = "c5"),
+ggsave(get_pub_figures_path(type = "c5", test_output = test_output),
   plot = c5,
   width = 6.8,
   height = 3.5,
@@ -383,7 +381,7 @@ c6 <-
   ylab(str_wrap("Percentage of total referrals", width = 10))
 
 # Save chart to output folder
-ggsave(get_pub_figures_path(type = "c6"),
+ggsave(get_pub_figures_path(type = "c6", test_output = test_output),
   plot = c6,
   width = 6.8,
   height = 3.5,
@@ -445,7 +443,7 @@ c7 <-
   ylab(str_wrap("Percentage of Referrals Achieved LDP Standard", width = 10))
 
 # Save chart to output folder
-ggsave(get_pub_figures_path(type = "c7"),
+ggsave(get_pub_figures_path(type = "c7", test_output = test_output),
   plot = c7,
   width = 6.8,
   height = 3.5,

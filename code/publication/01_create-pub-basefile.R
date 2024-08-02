@@ -30,7 +30,7 @@ create_final_data(
 
 ### 2 - Restructure data file ----
 
-basefile <- read_rds(get_mi_data_path(type = "final_data", ext = "rds")) %>% 
+basefile <- read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_output = test_output)) %>% 
   
   # Select only FY to be included in pub
   filter(fy %in% fy_in_pub) %>%
@@ -81,6 +81,6 @@ basefile <- read_rds(get_mi_data_path(type = "final_data", ext = "rds")) %>%
 
 ### 3 - Save file ----
 basefile %>% 
-write_rds(get_pub_data_path(), compress = "gz")
+write_rds(get_pub_data_path(test_output = test_output), compress = "gz")
 
 ### END OF SCRIPT ###
