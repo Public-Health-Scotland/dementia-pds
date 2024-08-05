@@ -119,7 +119,8 @@ get_mi_output_path <- function(test_output = FALSE) {
   
   mi_output_path <- get_file_path(
     directory = get_mi_year_dir("output", test_output = test_output),
-    file_name = file_name
+    file_name = file_name, 
+    check_mode = "write"
   )
   
   return(mi_output_path)
@@ -219,7 +220,8 @@ get_pub_output_path <- function(output_name = c("pub_summary", "pub_report",
   
   pub_output_path <- get_file_path(
     directory = get_pub_date_dir("output", test_output = test_output),
-    file_name = file_name
+    file_name = file_name, 
+    check_mode = "write"
   )
   
   return(pub_output_path)
@@ -261,7 +263,8 @@ get_pub_figures_path <- function(type = c("c1",
   
   pub_output_path <- get_file_path(
     directory = fs::path(get_pub_date_dir("output", test_output = test_output), "figures"),
-    file_name = file_name
+    file_name = file_name, 
+    check_mode = "write"
   )
   
   return(pub_output_path)
