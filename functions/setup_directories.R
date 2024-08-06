@@ -58,7 +58,9 @@ get_mi_year_dir <- function(folder = c("data", "output"), test_output = FALSE) {
   }
   
   if (!fs::dir_exists(year_dir)) {
-    fs::dir_create(year_dir)
+    fs::dir_create(get_file_path(directory = year_dir,
+                                 check_mode = "write"
+                                 ))
     cli::cli_alert_info(
       "{.path {year_dir}} did not exist, it has now been created."
     )
@@ -99,7 +101,8 @@ test_output = FALSE) {
   mi_data_path <- get_file_path(
     directory = get_mi_year_dir("data", test_output = test_output),
     file_name = file_name,
-    ext = ext
+    ext = ext, 
+    check_mode = "write"
   )
   
   return(mi_data_path)
@@ -167,7 +170,8 @@ get_pub_date_dir <- function(folder = c("data", "output"), test_output = FALSE) 
   }
   
   if (!fs::dir_exists(pub_date_dir)) {
-    fs::dir_create(pub_date_dir)
+    fs::dir_create(get_file_path(directory = pub_date_dir, 
+                                 check_mode = "write"))
     cli::cli_alert_info(
       "{.path {pub_date_dir}} did not exist, it has now been created."
     )
@@ -190,7 +194,8 @@ get_pub_data_path <- function(test_output = FALSE) {
   pub_data_path <- get_file_path(
     directory = get_pub_date_dir("data", test_output = test_output),
     file_name = file_name,
-    ext = "rds"
+    ext = "rds", 
+    check_mode = "write"
   )
   
   return(pub_data_path)
