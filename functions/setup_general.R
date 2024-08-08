@@ -101,6 +101,34 @@ find_latest_file <- function(directory,
 }
 
 
+get_dir_path <- function(directory, 
+                         check_mode = "read",
+                         create = NULL)
+{
+  
+  check_mode <- match.arg(
+    arg = check_mode,
+    choices = c("exists", "read", "write", "execute")
+  )
+  
+  if(!fs::dir_exists(directory) && check_mode != "exists") {
+    if (is.null(create) && check_mode == "write" ||
+        !is.null(create) && create == TRUE) {
+      # The directory doesn't exist but we do want to create it
+      directory <- fs::dir_create(directory, mode = "u=rwx,go=rwx")
+      cli::cli_alert_info(
+        "The directory {.path {directory}} did not exist, it has now been created."
+      )
+    } else if(!fs::dir_exists(directory)) {
+      directory <- return(FALSE)
+      cli::cli_abort("The directory {.path {directory}} does not exist.")
+    }}
+  
+  return(directory)
+  
+}
+
+
 #' Get and check and full file path
 #'
 #' @description This generic function takes a directory and
@@ -139,29 +167,10 @@ get_file_path <-
            file_name_regexp = NULL,
            selection_method = "modification_date") {
     
-    if(!fs::dir_exists(directory) && check_mode != "exists") {
-      if (is.null(create) && check_mode == "write" ||
-          !is.null(create) && create == TRUE) {
-        # The directory doesn't exist but we do want to create it
-        fs::dir_create(directory, mode = "u=rwx,go=rwx")
-        cli::cli_alert_info(
-          "The directory {.path {directory}} did not exist, it has now been created."
-        )
-      } else if(!fs::dir_exists(directory)) {
-        return(FALSE)
-        cli::cli_abort("The directory {.path {directory}} does not exist.")
-      }}
-    
-    
     check_mode <- match.arg(
       arg = check_mode,
       choices = c("exists", "read", "write", "execute")
     )
-    
-    
-    if (is.null(file_name)) {
-      file_path <- fs::path(directory)
-    }
     
     if (!is.null(file_name)) {
       file_path <- fs::path(directory, file_name)

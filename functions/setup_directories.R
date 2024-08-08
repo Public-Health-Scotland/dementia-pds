@@ -57,17 +57,10 @@ get_mi_year_dir <- function(folder = c("data", "output"), test_output = FALSE) {
   year_dir <- fs::path(get_mi_dir(), {{ folder }}, year, qtr)
   }
   
-  if (!fs::dir_exists(year_dir)) {
-    fs::dir_create(get_file_path(directory = year_dir,
-                                 check_mode = "write"
-                                 ),
-                   mode = "u=rwx,go=rwx")
-    cli::cli_alert_info(
-      "{.path {year_dir}} did not exist, it has now been created."
-    )
-  }
+  path <- get_dir_path(directory = year_dir, 
+                           check_mode = "write")
   
-  return(year_dir)
+  return(path)
 }
 
 
@@ -170,16 +163,10 @@ get_pub_date_dir <- function(folder = c("data", "output"), test_output = FALSE) 
                            {folder}, {pub_date})  
   }
   
-  if (!fs::dir_exists(pub_date_dir)) {
-    fs::dir_create(get_file_path(directory = pub_date_dir, 
-                                 check_mode = "write"), 
-                   mode = "u=rwx,go=rwx")
-    cli::cli_alert_info(
-      "{.path {pub_date_dir}} did not exist, it has now been created."
-    )
-  }
+  path <- get_dir_path(directory = pub_date_dir, 
+                       check_mode = "write")
   
-  return(pub_date_dir)
+  return(path)
 }
 
 
