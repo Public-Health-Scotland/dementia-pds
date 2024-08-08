@@ -39,7 +39,7 @@ write_file <- function(data, path, ...) {
   
   if (fs::file_info(path)$user == Sys.getenv("USER")) {
     # Set the correct permissions
-    fs::file_chmod(path = path, mode = "660")
+    fs::file_chmod(path = path, mode = "770")
   }
   
   return(invisible(data))
