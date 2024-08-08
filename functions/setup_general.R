@@ -138,14 +138,30 @@ get_file_path <-
            create = NULL,
            file_name_regexp = NULL,
            selection_method = "modification_date") {
-    if (!fs::dir_exists(directory)) {
-      cli::cli_abort("The directory {.path {directory}} does not exist.")
-    }
+    
+    if(!fs::dir_exists(directory) && check_mode != "exists") {
+      if (is.null(create) && check_mode == "write" ||
+          !is.null(create) && create == TRUE) {
+        # The directory doesn't exist but we do want to create it
+        fs::dir_create(directory)
+        cli::cli_alert_info(
+          "The directory {.path {directory}} did not exist, it has now been created."
+        )
+      } else if(!fs::dir_exists(directory)) {
+        return(FALSE)
+        cli::cli_abort("The directory {.path {directory}} does not exist.")
+      }}
+    
     
     check_mode <- match.arg(
       arg = check_mode,
       choices = c("exists", "read", "write", "execute")
     )
+    
+    
+    if (is.null(file_name)) {
+      file_path <- fs::path(directory)
+    }
     
     if (!is.null(file_name)) {
       file_path <- fs::path(directory, file_name)
@@ -221,6 +237,7 @@ find the latest file with {.arg file_name_regexp}",
     
     return(file_path)
   }
+
 
 #' SIMD File Path
 #'
