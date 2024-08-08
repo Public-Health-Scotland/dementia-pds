@@ -112,7 +112,7 @@ find_latest_file <- function(directory,
 #'
 #' @param directory The file directory
 #' @param check_mode The mode passed to
-#' [fs::dir_access()], defaults to "read"
+#' [fs::file_access()], defaults to "read"
 #' to check that you have read access to the file
 #' @param create Optionally create the file if it doesn't exists,
 #' the default is to only create a file if we set `check_mode = "write"`
@@ -145,7 +145,7 @@ get_dir_path <- function(directory,
       cli::cli_abort("The directory {.path {directory}} does not exist.")
     }}
   
-  if (!fs::dir_access(directory, mode = check_mode)) {
+  if (!fs::file_access(directory, mode = check_mode)) {
     cli::cli_abort(
       "The directory {.path {directory}} exists but is not {check_mode}able."
     )
