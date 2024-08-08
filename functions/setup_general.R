@@ -145,6 +145,12 @@ get_dir_path <- function(directory,
       cli::cli_abort("The directory {.path {directory}} does not exist.")
     }}
   
+  if (!fs::dir_access(directory, mode = check_mode)) {
+    cli::cli_abort(
+      "The directory {.path {directory}} exists but is not {check_mode}able."
+    )
+  }
+  
   return(directory)
   
 }
