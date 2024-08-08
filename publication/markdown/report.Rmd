@@ -32,20 +32,16 @@ format_perc <- function(x, dp = 1){
 
 # LDP Dataset
 pds <- 
-  read_rds(data_path(directory = "publication", 
-                    type = "pub_data",
-                    ext = "rds")) %>% 
+  read_rds(get_pub_data_path(test_output = test_output)) %>% 
   filter(ijb != "Unknown" & referrals > 0)
 
 # Expected Diagnoses (Incidence)
-exp <- read_csv(exp_diagnoses_path()) %>%
+exp <- read_csv(get_exp_diagnoses_path()) %>%
   select(fy, health_board = health_board_label, diagnoses)
 
 # Error rates 
 err <- 
-  read_rds(data_path(directory = "mi", 
-                    type = "error_data",
-                    ext = "rds")) %>% 
+  read_rds(get_mi_data_path(type = "error_data", ext = "rds", test_output = test_output)) %>% 
   filter(health_board == "Scotland" & fy %in% fy_in_pub) %>%
   mutate(perc = format_perc(total_errors / records * 100)
   ) %>%
