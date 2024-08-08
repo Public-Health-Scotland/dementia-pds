@@ -101,10 +101,31 @@ find_latest_file <- function(directory,
 }
 
 
+#' Get and check the directory path 
+#' 
+#' @description This generic function takes a directory path and then checks to
+#'  make sure it exists.
+#' The parameter \code{check_mode} will also test to make sure
+#' the file is readable (default) or writeable (\code{check_mode = "write"}).
+#' By default it will return an error if the directory doesn't exist.
+#' If the directory does not exist, then it will create it. 
+#'
+#' @param directory The file directory
+#' @param check_mode The mode passed to
+#' [fs::dir_access()], defaults to "read"
+#' to check that you have read access to the file
+#' @param create Optionally create the file if it doesn't exists,
+#' the default is to only create a file if we set `check_mode = "write"`
+#'
+#' @return The full directory path. If the directory does not exist and we want to
+#' create it then it will create with the correct permissions. If we do not supply
+#' check_mode = "write" then an error will be thrown if the directory doesn't exist
+#' @export
+#'
+#' @examples
 get_dir_path <- function(directory, 
                          check_mode = "read",
-                         create = NULL)
-{
+                         create = NULL){
   
   check_mode <- match.arg(
     arg = check_mode,
