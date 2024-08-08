@@ -143,7 +143,7 @@ get_file_path <-
       if (is.null(create) && check_mode == "write" ||
           !is.null(create) && create == TRUE) {
         # The directory doesn't exist but we do want to create it
-        fs::dir_create(directory)
+        fs::dir_create(directory, mode = "u=rwx,go=rwx")
         cli::cli_alert_info(
           "The directory {.path {directory}} did not exist, it has now been created."
         )
