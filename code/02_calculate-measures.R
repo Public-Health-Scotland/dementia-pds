@@ -157,9 +157,11 @@ pds %<>%
 ### 7 - Save individual level file for checking ----
 pds %>% 
 write_file(path = get_mi_data_path("ldp_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
              
 pds %>% 
 write_file(path = get_mi_data_path("ldp_data", ext = "csv", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
 ### 8 - Create final output file ----
@@ -198,6 +200,7 @@ pds %<>%
 # write final data
 pds %>% 
 write_file(path = get_mi_data_path("final_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
 ### END OF SCRIPT ###

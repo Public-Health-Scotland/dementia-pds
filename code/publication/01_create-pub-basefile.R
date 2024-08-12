@@ -82,5 +82,6 @@ basefile <- read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_out
 ### 3 - Save file ----
 basefile %>% 
 write_file(get_pub_data_path(test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 ### END OF SCRIPT ###

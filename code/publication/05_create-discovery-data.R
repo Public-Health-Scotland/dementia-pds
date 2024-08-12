@@ -54,6 +54,7 @@ discovery <-
 write_file(
   discovery,
   get_pub_output_path(output_name = "discovery_data", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
 ### END OF SCRIPT ###
