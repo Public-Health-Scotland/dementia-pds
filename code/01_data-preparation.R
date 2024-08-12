@@ -62,7 +62,7 @@ pds <-
   )
 
 
-### 3 - Save out error summary
+### 4 - Save out error summary
 
 err <- pds %>%
   mutate(health_board = if_else(is.na(health_board),
@@ -83,8 +83,9 @@ err <- pds %>%
   ungroup() %>%
   arrange(fy, health_board, ijb) %T>%
   write_file(path = get_mi_data_path("error_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-### 4 - Recode Lanarkshire IJB records ----
+### 5 - Recode Lanarkshire IJB records ----
 
 pds %<>%
   mutate(health_board = 
@@ -94,7 +95,7 @@ pds %<>%
            ))
 
 
-### 5 - Remove duplicate records ----
+### 6 - Remove duplicate records ----
 
 pds %<>%
   
@@ -172,7 +173,7 @@ dupes <-
   pds %>% 
   filter(dupe == 1) %T>%
   write_file(path = get_mi_data_path("dupe_data", ext = "csv", test_output = test_output))
-
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 # Remove duplicate records
 pds %<>%
@@ -187,9 +188,9 @@ pds %<>%
   select(-contains("dupe"))
 
 
-### 6 - Save data ---
+### 7 - Save data ---
 
 pds %>% 
 write_file(path = get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
-
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 ### END OF SCRIPT ###
