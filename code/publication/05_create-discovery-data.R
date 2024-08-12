@@ -51,7 +51,7 @@ discovery <-
 
 ### 4 - Save data ----
 
-write_csv(
+write_file(
   discovery,
   get_pub_output_path(output_name = "discovery_data", test_output = test_output))
 
