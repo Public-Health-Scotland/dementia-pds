@@ -81,6 +81,6 @@ basefile <- read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_out
 
 ### 3 - Save file ----
 basefile %>% 
-write_rds(get_pub_data_path(test_output = test_output), compress = "gz")
+write_file(get_pub_data_path(test_output = test_output))
 
 ### END OF SCRIPT ###
