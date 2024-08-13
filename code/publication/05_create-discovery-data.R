@@ -18,9 +18,7 @@ source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 ### 2 - Load data ----
 
-pds <- read_rds(data_path(directory = "publication", 
-                         type = "pub_data", 
-                         ext = "rds"))
+pds <- read_rds(get_pub_data_path(test_output = test_output))
 
 
 ### 3 - Restructure data ----
@@ -53,10 +51,10 @@ discovery <-
 
 ### 4 - Save data ----
 
-write_csv(
+write_file(
   discovery,
-  output_path(directory = "publication", 
-              output = "discovery_data"))
+  get_pub_output_path(output_name = "discovery_data", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
 ### END OF SCRIPT ###

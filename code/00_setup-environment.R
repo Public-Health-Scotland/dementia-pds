@@ -17,12 +17,20 @@
 
 ### 0 - Manual Variable(s) - TO UPDATE 
 
+# UPDATE - TRUE/FALSE for defining a test file path for saving test copies of 
+#           outputs. This is useful for when the DM give us a test run when boards
+#           are still submitting the data.
+#
+#           test_report = TRUE - returns the test file path
+#           test_report = FALSE - returns the finalised report for distribution
+test_output <- FALSE
+
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(31032024)
+end_date <- lubridate::dmy(30062024)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure
-pub_date <- lubridate::dmy(28032023)
+pub_date <- lubridate::dmy(26032024)
 
 ### 1 - Load packages ----
 
@@ -115,13 +123,12 @@ exempt_reasons <- c("03", "04", "05", "06")
 ### 7 - Create folder structure ----
 
 # Load functions
-source(here::here("functions/create-folder-structure.R"))
+source(here::here("functions/setup_directories.R"))
 
-source(here::here("functions/write_file.R"))
 
 #Define years in which data has been made final
 finalised_years <- 
-  list.files(final_data_path()) %>% 
+  list.files(get_final_data_dir()) %>% 
   str_sub(1, 7) %>%
   str_replace("-", "/")
 
