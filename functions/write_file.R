@@ -39,8 +39,9 @@ write_file <- function(data, path, input = 2, ...) {
     )
     if (fs::file_info(path)$user == Sys.getenv("USER")) {
       # Set the correct permissions
-      fs::file_chmod(path = path, mode = "770")
-      fs::file_chown(path = path, group_id = "3182")
+          fs::file_chmod(path = path, mode = "770")
+          fs::file_chown(path = path, group_id = 3182)
+      
     }
   }
     if (input == 1) {
