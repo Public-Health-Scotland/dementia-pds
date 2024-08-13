@@ -105,11 +105,12 @@ est_date3 <- dmy(01042023)
            "to improve on data reporting from 2019 onwards.*"), TRUE ~ paste0(""))
 
   
-  # Data quality notes - Scotland Q1 2022/23
+  # Data quality notes - Orkney, Tayside, Shetland
   scot_date1 <- dmy(01042020)
   scot_date2 <- dmy(01042021)
   scot_date3 <- dmy(01042022)
   scot_date4 <- dmy(01042023)
+  scot_date5 <- dmy(01042024)
   
   scot_text <-  
     case_when(sel_fy == extract_fin_year(scot_date1) | 
@@ -123,10 +124,11 @@ est_date3 <- dmy(01042023)
             TRUE ~ paste0(""))
   
   scot_text2 <- 
-    case_when(sel_fy == extract_fin_year(scot_date4) ~
+    case_when(sel_fy == extract_fin_year(scot_date4) |
+              sel_fy == extract_fin_year(scot_date5) ~
               paste0(" ", 
               "**Please note:** ",
-              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ",
+              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24 and 2024/25, ",
               "which has resulted in some records showing as incorrectly having met the standard. ",
               "PHS are working with the Health Board to try and rectify this data issue ",
               "in future submissions.*"), 
@@ -137,13 +139,10 @@ est_date3 <- dmy(01042023)
               sel_fy == extract_fin_year(scot_date4) ~
               paste0(" ", 
               "**Please note:** ",
-             "*NHS Shetland have not had a PDS worker in post since 2022/23 Q1. As a result 38 people ",
-             "referred to PDS could not be allocated or contacted by a PDS worker within 12 months of diagnosis ", 
-             "hence they have been recorded as not having met the standard. A PDS worker has recently been ",
-             "assigned to post and the PDS service in Shetland will resume. Currently due to the lack of the ",
-             "required information to calculate the standard it is not possible to calculate the standard for ",
-             "2023/24 year. It is anticipated that the necessary information will be available in future submissions ",
-             "and figures for 2023/24 will then be revised.*"), 
+              "*NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all ",  
+              "people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, ", 
+              "hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4",
+              "and the PDS service in Shetland has resumed.*"), 
             TRUE ~ paste0(""))
    
  
