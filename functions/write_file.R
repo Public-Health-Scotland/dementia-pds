@@ -43,7 +43,7 @@ write_file <- function(data, path, input = 2, ...) {
     }
   }
     if (input == 1) {
-      cli::cli_alert_info("The file {.file {fs::path_file(path)}} has been overwritten")
+      cli::cli_alert_info("The file {.file {fs::path_file(path)}} has been overwritten.")
       return(invisible(data))
     }
     if (input == 2) {
