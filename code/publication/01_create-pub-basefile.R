@@ -24,15 +24,13 @@ source(here("functions", "create-final-data.R"))
 
 create_final_data(
   fy_final = nth(fy_in_pub, -2),
-  collated_file = collated_file_path()
+  collated_file = get_national_data_path()
 )
 
 
 ### 2 - Restructure data file ----
 
-basefile <- read_rds(data_path(directory = "mi",
-                               type = "final_data", 
-                               ext = "rds")) %>% 
+basefile <- read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_output = test_output)) %>% 
   
   # Select only FY to be included in pub
   filter(fy %in% fy_in_pub) %>%
@@ -83,8 +81,7 @@ basefile <- read_rds(data_path(directory = "mi",
 
 ### 3 - Save file ----
 basefile %>% 
-write_rds(data_path(directory = "publication", 
-                    type = "pub_data", 
-                    ext = "rds"), compress = "gz")
+write_file(get_pub_data_path(test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 ### END OF SCRIPT ###

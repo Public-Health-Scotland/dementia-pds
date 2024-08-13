@@ -20,7 +20,7 @@ source(here::here("code", "00_setup-environment.R"))
 
 ### 2 - Read and clean collated file ----
 
-pds <- read_csv(collated_file_path(),
+pds <- read_csv(get_national_data_path(),
                 col_types = cols(.default = "c")
                 )%>%
   
@@ -42,14 +42,14 @@ pds <- read_csv(collated_file_path(),
 ### 3 - Add finalised data ----
 
 finalised_years <- 
-  list.files(final_data_path()) %>% 
+  list.files(get_final_data_dir()) %>% 
   str_sub(1, 7) %>%
   str_replace("-", "/")
 
 pds <-
   
   # Read in and bind all previous finalised years data
-  list.files(final_data_path(), full.names = TRUE) %>%
+  list.files(get_final_data_dir(), full.names = TRUE) %>%
   map(read_rds) %>%
   reduce(bind_rows) %>%
   
@@ -62,7 +62,7 @@ pds <-
   )
 
 
-### 3 - Save out error summary
+### 4 - Save out error summary
 
 err <- pds %>%
   mutate(health_board = if_else(is.na(health_board),
@@ -82,11 +82,10 @@ err <- pds %>%
   ) %>%
   ungroup() %>%
   arrange(fy, health_board, ijb) %T>%
-  write_file(path = data_path(directory = "mi",
-                      type = "error_data", 
-                      ext = "rds"))
+  write_file(path = get_mi_data_path("error_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-### 4 - Recode Lanarkshire IJB records ----
+### 5 - Recode Lanarkshire IJB records ----
 
 pds %<>%
   mutate(health_board = 
@@ -96,7 +95,7 @@ pds %<>%
            ))
 
 
-### 5 - Remove duplicate records ----
+### 6 - Remove duplicate records ----
 
 pds %<>%
   
@@ -173,12 +172,10 @@ pds %<>%
 dupes <- 
   pds %>% 
   filter(dupe == 1) %T>%
-  write_file(path = data_path(directory = "mi",
-                      type = "dupe_data",
-                      ext = "csv"))
+  write_file(path = get_mi_data_path("dupe_data", ext = "csv", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-
-# Remove duplicate records
+### 7 - Remove duplicate records ---
 pds %<>%
   
   filter(dupe_keep == 1) %>%
@@ -191,12 +188,10 @@ pds %<>%
   select(-contains("dupe"))
 
 
-### 6 - Save data ---
+### 8 - Save data ---
 
 pds %>% 
-write_file(path = data_path(directory = "mi",  
-                    type = "clean_data", 
-                    ext = "rds"))
-
+write_file(path = get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 ### END OF SCRIPT ###
