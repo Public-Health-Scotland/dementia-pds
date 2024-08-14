@@ -19,8 +19,10 @@ source(here::here("code", "00_setup-environment.R"))
 
 
 ### 2 - Render markdown script ----
+# render_check firsts checks if a file already exists before running rmarkdown::render
+# if a file already exists, permission must be given via the console to overwrite the file
 
-rmarkdown::render(
+render_check(
   input = here("management-report", "markdown", 
                "management-report.Rmd"),
   output_file = get_mi_output_path(test_output = test_output))

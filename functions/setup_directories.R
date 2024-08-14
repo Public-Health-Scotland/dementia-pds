@@ -19,6 +19,9 @@ source(here::here("functions/setup_general.R"))
 # Use write file function for writing files to disk and setting correct permissions
 source(here::here("functions/write_file.R"))
 
+# Use render_check function for rendering rmarkdown files
+source(here::here("functions/render_check.R"))
+
 ### MI directory setup ###------------------------------------------------------
 
 #' Set up Management Information Directory
