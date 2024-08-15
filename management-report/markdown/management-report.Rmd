@@ -103,15 +103,13 @@ Row
 
 *Please note the following:*
 
-**Scotland** – Due to staffing issues the *2022/23* and *2023/24* Scotland figure does not include data from the following areas for the stated quarters : NHS Orkney 2022/23 (*Q1*, *Q2*, *Q3 and Q4*) and 2023/24 (*Q1*,*Q2* and *Q3*). 
+**NHS Orkney** – PHS PDS Data Management Team are working with NHS Orkney to identify and fix issues with their data submissions. Currently these issues affect data for years *2020/21* to *2023/24*. NHS Orkney had no referrals in *2022/23* (*Q3* and *Q4*) and *2023/24* (*Q1* and *Q2*) as they were unable to access a consultant psychiatrist.
 
-**NHS Orkney** – PHS PDS Data Management Team are working with NHS Orkney to identify and fix issues with their data submissions. Currently these issues affect data for years *2020/21* to *2023/24*. 
+**NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed.
 
-**NHS Shetland** - NHS Shetland have not had a PDS worker in post since *2022/23 Q1*.  As a result 38 people referred to PDS could not be allocated or contacted by a PDS worker within 12 months of diagnosis hence they have been recorded as not having met the standard. A PDS worker has recently been assigned to post and the PDS service in Shetland will resume. Currently due to the lack of the required information to calculate the standard it is not possible to calculate the standard for *2023/24* year.  It is anticipated that the necessary information will be available in future submissions and figures for *2023/24* will then be revised. 
+**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected.
 
-**NHS Grampian** - Due to staffing issues and system changes, Aberdeen City have reported that they are finding it difficult to collate and report their data timeously and that there will be a lag in the numbers reported. Therefore the numbers presented for recent quarters will be an underestimate of the true number of referrals and likely to be revised in subsequent quarters. Due to changes in service provider the figures for Aberdeen City in 2019/20 and 2020/21 have been affected.
-
-**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, which has resulted in some records showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
+**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24* and *2024/25*, which has resulted in some records showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
 
 **Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland:](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/). For financial years *2021/22*, *2022/23* and *2023/24*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates.
 
