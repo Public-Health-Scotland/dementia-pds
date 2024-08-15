@@ -68,10 +68,10 @@ est_date3 <- dmy(01042023)
              "In December 2016, the Scottish Government published a report: 2014-2020 ",
              "Estimated and Projected Diagnosis Rates for Dementia in Scotland:",
              "(https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/). ", 
-             "For financial years *2021/22, 2022/23 and 2023/24,* the rates referenced in the report ",
-             "were used to create national, age specific rates of dementia incidence ",
-             "per 1,000 population which were then applied to the National Records of Scotland (NRS) ",
-             "Mid-2021 Population Estimates to obtain the incidence estimates."),
+             "For financial years *2021/22, 2022/23 and 2023/24,* the rates referenced in ", 
+             "the report were used to create national, age specific rates of dementia incidence ",
+             "per 1,000 population which were then applied to the National Records of ", 
+             "Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates."),
       TRUE ~ paste0(""))
   
 
@@ -104,19 +104,19 @@ est_date3 <- dmy(01042023)
               hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date2) ~
     paste0(" ", 
            "**Please note:** ",
-           "*NHS Tayside experienced challenges in capturing and reporting on electronic system data ",
-           "within Perth & Kinross over the period 2018/19 to 2019/20. Despite local work undertaken to ",
-           "uncover the missing data, it has not been possible to fill this gap.",
-           " Subsequent measures put in place have successfully allowed NHS Tayside ",
-           "to improve on data reporting from 2019 onwards.*"),
+           "*NHS Tayside experienced challenges in capturing and reporting on electronic ", 
+           "system data within Perth & Kinross over the period 2018/19 to 2019/20. ", 
+           "Despite local work undertaken to uncover the missing data, it has not been ",
+           "possible to fill this gap. Subsequent measures put in place have successfully ", 
+           "allowed NHS Tayside to improve on data reporting from 2019 onwards.*"),
       hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date3)|
       hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date4)~
         paste0(" ", 
            "**Please note:** ",
-           "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24 and 2024/25, which ",
-           "has resulted in some records showing as incorrectly having met the standard. ",
-           "PHS are working with the Health Board to try and rectify this data issue in future ",
-           "submissions.*"),
+           "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24 ", 
+           "and 2024/25, which has resulted in some records showing as incorrectly having ",
+           "met the standard. PHS are working with the Health Board to try and rectify ",
+           "this data issue in future submissions.*"),
     TRUE ~ paste0(""))
   
   
@@ -132,14 +132,15 @@ est_date3 <- dmy(01042023)
             hb == "NHS Orkney" & sel_fy == extract_fin_year(date23_24) ~ 
               paste0(" ",
              "**Please note:** ",
-             "*PHS PDS Data Management Team are working with NHS Orkney to identify and fix issues ",
-             "with their data submissions. Currently these issues affect data for years 2020/21 to 2023/24.*"),
+             "*PHS PDS Data Management Team are working with NHS Orkney to identify ", 
+             "and fix issues with their data submissions. Currently these issues affect ", 
+             "data for years 2020/21 to 2023/24.*"),
             hb == "NHS Orkney" & sel_fy == extract_fin_year(date22_23) | 
             hb == "NHS Orkney" & sel_fy == extract_fin_year(date23_24) ~ 
               paste0(" ",
              "**Please note:** ",
-             "*NHS Orkney had no referrals in 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2) as they were unable, "
-             "to access a consultant psychiatrist.*"),
+             "*NHS Orkney had no referrals in 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2) ", 
+             "as they were unable to access a consultant psychiatrist.*"),
     TRUE ~ paste0(""))
     
     
@@ -149,12 +150,14 @@ est_date3 <- dmy(01042023)
   date23_24 <- dmy(01042023)
 
   shetland_text <-  
-    case_when(hb == "NHS Shetland" & sel_fy == extract_fin_year(date22_23) | hb == "NHS Shetland" & sel_fy == extract_fin_year(date23_24) ~
+    case_when(hb == "NHS Shetland" & sel_fy == extract_fin_year(date22_23) | 
+              hb == "NHS Shetland" & sel_fy == extract_fin_year(date23_24) ~
                paste0(" ",
              "**Please note:** ",
-              "*NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all ",  
-              "people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, ", 
-              "hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4",
+              "*NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through ", 
+              "2023/24 Q3. As a result not all people referred to PDS could be allocated or ", 
+              "contacted by a PDS worker within 12 months of diagnosis, hence they have been ", 
+              "recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 ",
               "and the PDS service in Shetland has resumed.*"), 
       TRUE ~ paste0(""))
   
