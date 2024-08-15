@@ -229,7 +229,7 @@ Row
 
 `r tay_text`
 
-`r text22_23`
+`r shetland_text`
 
 `r orkney_text`
 
