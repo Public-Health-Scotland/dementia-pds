@@ -120,7 +120,7 @@ est_date3 <- dmy(01042023)
               sel_fy == extract_fin_year(scot_date4) ~
     paste0(" ", 
              "**Please note:** ",
-             "*PHS PDS Data Management Team are working with NHS Orkney to identify and " 
+             "*PHS PDS Data Management Team are working with NHS Orkney to identify and ", 
              "fix issues with their data submissions. Currently these issues affect data ", 
              "for years 2020/21 to 2023/24.*"),
             TRUE ~ paste0(""))
