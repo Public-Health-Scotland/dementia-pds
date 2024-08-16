@@ -102,7 +102,7 @@ est_date3 <- dmy(01042023)
   tay_text <-  
     case_when(hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date1) |
               hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date2) ~
-    paste0(" ", 
+        paste0(" ", 
            "**Please note:** ",
            "*NHS Tayside experienced challenges in capturing and reporting on electronic ", 
            "system data within Perth & Kinross over the period 2018/19 to 2019/20. ", 
@@ -126,21 +126,23 @@ est_date3 <- dmy(01042023)
     date22_23 <- dmy(01042022)
     date23_24 <- dmy(01042023)
   
-  orkney_text <- case_when(hb == "NHS Orkney" & sel_fy == extract_fin_year(date20_21) | 
-            hb == "NHS Orkney" & sel_fy == extract_fin_year(date21_22) | 
-            hb == "NHS Orkney" & sel_fy == extract_fin_year(date22_23) | 
-            hb == "NHS Orkney" & sel_fy == extract_fin_year(date23_24) ~ 
+  orkney_text <- 
+    case_when(hb == "NHS Orkney" & sel_fy == extract_fin_year(date20_21) | 
+              hb == "NHS Orkney" & sel_fy == extract_fin_year(date21_22) ~ 
               paste0(" ",
              "**Please note:** ",
              "*PHS PDS Data Management Team are working with NHS Orkney to identify ", 
              "and fix issues with their data submissions. Currently these issues affect ", 
              "data for years 2020/21 to 2023/24.*"),
-            hb == "NHS Orkney" & sel_fy == extract_fin_year(date22_23) | 
-            hb == "NHS Orkney" & sel_fy == extract_fin_year(date23_24) ~ 
+              hb == "NHS Orkney" & sel_fy == extract_fin_year(date22_23) | 
+              hb == "NHS Orkney" & sel_fy == extract_fin_year(date23_24) ~ 
               paste0(" ",
              "**Please note:** ",
-             "*NHS Orkney had no referrals in 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2) ", 
-             "as they were unable to access a consultant psychiatrist.*"),
+             "*PHS PDS Data Management Team are working with NHS Orkney to identify ", 
+             "and fix issues with their data submissions. Currently these issues affect ", 
+             "data for years 2020/21 to 2023/24. NHS Orkney had no referrals in 2022/23 ",
+             "(Q3 and Q4) and 2023/24 (Q1 and Q2) as they were unable to access a ",
+             "consultant psychiatrist.*"),
     TRUE ~ paste0(""))
     
     
