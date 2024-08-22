@@ -103,7 +103,7 @@ Row
 
 *Please note the following:*
 
-**NHS Orkney** – PHS PDS Data Management Team are working with NHS Orkney to identify and fix issues with their data submissions. Currently these issues affect data for years *2020/21* to *2023/24*. NHS Orkney had no referrals in *2022/23* (*Q3* and *Q4*) and *2023/24* (*Q1* and *Q2*) as they were unable to access a consultant psychiatrist.
+**NHS Orkney** – NHS Orkney had no referrals in *2022/23* (*Q3* and *Q4*) and *2023/24* (*Q1* and *Q2*) as they were unable to access a consultant psychiatrist.
 
 **NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed.
 

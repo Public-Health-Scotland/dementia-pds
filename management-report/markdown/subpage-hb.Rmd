@@ -121,28 +121,16 @@ est_date3 <- dmy(01042023)
   
   
     # Data Quality notes -  Orkney
-    date20_21 <- dmy(01042020)
-    date21_22 <- dmy(01042021)  
     date22_23 <- dmy(01042022)
     date23_24 <- dmy(01042023)
   
   orkney_text <- 
-    case_when(hb == "NHS Orkney" & sel_fy == extract_fin_year(date20_21) | 
-              hb == "NHS Orkney" & sel_fy == extract_fin_year(date21_22) ~ 
-              paste0(" ",
-             "**Please note:** ",
-             "*PHS PDS Data Management Team are working with NHS Orkney to identify ", 
-             "and fix issues with their data submissions. Currently these issues affect ", 
-             "data for years 2020/21 to 2023/24.*"),
-              hb == "NHS Orkney" & sel_fy == extract_fin_year(date22_23) | 
+    case_when(hb == "NHS Orkney" & sel_fy == extract_fin_year(date22_23) | 
               hb == "NHS Orkney" & sel_fy == extract_fin_year(date23_24) ~ 
               paste0(" ",
              "**Please note:** ",
-             "*PHS PDS Data Management Team are working with NHS Orkney to identify ", 
-             "and fix issues with their data submissions. Currently these issues affect ", 
-             "data for years 2020/21 to 2023/24. NHS Orkney had no referrals in 2022/23 ",
-             "(Q3 and Q4) and 2023/24 (Q1 and Q2) as they were unable to access a ",
-             "consultant psychiatrist.*"),
+             "*NHS Orkney had no referrals in 2022/23 (Q3 and Q4) and 2023/24 ",
+             "(Q1 and Q2) as they were unable to access a consultant psychiatrist.*"),
     TRUE ~ paste0(""))
     
     

@@ -107,22 +107,18 @@ est_date3 <- dmy(01042023)
 
   
   # Data quality notes - Orkney, Tayside, Shetland
-  scot_date1 <- dmy(01042020)
-  scot_date2 <- dmy(01042021)
   scot_date3 <- dmy(01042022)
   scot_date4 <- dmy(01042023)
   scot_date5 <- dmy(01042024)
   
   scot_text <-  
-    case_when(sel_fy == extract_fin_year(scot_date1) | 
-              sel_fy == extract_fin_year(scot_date2) | 
-              sel_fy == extract_fin_year(scot_date3) | 
+    case_when(sel_fy == extract_fin_year(scot_date3) | 
               sel_fy == extract_fin_year(scot_date4) ~
     paste0(" ", 
              "**Please note:** ",
-             "*PHS PDS Data Management Team are working with NHS Orkney to identify and ", 
-             "fix issues with their data submissions. Currently these issues affect data ", 
-             "for years 2020/21 to 2023/24.*"),
+             "*NHS Orkney had no referrals in 2022/23 (Q3 and Q4) and 2023/24 ",
+             "(Q1 and Q2) as they were unable to access a consultant psychiatrist.*"),
+             
             TRUE ~ paste0(""))
   
   scot_text2 <- 
