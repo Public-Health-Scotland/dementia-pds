@@ -36,7 +36,14 @@ pds <- read_csv(get_national_data_path(),
   mutate(health_board = str_replace(health_board, " and ", " & ")) %>%
   
   # Remove records with missing diag date or outwith reporting period
-  filter(between(dementia_diagnosis_confirmed_date, start_date, end_date))
+  filter(between(dementia_diagnosis_confirmed_date, start_date, end_date)) #%>% 
+
+  ## If including this, remove the comments
+  # Recode NA for NHS Lothian 
+  # One case originally submitted Edi_city for IJB and in their resub this showed NA
+  # We are recoding this as a once off. 
+  # mutate(ijb = if_else(health_board == "S NHS Lothian" & is.na(ijb), 
+  #                    "S37000012 Edinburgh City", ijb))
 
 
 ### 3 - Add finalised data ----
