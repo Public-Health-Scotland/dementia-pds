@@ -114,7 +114,7 @@ get_mi_data_path <- function(type = c("error_data",
   }
   
   mi_data_path <- get_file_path(
-    directory = get_mi_year_dir("data", test_output = test_output),
+    directory = get_mi_year_dir("data", test_output = test_output, previous_data = previous_data),
     file_name = file_name,
     ext = ext, 
     check_mode = "write"
@@ -142,7 +142,7 @@ get_mi_output_path <- function(test_output = FALSE,
   }
   
   mi_output_path <- get_file_path(
-    directory = get_mi_year_dir("output", test_output = test_output),
+    directory = get_mi_year_dir("output", test_output = test_output, previous_data = previous_data),
     file_name = file_name, 
     check_mode = "write"
   )
