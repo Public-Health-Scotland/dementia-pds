@@ -3,18 +3,28 @@
 output$intro_page_ui <-  renderUI({
 if(input$home_select == "about"){
   div(
-	     fluidRow(
-            h3("About this report"),
-	           p("This report has been produced by Public Health Scotland (PHS) and contains analysis of performance against the Scottish Government’s LDP Standard on provision of Dementia Post Diagnostic Support (PDS)."),
-	           p(strong(span("The information contained in this report is for management information only and should not be distributed widely.", style="color:red"))),
-	           p(strong("Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic."))  
-	      ), #fluidrow
+    fluidRow(
+      h3("About This Report"),
+      p("This report has been produced by Public Health Scotland (PHS) and contains analysis of performance against the Scottish Government’s LDP Standard on provision of Dementia Post Diagnostic Support (PDS)."),
+      p(strong(span("The information contained in this report is for management information only and should not be distributed widely.", style="color:red"))),
+      p(strong("Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.")),  
+      p("These reports reflect the ",  a("Dementia PDS dataset", href="https://publichealthscotland.scot/media/20921/2023-12-14-dementia-pds-definitions-and-recording-guidance-v14.pdf"),
+        " effective 01 April 2019 and contain data for individuals diagnosed with dementia between ",
+        strong("01 April 2016"), " and ", strong(format(end_date, "%d %B %Y")),  " who were referred for post diagnostic support."),
+      p("Data are submitted to PHS by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from 01 April 2016 onwards. Therefore, data for diagnoses from this date onwards are refreshed in each management report and are based on the most recently submitted data."),
+      p("Information is shown at Scotland, Health Board and Integration Joint Board level using the drop down menus at the top of the page."),
+      p("To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the PHS Dementia PDS team mailbox at: ",
+        a("phs.dementiapds@phs.scot", href="mailto:phs.dementiapds@phs.scot"),  ".")
+    ), #fluidrow
 	    
 	   fluidRow(
 	     h3("About the LDP Standard"),
-	     p("The Local Delivery Plan (LDP) standard is that everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker, including the building of a person-centred support plan. Performance is reported in two parts:")
-	     
-	   )
+	     p("The Local Delivery Plan (LDP) standard is that everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker, including the building of a person-centred support plan. Performance is reported in two parts:"),
+	     box(width = 12,
+	         background = "blue",
+	         p("1. The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support."),
+	         p("2. The percentage of people referred who received a minimum of one year’s worth of post-diagnostic support coordinated by a Link Worker, including the building of a person-centred support plan."))
+	   ) #fluidrow
    )} 
   
   else if(input$home_select == "use"){

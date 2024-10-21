@@ -65,8 +65,7 @@ plot_referrals <- function(data,
     data %<>% 
       mutate(health_board = ifelse(scotland == TRUE, "Scotland", health_board)) %>%
       group_by(fy, month, health_board) %>%
-      summarise(referrals = sum(referrals), .groups = "drop") %>%
-      ungroup()
+      summarise(referrals = sum(referrals), .groups = "drop")
     
   }
   
@@ -84,16 +83,15 @@ plot_referrals <- function(data,
     
     ggplot(aes(x = month_abbr,
                y = referrals,
-               group = ifelse(ijb_group, ijb, 1),
+               group = if(ijb_group == TRUE){ijb}else{health_board},
                colour = if(ijb_group == TRUE){ijb}else{health_board},
                text = paste0(if(ijb_group == TRUE){ijb}else{health_board}, "<br>",
                              month_full, " ", year, "<br>",
                              "Referrals: ", format(referrals, big.mark = ",")))) +
+    geom_line() +
     
     geom_point() +
-    
-    geom_line() + 
-    
+
     scale_y_continuous(limits = c(0, NA)) +
     
     phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
@@ -103,14 +101,15 @@ plot_referrals <- function(data,
                                     c(rep(min(data$year), 9), rep(max(data$year), 3)))) +
     
     theme(legend.title = element_blank(),
-          legend.position = ifelse(ijb_group == FALSE, "none", "top"),
-          axis.text.x = element_text(angle=45))
-  
+          legend.position = ifelse(scotland == TRUE, "none", "bottom"),
+          axis.text.x = element_text(angle=45)) 
+    
+
   ggplotly(plot, tooltip = "text") %>%
     
     config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
            displaylogo = F, editable = F) %>%
-    layout(legend = list(orientation = "h", x = 0.2 , y = -0.6,
+    layout(legend = list(orientation = "h", x = 0.5 , y = -0.5,
                          xanchor = "center", yanchor = "bottom")) %>% 
     layout(margin = list(b = 30, t = 10), # to avoid labels getting cut out
           yaxis = yaxis_plots, xaxis = xaxis_plots)
@@ -118,20 +117,69 @@ plot_referrals <- function(data,
   
 }
 
-# bar chart for additional analysis page
-
-percent_met_bar_chart <- function(data){
+# trend plot function
+plot_trend <- function(data){
   
-  yaxis_plots[["title"]] <- "Percentage of Referrals Achieved LDP Standard"
+  yaxis_plots[["title"]] <- ""
   xaxis_plots[["title"]] <- ""
   
+  data %<>%
+    
+    select(ijb, fy, rate) %>%
+    distinct(ijb, fy, .keep_all = T) %>% 
+    mutate(rate = as.numeric(substr(rate,1,5)))
   
-  plot <-  data %>% ggplot(aes(type, percent_met, fill = type,
-                               text = paste0(type, "<br>",
-                               "Percentage of Referrals Achieved LDP Standard: ", percent_met, "%"))) +
+  
+  plot <- data %>%
+    
+    ggplot(aes(x = fy,
+               y = rate,
+               group = ijb,
+               colour = ijb,
+               text = paste0(ijb, "<br>",
+                             fy, "<br>",
+                             rate, "%"))) +
+    
+    geom_point() +
+    
+    geom_line() + 
+    
+    scale_y_continuous(limits = c(0, 100),
+                       labels=function(x) paste0(x,"%")) + 
+    
+    phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
+    
+    theme(legend.title = element_blank(),
+    )
+  
+  ggplotly(plot, tooltip = "text") %>%
+    
+    config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
+           displaylogo = F, editable = F) %>%
+    layout(legend = list(orientation = "h", x = 0.5 , y = -0.2,
+                         xanchor = "center", yanchor = "bottom")) %>% 
+    layout(margin = list(b = 30, t = 10), # to avoid labels getting cut out
+           yaxis = yaxis_plots, xaxis = xaxis_plots)
+  
+  
+}
+
+# bar chart for proportion of referrals
+
+proportion_bar_chart <- function(data){
+  
+  yaxis_plots[["title"]] <- ""
+  xaxis_plots[["title"]] <- ""
+  
+  data %<>% filter(type != "Unknown") 
+  
+  plot <-  data %>% ggplot(aes(x = type, y = total_referrals/sum(total_referrals)*100, fill = type,
+                                text = paste0(type, "<br>",
+                                              "Proportion of total referrals: ", round(total_referrals/sum(total_referrals)*100,1), "%"))) +
     geom_col() +
     
-    scale_y_continuous(limits = c(0, 100)) +
+    scale_y_continuous(limits = c(0, NA),
+                       labels=function(x) paste0(x,"%")) +
     
     phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
     
@@ -143,12 +191,44 @@ percent_met_bar_chart <- function(data){
     
     config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
            displaylogo = F, editable = F) %>%
-    layout(legend = list(orientation = "h", x = 0.2 , y = -0.6,
-                         xanchor = "center", yanchor = "bottom")) %>% 
     layout(margin = list(b = 30, t = 30), # to avoid labels getting cut out
            yaxis = yaxis_plots, xaxis = xaxis_plots)
   
 }
+
+# bar chart for ldp
+
+percent_met_bar_chart <- function(data){
+  
+  yaxis_plots[["title"]] <- ""
+  xaxis_plots[["title"]] <- ""
+  
+  data %<>% filter(type != "Unknown") 
+  
+  plot <-  data %>% ggplot(aes(type, percent_met, fill = type,
+                               text = paste0(type, "<br>",
+                               "Percentage of Referrals Achieved LDP Standard: ", percent_met, "%"))) +
+    geom_col() +
+    
+    scale_y_continuous(limits = c(0, 100),
+                       labels=function(x) paste0(x,"%")) +
+    
+    phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+    
+    theme(legend.title = element_blank(),
+          legend.position = "none",
+          axis.text.x = element_text(angle=45))
+  
+  ggplotly(plot, tooltip = "text") %>%
+    
+    config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
+           displaylogo = F, editable = F) %>%
+    layout(margin = list(b = 30, t = 30), # to avoid labels getting cut out
+           yaxis = yaxis_plots, xaxis = xaxis_plots)
+  
+}
+
+
 
 
 
