@@ -37,7 +37,7 @@ bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
                      'hoverClosestCartesian')
 # LOAD IN DATA ----
 
-source(here("dashboard/data/data_load_shiny.R"))
+source(here("dashboard/data_setup/data_load_shiny.R"))
 
 # selections lists
 provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
