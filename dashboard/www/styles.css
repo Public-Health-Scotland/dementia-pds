@@ -1,3 +1,7 @@
+/* to avoid red text error messages in the whole app, take out for testing 
+.shiny-output-error { visibility: hidden; }
+.shiny-output-error:before { visibility: hidden; } */
+
 /* Define colours */
   :root{
       --white: #FFFFFF;
@@ -109,7 +113,7 @@ a:hover {
   color: var(--white);
   background-image:none;
   border: 2px solid var(--white);
-  border-radius: 10px;
+  border-radius: 0px;
 }
 
 /* Hover/active/focus, change text colour purple, background light purple*/
@@ -122,7 +126,7 @@ a:hover {
 
 /* tabset panel update, pills style in phs colours */
 .nav-pills>li>a {
-    border-radius: 4px;
+    border-radius: 0px;
     color: var(--phs-purple);
     font-size: 20px;
 }
@@ -189,9 +193,9 @@ a:hover {
   color: var(--white);     background-color: var(--phs-purple-80);}
 
 /* Border tables - th, td puts within the table as well */
-  .border-table{border:1px solid var(--phs-purple);}
+  .border-table{border:0px solid var(--phs-purple);}
 th, td {
-  border: 1px solid var(--phs-purple-30);
+  border: 0px solid var(--phs-purple-30);
   padding-right: 1px;
 }
 .container-fluid {
@@ -363,10 +367,49 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
   /*color: rgba(0, 0, 0, 0.15);*/
 }
 
+/* side bar buttons */
+.btn.radiobtn.btn-primary {
+  border-radius: 0px; 
+  
+}
+
+.btn.radiobtn.btn-primary.active, .btn.radiobtn.btn-primary:active {
+  background-color: var(--phs-blue-80); 
+  border-radius: 0px;
+  border-color: #FFFFFF;
+  
+} 
+
+.btn.radiobtn.btn-primary.focus, .btn.radiobtn.btn-primary:focus {
+  background-color: var(--phs-blue-80); 
+  border-radius: 0px; 
+  border-color: #FFFFFF; 
+  
+} 
+
+.btn.radiobtn.hover, .btn.radiobtn:hover {
+    background-color: var(--phs-blue-80);
+    border-radius: 0px;
+    border-color: var(--phs-blue-80);
+}
+
+/*intro page ldp description box */
+.box.box-solid.bg-blue { background-color: var(--phs-blue-10) ; padding: 4px; border: 2px solid var(--phs-blue-50)} 
+
+/*value box for page 1 and 2 */
+.small-box.bg-blue {background-color: var(--phs-blue); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+
+/* description box for page 1 and 2 */
+.box.box-solid.bg-black {background-color: #FFFFFF; padding: 0px; margin-bottom: 10px; margin-left: 0px} 
+.box-header {background-color: var(--phs-blue-10); padding: 4px}
+.box-title {margin-top: 3px; margin-bottom: -12px; padding: 4px}
+.box-body {padding: 5px}
+.col-sm-5 {padding-right: 4px; padding-left: 4px}
+.col-sm-7 {padding-right: 4px; padding-left: 4px}
+
 /* Hack to get the colours we want on shinydashboard varBox */
 .small-box.bg-green { background-color:var(--phs-green); !important; color:#000000 !important; }
 .small-box.bg-purple { background-color:var(--phs-purple); !important; color:#000000 !important; }
-.small-box.bg-blue { background-color:var(--phs-blue); !important; color:#000000 !important; }
 .small-box.bg-fuchsia { background-color:var(--phs-magenta); !important; color:#000000 !important; }
 .small-box.bg-olive { background-color:var(--phs-graphite); !important; color:#000000 !important; }
 .small-box.bg-teal { background-color:var(--phs-teal); !important; color:#000000 !important; }

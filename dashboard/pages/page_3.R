@@ -1,4 +1,4 @@
-####################### Page 3 #######################
+####################### Page 3: TREND #######################
 
 #output$page_3_ui <-  renderUI({
 
@@ -28,7 +28,7 @@ output$table_hb_trend <- DT::renderDataTable({
     pivot_wider(names_from = fy, values_from = rate) %>% 
     slice(15,1:14) %>% 
     rename(" " = "health_board") 
-  make_table(trend_hb_data, right_align = 1:6)
+  make_table(trend_hb_data, right_align = 1:8)
   })
 
 output$table_ijb_trend <- DT::renderDataTable({
@@ -38,7 +38,7 @@ output$table_ijb_trend <- DT::renderDataTable({
     distinct(ijb, fy, .keep_all = T) %>% 
     pivot_wider(names_from = fy, values_from = rate) %>% 
     rename(" " = "ijb") 
-  make_table(trend_ijb_data, right_align = 1:6)
+  make_table(trend_ijb_data, right_align = 1:8)
 })
 
 

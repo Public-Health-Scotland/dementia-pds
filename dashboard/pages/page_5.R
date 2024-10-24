@@ -43,7 +43,7 @@ data_selected_add <-reactive({
   } else if(input$select_data_add == "data_stage"){
     data_stage
   } else if(input$select_data_add == "waiting_times"){
-    data_model
+    NULL
   } 
 })
 

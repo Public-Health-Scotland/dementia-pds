@@ -16,20 +16,7 @@ ui <- fluidPage(
 tagList(
 # Specify most recent fontawesome library - change version as needed
 tags$style("@import url(https://use.fontawesome.com/releases/v6.1.2/css/all.css);"),
-#side bar buttons
-tags$style(".btn.radiobtn.btn-primary {border-radius: 0px; }"),
-tags$style(".btn.radiobtn.btn-primary.active { background-color: #4B999D ; border-radius: 0px; border: 2px solid #FFFFFF}"), 
-#intro page ldp description box
-tags$style(".box.box-solid.bg-blue { background-color: #E6F2FB ; padding: 2px; border: 3px solid #B3D7F2}"), 
-#value box for page 1 and 2
-tags$style(".small-box.bg-blue {background-color: #3393DD; border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}"), 
-# description box for page 1 and 2
-tags$style(".box.box-solid.bg-black {background-color: #FFFFFF; padding: 0px; margin-bottom: 10px; margin-left: 0px}"), 
-tags$style(".box-header {background-color: #E6F2FB; padding: 4px"),
-tags$style(".box-title {margin-top: 3px; margin-bottom: -12px; padding: 4px"),
-tags$style(".box-body {padding: 10px"),
-tags$style(".col-sm-5 {padding-right: 4px; padding-left: 4px}"),
-tags$style(".col-sm-7 {padding-right: 4px; padding-left: 4px}"),
+
 # set up navigation bar
 navbarPage(
     id = "intabset", # id used for jumping between tabs
@@ -45,12 +32,12 @@ navbarPage(
 ##############################################.
 # INTRO PAGE: Home ----
 ##############################################.
-
 tabPanel(title = "Home",
     icon = icon_no_warning_fn("circle-info"),
     value = "intro",
 
-    h1("Dementia Post Diagnostic Support (PDS) Dashboard"),
+    h1("Dementia Post-Diagnostic Support (PDS) Dashboard"),
+    linebreaks(1),
     sidebarLayout(
       sidebarPanel(radioGroupButtons("home_select", label = NULL, choices = home_list,
                                      status = "primary",
@@ -137,13 +124,13 @@ tabPanel(title = "Trend",
          icon = icon_no_warning_fn("chart-line"),
          value = "intro",
          
-         h1("Percentage of people referred for dementia PDS who received a minimum of one year’s support; Trend"),
+         h1("Dementia Post-Diagnostic Support - Trend"),
       fluidRow(
          #  uiOutput("page_3_ui"),
           # linebreaks(2),
-           h2("Scotland/Health Board"),
+           h2("Percentage of people referred for dementia PDS who received a minimum of one year’s support; Scotland/Health Board"),
            DT::dataTableOutput("table_hb_trend"),
-           h2("Integration Joint Board"),
+           h2("Percentage of people referred for dementia PDS who received a minimum of one year’s support; Integration Joint Board"),
            DT::dataTableOutput("table_ijb_trend"),
           h2(htmlOutput("chart_title_trend")),
           linebreaks(1)),
@@ -166,8 +153,8 @@ tabPanel(title = "Demographics",
          icon = icon_no_warning_fn("id-card"),
          value = "intro",
 
-         h1("Post Diagnostic Support - Demographics"),
-         linebreaks(2),
+         h1("Dementia Post-Diagnostic Support - Demographics"),
+         linebreaks(1),
 
          sidebarLayout(
            sidebarPanel(radioGroupButtons("select_data_demo", label = NULL, choices = demographics_list,
@@ -218,8 +205,8 @@ tabPanel(title = "Additional Analysis",
          icon = icon_no_warning_fn("magnifying-glass-chart"),
          value = "intro",
          
-         h1("Post Diagnostic Support - Additional Analysis"),
-         linebreaks(2),
+         h1("Dementia Post-Diagnostic Support - Additional Analysis"),
+         linebreaks(1),
          
          sidebarLayout(
            sidebarPanel(radioGroupButtons("select_data_add", label = NULL, choices = data_list,
@@ -276,7 +263,40 @@ tabPanel(title = "Additional Analysis",
            ) #cond panel 2
          ) # main panel
          )  #sidebar layout
-     ) # tabpanel
+     ), # tabpanel
+
+
+##############################################.
+# PAGE 6: Methodology ----
+##############################################.
+tabPanel(title = "Methodology",
+         # Look at https://fontawesome.com/search?m=free for icons
+         icon = icon_no_warning_fn("diagram-successor"),
+         value = "intro",
+         
+         h1("Dementia Post-Diagnostic Support - Methodology"),
+         #linebreaks(1),
+        
+         fluidRow(
+         uiOutput("page_6_ui")
+         )# fluid Row
+), # tabPanel
+
+##############################################.
+# PAGE 7: Methodology ----
+##############################################.
+tabPanel(title = "Data Quality",
+         # Look at https://fontawesome.com/search?m=free for icons
+         icon = icon_no_warning_fn("circle-check"),
+         value = "intro",
+         
+         h1("Dementia Post-Diagnostic Support - Data Quality"),
+         #linebreaks(1),
+         
+         fluidRow(
+           uiOutput("page_7_ui")
+         )# fluid Row
+) # tabPanel
     ) # navbar
   ) # taglist
 ) # ui fluidpage
@@ -300,6 +320,8 @@ server <- function(input, output, session) {
     source(file.path(here("dashboard/pages/page_3.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_4.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_5.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_6.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_7.R")), local = TRUE)$value
 
 }
 

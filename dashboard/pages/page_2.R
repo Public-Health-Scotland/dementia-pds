@@ -18,7 +18,7 @@ output$page_2_ui <-  renderUI({
         color = "blue"), #valueBox
       box(htmlOutput("hb_exp_text"),
           title = (p(strong("How is this figure calculated?"))),
-          width = 5, background = "black", solidHeader = TRUE), #box
+          width = 5, background = "black", solidHeader = TRUE), #box background set to black in order to edit ccs styles
     ), #fluidRow
     fluidRow(
       valueBox(

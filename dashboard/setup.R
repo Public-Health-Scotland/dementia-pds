@@ -40,10 +40,13 @@ bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
 source(here("dashboard/data_setup/data_load_shiny.R"))
 
 # selections lists
+
 provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
                            "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
 
-included_years <- c(finalised_years, provisional_year)
+#included_years <- c(finalised_years, provisional_year)
+
+included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
 
 home_list <- c("Dementia PDS" = "about",
                "Using the Dashboard" = "use",
@@ -60,7 +63,14 @@ data_list <- c("Subtype of Dementia" = "data_subtype",
 
 demographics_list <- c("Age" = "data_age",
                        "SIMD" = "data_simd",
-                       "Accommodation" = "data_accom") #include accommodation type and living alone status
+                       "Accommodation" = "data_accom") 
+
+method_list <- c("Local Delivery Plan (LDP) Classification" = "ldp_class",
+                       "Number of Expected Diagnoses" = "exp_diag",
+                       "Removal of Duplicate Records" = "duplicates") 
+
+quality_list <- c("Queries/Errors" = "errors",
+                  "Number of Records Submitted" = "records") 
 
 
 boards <- sort(unique(pds_plot_data$health_board))

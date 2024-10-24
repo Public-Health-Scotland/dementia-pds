@@ -22,8 +22,10 @@ if(input$home_select == "about"){
 	     p("The Local Delivery Plan (LDP) standard is that everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker, including the building of a person-centred support plan. Performance is reported in two parts:"),
 	     box(width = 12,
 	         background = "blue",
-	         p("1. The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support."),
-	         p("2. The percentage of people referred who received a minimum of one year’s worth of post-diagnostic support coordinated by a Link Worker, including the building of a person-centred support plan."))
+	         p(tags$ol(tags$li("The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support."),
+	                   linebreaks(0.8),
+	                   tags$li("The percentage of people referred who received a minimum of one year’s worth of post-diagnostic support coordinated by a Link Worker, including the building of a person-centred support plan.")))
+	         ) #box
 	   ) #fluidrow
    )} 
   

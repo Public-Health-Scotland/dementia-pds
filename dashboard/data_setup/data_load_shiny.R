@@ -42,12 +42,18 @@ annual_table_data$ldp<- as.factor(annual_table_data$ldp)
 
 # 3 read in additional data ----
 
-error_summary <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
-  mutate(ijb          = case_when(is.na(ijb) ~ "Unknown",
-                                  ijb == "Scotland" ~ ijb,
-                                  TRUE ~ str_sub(ijb, 11, -1))
-         )
-data_error <- as.data.frame(error_summary)
+# error_summary <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
+#   mutate(ijb          = case_when(is.na(ijb) ~ "Unknown",
+#                                   ijb == "Scotland" ~ ijb,
+#                                   TRUE ~ str_sub(ijb, 11, -1))
+#          )
+# data_error <- as.data.frame(error_summary)
+
+err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
+  
+  mutate(ijb = if_else(is.na(ijb),
+                       "Unknown",
+                       str_sub(ijb, 11, -1)))
 
 
 
