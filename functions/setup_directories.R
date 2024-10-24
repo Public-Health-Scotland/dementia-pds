@@ -49,7 +49,7 @@ get_mi_dir <- function() {
 #' @return the path to the management report year specific folder. 
 #' 
 #'
-get_mi_year_dir <- function(folder = c("data", "output"), 
+get_mi_year_dir <- function(folder = c("data", "output", "tests"), 
                             test_output = FALSE, 
                             previous_data = FALSE) {
   
