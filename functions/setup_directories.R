@@ -49,11 +49,20 @@ get_mi_dir <- function() {
 #' @return the path to the management report year specific folder. 
 #' 
 #'
-get_mi_year_dir <- function(folder = c("data", "output"), test_output = FALSE) {
+get_mi_year_dir <- function(folder = c("data", "output", "tests"), 
+                            test_output = FALSE, 
+                            previous_data = FALSE) {
+  
+  if (previous_data){
+    year <- stringr::str_glue("{previous_fy}-{substr(as.numeric(previous_fy)+1, 3, 4)}")
+    qtr <- stringr::str_glue("Q{previous_qt}")
+    test <- "test"
+  } else {
   year <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}")
   qtr <- stringr::str_glue("Q{qt}")
   test <- "test"
-  
+  }
+    
   if ((test_output)){
   year_dir <- fs::path(get_mi_dir(), {{ folder }}, year, qtr, test)
   }else{
@@ -77,26 +86,35 @@ get_mi_year_dir <- function(folder = c("data", "output"), test_output = FALSE) {
 #'
 #' @return the file path to the data files needed to create the MI report.
 #' 
-get_mi_data_path <- function(type = c(
-  "error_data",
-  "dupe_data",
-  "clean_data",
-  "ldp_data",
-  "final_data"
-),
-ext = c("rds", "csv"), 
-test_output = FALSE) {
-  file_name <- dplyr::case_match(
+get_mi_data_path <- function(type = c("error_data",
+                                      "dupe_data",
+                                      "clean_data",
+                                      "ldp_data",
+                                      "final_data"),
+                             ext = c("rds", "csv"), 
+                             test_output = FALSE, 
+                             previous_data = FALSE) {
+  
+  if (previous_data){
+      file_name <- dplyr::case_match(
+      type,
+      "error_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_error-summary"),
+      "dupe_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_dupes"),
+      "clean_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_clean-data"),
+      "ldp_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_individuals-with-ldp"),
+      "final_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_final-data"))
+  } else {
+    file_name <- dplyr::case_match(
     type,
     "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
     "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"),
     "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
     "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
-    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data")
-  )
+    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data"))
+  }
   
   mi_data_path <- get_file_path(
-    directory = get_mi_year_dir("data", test_output = test_output),
+    directory = get_mi_year_dir("data", test_output = test_output, previous_data = previous_data),
     file_name = file_name,
     ext = ext, 
     check_mode = "write"
@@ -114,11 +132,17 @@ test_output = FALSE) {
 #' @return the file path to the final mi report output in html format.
 #' 
 #' 
-get_mi_output_path <- function(test_output = FALSE) {
+get_mi_output_path <- function(test_output = FALSE, 
+                               previous_data = FALSE) {
+  
+  if (previous_data){
+  file_name <- stringr::str_glue("{previous_end_date}_management-report.html")    
+  }else{
   file_name <- stringr::str_glue("{end_date}_management-report.html")
+  }
   
   mi_output_path <- get_file_path(
-    directory = get_mi_year_dir("output", test_output = test_output),
+    directory = get_mi_year_dir("output", test_output = test_output, previous_data = previous_data),
     file_name = file_name, 
     check_mode = "write"
   )
