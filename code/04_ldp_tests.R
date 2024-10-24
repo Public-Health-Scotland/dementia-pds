@@ -37,13 +37,13 @@ previous_data <- read_rds(get_mi_data_path(type = "final_data",
 ### Produce cross year tests ---------------------------------------------------
 
 # create a cross year comparison - Health Board level
-cross_yr_comparison_hb <- cross_year_measures(latest_data, var = health_board)
+cross_yr_comparison_hb <- cross_year_measures(latest_data, var = health_board) %>% 
+                          write_tests_xlsx(sheet_name = "cross_yr_hb")  
   
 # create a cross year comparison - IJB level
-cross_yr_comparison_ijb <- cross_year_measures(latest_data, var = ijb)
+cross_yr_comparison_ijb <- cross_year_measures(latest_data, var = ijb) %>% 
+                           write_tests_xlsx(sheet_name = "cross_yr_ijb")
 
-
-## TODO - write to excel workbook 
 
 
 ### Produce comparison to previous quarter submission --------------------------
@@ -51,17 +51,16 @@ cross_yr_comparison_ijb <- cross_year_measures(latest_data, var = ijb)
 hb_comparison <- produce_test_comparison(calculate_measures(previous_data, 
                                                             var = health_board),
                                          calculate_measures(latest_data, 
-                                                            var = health_board))
+                                                            var = health_board)) %>% 
+                  arrange(fy, measure) %>% 
+                  write_tests_xlsx(sheet_name = "HB_comparison")
 
 ijb_comparison <- produce_test_comparison(calculate_measures(previous_data, 
                                                              var = ijb),
                                           calculate_measures(latest_data, 
-                                                             var = ijb))
-
-total_comparison <- bind_rows(hb_comparison, ijb_comparison) %>% 
-                    arrange(fy, measure)
-
-## TODO - write to excel workbook 
+                                                             var = ijb)) %>% 
+                  arrange(fy, measure) %>%  
+                  write_tests_xlsx(sheet_name = "IJB_comparison")
 
 
 # End of Script # 
