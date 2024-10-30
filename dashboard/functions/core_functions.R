@@ -13,7 +13,9 @@ make_table <- function(input_data_table,
                        rows_to_display = 20,
                        filter = "none",
                        ordering = TRUE,
-                       right_align = NULL
+                       right_align = NULL,
+                       selected = NULL,
+                       table_elements = "tip"
 ){
 
   # Take out underscores in column names for display purposes
@@ -24,10 +26,11 @@ make_table <- function(input_data_table,
                       rownames = FALSE,
                       filter=filter,
                       colnames = table_colnames,
+                      selection = list(selected = selected),
                       options = list(pageLength = rows_to_display,
                                      scrollX = FALSE,
                                      scrollY = FALSE,
-                                     dom = 'tip',
+                                     dom = table_elements,
                                      ordering = ordering,
                                      autoWidth = TRUE,
                                      columnDefs = list(list(className = 'dt-right', targets = right_align)),
@@ -42,7 +45,7 @@ make_table <- function(input_data_table,
   return(dt)
 }
 
-#plot referrals function
+#plot monthly referrals function
 
 plot_referrals <- function(data, 
                            scotland = FALSE){ 
@@ -118,27 +121,28 @@ plot_referrals <- function(data,
 }
 
 # trend plot function
-plot_trend <- function(data){
+plot_trend <- function(data, measure){
   
   yaxis_plots[["title"]] <- ""
   xaxis_plots[["title"]] <- ""
   
   data %<>%
     
-    select(ijb, fy, rate) %>%
-    distinct(ijb, fy, .keep_all = T) %>% 
-    mutate(rate = as.numeric(substr(rate,1,5)))
+    select(ijb, fy, {{measure}}) %>%
+    filter(!is.na({{measure}})) %>% 
+    distinct(ijb, fy, .keep_all = T)
+
   
   
   plot <- data %>%
     
     ggplot(aes(x = fy,
-               y = rate,
+               y = {{measure}},
                group = ijb,
                colour = ijb,
                text = paste0(ijb, "<br>",
                              fy, "<br>",
-                             rate, "%"))) +
+                             {{measure}}, "%"))) +
     
     geom_point() +
     
@@ -166,17 +170,17 @@ plot_trend <- function(data){
 
 # bar chart for proportion of referrals
 
-proportion_bar_chart <- function(data){
+proportion_bar_chart <- function(data, x_text_angle = 45, legend = "none"){
   
   yaxis_plots[["title"]] <- ""
   xaxis_plots[["title"]] <- ""
   
   data %<>% filter(type != "Unknown") 
   
-  plot <-  data %>% ggplot(aes(x = type, y = total_referrals/sum(total_referrals)*100, fill = type,
+  plot <-  data %>% ggplot(aes(x = type, y = total_referrals/sum(total_referrals)*100, fill = sex,
                                 text = paste0(type, "<br>",
                                               "Proportion of total referrals: ", round(total_referrals/sum(total_referrals)*100,1), "%"))) +
-    geom_col() +
+    geom_col(position=position_dodge()) +
     
     scale_y_continuous(limits = c(0, NA),
                        labels=function(x) paste0(x,"%")) +
@@ -184,8 +188,8 @@ proportion_bar_chart <- function(data){
     phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
     
     theme(legend.title = element_blank(),
-          legend.position = "none",
-          axis.text.x = element_text(angle=45))
+          legend.position = legend,
+          axis.text.x = element_text(angle=x_text_angle))
   
   ggplotly(plot, tooltip = "text") %>%
     
@@ -196,19 +200,19 @@ proportion_bar_chart <- function(data){
   
 }
 
-# bar chart for ldp
+# bar chart for ldp percentage
 
-percent_met_bar_chart <- function(data){
+percent_met_bar_chart <- function(data, x_text_angle = 45, legend = "none"){
   
   yaxis_plots[["title"]] <- ""
   xaxis_plots[["title"]] <- ""
   
   data %<>% filter(type != "Unknown") 
   
-  plot <-  data %>% ggplot(aes(type, percent_met, fill = type,
+  plot <-  data %>% ggplot(aes(type, percent_met, fill = sex,
                                text = paste0(type, "<br>",
                                "Percentage of Referrals Achieved LDP Standard: ", percent_met, "%"))) +
-    geom_col() +
+    geom_col(position=position_dodge()) +
     
     scale_y_continuous(limits = c(0, 100),
                        labels=function(x) paste0(x,"%")) +
@@ -216,8 +220,8 @@ percent_met_bar_chart <- function(data){
     phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
     
     theme(legend.title = element_blank(),
-          legend.position = "none",
-          axis.text.x = element_text(angle=45))
+          legend.position = legend,
+          axis.text.x = element_text(angle=x_text_angle))
   
   ggplotly(plot, tooltip = "text") %>%
     

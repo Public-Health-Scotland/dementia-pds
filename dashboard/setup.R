@@ -44,9 +44,9 @@ source(here("dashboard/data_setup/data_load_shiny.R"))
 provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
                            "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
 
-#included_years <- c(finalised_years, provisional_year)
+included_years <- c(finalised_years, provisional_year)
 
-included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
+#included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
 
 home_list <- c("Dementia PDS" = "about",
                "Using the Dashboard" = "use",
@@ -54,11 +54,14 @@ home_list <- c("Dementia PDS" = "about",
                #"Data Definitions" = "defs",
                "Accessibility" = "accessibility")
 
+trend_list <- c("Percentage of LDP standard achieved" = "pds_perc_trend",
+                "Percentage of estimated diagnoses referred to PDS" = "exp_perc_trend")
+
 data_list <- c("Subtype of Dementia" = "data_subtype",
                "Stage of Dementia" = "data_stage",
                "PDS Referral Source" = "data_referral",
                "Model of Care" = "data_model",
-               "Waiting Times" = "waiting_times"
+               "PDS Pathways" = "waiting_times"
 )
 
 demographics_list <- c("Age" = "data_age",

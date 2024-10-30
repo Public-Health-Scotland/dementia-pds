@@ -49,6 +49,12 @@
       --phs-rust-30: #EEC4BA;
       --phs-rust-10: #F9EBE8;
   }
+  
+/* color of selected row in data table */
+table.dataTable tr.active td, table.dataTable tr.active {
+    box-shadow: inset 0 0 0 9999px #3F3685;
+    font-weight: 600;
+}
 
 /* Setting header colour */
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
@@ -374,26 +380,30 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 }
 
 .btn.radiobtn.btn-primary.active, .btn.radiobtn.btn-primary:active {
-  background-color: var(--phs-blue-80); 
+  background-color: var(--phs-purple-80); 
   border-radius: 0px;
-  border-color: #FFFFFF;
+  font-size: 14pt;
+  font-weight: 600;
+  border-color: var(--phs-purple);
   
 } 
 
 .btn.radiobtn.btn-primary.focus, .btn.radiobtn.btn-primary:focus {
-  background-color: var(--phs-blue-80); 
-  border-radius: 0px; 
-  border-color: #FFFFFF; 
+  background-color: var(--phs-purple-80); 
+  border-radius: 0px;
+  font-size: 14pt;
+  font-weight: 600;
+  border-color: var(--phs-purple);
   
 } 
 
 .btn.radiobtn.hover, .btn.radiobtn:hover {
-    background-color: var(--phs-blue-80);
+    background-color: var(--phs-purple-80);
     border-radius: 0px;
-    border-color: var(--phs-blue-80);
+    border-color: var(--phs-purple-80);
 }
 
-/*intro page ldp description box */
+/*intro page ldp description box intro page*/
 .box.box-solid.bg-blue { background-color: var(--phs-blue-10) ; padding: 4px; border: 2px solid var(--phs-blue-50)} 
 
 /*value box for page 1 and 2 */
@@ -403,9 +413,13 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 .box.box-solid.bg-black {background-color: #FFFFFF; padding: 0px; margin-bottom: 10px; margin-left: 0px} 
 .box-header {background-color: var(--phs-blue-10); padding: 4px}
 .box-title {margin-top: 3px; margin-bottom: -12px; padding: 4px}
-.box-body {padding: 5px}
+.box-body {padding: 8px}
 .col-sm-5 {padding-right: 4px; padding-left: 4px}
 .col-sm-7 {padding-right: 4px; padding-left: 4px}
+
+
+
+
 
 /* Hack to get the colours we want on shinydashboard varBox */
 .small-box.bg-green { background-color:var(--phs-green); !important; color:#000000 !important; }

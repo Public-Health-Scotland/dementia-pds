@@ -58,7 +58,8 @@ output$error_table <- renderUI({HTML(
   summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1),
             .groups = "drop") %>%
   bind_rows(
-    err %>% 
+    err %>%
+      filter(fy %in% included_years) %>%
       group_by(fy = "All", health_board) %>% 
       summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1),
                 .groups = "drop")) %>%
@@ -90,6 +91,7 @@ err %>%
             .groups = "drop") %>%
   bind_rows(
     err %>%
+      filter(fy %in% included_years) %>%
       group_by(fy = "All", health_board, ijb) %>% 
       summarise(records = sum(records),
                 .groups = "drop")) %>%

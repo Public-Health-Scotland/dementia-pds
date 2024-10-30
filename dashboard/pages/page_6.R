@@ -74,7 +74,7 @@ conditionalPanel(
              a("Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020.", href="https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/"),
              "Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report."),
            p("For financial years ",
-             em("2021/22, 2022/23 and 2023/24"),
+             em("2021/22 and 2022/23"),
              " the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates."),
            p("Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018."),
     width = 12)) #fluid Row

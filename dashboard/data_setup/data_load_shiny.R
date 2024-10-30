@@ -27,7 +27,18 @@ data_age <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_age.csv")
 data_simd <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_simd.csv")
 data_accom <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_accom.csv")
 
-# 2 convert data types ----
+
+# 2 read in error data ----
+
+
+err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
+  
+  mutate(ijb = if_else(is.na(ijb),
+                       "Unknown",
+                       str_sub(ijb, 11, -1)))
+
+# 3 convert data types ----
+
 
 pds_plot_data %<>%
   filter(!is.na(ijb)) %>%
@@ -39,57 +50,11 @@ annual_table_data$ijb <- factor(annual_table_data$ijb, levels=unique(annual_tabl
 annual_table_data$fy <- as.factor(annual_table_data$fy)
 annual_table_data$ldp<- as.factor(annual_table_data$ldp)
 
-
-# 3 read in additional data ----
-
-# error_summary <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
-#   mutate(ijb          = case_when(is.na(ijb) ~ "Unknown",
-#                                   ijb == "Scotland" ~ ijb,
-#                                   TRUE ~ str_sub(ijb, 11, -1))
-#          )
-# data_error <- as.data.frame(error_summary)
-
-err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
-  
-  mutate(ijb = if_else(is.na(ijb),
-                       "Unknown",
-                       str_sub(ijb, 11, -1)))
-
-
-
-# 4 convert data types ----
-
-
 data_wait$health_board <- as.factor(data_wait$health_board)
 data_wait$fy <- as.factor(data_wait$fy)
 data_wait$simd <- as.factor(data_wait$simd)
 data_wait$sex <- as.factor(data_wait$sex)
 data_wait$ijb <- as.factor(data_wait$ijb)
-
-# data_wait_1 <- data_wait
-# data_wait_1 <- subset(data_wait_1,data_wait_1$ijb != "All")
-
-# reshape wait times data
-# data_wait_reshaped <- data_wait %>%  pivot_longer(cols=c('median_diagnosis_to_referral', 'median_referral_to_contact', 'median_diagnosis_to_contact'),
-#                     names_to='measure',
-#                     values_to='median_n_days') %>% 
-#   mutate(measure = substring(measure, 8))
-# 
-# data_wait_reshaped$health_board <- as.factor(data_wait_reshaped$health_board)
-# data_wait_reshaped$fy <- as.factor(data_wait_reshaped$fy)
-# data_wait_reshaped$simd <- as.factor(data_wait_reshaped$simd)
-# data_wait_reshaped$sex <- as.factor(data_wait_reshaped$sex)
-# 
-# 
-# data_wait_reshaped <- set_colnames(data_wait_reshaped,c("health_board","IJB","fy","Gender","SIMD","Referrals","Measure","Median_days"))
-# 
-# data_wait_reshaped_1 <- data_wait_reshaped[data_wait_reshaped$IJB != "All",] 
-
-
-# data_wait_reshaped$IJB <- as.factor(data_wait_reshaped$IJB)
-# data_wait_reshaped_1$IJB <- as.factor(data_wait_reshaped_1$IJB)
-# 
-# tabyl(data_wait_reshaped_1$IJB)
 
 data_subtype$health_board <- as.factor(data_subtype$health_board)
 data_subtype$fy <- as.factor(data_subtype$fy)
@@ -99,7 +64,9 @@ data_subtype$type <- as.factor(data_subtype$type)
 data_stage$health_board <- as.factor(data_stage$health_board)
 data_stage$fy <- as.factor(data_stage$fy)
 data_stage$sex <- as.factor(data_stage$sex)
-data_stage$type <- as.factor(data_stage$type)
+data_stage$type <- factor(data_stage$type, levels = c("Early (Mild) Stage", "Mid (Moderate) Stage", "Late (Severe) Stage", "Yet to be determined", "Not Known"))
+data_stage %<>% arrange(type) 
+
 
 data_referral$health_board <- as.factor(data_referral$health_board)
 data_referral$fy <- as.factor(data_referral$fy)
