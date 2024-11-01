@@ -189,8 +189,7 @@ tabPanel(title = "Trend",
       
       plotlyOutput("trend_plot_2")
     ) # cond panel 2
-      
-      
+  
 ), # tabpanel
 
 
@@ -319,22 +318,26 @@ tabPanel(title = "Additional Analysis",
                
                fluidRow(
                  # outputs
-                 h2(htmlOutput("hb_table_title_wait")),
-                 column(
-                   radioButtons("select_wait_table",
+                 h2(htmlOutput("hb_ijb_table_title_wait")),
+                 column(radioButtons("select_wait_table",
                                 label = "In the table below show Scotland and: ",
                                 choices = c("Health Boards", "Integration Joint Boards"),
                                 selected = "Health Boards",
                                 inline = TRUE
                    ), width = 6),
-                 DT::dataTableOutput("table_hb_wait"),
+                 DT::dataTableOutput("table_hb_ijb_wait"),
                  linebreaks(2),
-                 h2(htmlOutput("ijb_table_title_wait")),
-                 DT::dataTableOutput("table_ijb_wait"),
+                 h2(htmlOutput("table_wait_2_title")),
+             #linebreaks(1),
+               column(selectInput("select_hb_ijb_wait_2",
+                                   label = "Select Health Board/IJB to show in table:",
+                                   choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"), width = 4),
+                 DT::dataTableOutput("table_hb_ijb_wait_2"),
+             linebreaks(1),
                  # h2(htmlOutput("")),
                  # plotlyOutput("", height = "600px"))
                
-             ) #fluid Row
+               ) # fluidrow
            ) #cond panel 2
          ) # main panel
          )  #sidebar layout

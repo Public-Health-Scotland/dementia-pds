@@ -153,15 +153,6 @@ annual_table_data %<>%  mutate(exp_perc = if_else(!is.na(diagnoses), round(refer
 annual_table_data %>% 
 write_csv("//conf/dementia/A&I/Outputs/dashboard/data/annual_table_data.csv")
 
-rm(exp)
-rm(board)
-rm(prepare_data)
-rm(pds)
-rm(den_ijb)
-rm(num_ijb)
-rm(pds_rate_ijb)
-
-
 
 # 7 read in individual data ----
 ldp <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output)) %>% 
@@ -189,8 +180,7 @@ variables <- c("ethnic_group",
                "pds_referral_source",
                "pds_uptake_decision",
                "pds_status",
-               "carers_support",                         
-               "termination_or_transition_reason")
+               "carers_support")
 
 ldp %<>% mutate(across(all_of(variables), ~substring(.x, 3))) %>% 
   mutate(across(all_of(variables), ~if_else(is.na(.x), "Not Known", .x))) %>% 
@@ -214,128 +204,36 @@ ldp_wait_times <- ldp %>%
          contact_to_termination_days = time_length(interval(date_of_initial_first_contact, termination_or_transition_date), "days")
                )
 
+
+ldp_wait_times %<>%
+  mutate(termination_or_transition_reason = if_else(grepl(paste(exempt_reasons, collapse='|'), termination_or_transition_reason), paste0(termination_or_transition_reason, " (exempt from LDP Standard)"), termination_or_transition_reason)) %>%
+  mutate(termination_or_transition_reason = substring(termination_or_transition_reason, 3)) %>% 
+  mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_date), "PDS Active", termination_or_transition_reason)) %>%
+  mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_reason), "Unknown Reason", termination_or_transition_reason)) %>%
+  mutate(termination_or_transition_reason = str_trim(termination_or_transition_reason, "left"))
+
+
 # create summary
-data_wait <- bind_rows(
-  
-ldp_wait_times %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", simd = "All") %>% 
-   summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-             median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-             median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop"),
+source(here("dashboard/functions/summarise_by_variable.R"))
 
-ldp_wait_times %>% group_by(health_board, ijb = "All", fy, sex = "All", simd = "All") %>% 
-  summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-            median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-            median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop"),
-
-ldp_wait_times %>% group_by(health_board, ijb, fy, sex = "All", simd = "All") %>% 
-  summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-            median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-            median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop"),
-
-ldp_wait_times %>% group_by(health_board, ijb, fy, sex, simd = "All") %>% 
-  summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-            median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-            median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop"),
-
-ldp_wait_times %>% group_by(health_board, ijb, fy, sex, simd) %>% 
-  summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-            median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-            median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop"),
-
-ldp_wait_times %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, simd = "All") %>% 
-  summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-            median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-            median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop"),
-
-ldp_wait_times %>% group_by(health_board, ijb = "All", fy, sex, simd = "All") %>% 
-  summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-            median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-            median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop"),
-
-ldp_wait_times %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, simd) %>% 
-  summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-            median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-            median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop"),
-
-ldp_wait_times %>% group_by(health_board, ijb = "All", fy, sex, simd) %>% 
-  summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-            median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-            median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop"),
-
-ldp_wait_times %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", simd) %>% 
-  summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-            median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-            median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop"),
-
-ldp_wait_times %>% group_by(health_board, ijb = "All", fy, sex = "All", simd) %>% 
-  summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-            median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-            median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop"),
-
-ldp_wait_times %>% group_by(health_board, ijb, fy, sex = "All", simd) %>% 
-  summarise(median_diagnosis_to_referral = median(diagnosis_to_referral_days, na.rm = T),
-            median_referral_to_allocation = median(referral_to_allocation_days, na.rm = T),
-            median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
-            median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
-            median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-            median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
-            total_referrals = sum(n_referrals), .groups = "drop")
-  )
+data_wait <- summarise_pathways(ldp_wait_times)
 
 data_wait %<>% mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb))
+
+data_wait_2 <- summarise_pathways_2(ldp_wait_times)
+
+data_wait_2 %<>% mutate(ijb = if_else(ijb == "All", health_board, ijb))
+
 
 write_csv(data_wait, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_wait.csv")
 
-rm(ldp_wait_times)
+write_csv(data_wait_2, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_wait_2.csv")
+
 
 # 9 variable analysis tables ----
 
-source(here("dashboard/functions/summarise_by_variable.R"))
 
 data_subtype <- summarise_by_variable(subtype_of_dementia)
 data_stage <- summarise_by_variable(clinical_impression_of_stage_of_illness)
@@ -360,77 +258,9 @@ write_csv(data_simd,
 write_csv(data_accom, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_accom.csv")
 
-rm(ldp)
 
 
 
 
 ##### END OF SCRIPT #####
 
-
-
-
-
-# ldp %>% group_by(health_board, accommodation_type) %>%
-#   summarise(total_referrals = sum(n_referrals),
-#             exempt_referrals = sum(ldp == "exempt"))
-
-
-# vb_2_data<- annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == provisional_year,
-#                                        ldp == "complete" | ldp == "exempt" | ldp == "total") %>% select(-diagnoses) %>% 
-#                           pivot_wider(values_from = referrals, names_from = ldp)
-# 
-# 
-# 
-# vb_text <- paste0(round(100*(vb_2_data$complete + vb_2_data$exempt)/vb_2_data$total, 1), "%")
-# 
-# 
-# annual_table_data %>%
-#   filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
-#   filter(fy == provisional_year) %>%
-#   group_by(health_board)%>%
-#   select(health_board,ldp,referrals,rate)%>%
-#   pivot_wider(names_from=ldp,values_from=referrals) %>% relocate(total, .after = health_board) %>%
-#   mutate(health_board = if_else(health_board == "Scotland","AAA Scotland", health_board)) %>% 
-#   arrange(health_board) %>% 
-#   mutate(health_board = if_else(health_board == "AAA Scotland","Scotland", health_board)) %>% 
-#   formatCurrency(., currency = "", interval = 3, mark = ",") %>% 
-#   set_colnames(c("Health Board","Total Referrals", "% Met Standard/Exempt","Standard Met","Exempt","Standard Not Met","PDS Ongoing")) 
-
-# data_wait %>% filter(fy == provisional_year, sex == "All", ijb == "All", simd == "All") %>% 
-#   select(health_board, total_referrals, median_diagnosis_to_referral, median_referral_to_contact, median_diagnosis_to_contact)
-
-
-# test<-annual_table_data %>% 
-#    filter(health_board == "NHS Fife" | health_board == "Scotland")
-# 
-# plot_trend(test)
-# 
-# test %<>%
-#   
-#   select(health_board, fy, rate) %>%
-#   distinct(health_board, fy, .keep_all = T) %>% 
-#   mutate(rate = as.numeric(substr(rate,1,5)))
-# 
-# 
-# plot <- test %>%
-#   
-#   ggplot(aes(x = fy,
-#              y = rate,
-#              group = health_board,
-#              text = paste0(health_board, "<br>",
-#                            fy, "<br>",
-#                            rate, "%")))
-# 
-# plot
-# data_simd %>% filter(health_board == "Scotland", fy == provisional_year, sex == "All") %>% 
-# 
-# proportion_bar_chart()
-
-# test<- data_simd%>% filter(health_board == "Scotland", fy == provisional_year, sex == "All")
-# 
-# 
-# test %>% 
-#   select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met) %>% 
-#   mutate(percent_met = paste0(percent_met,"%")) %>% 
-#   set_colnames(c("","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))

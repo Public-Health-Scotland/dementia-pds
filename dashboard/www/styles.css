@@ -1,6 +1,6 @@
-/* to avoid red text error messages in the whole app, take out for testing 
+/* to avoid red text error messages in the whole app, take out for testing  */
 .shiny-output-error { visibility: hidden; }
-.shiny-output-error:before { visibility: hidden; } */
+.shiny-output-error:before { visibility: hidden; }
 
 /* Define colours */
   :root{
