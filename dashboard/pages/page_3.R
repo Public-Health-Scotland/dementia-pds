@@ -1,22 +1,51 @@
 ####################### Page 3: TREND #######################
+#UI ----
+output$page_3_ui <-  renderUI({
 
-#output$page_3_ui <-  renderUI({
+  div(
+    conditionalPanel(
+      condition= 'input.trend_tab == "pds_perc_trend"',
+      fluidRow(
+        column(
+          h2(htmlOutput("table_pds_trend_title")), width = 12)),
+      fluidRow(
+        column(
+          radioButtons("select_pds_trend_table",
+                       label = "In the table below show Scotland and: ",
+                       choices = c("Health Boards", "Integration Joint Boards"),
+                       selected = "Health Boards",
+                       inline = TRUE
+          ), width = 3)),
+      DT::dataTableOutput("table_hb_ijb_trend"),
+      linebreaks(1),
+      h2(htmlOutput("chart_title_trend")),
+      fluidRow(
+        column(selectInput("select_hb_ijb_trend",
+                           label = "Select Health Board/IJB to show in chart:",
+                           choices = c(boards, ijb_list), width = "100%"), width = 3)),
+      
+      plotlyOutput("trend_plot")
+    ), # cond panel 1
+    conditionalPanel(
+      condition= 'input.trend_tab == "exp_perc_trend"',
+      fluidRow(
+        column(
+          h2("Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support; Scotland and Health Boards"),
+          DT::dataTableOutput("table_hb_trend_2"),
+          linebreaks(1),
+          h2(htmlOutput("chart_title_trend_2")), width = 12)),
+      fluidRow(
+        column(selectInput("select_hb_ijb_trend_2",
+                           label = "Select Health Board to show in chart:",
+                           choices = boards, width = "100%"), width = 3)),
+      
+      plotlyOutput("trend_plot_2")
+    ) # cond panel 2
+ 	     ) # div
+ }) # renderUI
+   
 
-  #div(
-	     #fluidRow(
-#             h3("Notes:"),
-# 	           p(strong("Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.")),
-# 	           p(("LDP Standard performance figures are not provided until data is available for the full financial year.")),
-         
-	       
-	         
-	         
-# 	       ) #fluidRow
-# 	     ) # div
-# }) # renderUI
-#   
-
-
+# SERVER----
 #data table for conditional panel 1 ----    
 
 output$table_pds_trend_title <- renderUI({

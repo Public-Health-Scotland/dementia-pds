@@ -1,15 +1,8 @@
 ####################### Page 2: HEALTH BOARDS LDP#######################
-# ui ----
+# UI ----
 output$page_2_ui <-  renderUI({
   
   div(
-    # 	     fluidRow(
-    #             h3("Notes:"),
-    # 	           p(strong("Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.")),
-    # 	           p(strong(""),
-    #             em(" "))
-    #             	      ), #fluidrow
-    # 	     linebreaks(2),
     fluidRow(
       valueBox(
         value = textOutput("hb_exp_perc"),
@@ -29,11 +22,21 @@ output$page_2_ui <-  renderUI({
       box(htmlOutput("hb_pds_text"),
           title = (p(strong("How is this figure calculated?"))),
           width = 5, background = "black"), #box
-      
-      
-    ) #fluidRow
-  ) # div
+         ), #fluidRow
+    fluidRow(
+      linebreaks(2),
+      h2(htmlOutput("table_title_p2")),
+      DT::dataTableOutput("table_hb_ijb"),
+      linebreaks(2),
+      h2(htmlOutput("chart_title_p2")),
+      plotlyOutput("hb_ijb_plot"),
+      linebreaks(2)
+    )# fluidRow
+   ) # div
 }) # renderUI
+
+
+#SERVER ----
 
 # page 2 title ----
 
@@ -95,7 +98,7 @@ output$table_hb_ijb <- DT::renderDataTable({
  })
 
 
-#referrals plot
+#referrals monthly plot ----
 output$chart_title_p2 <- renderUI({HTML(paste0("Number of Individuals Diagnosed and Referred for PDS: Financial Year ", 
                                               input$select_year_p2, ", ", input$select_hb_p2, " and Integration Joint Board(s)"))
 })

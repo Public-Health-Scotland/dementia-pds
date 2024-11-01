@@ -206,11 +206,13 @@ ldp_wait_times <- ldp %>%
 
 
 ldp_wait_times %<>%
-  mutate(termination_or_transition_reason = if_else(grepl(paste(exempt_reasons, collapse='|'), termination_or_transition_reason), paste0(termination_or_transition_reason, " (exempt from LDP Standard)"), termination_or_transition_reason)) %>%
+  mutate(termination_or_transition_reason = if_else(ldp == 'exempt', paste0(termination_or_transition_reason, " (exempt from LDP Standard)"), termination_or_transition_reason)) %>%
   mutate(termination_or_transition_reason = substring(termination_or_transition_reason, 3)) %>% 
   mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_date), "PDS Active", termination_or_transition_reason)) %>%
   mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_reason), "Unknown Reason", termination_or_transition_reason)) %>%
   mutate(termination_or_transition_reason = str_trim(termination_or_transition_reason, "left"))
+
+er<-ldp_wait_times %>% filter(termination_or_transition_reason == "Service user has terminated PDS early/refused")
 
 
 # create summary
@@ -263,4 +265,3 @@ write_csv(data_accom,
 
 
 ##### END OF SCRIPT #####
-

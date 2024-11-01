@@ -60,7 +60,8 @@ data_wait$ijb <- as.factor(data_wait$ijb)
 
 data_wait_2$health_board <- as.factor(data_wait_2$health_board)
 data_wait_2$fy <- as.factor(data_wait_2$fy)
-data_wait_2$termination_or_transition_reason <- factor(data_wait_2$termination_or_transition_reason, levels = unique(data_wait_2$termination_or_transition_reason)[c(1,2,9,11,8,6,7,12,4,5,10,3)])
+data_wait_2$termination_or_transition_reason <- factor(data_wait_2$termination_or_transition_reason,
+                                                       levels = unique(data_wait_2$termination_or_transition_reason)[c(1,2,12,10,8,15,11,6,13,3,9,16,5,7,14,4)])
 data_wait_2$sex <- as.factor(data_wait_2$sex)
 data_wait_2$ijb <- as.factor(data_wait_2$ijb)
 data_wait_2 %<>% arrange(termination_or_transition_reason) 

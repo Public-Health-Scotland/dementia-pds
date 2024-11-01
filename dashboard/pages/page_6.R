@@ -1,5 +1,5 @@
 ####################### Page 6: methodology #######################
-
+# UI ----
 output$page_6_ui <-  renderUI({
 
   div(
@@ -19,9 +19,7 @@ linebreaks(1),
 
     conditionalPanel(
       condition= 'input.method_tab == "ldp_class"',
-      # inputs
-      
-      
+   
       fluidRow(column(
         p("The following steps are taken to ensure the data is of sufficient quality for analysis:"),
         

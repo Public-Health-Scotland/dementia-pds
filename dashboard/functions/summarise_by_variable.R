@@ -218,25 +218,25 @@ summarise_pathways_2 <- function(data){
   bind_rows(
     
     data %>% filter(ldp != "exempt") %>% 
-      group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", termination_or_transition_reason = "All reasons (excluding those exempt from LDP Standard)") %>% 
+      group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", termination_or_transition_reason = "All reasons") %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                .groups = "drop"),
     
     data %>% filter(ldp != "exempt") %>% 
-        group_by(health_board, ijb = "All", fy, sex = "All", termination_or_transition_reason = "All reasons (excluding those exempt from LDP Standard)") %>% 
+        group_by(health_board, ijb = "All", fy, sex = "All", termination_or_transition_reason = "All reasons") %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
     data %>% filter(ldp != "exempt") %>% 
-      group_by(health_board, ijb, fy, sex = "All", termination_or_transition_reason = "All reasons (excluding those exempt from LDP Standard)") %>% 
+      group_by(health_board, ijb, fy, sex = "All", termination_or_transition_reason = "All reasons") %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
     data %>% filter(ldp != "exempt") %>%  
-      group_by(health_board, ijb, fy, sex, termination_or_transition_reason = "All reasons (excluding those exempt from LDP Standard)") %>% 
+      group_by(health_board, ijb, fy, sex, termination_or_transition_reason = "All reasons") %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
@@ -247,13 +247,13 @@ summarise_pathways_2 <- function(data){
                 .groups = "drop"),
     
     data %>% filter(ldp != "exempt") %>%  
-      group_by(health_board = "Scotland", ijb = "All", fy, sex, termination_or_transition_reason = "All reasons (excluding those exempt from LDP Standard)") %>% 
+      group_by(health_board = "Scotland", ijb = "All", fy, sex, termination_or_transition_reason = "All reasons") %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
     data %>% filter(ldp != "exempt") %>% 
-      group_by(health_board, ijb = "All", fy, sex, termination_or_transition_reason = "All reasons (excluding those exempt from LDP Standard)") %>% 
+      group_by(health_board, ijb = "All", fy, sex, termination_or_transition_reason = "All reasons") %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),

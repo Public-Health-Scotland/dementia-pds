@@ -66,35 +66,9 @@ tabPanel(title = "Scotland LDP Standard",
                 choices = included_years,
                 selected= provisional_year
                 )),
-    
-    fluidRow(
     linebreaks(1),
-    uiOutput("page_1_ui"),
-    linebreaks(2),
-    h2(htmlOutput("chart_title_p1")),
-    plotlyOutput("ldp_scotland"),
-    linebreaks(2),
-    h2(htmlOutput("pds_table_title_p1")),
-    
-    fluidRow(column(
-      radioButtons("select_hb_ijb",
-                         label = "In the table below show Scotland and: ",
-                         choices = c("Health Boards", "Integration Joint Boards"),
-                         selected = "Health Boards",
-                         inline = TRUE
-    ), width = 3)),
-    
-    DT::dataTableOutput("table_pds"),
-    linebreaks(2),
-    #h2(htmlOutput("ijb_table_title_p1")),
-   # DT::dataTableOutput("table_ijb"),
-   # linebreaks(2),
-    h2(htmlOutput("hb_exp_table_title_p1")),
-    DT::dataTableOutput("table_hb_exp"),
-    linebreaks(2)
-    ),
-
-    ), # tabpanel
+    uiOutput("page_1_ui")
+   ), # tabpanel
 
 ##############################################.
 # PAGE 2: Health Boards LDP Standard  ----
@@ -104,7 +78,6 @@ tabPanel(title = "Health Boards LDP Standard",
          icon = icon_no_warning_fn("clipboard-list"),
          value = "ldp-hb",
 
-        # h1("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard - Health Board"),
          h1(htmlOutput("page_2_title")),
          linebreaks(1),
          fluidRow(
@@ -116,17 +89,9 @@ tabPanel(title = "Health Boards LDP Standard",
            selectInput("select_hb_p2",
                      label = "Health Board",
                      choices = boards)),
-         fluidRow(
          linebreaks(1),
-         uiOutput("page_2_ui"),
-         linebreaks(2),
-         h2(htmlOutput("table_title_p2")),
-         DT::dataTableOutput("table_hb_ijb"),
-         linebreaks(2),
-         h2(htmlOutput("chart_title_p2")),
-         plotlyOutput("hb_ijb_plot"),
-         linebreaks(2)),
-
+         uiOutput("page_2_ui")
+        
      ), # tabpanel
 
 ##############################################.
@@ -146,49 +111,7 @@ tabPanel(title = "Trend",
                           justified = T,
                           size = "lg"), width = 12)),
         
-         #  uiOutput("page_3_ui"),
-          # linebreaks(2),
-      conditionalPanel(
-        condition= 'input.trend_tab == "pds_perc_trend"',
-          fluidRow(
-            column(
-      h2(htmlOutput("table_pds_trend_title")), width = 12)),
-      fluidRow(
-        column(
-        radioButtons("select_pds_trend_table",
-                     label = "In the table below show Scotland and: ",
-                     choices = c("Health Boards", "Integration Joint Boards"),
-                     selected = "Health Boards",
-                     inline = TRUE
-        ), width = 3)),
-           DT::dataTableOutput("table_hb_ijb_trend"),
-           linebreaks(1),
-     # h2("Percentage of people referred for dementia PDS who received a minimum of one year’s support; Integration Joint Board"),
-        #   DT::dataTableOutput("table_ijb_trend"),
-          h2(htmlOutput("chart_title_trend")),
-      fluidRow(
-            column(selectInput("select_hb_ijb_trend",
-                                label = "Select Health Board/IJB to show in chart:",
-                                choices = c(boards, ijb_list), width = "100%"), width = 3)),
-      
-           plotlyOutput("trend_plot")
-      ), # cond panel 1
-    conditionalPanel(
-      condition= 'input.trend_tab == "exp_perc_trend"',
-      fluidRow(
-        column(
-     h2("Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support; Scotland and Health Boards"),
-        DT::dataTableOutput("table_hb_trend_2"),
-        linebreaks(1),
-        h2(htmlOutput("chart_title_trend_2")), width = 12)),
-      #  linebreaks(1),
-      fluidRow(
-        column(selectInput("select_hb_ijb_trend_2",
-                           label = "Select Health Board to show in chart:",
-                           choices = boards, width = "100%"), width = 3)),
-      
-      plotlyOutput("trend_plot_2")
-    ) # cond panel 2
+           uiOutput("page_3_ui")
   
 ), # tabpanel
 
@@ -226,37 +149,7 @@ tabPanel(title = "Demographics",
                                        choices = c("Scotland", boards)),width=6)),
                     
           
-             
-           # outputs
-          fluidRow(
-          #uiOutput("page_3_ui"),
-          #linebreaks(2),
-          h2(htmlOutput("table_title_demo")),
-          DT::dataTableOutput("table_demo"),
-          linebreaks(1),
-          h2(htmlOutput("chart_title_demo_referrals")),
-
-          conditionalPanel(condition= 'input.select_sex_demo == "All"',
-              radioButtons("select_sex_chart_1",
-                              label="Choose how genders are displayed in chart:",
-                              choices=c("show all genders combined" = "All",
-                                        "show female/male comparison" = "Male/Female"),
-                              inline =TRUE),
-            plotlyOutput("plot_demo_referrals_all", height = "600px"),
-            h2(htmlOutput("chart_title_demo_ldp_all")),
-            radioButtons("select_sex_chart_2",
-                         label="Choose how genders are displayed in chart:",
-                         choices=c("show all genders combined" = "All",
-                                   "show female/male comparison" = "Male/Female"),
-                         inline =TRUE),
-            plotlyOutput("plot_demo_ldp_all", height = "600px")),
-          
-          conditionalPanel(condition= 'input.select_sex_demo != "All"',
-            plotlyOutput("plot_demo_referrals", height = "600px"),
-            h2(htmlOutput("chart_title_demo_ldp")),
-            plotlyOutput("plot_demo_ldp", height = "600px"))
-          ),
-      
+           uiOutput("page_4_ui") 
           ) # main panel
          ) #sidebar layout
 
@@ -290,56 +183,8 @@ tabPanel(title = "Additional Analysis",
              column(selectInput("select_sex_add",
                                 label="Gender",
                                 choices=c("All", "Female", "Male")),width=6)),
-             conditionalPanel(
-               condition= 'input.select_data_add != "waiting_times"',
-             # inputs
-             
-             
-             fluidRow(column(selectInput("select_hb_add",
-                                         label = "Health Board",
-                                         choices = c("Scotland", boards)),width=6)),
-                      
-             
-             #uiOutput("page_5_ui"),
-             
-             fluidRow(
-               # outputs
-               h2(htmlOutput("table_title_add")),
-               DT::dataTableOutput("table_add"),
-               linebreaks(1),
-               h2(htmlOutput("chart_title_add_referrals")),
-               plotlyOutput("plot_add_referrals", height = "600px"),
-               h2(htmlOutput("chart_title_add")),
-               plotlyOutput("plot_add", height = "600px"))
-             ), #cond panel 1
-             
-             conditionalPanel(
-               condition = 'input.select_data_add == "waiting_times"',
-               
-               fluidRow(
-                 # outputs
-                 h2(htmlOutput("hb_ijb_table_title_wait")),
-                 column(radioButtons("select_wait_table",
-                                label = "In the table below show Scotland and: ",
-                                choices = c("Health Boards", "Integration Joint Boards"),
-                                selected = "Health Boards",
-                                inline = TRUE
-                   ), width = 6),
-                 DT::dataTableOutput("table_hb_ijb_wait"),
-                 linebreaks(2),
-                 h2(htmlOutput("table_wait_2_title")),
-             #linebreaks(1),
-               column(selectInput("select_hb_ijb_wait_2",
-                                   label = "Select Health Board/IJB to show in table:",
-                                   choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"), width = 4),
-                 DT::dataTableOutput("table_hb_ijb_wait_2"),
-             linebreaks(1),
-                 # h2(htmlOutput("")),
-                 # plotlyOutput("", height = "600px"))
-               
-               ) # fluidrow
-           ) #cond panel 2
-         ) # main panel
+             uiOutput("page_5_ui") 
+           ) # main panel
          )  #sidebar layout
      ), # tabpanel
 
@@ -353,11 +198,8 @@ tabPanel(title = "Methodology",
          value = "method",
          
          h1("Dementia Post-Diagnostic Support - Methodology"),
-         #linebreaks(1),
-        
-         fluidRow(
          uiOutput("page_6_ui")
-         )# fluid Row
+      
 ) # tabPanel
 
 ##############################################.
@@ -368,11 +210,9 @@ tabPanel(title = "Methodology",
 #          icon = icon_no_warning_fn("circle-check"),
 #          value = "quality",
 #          h1("Dementia Post-Diagnostic Support - Data Quality"),
-#          #linebreaks(1),
-# 
-#          fluidRow(
+#               
 #            uiOutput("page_7_ui")
-#          )# fluid Row
+#   
 # ) # tabPanel
 
 
@@ -382,7 +222,7 @@ tabPanel(title = "Methodology",
 ) # ui fluidpage
 
 
-# Server
+# SERVER
 
 server <- function(input, output, session) {
   
@@ -400,9 +240,8 @@ server <- function(input, output, session) {
 
     # Get functions
     source(here(here("dashboard/functions/core_functions.R")), local = TRUE)$value
-    source(file.path(here("dashboard/functions/intro_page_functions.R")), local = TRUE)$value
-    source(file.path(here("dashboard/functions/page_1_functions.R")), local = TRUE)$value
-
+    source(file.path(here("dashboard/functions/plot_functions.R")), local = TRUE)$value
+  
     # Get content for individual pages
     source(file.path(here("dashboard/pages/intro_page.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_1.R")), local = TRUE)$value

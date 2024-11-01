@@ -1,15 +1,8 @@
 ####################### Page 1: SCOTLAND LDP #######################
-# ui ----
+# UI ----
 output$page_1_ui <-  renderUI({
 
   div(
-# 	     fluidRow(
-#             h3("Notes:"),
-# 	           p(strong("Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.")),
-# 	           p(strong(""),
-#             em(" "))
-#             	      ), #fluidrow
-# 	     linebreaks(2),
     fluidRow(
       valueBox(
         value = textOutput("scot_exp_perc"),
@@ -29,12 +22,32 @@ output$page_1_ui <-  renderUI({
       box(htmlOutput("scot_pds_text"),
           title = (p(strong("How is this figure calculated?"))),
           width = 5, background = "black"), #box
+          ), #fluidRow
+    fluidRow(
+      linebreaks(2),
+      h2(htmlOutput("chart_title_p1")),
+      plotlyOutput("ldp_scotland"),
+      linebreaks(2),
+      h2(htmlOutput("pds_table_title_p1")),
       
+      fluidRow(column(
+        radioButtons("select_hb_ijb",
+                     label = "In the table below show Scotland and: ",
+                     choices = c("Health Boards", "Integration Joint Boards"),
+                     selected = "Health Boards",
+                     inline = TRUE
+        ), width = 3)),
       
-    ) #fluidRow
-  ) # div
+      DT::dataTableOutput("table_pds"),
+      linebreaks(2),
+      h2(htmlOutput("hb_exp_table_title_p1")),
+      DT::dataTableOutput("table_hb_exp"),
+      linebreaks(2)
+    ) # fluid Row
+      ) # div
 }) # renderUI
 
+#SERVER ----
 
 #value boxes data ----
 vb_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_p1, ldp == "total")}) 

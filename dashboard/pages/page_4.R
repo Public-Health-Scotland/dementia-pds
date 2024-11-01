@@ -1,18 +1,40 @@
 ####################### Page 4 DEMOGRAPHICS #######################
+#UI----
+output$page_4_ui <-  renderUI({
 
-# output$page_4_ui <-  renderUI({
+   div(
+     fluidRow(
+       #uiOutput("page_3_ui"),
+       #linebreaks(2),
+       h2(htmlOutput("table_title_demo")),
+       DT::dataTableOutput("table_demo"),
+       linebreaks(1),
+       h2(htmlOutput("chart_title_demo_referrals")),
+       
+       conditionalPanel(condition= 'input.select_sex_demo == "All"',
+                        radioButtons("select_sex_chart_1",
+                                     label="Choose how genders are displayed in chart:",
+                                     choices=c("show all genders combined" = "All",
+                                               "show female/male comparison" = "Male/Female"),
+                                     inline =TRUE),
+                        plotlyOutput("plot_demo_referrals_all", height = "600px"),
+                        h2(htmlOutput("chart_title_demo_ldp_all")),
+                        radioButtons("select_sex_chart_2",
+                                     label="Choose how genders are displayed in chart:",
+                                     choices=c("show all genders combined" = "All",
+                                               "show female/male comparison" = "Male/Female"),
+                                     inline =TRUE),
+                        plotlyOutput("plot_demo_ldp_all", height = "600px")),
+       
+       conditionalPanel(condition= 'input.select_sex_demo != "All"',
+                        plotlyOutput("plot_demo_referrals", height = "600px"),
+                        h2(htmlOutput("chart_title_demo_ldp")),
+                        plotlyOutput("plot_demo_ldp", height = "600px"))
+     ) # fluid Row
+    ) # div
+ }) # renderUI
 
-#   div(
-# 	     fluidRow(
-#             h3("Notes:"),
-# 	           p(strong("Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.")),
-# 	           p(("")),
-#
-# 	      ) #fluidrow
-#    ) # div
-# }) # renderUI
-
-
+# SERVER ----
 
 #filter data
 data_selected <- reactive({get(input$select_data_demo)})
@@ -20,7 +42,7 @@ data_selected <- reactive({get(input$select_data_demo)})
 data_demo <- reactive({data_selected() %>% filter(health_board == input$select_hb_demo, fy == input$select_year_demo)
                 })
 
-# create table
+# create table ----
 output$table_title_demo <- renderUI({HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support by ", 
                                                  
                                                  if (input$select_data_demo == "data_age"){
