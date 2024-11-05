@@ -4,7 +4,7 @@ output$page_1_ui <-  renderUI({
 
   div(
     fluidRow(
-      valueBox(
+      shinydashboard::valueBox(
         value = textOutput("scot_exp_perc"),
         subtitle = "of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support.",
         width = 7,
@@ -14,7 +14,7 @@ output$page_1_ui <-  renderUI({
           width = 5, background = "black", solidHeader = TRUE), #box background set to black in order to edit ccs styles
     ), #fluidRow
     fluidRow(
-      valueBox(
+      shinydashboard::valueBox(
         value = textOutput("scot_pds_perc"),
         subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
         width = 7,
@@ -24,11 +24,11 @@ output$page_1_ui <-  renderUI({
           width = 5, background = "black"), #box
           ), #fluidRow
     fluidRow(
-      linebreaks(2),
-      h2(htmlOutput("chart_title_p1")),
+      linebreaks(1),
+      h3(htmlOutput("chart_title_p1")),
       plotlyOutput("ldp_scotland"),
-      linebreaks(2),
-      h2(htmlOutput("pds_table_title_p1")),
+      linebreaks(1),
+      h3(htmlOutput("pds_table_title_p1")),
       
       fluidRow(column(
         radioButtons("select_hb_ijb",
@@ -36,13 +36,13 @@ output$page_1_ui <-  renderUI({
                      choices = c("Health Boards", "Integration Joint Boards"),
                      selected = "Health Boards",
                      inline = TRUE
-        ), width = 3)),
+        ), width = 4)),
       
       DT::dataTableOutput("table_pds"),
-      linebreaks(2),
-      h2(htmlOutput("hb_exp_table_title_p1")),
+      linebreaks(1),
+      h3(htmlOutput("hb_exp_table_title_p1")),
       DT::dataTableOutput("table_hb_exp"),
-      linebreaks(2)
+      linebreaks(1)
     ) # fluid Row
       ) # div
 }) # renderUI

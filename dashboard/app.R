@@ -97,12 +97,13 @@ tabPanel(title = "Health Boards LDP Standard",
 ##############################################.
 # PAGE 3: Trend  ----
 ##############################################.
-tabPanel(title = "Trend",
+tabPanel(title = "Trends",
          # Look at https://fontawesome.com/search?m=free for icons
          icon = icon_no_warning_fn("chart-line"),
-         value = "trend",
+         value = "trends",
          
-         h1("Dementia Post-Diagnostic Support - Trend"),
+         h1("Dementia Post-Diagnostic Support - Trends"),
+         linebreaks(1),
       fluidRow(column(
         
         radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
@@ -132,25 +133,23 @@ tabPanel(title = "Demographics",
                                           status = "primary",
                                           direction = "vertical", 
                                           justified = T,
-                                          size = "lg"), width = 3),
-         mainPanel(width = 9,
-           # inputs
-           fluidRow(
-                    column(selectInput("select_year_demo",
-                                           label = "Financial Year of Diagnosis",
-                                           choices = included_years,
-                                           selected = provisional_year),width=6),
-                    column(selectInput("select_sex_demo",
-                                        label="Gender",
-                                        choices=c("All", "Female", "Male")),width=6)),
-
-           fluidRow(column(selectInput("select_hb_demo",
-                                       label = "Health Board",
-                                       choices = c("Scotland", boards)),width=6)),
-                    
-          
+                                          size = "normal"
+                                          ), width = 2),
+           
+           mainPanel(width = 10,
+                     # inputs
+                       column(selectInput("select_year_demo",
+                                          label = "Financial Year of Diagnosis",
+                                          choices = included_years,
+                                          selected = provisional_year),
+                     
+                   
+                              selectInput("select_hb_demo",
+                                          label = "Health Board",
+                                          choices = c("Scotland", boards)),width=6),   
+        
            uiOutput("page_4_ui") 
-          ) # main panel
+           ) #main panel
          ) #sidebar layout
 
       ), # tabpanel
@@ -172,9 +171,9 @@ tabPanel(title = "Additional Analysis",
                                           status = "primary",
                                           direction = "vertical", 
                                           justified = T,
-                                          size = "lg"), width = 3),
+                                          size = "normal"), width = 2),
            
-           mainPanel(width = 9,
+           mainPanel(width = 10,
              fluidRow(
               column(selectInput("select_year_add",
                                                  label = "Financial Year of Diagnosis",
@@ -236,11 +235,6 @@ server <- function(input, output, session) {
     }
   })
   
-  
-
-    # Get functions
-    source(here(here("dashboard/functions/core_functions.R")), local = TRUE)$value
-    source(file.path(here("dashboard/functions/plot_functions.R")), local = TRUE)$value
   
     # Get content for individual pages
     source(file.path(here("dashboard/pages/intro_page.R")), local = TRUE)$value

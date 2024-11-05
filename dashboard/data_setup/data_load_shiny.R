@@ -9,7 +9,7 @@
 # Description - script 2 of 2 to prepare PDS data for use in R shiny. 
 ################################################################################
 #
-source(here::here("dashboard", "00_setup-environment.R"))
+source(here::here("code", "00_setup-environment.R"))
 
 
 
@@ -27,6 +27,7 @@ data_stage <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_stage.cs
 data_age <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_age.csv")
 data_simd <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_simd.csv")
 data_accom <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_accom.csv")
+data_sex <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_sex.csv")
 
 
 # 2 read in error data ----
@@ -92,6 +93,11 @@ data_age$health_board <- as.factor(data_age$health_board)
 data_age$fy <- as.factor(data_age$fy)
 data_age$sex <- as.factor(data_age$sex)
 data_age$type <- as.factor(data_age$type)
+
+data_sex$health_board <- as.factor(data_sex$health_board)
+data_sex$fy <- as.factor(data_sex$fy)
+data_sex$simd <- as.factor(data_sex$simd)
+data_sex$type <- as.factor(data_sex$type)
 
 data_simd$health_board <- as.factor(data_simd$health_board)
 data_simd$fy <- as.factor(data_simd$fy)

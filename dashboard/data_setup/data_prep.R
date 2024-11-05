@@ -11,7 +11,7 @@
 ################################################################################
 
 # 1 Load set up ----
-source(here::here("dashboard", "00_setup-environment.R"))
+source(here::here("code", "00_setup-environment.R"))
 
 provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
        "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
@@ -135,7 +135,9 @@ pds_rate_ijb <- full_join(num_ijb, den_ijb, by = c("health_board", "ijb", "fy"))
 
 # Join rate onto prepared data
 annual_table_data <- left_join(prepare_data, pds_rate_ijb, by = c("health_board", "ijb", "fy")) %>% 
+  mutate(health_board = if_else(health_board == "Scotland", "AAA Scotland", health_board)) %>% 
   arrange(ijb, health_board) %>% 
+  mutate(health_board = if_else(health_board == "AAA Scotland", "Scotland", health_board)) %>% 
   mutate(ijb = if_else(ijb == "AAA", health_board, ijb))
 
 # add expected diagnoses data
@@ -170,7 +172,6 @@ mutate(n_referrals = 1,
   
 # remove codes
 variables <- c("ethnic_group",  
-               "sex",
                "additional_disability",
                "living_alone",
                "accommodation_type",
@@ -185,15 +186,49 @@ variables <- c("ethnic_group",
 ldp %<>% mutate(across(all_of(variables), ~substring(.x, 3))) %>% 
   mutate(across(all_of(variables), ~if_else(is.na(.x), "Not Known", .x))) %>% 
   mutate(across(all_of(variables), ~str_trim(.x, "left"))) 
-  
+
+ldp %<>% mutate(sex = substring(sex, 3)) %>% 
+  mutate(sex = str_trim(sex, "left")) %>% 
+  mutate(sex = if_else(is.na(sex) | sex == "Not Known", "Unknown", sex)) 
+
   
 ldp %<>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Known", "Homeless", "No Fixed Address"),
                                              "Not Known/Other", accommodation_type),
                 pds_referral_source = if_else(pds_referral_source %in% c("Not Known", "Local Authority", "Other", "Private Professional/Service/Organisation", "Self Referral"),
                                               "Not Known/Other", pds_referral_source))
+
+# 8 variable analysis tables ----
+source(here("dashboard/functions/summarise_by_variable.R"))
+
+data_sex <- summarise_by_variable_gender(sex)
+data_subtype <- summarise_by_variable(subtype_of_dementia)
+data_stage <- summarise_by_variable(clinical_impression_of_stage_of_illness)
+data_referral <- summarise_by_variable(pds_referral_source)
+data_model <- summarise_by_variable(model_of_care)
+data_age <- summarise_by_variable_demo(age_grp)
+data_simd <- summarise_by_variable_demo(simd)
+data_accom <- summarise_by_variable_demo(accommodation_type)
+
+write_csv(data_sex, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_sex.csv")
+write_csv(data_model, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_model.csv")
+write_csv(data_subtype, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_subtype.csv")
+write_csv(data_stage, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_stage.csv")
+write_csv(data_referral, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_referral.csv")
+write_csv(data_age, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_age.csv")
+write_csv(data_simd, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_simd.csv")
+write_csv(data_accom, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_accom.csv")
+
   
 
-# 8 calculate waiting times ----
+# 9 calculate waiting times ----
 ldp_wait_times <- ldp %>% 
   mutate(n_referrals = 1,
          diagnosis_to_referral_days = time_length(interval(dementia_diagnosis_confirmed_date, date_pds_referral_received), "days"),
@@ -216,8 +251,6 @@ er<-ldp_wait_times %>% filter(termination_or_transition_reason == "Service user 
 
 
 # create summary
-source(here("dashboard/functions/summarise_by_variable.R"))
-
 data_wait <- summarise_pathways(ldp_wait_times)
 
 data_wait %<>% mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb))
@@ -234,34 +267,7 @@ write_csv(data_wait_2,
           "//conf/dementia/A&I/Outputs/dashboard/data/data_wait_2.csv")
 
 
-# 9 variable analysis tables ----
-
-
-data_subtype <- summarise_by_variable(subtype_of_dementia)
-data_stage <- summarise_by_variable(clinical_impression_of_stage_of_illness)
-data_referral <- summarise_by_variable(pds_referral_source)
-data_model <- summarise_by_variable(model_of_care)
-data_age <- summarise_by_variable_demo(age_grp)
-data_simd <- summarise_by_variable_demo(simd)
-data_accom <- summarise_by_variable_demo(accommodation_type)
-
-write_csv(data_model, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_model.csv")
-write_csv(data_subtype, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_subtype.csv")
-write_csv(data_stage, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_stage.csv")
-write_csv(data_referral, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_referral.csv")
-write_csv(data_age, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_age.csv")
-write_csv(data_simd, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_simd.csv")
-write_csv(data_accom, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_accom.csv")
-
-
-
 
 
 ##### END OF SCRIPT #####
+

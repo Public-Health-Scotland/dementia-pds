@@ -17,12 +17,12 @@
     
     fluidRow(
       # outputs
-      h2(htmlOutput("table_title_add")),
+      h3(htmlOutput("table_title_add")),
       DT::dataTableOutput("table_add"),
       linebreaks(1),
-      h2(htmlOutput("chart_title_add_referrals")),
+      h3(htmlOutput("chart_title_add_referrals")),
       plotlyOutput("plot_add_referrals", height = "600px"),
-      h2(htmlOutput("chart_title_add")),
+      h3(htmlOutput("chart_title_add")),
       plotlyOutput("plot_add", height = "600px"))
   ), #cond panel 1
    
@@ -31,7 +31,7 @@
      
      fluidRow(
        # outputs
-       h2(htmlOutput("hb_ijb_table_title_wait")),
+       h3(htmlOutput("hb_ijb_table_title_wait")),
        column(radioButtons("select_wait_table",
                            label = "In the table below show Scotland and: ",
                            choices = c("Health Boards", "Integration Joint Boards"),
@@ -40,7 +40,7 @@
        ), width = 6),
        DT::dataTableOutput("table_hb_ijb_wait"),
        linebreaks(2),
-       h2(htmlOutput("table_wait_2_title")),
+       h3(htmlOutput("table_wait_2_title")),
        #linebreaks(1),
        column(selectInput("select_hb_ijb_wait_2",
                           label = "Select Health Board/IJB to show in tables below:",
@@ -54,7 +54,7 @@
        h4(strong("Referrals exempt from LDP Standard, where post-diagnostic support has ended after being contacted by PDS practitioner:")),
        DT::dataTableOutput("table_wait_2_exempt"), width = 6)
        
-       # h2(htmlOutput("")),
+       # h3(htmlOutput("")),
        # plotlyOutput("", height = "600px"))
        
      ), # fluidrow

@@ -4,7 +4,7 @@ output$page_2_ui <-  renderUI({
   
   div(
     fluidRow(
-      valueBox(
+      shinydashboard::valueBox(
         value = textOutput("hb_exp_perc"),
         subtitle = "of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support.",
         width = 7,
@@ -14,7 +14,7 @@ output$page_2_ui <-  renderUI({
           width = 5, background = "black", solidHeader = TRUE), #box background set to black in order to edit ccs styles
     ), #fluidRow
     fluidRow(
-      valueBox(
+      shinydashboard::valueBox(
         value = textOutput("hb_pds_perc"),
         subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
         width = 7,
@@ -24,13 +24,13 @@ output$page_2_ui <-  renderUI({
           width = 5, background = "black"), #box
          ), #fluidRow
     fluidRow(
-      linebreaks(2),
-      h2(htmlOutput("table_title_p2")),
+      linebreaks(1),
+      h3(htmlOutput("table_title_p2")),
       DT::dataTableOutput("table_hb_ijb"),
-      linebreaks(2),
-      h2(htmlOutput("chart_title_p2")),
+      linebreaks(1),
+      h3(htmlOutput("chart_title_p2")),
       plotlyOutput("hb_ijb_plot"),
-      linebreaks(2)
+      linebreaks(1)
     )# fluidRow
    ) # div
 }) # renderUI

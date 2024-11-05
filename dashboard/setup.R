@@ -20,8 +20,9 @@ library(plotly)
 # PHS styling packages ----
 library(phsstyles)
 
-# Load core functions ----
+# Load functions ----
 source(here("dashboard/functions/core_functions.R"))
+source(here("dashboard/functions/plot_functions.R"))
 
 ## Plotting ----
 # Style of x and y axis
@@ -54,7 +55,8 @@ home_list <- c("Dementia PDS" = "about",
                #"Data Definitions" = "defs",
                "Accessibility" = "accessibility")
 
-trend_list <- c("Percentage of LDP standard achieved" = "pds_perc_trend",
+trend_list <- c("Number of Referrals" = "referrals_trend",
+                "Percentage of LDP standard achieved" = "pds_perc_trend",
                 "Percentage of estimated diagnoses referred to PDS" = "exp_perc_trend")
 
 data_list <- c("Subtype of Dementia" = "data_subtype",
@@ -64,7 +66,8 @@ data_list <- c("Subtype of Dementia" = "data_subtype",
                "PDS Pathways" = "waiting_times"
 )
 
-demographics_list <- c("Age" = "data_age",
+demographics_list <- c("Gender" = "data_sex",
+                       "Age" = "data_age",
                        "SIMD" = "data_simd",
                        "Accommodation" = "data_accom") 
 
@@ -77,7 +80,7 @@ quality_list <- c("Queries/Errors" = "errors",
 
 
 boards <- sort(unique(pds_plot_data$health_board))
-ijb_list <- as.character(sort(unique(filter(data_wait, ijb != "All")$ijb)))
+ijb_list <- as.character(sort(unique(filter(err, ijb != "" & ijb != "Unknown")$ijb)))
 
 
 

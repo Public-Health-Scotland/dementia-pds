@@ -75,7 +75,7 @@ plot_referrals <- function(data,
   
 }
 
-# trend plot function
+# yearly trend plot function for percentages
 plot_trend <- function(data, measure){
   
   yaxis_plots[["title"]] <- ""
@@ -123,16 +123,64 @@ plot_trend <- function(data, measure){
   
 }
 
-# bar chart for proportion of referrals
-
-proportion_bar_chart <- function(data, x_text_angle = 45, legend = "none"){
+# yearly trend plot function for referrals
+plot_trend_referrals <- function(data, measure){
   
   yaxis_plots[["title"]] <- ""
   xaxis_plots[["title"]] <- ""
   
-  data %<>% filter(type != "Unknown") 
+  data %<>%
+    
+    select(ijb, fy, {{measure}}) %>%
+    filter(!is.na({{measure}})) %>% 
+    distinct(ijb, fy, .keep_all = T)
   
-  plot <-  data %>% ggplot(aes(x = type, y = total_referrals/sum(total_referrals)*100, fill = sex,
+  
+  
+  plot <- data %>%
+    
+    ggplot(aes(x = fy,
+               y = {{measure}},
+               group = ijb,
+               colour = ijb,
+               text = paste0(ijb, "<br>",
+                             fy, "<br>",
+                             {{measure}}))) +
+    
+    geom_point() +
+    
+    geom_line() + 
+    
+    scale_y_continuous(limits = c(0, NA)
+                    ) + 
+    
+    phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
+    
+    theme(legend.title = element_blank(),
+    )
+  
+  ggplotly(plot, tooltip = "text") %>%
+    
+    config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
+           displaylogo = F, editable = F) %>%
+    layout(legend = list(orientation = "h", x = 0.5 , y = -0.2,
+                         xanchor = "center", yanchor = "bottom")) %>% 
+    layout(margin = list(b = 30, t = 10), # to avoid labels getting cut out
+           yaxis = yaxis_plots, xaxis = xaxis_plots)
+  
+  
+}
+
+# bar chart for proportion of referrals
+
+proportion_bar_chart <- function(data, x_text_angle = 45, legend = "none", fill = sex){
+  
+  yaxis_plots[["title"]] <- ""
+  xaxis_plots[["title"]] <- ""
+  
+  data %<>% filter(type != "Unknown", type != "Not Specified") 
+  
+  plot <-  data %>% ggplot(aes(x = type, y = total_referrals/sum(total_referrals)*100, fill = {{fill}},
                                text = paste0(type, "<br>",
                                              "Proportion of total referrals: ", round(total_referrals/sum(total_referrals)*100,1), "%"))) +
     geom_col(position=position_dodge()) +
@@ -157,14 +205,14 @@ proportion_bar_chart <- function(data, x_text_angle = 45, legend = "none"){
 
 # bar chart for ldp percentage
 
-percent_met_bar_chart <- function(data, x_text_angle = 45, legend = "none"){
+percent_met_bar_chart <- function(data, x_text_angle = 45, legend = "none", fill = sex){
   
   yaxis_plots[["title"]] <- ""
   xaxis_plots[["title"]] <- ""
   
-  data %<>% filter(type != "Unknown") 
+  data %<>% filter(type != "Unknown", type != "Not Specified") 
   
-  plot <-  data %>% ggplot(aes(type, percent_met, fill = sex,
+  plot <-  data %>% ggplot(aes(type, percent_met, fill = {{fill}},
                                text = paste0(type, "<br>",
                                              "Percentage of Referrals Achieved LDP Standard: ", percent_met, "%"))) +
     geom_col(position=position_dodge()) +
