@@ -144,8 +144,8 @@ output$hb_exp_table_title_p1 <- renderUI({HTML(paste0("Number and percentage of 
 
 output$table_hb_exp <- DT::renderDataTable({
   table_hb_exp_data <- annual_table_data %>% 
+    filter(fy == input$select_year_p1) %>%
     filter(grepl("NHS", ijb) | ijb == "Scotland", !is.na(diagnoses)) %>% 
-    filter(fy == provisional_year) %>%
     group_by(health_board)%>%
     select(health_board, diagnoses, referrals)%>%
     mutate(exp_perc = paste0(round(referrals/diagnoses*100, 1), "%")) %>%  

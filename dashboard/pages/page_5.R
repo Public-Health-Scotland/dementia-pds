@@ -227,7 +227,7 @@ output$table_wait_2 <- DT::renderDataTable({
            sex == input$select_sex_add,
            !grepl("exempt", termination_or_transition_reason)) %>% 
     select(termination_or_transition_reason, referrals, median_contact_to_termination) %>% 
-    set_colnames(c("Reason for termination of post-diagnostic support", "Number of referrals", "Average (median) days from contact to termination/transition"))
+    set_colnames(c("Reason for termination of post-diagnostic support", "Number of referrals", "Average (median) days from contact to termination"))
   make_table(wait_table_2_data, table_elements = "t") %>% 
     formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
 })
@@ -239,7 +239,7 @@ output$table_wait_2_exempt <- DT::renderDataTable({
            sex == input$select_sex_add,
            grepl("exempt", termination_or_transition_reason)) %>%
     select(termination_or_transition_reason, referrals, median_contact_to_termination) %>%
-    set_colnames(c("Reason for termination of post-diagnostic support", "Number of referrals", "Average (median) days from contact to termination/transition"))
+    set_colnames(c("Reason for termination of post-diagnostic support", "Number of referrals", "Average (median) days from contact to termination"))
   make_table(wait_table_2_data_exempt, table_elements = "t") %>%
     formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
 })
