@@ -26,7 +26,8 @@
 test_output <- TRUE
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(30092024)
+end_date <- lubridate::dmy(30062024)
+previous_end_date <- lubridate::dmy(31032024)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure
@@ -97,6 +98,10 @@ simd <- function(){
 # Latest FY and Quarter
 fy <- extract_fin_year(end_date) %>% substr(1, 4)
 qt <- quarter(end_date, fiscal_start = 4)
+
+# Previous FY and Quarter
+previous_fy <- extract_fin_year(previous_end_date) %>% substr(1, 4)
+previous_qt <- quarter(previous_end_date, fiscal_start = 4)
 
 # First date in reporting period 
 start_date <- dmy(01042016)
