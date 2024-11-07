@@ -99,6 +99,10 @@ simd <- function(){
 fy <- extract_fin_year(end_date) %>% substr(1, 4)
 qt <- quarter(end_date, fiscal_start = 4)
 
+# Previous FY and Quarter
+previous_fy <- extract_fin_year(previous_end_date) %>% substr(1, 4)
+previous_qt <- quarter(previous_end_date, fiscal_start = 4)
+
 # First date in reporting period 
 start_date <- dmy(01042016)
   
