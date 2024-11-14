@@ -260,72 +260,201 @@ summarise_pathways_2 <- function(data){
   
   bind_rows(
     
-    data %>% filter(ldp != "exempt") %>% 
-      group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", termination_or_transition_reason = "All reasons") %>% 
+    data %>% 
+      group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", termination_or_transition_reason = "14 All reasons", ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                .groups = "drop"),
     
-    data %>% filter(ldp != "exempt") %>% 
-        group_by(health_board, ijb = "All", fy, sex = "All", termination_or_transition_reason = "All reasons") %>% 
+    data %>% 
+        group_by(health_board, ijb = "All", fy, sex = "All", termination_or_transition_reason = "14 All reasons", ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
-    data %>% filter(ldp != "exempt") %>% 
-      group_by(health_board, ijb, fy, sex = "All", termination_or_transition_reason = "All reasons") %>% 
+    data %>%  
+      group_by(health_board, ijb, fy, sex = "All", termination_or_transition_reason = "14 All reasons", ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
-    data %>% filter(ldp != "exempt") %>%  
-      group_by(health_board, ijb, fy, sex, termination_or_transition_reason = "All reasons") %>% 
+    data %>% 
+      group_by(health_board, ijb, fy, sex, termination_or_transition_reason = "14 All reasons", ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
-    data %>% group_by(health_board, ijb, fy, sex, termination_or_transition_reason) %>% 
+    data %>% group_by(health_board, ijb, fy, sex, termination_or_transition_reason, ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
-    data %>% filter(ldp != "exempt") %>%  
-      group_by(health_board = "Scotland", ijb = "All", fy, sex, termination_or_transition_reason = "All reasons") %>% 
+   data %>%  
+      group_by(health_board = "Scotland", ijb = "All", fy, sex, termination_or_transition_reason = "14 All reasons", ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
-    data %>% filter(ldp != "exempt") %>% 
-      group_by(health_board, ijb = "All", fy, sex, termination_or_transition_reason = "All reasons") %>% 
+   data %>% 
+      group_by(health_board, ijb = "All", fy, sex, termination_or_transition_reason = "14 All reasons", ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
-    data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, termination_or_transition_reason) %>% 
+    data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, termination_or_transition_reason, ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
-    data %>% group_by(health_board, ijb = "All", fy, sex, termination_or_transition_reason) %>% 
+    data %>% group_by(health_board, ijb = "All", fy, sex, termination_or_transition_reason, ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
-    data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", termination_or_transition_reason) %>% 
+    data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", termination_or_transition_reason, ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
-    data %>% group_by(health_board, ijb = "All", fy, sex = "All", termination_or_transition_reason) %>% 
+    data %>% group_by(health_board, ijb = "All", fy, sex = "All", termination_or_transition_reason, ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
                 .groups = "drop"),
     
-    data %>% group_by(health_board, ijb, fy, sex = "All", termination_or_transition_reason) %>% 
+    data %>% group_by(health_board, ijb, fy, sex = "All", termination_or_transition_reason, ldp) %>% 
       summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                 referrals = sum(n_referrals),
-                .groups = "drop")
+                .groups = "drop"),
+   
+   data %>% 
+     group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", termination_or_transition_reason = "14 All reasons", ldp = "All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop"),
+   
+   data %>% 
+     group_by(health_board, ijb = "All", fy, sex = "All", termination_or_transition_reason = "14 All reasons", ldp = "All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop"),
+   
+   data %>%  
+     group_by(health_board, ijb, fy, sex = "All", termination_or_transition_reason = "14 All reasons", ldp = "All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop"),
+   
+   data %>% 
+     group_by(health_board, ijb, fy, sex, termination_or_transition_reason = "14 All reasons", ldp = "All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop"),
+   
+   data %>% group_by(health_board, ijb, fy, sex, termination_or_transition_reason, ldp = "14 All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop"),
+   
+   data %>%  
+     group_by(health_board = "Scotland", ijb = "All", fy, sex, termination_or_transition_reason = "14 All reasons", ldp = "All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop"),
+   
+   data %>% 
+     group_by(health_board, ijb = "All", fy, sex, termination_or_transition_reason = "14 All reasons", ldp = "All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop"),
+   
+   data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, termination_or_transition_reason, ldp = "All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop"),
+   
+   data %>% group_by(health_board, ijb = "All", fy, sex, termination_or_transition_reason, ldp = "All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop"),
+   
+   data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", termination_or_transition_reason, ldp = "All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop"),
+   
+   data %>% group_by(health_board, ijb = "All", fy, sex = "All", termination_or_transition_reason, ldp = "All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop"),
+   
+   data %>% group_by(health_board, ijb, fy, sex = "All", termination_or_transition_reason, ldp = "All") %>% 
+     summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
+               referrals = sum(n_referrals),
+               .groups = "drop")
   )
 }
 
+
+summarise_uptake <- function(data){
+  
+  bind_rows(
+    
+    data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", simd = "All", pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    data %>% group_by(health_board, ijb = "All", fy, sex = "All", simd = "All", pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb, fy, sex = "All", simd = "All", pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb, fy, sex, simd = "All", pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb, fy, sex, simd, pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, simd = "All", pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb = "All", fy, sex, simd = "All", pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, simd, pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb = "All", fy, sex, simd, pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", simd, pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    data %>% group_by(health_board, ijb = "All", fy, sex = "All", simd, pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb, fy, sex = "All", simd, pds_uptake_decision) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop")
+    
+  )
+}
 

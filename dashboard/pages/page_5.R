@@ -1,73 +1,104 @@
 ####################### Page 5 ADDITIONAL ANALYSIS #######################
 # UI ----
- output$page_5_ui <-  renderUI({
-
+output$page_5_ui <-  renderUI({
+  
   div(
- 	     conditionalPanel(
-    condition= 'input.select_data_add != "waiting_times"',
-    # inputs
+    #subtype, stage, referral source, and model of care----
+    conditionalPanel(
+      condition= 'input.select_data_add == "data_subtype" || input.select_data_add == "data_stage" || input.select_data_add == "data_referral" || input.select_data_add == "data_model"',
+      # inputs
+      
+      
+      column(selectInput("select_hb_add",
+                         label = "Health Board",
+                         choices = c("Scotland", boards)),width=6),
+      
+      
+      #uiOutput("page_5_ui"),
+      
+      fluidRow(column(
+        # outputs
+        h3(strong(htmlOutput("table_title_add"))),
+        DT::dataTableOutput("table_add"),
+        linebreaks(1),
+        h3(strong(htmlOutput("chart_title_add_referrals"))),
+        plotlyOutput("plot_add_referrals", height = "600px"),
+        h3(strong(htmlOutput("chart_title_add"))),
+        plotlyOutput("plot_add", height = "600px"),width = 12))
+    ), #cond panel 1
     
-    
-    fluidRow(column(selectInput("select_hb_add",
-                                label = "Health Board",
-                                choices = c("Scotland", boards)),width=6)),
-    
-    
-    #uiOutput("page_5_ui"),
-    
-    fluidRow(
-      # outputs
-      h3(htmlOutput("table_title_add")),
-      DT::dataTableOutput("table_add"),
-      linebreaks(1),
-      h3(htmlOutput("chart_title_add_referrals")),
-      plotlyOutput("plot_add_referrals", height = "600px"),
-      h3(htmlOutput("chart_title_add")),
-      plotlyOutput("plot_add", height = "600px"))
-  ), #cond panel 1
-   
-   conditionalPanel(
-     condition = 'input.select_data_add == "waiting_times"',
-     
-     fluidRow(
-       # outputs
-       h3(htmlOutput("hb_ijb_table_title_wait")),
-       column(radioButtons("select_wait_table",
-                           label = "In the table below show Scotland and: ",
-                           choices = c("Health Boards", "Integration Joint Boards"),
-                           selected = "Health Boards",
-                           inline = TRUE
-       ), width = 6),
-       DT::dataTableOutput("table_hb_ijb_wait"),
-       linebreaks(2),
-       h3(htmlOutput("table_wait_2_title")),
-       #linebreaks(1),
-       column(selectInput("select_hb_ijb_wait_2",
-                          label = "Select Health Board/IJB to show in tables below:",
-                          choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"), width = 6)
-              ), #fluid Row
-       fluidRow(
-         column(
-       h4(strong("Referrals not exempt from LDP Standard, where post-diagnostic support has ended after being contacted by PDS practitioner:")),
-       DT::dataTableOutput("table_wait_2"),width = 6),
-        column(
-       h4(strong("Referrals exempt from LDP Standard, where post-diagnostic support has ended after being contacted by PDS practitioner:")),
-       DT::dataTableOutput("table_wait_2_exempt"), width = 6)
+    #uptake----
+    conditionalPanel(
+      condition = 'input.select_data_add == "uptake"',
+      
+      fluidRow(column(
+        # outputs
        
-       # h3(htmlOutput("")),
-       # plotlyOutput("", height = "600px"))
-       
-     ), # fluidrow
-     linebreaks(2)
-   ) #cond panel 2
-   
+        h3(strong(htmlOutput("hb_ijb_table_title_uptake"))),
+        column(radioButtons("select_uptake_table",
+                            label = "In the table below show Scotland and: ",
+                            choices = c("Health Boards", "Integration Joint Boards"),
+                            selected = "Health Boards",
+                            inline = TRUE
+        ), width = 6),
+        DT::dataTableOutput("table_hb_ijb_uptake"),
+        linebreaks(2),
+        h3(strong(htmlOutput("table_uptake_2_title"))),
+        linebreaks(1),
+        column(selectInput("select_hb_ijb_uptake_2",
+                           label = "Select Health Board/IJB to show in table below:",
+                           choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"), width = 5),
+        
+        DT::dataTableOutput("table_uptake_2"),
+        #h3(htmlOutput("")),
+        plotlyOutput("plot_simd_uptake", height = "600px"),
+      width = 12)), # fluidrow
+      linebreaks(2)
+    ), #cond panel 2
+    
+    
+    # pathways----
+    conditionalPanel(
+      condition = 'input.select_data_add == "waiting_times"',
+      
+      fluidRow(column(
+        
+        # outputs
+        h3(strong(htmlOutput("hb_ijb_table_title_wait"))),
+        column(radioButtons("select_wait_table",
+                            label = "In the table below show Scotland and: ",
+                            choices = c("Health Boards", "Integration Joint Boards"),
+                            selected = "Health Boards",
+                            inline = TRUE
+        ), width = 6),
+        DT::dataTableOutput("table_hb_ijb_wait"),
+        linebreaks(2),
+        h3(strong(htmlOutput("table_wait_2_title"))),
+        #linebreaks(1),
+        column(selectInput("select_hb_ijb_wait_2",
+                           label = "Select Health Board/IJB to show in table below:",
+                           choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"), width = 5),
+        
+        #h4(strong("Referrals where post-diagnostic support has ended after being contacted by PDS practitioner:")),
+        DT::dataTableOutput("table_wait_2"),
+        #  column(
+        # h4(strong("Referrals exempt from LDP Standard, where post-diagnostic support has ended after being contacted by PDS practitioner:")),
+        # DT::dataTableOutput("table_wait_2_exempt"), width = 6)
+        
+        # h3(htmlOutput("")),
+        # plotlyOutput("", height = "600px"))
+        
+      width = 12)), # fluidrow
+      linebreaks(2)
+    ) #cond panel 3
+    
   ) #div   
- }) # renderUI
+}) # renderUI
  
  
 # SERVER ----
 
-# create table for variables other than waiting times ----
+# create table for variables other than pathways and uptake ----
 # title 
  
 output$table_title_add <- renderUI({HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support by ", 
@@ -98,7 +129,7 @@ data_selected_add <-reactive({
     data_referral
   } else if(input$select_data_add == "data_stage"){
     data_stage
-  } else if(input$select_data_add == "waiting_times"){
+  } else {
     NULL
   } 
 })
@@ -115,7 +146,7 @@ output$table_add <- DT::renderDataTable({
   })
 
 
-#create plots  for variables other than waiting times ----
+#create plots  for variables other than pathways and uptake ----
 # proportion plot
 output$chart_title_add_referrals <- renderUI({HTML(paste0("Proportion of total referrals for dementia post-diagnostic support by ", 
                                                           
@@ -161,6 +192,99 @@ output$plot_add <- renderPlotly({
                           filter(health_board == input$select_hb_add, fy == input$select_year_add, sex == input$select_sex_add))
 })
  
+
+#Uptake ----
+
+# Data table 
+output$hb_ijb_table_title_uptake<- renderUI({HTML(paste0("Number of Referrals by PDS Uptake Decision, Financial Year ", 
+                                                        input$select_year_add, ", Scotland and ", input$select_uptake_table, ", Gender: ", input$select_sex_add))
+})
+
+output$table_hb_ijb_uptake <- DT::renderDataTable({
+  
+  if(input$select_uptake_table == "Health Boards"){  
+    
+    table_hb_data_uptake <- data_uptake %>% 
+      filter(fy == input$select_year_add, sex == input$select_sex_add) %>% 
+      filter(ijb == "All" | ijb == "Scotland", simd == "All") %>% 
+      pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>% 
+      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+      adorn_totals("col") %>% 
+      select(1,10,6,7,8,9) %>% 
+      rowwise() %>% mutate(perc_accepted = paste0(round(sum(c_across(c(3:4)))/sum(c_across(c(3:6)))*100,1), "%")) %>% 
+      rename("Number of People Referred to PDS" = "Total", 
+             "Health Board" = "health_board",
+             "Percentage Accepted" = "perc_accepted")
+    make_table(table_hb_data_uptake, right_align = 1:5, selected = 1, table_elements = "t") %>%
+      formatCurrency(c(2:6), currency = "", interval = 3, mark = ",", digits = 0)
+    
+    
+  }else{    
+    
+    
+    # # Data table ijb
+    
+    table_hb_data_uptake <- data_uptake %>% 
+      filter(fy == input$select_year_add, sex == input$select_sex_add, simd == "All") %>% 
+      mutate(ijb = if_else(health_board == "Scotland", "AAA", ijb)) %>%
+      arrange(ijb) %>% 
+      filter(ijb != "All") %>% 
+      mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
+      pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>% 
+      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+      adorn_totals("col") %>% 
+      select(2,10,6,7,8,9) %>% 
+      rowwise() %>% mutate(perc_accepted = paste0(round(sum(c_across(c(3:4)))/sum(c_across(c(2)))*100,1), "%")) %>%
+      rename("Number of People Referred to PDS" = "Total",
+             "IJB" = "ijb",
+             "Percentage Accepted" = "perc_accepted")
+    make_table(table_hb_data_uptake, right_align = 1:5, selected = 1, table_elements = "t", rows_to_display = 32) %>%
+      formatCurrency(c(2:6), currency = "", interval = 3, mark = ",", digits = 0)
+  }
+})
+
+
+#table 2 (simd)
+output$table_uptake_2_title<- renderUI({HTML(paste0("Number of Referrals by PDS Uptake Decision and Scottish Index of Multiple Deprivation (SIMD), Financial Year ",
+                                                  input$select_year_add, ", ", input$select_hb_ijb_uptake_2, ", Gender: ", input$select_sex_add))
+})
+
+output$table_uptake_2 <- DT::renderDataTable({
+  uptake_table_2_data <- data_uptake %>%
+    pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>%
+    mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>%
+    mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
+    filter(ijb == input$select_hb_ijb_uptake_2,
+           fy == input$select_year_add,
+           sex == input$select_sex_add,
+           simd != "All",
+           simd != "Unknown") %>%
+    select(5:9) %>% 
+    rowwise() %>% mutate(perc_accepted = paste0(round(sum(c_across(c(2,3)))/sum(c_across(c(2:5)))*100,1), "%")) %>% 
+    rename("SIMD" = "simd",
+           "Percentage Accepted" = "perc_accepted")
+  make_table(uptake_table_2_data, right_align = 1:5, table_elements = "t") %>%
+    formatCurrency(c(3:5), currency = "", interval = 3, mark = ",", digits = 0)
+})
+
+# simd chart
+output$plot_simd_uptake <- renderPlotly({
+  percent_uptake_bar_chart(data_uptake %>% 
+                             pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>%
+                             mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>%
+                             mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
+                             filter(ijb == input$select_hb_ijb_uptake_2,
+                                    fy == input$select_year_add,
+                                    sex == input$select_sex_add,
+                                    simd != "All",
+                                    simd != "Unknown") %>%
+                             rowwise() %>% mutate(perc_accepted = round(sum(c_across(c(6,7)))/sum(c_across(c(6:9)))*100,1))
+  )
+})
+
+
+
+
 #Pathways ----
 
 # Data table diagnosis to contact times
@@ -179,7 +303,7 @@ output$table_hb_ijb_wait <- DT::renderDataTable({
              allocated_referrals, median_referral_to_allocation,
              contacted_referrals, median_allocation_to_contact,
              median_diagnosis_to_contact) %>% 
-      set_colnames(c("Health Board","Total Referrals",  "Average (median) days from diagnosis to PDS referral",
+      set_colnames(c("Health Board","Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
                      "Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
                      "Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
                      "Average (median) days from diagnosis to first contact"
@@ -204,7 +328,7 @@ output$table_hb_ijb_wait <- DT::renderDataTable({
       mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
       arrange(ijb) %>% 
       mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
-      set_colnames(c("IJB","Total Referrals",  "Average (median) days from diagnosis to PDS referral",
+      set_colnames(c("IJB","Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
                      "Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
                      "Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
                      "Average (median) days from diagnosis to first contact"
@@ -216,7 +340,7 @@ output$table_hb_ijb_wait <- DT::renderDataTable({
 
 
 # table 2 (contact to termination)
-output$table_wait_2_title<- renderUI({HTML(paste0("Pathways from contact by PDS practitioner to termination of PDS, Financial Year ", 
+output$table_wait_2_title<- renderUI({HTML(paste0("Pathways from contact by PDS practitioner to end of post-diagnostic support, Financial Year ", 
                                                   input$select_year_add, ", ", input$select_hb_ijb_wait_2, ", Gender: ", input$select_sex_add))
 })
 
@@ -224,24 +348,46 @@ output$table_wait_2 <- DT::renderDataTable({
   wait_table_2_data <- data_wait_2 %>% 
     filter(ijb == input$select_hb_ijb_wait_2,
            fy == input$select_year_add,
-           sex == input$select_sex_add,
-           !grepl("exempt", termination_or_transition_reason)) %>% 
-    select(termination_or_transition_reason, referrals, median_contact_to_termination) %>% 
-    set_colnames(c("Reason for termination of post-diagnostic support", "Number of referrals", "Average (median) days from contact to termination"))
-  make_table(wait_table_2_data, table_elements = "t") %>% 
-    formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
+           sex == input$select_sex_add) %>% 
+    pivot_wider(names_from = ldp, values_from = c(referrals, median_contact_to_termination)) %>% 
+    mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>% 
+   # mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
+    select(termination_or_transition_reason,
+           referrals_All,
+           referrals_complete,
+           referrals_exempt,
+           referrals_fail, median_contact_to_termination_All) %>% 
+    set_colnames(c("Reason for end of post-diagnostic support",
+                   "Number of people whose PDS has ended",
+                   "Standard Met",
+                   "Exempt from Standard",
+                   "Standard Not Met", "Average (median) days from first contact with PDS practitioner to end of PDS"))
+  make_table(wait_table_2_data, right_align = 1:4, table_elements = "t") %>% 
+    formatCurrency(c(2:5), currency = "", interval = 3, mark = ",", digits = 0)
 })
 
-output$table_wait_2_exempt <- DT::renderDataTable({
-  wait_table_2_data_exempt <- data_wait_2 %>%
-    filter(ijb == input$select_hb_ijb_wait_2,
-           fy == input$select_year_add,
-           sex == input$select_sex_add,
-           grepl("exempt", termination_or_transition_reason)) %>%
-    select(termination_or_transition_reason, referrals, median_contact_to_termination) %>%
-    set_colnames(c("Reason for termination of post-diagnostic support", "Number of referrals", "Average (median) days from contact to termination"))
-  make_table(wait_table_2_data_exempt, table_elements = "t") %>%
-    formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
-})
+# output$table_wait_2 <- DT::renderDataTable({
+#   wait_table_2_data <- data_wait_2 %>% 
+#     filter(ijb == input$select_hb_ijb_wait_2,
+#            fy == input$select_year_add,
+#            sex == input$select_sex_add,
+#            !grepl("exempt", termination_or_transition_reason)) %>% 
+#     select(termination_or_transition_reason, referrals, median_contact_to_termination) %>% 
+#     set_colnames(c("Reason for termination of post-diagnostic support", "Number of referrals", "Average (median) days from contact to termination"))
+#   make_table(wait_table_2_data, table_elements = "t") %>% 
+#     formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
+# })
+
+# output$table_wait_2_exempt <- DT::renderDataTable({
+#   wait_table_2_data_exempt <- data_wait_2 %>%
+#     filter(ijb == input$select_hb_ijb_wait_2,
+#            fy == input$select_year_add,
+#            sex == input$select_sex_add,
+#            grepl("exempt", termination_or_transition_reason)) %>%
+#     select(termination_or_transition_reason, referrals, median_contact_to_termination) %>%
+#     set_colnames(c("Reason for termination of post-diagnostic support", "Number of referrals", "Average (median) days from contact to termination"))
+#   make_table(wait_table_2_data_exempt, table_elements = "t") %>%
+#     formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
+# })
 
   

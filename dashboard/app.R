@@ -107,7 +107,7 @@ tabPanel(title = "Trends",
       fluidRow(column(
         
         radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
-                          status = "primary",
+                          status = "tab",
                           direction = "horizontal", 
                           justified = T,
                           size = "lg"), width = 12)),
@@ -124,20 +124,19 @@ tabPanel(title = "Demographics",
          # Look at https://fontawesome.com/search?m=free for icons
          icon = icon_no_warning_fn("id-card"),
          value = "demo",
-
+         
          h1("Dementia Post-Diagnostic Support - Demographics"),
          linebreaks(1),
 
          sidebarLayout(
            sidebarPanel(radioGroupButtons("select_data_demo", label = NULL, choices = demographics_list,
-                                          status = "primary",
+                                          status = "secondary",
                                           direction = "vertical", 
                                           justified = T,
-                                          size = "normal"
-                                          ), width = 2),
+                                          size = "normal"), width = 2),
            
            mainPanel(width = 10,
-                     # inputs
+                    
                        column(selectInput("select_year_demo",
                                           label = "Financial Year of Diagnosis",
                                           choices = included_years,
@@ -168,20 +167,20 @@ tabPanel(title = "Additional Analysis",
          
          sidebarLayout(
            sidebarPanel(radioGroupButtons("select_data_add", label = NULL, choices = data_list,
-                                          status = "primary",
+                                          status = "secondary",
                                           direction = "vertical", 
                                           justified = T,
                                           size = "normal"), width = 2),
            
            mainPanel(width = 10,
-             fluidRow(
+            
               column(selectInput("select_year_add",
                                                  label = "Financial Year of Diagnosis",
                                                  choices = included_years,
                                                  selected = provisional_year),width=6),
              column(selectInput("select_sex_add",
                                 label="Gender",
-                                choices=c("All", "Female", "Male")),width=6)),
+                                choices=c("All", "Female", "Male")),width=6),
              uiOutput("page_5_ui") 
            ) # main panel
          )  #sidebar layout
@@ -197,6 +196,19 @@ tabPanel(title = "Methodology",
          value = "method",
          
          h1("Dementia Post-Diagnostic Support - Methodology"),
+         fluidRow(
+           box("This page includes more detail regarding the methodology used to arrive at the figures in this report. It is hoped that by sharing this, the reports will be easier to understand and local reporting will be more consistent.",
+               background = "blue",
+               width = 12
+           )),
+         linebreaks(1),
+         fluidRow(column(
+           
+           radioGroupButtons("method_tab", label = NULL, choices = method_list,
+                             status = "tab",
+                             direction = "horizontal", 
+                             justified = T,
+                             size = "lg"), width = 12)),
          uiOutput("page_6_ui")
       
 ) # tabPanel

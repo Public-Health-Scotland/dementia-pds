@@ -3,20 +3,6 @@
 output$page_6_ui <-  renderUI({
 
   div(
-fluidRow(
-      box("This page includes more detail regarding the methodology used to arrive at the figures in this report. It is hoped that by sharing this, the reports will be easier to understand and local reporting will be more consistent.",
-          background = "blue",
-          width = 12
-      )),
-linebreaks(1),
-    fluidRow(column(
-      
-  radioGroupButtons("method_tab", label = NULL, choices = method_list,
-    status = "primary",
-    direction = "horizontal", 
-    justified = T,
-    size = "lg"), width = 12)),
-
     conditionalPanel(
       condition= 'input.method_tab == "ldp_class"',
    
