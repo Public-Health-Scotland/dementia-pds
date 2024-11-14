@@ -373,20 +373,13 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
   /*color: rgba(0, 0, 0, 0.15);*/
 }
 
-/* side bar buttons */
+/* intro page side bar buttons */
 .btn.radiobtn.btn-primary {
   border-radius: 0px; 
   
 }
 
-.btn.radiobtn.btn-primary.active, .btn.radiobtn.btn-primary:active {
-  background-color: var(--phs-purple-80); 
-  border-radius: 0px;
-  font-weight: 600;
-  border-color: var(--phs-purple);
-  
-} 
-
+.btn.radiobtn.btn-primary.active, .btn.radiobtn.btn-primary:active,
 .btn.radiobtn.btn-primary.focus, .btn.radiobtn.btn-primary:focus {
   background-color: var(--phs-purple-80); 
   border-radius: 0px;
@@ -399,6 +392,66 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
     background-color: var(--phs-purple-80);
     border-radius: 0px;
     border-color: var(--phs-purple-80);
+}
+
+
+/* demographics and additional analysis side bar buttons */
+.btn.radiobtn.btn-secondary {
+  border-radius: 0px; 
+  color: #FFFFFF;
+  margin-left: -40px;
+  width: 120%;
+  max-width: none;
+  font-size: 15px;
+  
+}
+
+.btn.radiobtn.btn-secondary.active, .btn.radiobtn.btn-secondary:active,
+.btn.radiobtn.btn-secondary.focus, .btn.radiobtn.btn-secondary:focus{
+  background-color: var(--phs-purple-50);
+    border-radius: 0px;
+    font-weight: 600;
+    color: var(--phs-purple);
+    border-color: var(--phs-purple-50);
+    border-right-width: 4px;
+    border-right-color: var(--phs-purple);
+}
+
+
+.btn.radiobtn.btn-secondary.hover, .btn.radiobtn.btn-secondary:hover {
+    background-color: var(--phs-purple-80);
+    border-radius: 0px;
+    color: #FFFFFF;
+    border-color: var(--phs-purple-80);
+}
+
+/* trend and methodology tab buttons */
+.btn.radiobtn.btn-tab {
+  border-radius: 0px; 
+  color: #FFFFFF;
+  font-size: 16px;
+  
+}
+
+.btn.radiobtn.btn-tab.active, .btn.radiobtn.btn-tab:active,
+.btn.radiobtn.btn-tab.focus, .btn.radiobtn.btn-tab:focus {
+  background-color: var(--phs-purple-80); 
+  border-radius: 0px;
+  font-weight: 600;
+  color: #FFFFFF;
+  border-color: var(--phs-purple);
+  border-bottom-color: var(--phs-purple-80);
+  border-width: 3px;
+  font-size: 16px;
+  
+} 
+
+.btn.radiobtn.btn-tab.hover, .btn.radiobtn.btn-tab:hover {
+    background-color: var(--phs-purple-80);
+    border-radius: 0px;
+    color: #FFFFFF;
+    border-color: var(--phs-purple-80);
+    font-size: 16px;
 }
 
 /*intro page ldp description box intro page*/
@@ -414,9 +467,6 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 .box-body {padding: 8px}
 .col-sm-5 {padding-right: 4px; padding-left: 4px}
 .col-sm-7 {padding-right: 4px; padding-left: 4px}
-
-
-
 
 
 /* Hack to get the colours we want on shinydashboard varBox */

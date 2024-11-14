@@ -55,14 +55,15 @@ home_list <- c("Dementia PDS" = "about",
                #"Data Definitions" = "defs",
                "Accessibility" = "accessibility")
 
-trend_list <- c("Number of Referrals" = "referrals_trend",
+trend_list <- c("Number of referrals" = "referrals_trend",
                 "Percentage of LDP standard achieved" = "pds_perc_trend",
-                "Percentage of estimated diagnoses referred to PDS" = "exp_perc_trend")
+                "Percentage of estimated diagnoses referred" = "exp_perc_trend")
 
 data_list <- c("Subtype of Dementia" = "data_subtype",
                "Stage of Dementia" = "data_stage",
                "PDS Referral Source" = "data_referral",
                "Model of Care" = "data_model",
+               "PDS Uptake" = "uptake",
                "PDS Pathways" = "waiting_times"
 )
 

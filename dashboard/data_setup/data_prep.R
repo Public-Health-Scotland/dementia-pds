@@ -208,6 +208,7 @@ data_model <- summarise_by_variable(model_of_care)
 data_age <- summarise_by_variable_demo(age_grp)
 data_simd <- summarise_by_variable_demo(simd)
 data_accom <- summarise_by_variable_demo(accommodation_type)
+data_uptake <- summarise_uptake(ldp)
 
 write_csv(data_sex, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_sex.csv")
@@ -225,6 +226,8 @@ write_csv(data_simd,
           "//conf/dementia/A&I/Outputs/dashboard/data/data_simd.csv")
 write_csv(data_accom, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_accom.csv")
+write_csv(data_uptake, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_uptake.csv")
 
   
 
@@ -239,15 +242,13 @@ ldp_wait_times <- ldp %>%
          contact_to_termination_days = time_length(interval(date_of_initial_first_contact, termination_or_transition_date), "days")
                )
 
+ ldp_wait_times %<>%
+#   mutate(termination_or_transition_reason = if_else(ldp == 'exempt', paste0(termination_or_transition_reason, " (exempt from LDP Standard)"), termination_or_transition_reason)) %>%
+ #  mutate(termination_or_transition_reason = substring(termination_or_transition_reason, 3)) %>% 
+   mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_date), "PDS Active", termination_or_transition_reason)) %>%
+   mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_reason), "13 Unknown Reason", termination_or_transition_reason))
+  # mutate(termination_or_transition_reason = str_trim(termination_or_transition_reason, "left"))
 
-ldp_wait_times %<>%
-  mutate(termination_or_transition_reason = if_else(ldp == 'exempt', paste0(termination_or_transition_reason, " (exempt from LDP Standard)"), termination_or_transition_reason)) %>%
-  mutate(termination_or_transition_reason = substring(termination_or_transition_reason, 3)) %>% 
-  mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_date), "PDS Active", termination_or_transition_reason)) %>%
-  mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_reason), "Unknown Reason", termination_or_transition_reason)) %>%
-  mutate(termination_or_transition_reason = str_trim(termination_or_transition_reason, "left"))
-
-er<-ldp_wait_times %>% filter(termination_or_transition_reason == "Service user has terminated PDS early/refused")
 
 
 # create summary
@@ -271,3 +272,32 @@ write_csv(data_wait_2,
 
 ##### END OF SCRIPT #####
 
+
+
+# test<-data_wait_2 %>%
+#   filter(ijb == "Scotland",
+#          fy == provisional_year,
+#          sex == "All") %>%
+#   pivot_wider(names_from = ldp, values_from = c(referrals, median_contact_to_termination)) %>%
+#   mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
+#  # mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>%
+#   select(termination_or_transition_reason,
+#          referrals_All, median_contact_to_termination_All,
+#          referrals_complete, median_contact_to_termination_complete,
+#          referrals_exempt, median_contact_to_termination_exempt,
+#          referrals_fail, median_contact_to_termination_fail)
+# 
+
+# 
+# test<-data_uptake %>% 
+#   pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>%
+#   mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>%
+#   mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
+#   filter(ijb == "Scotland",
+#          fy == provisional_year,
+#          sex == "All",
+#          simd != "All",
+#          simd != "Unknown") %>%
+#   rowwise() %>% mutate(perc_accepted = (round(sum(c_across(c(6,7)))/sum(c_across(c(6:9)))*100,1)))
+# 
+# percent_uptake_bar_chart(test)

@@ -28,6 +28,7 @@ data_age <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_age.csv")
 data_simd <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_simd.csv")
 data_accom <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_accom.csv")
 data_sex <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_sex.csv")
+data_uptake <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_uptake.csv")
 
 
 # 2 read in error data ----
@@ -61,11 +62,11 @@ data_wait$ijb <- as.factor(data_wait$ijb)
 
 data_wait_2$health_board <- as.factor(data_wait_2$health_board)
 data_wait_2$fy <- as.factor(data_wait_2$fy)
-data_wait_2$termination_or_transition_reason <- factor(data_wait_2$termination_or_transition_reason,
-                                                       levels = unique(data_wait_2$termination_or_transition_reason)[c(1,2,12,10,8,15,11,6,13,3,9,16,5,7,14,4)])
+data_wait_2 %<>% arrange(termination_or_transition_reason)
+data_wait_2$termination_or_transition_reason <- as.factor(data_wait_2$termination_or_transition_reason)
 data_wait_2$sex <- as.factor(data_wait_2$sex)
 data_wait_2$ijb <- as.factor(data_wait_2$ijb)
-data_wait_2 %<>% arrange(termination_or_transition_reason) 
+data_wait_2 %<>% mutate(termination_or_transition_reason = substring(termination_or_transition_reason, 3))
 
 data_subtype$health_board <- as.factor(data_subtype$health_board)
 data_subtype$fy <- as.factor(data_subtype$fy)
@@ -108,6 +109,16 @@ data_accom$health_board <- as.factor(data_accom$health_board)
 data_accom$fy <- as.factor(data_accom$fy)
 data_accom$sex <- as.factor(data_accom$sex)
 data_accom$type <- as.factor(data_accom$type)
+
+data_uptake$health_board <- as.factor(data_uptake$health_board)
+data_uptake$fy <- as.factor(data_uptake$fy)
+data_uptake$sex <- as.factor(data_uptake$sex)
+data_uptake$simd <- as.factor(data_uptake$simd)
+data_uptake$ijb <- as.factor(data_uptake$ijb)
+data_uptake$pds_uptake_decision <- as.factor(data_uptake$pds_uptake_decision)
+
+
+
 
 
 

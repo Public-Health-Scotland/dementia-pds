@@ -234,3 +234,34 @@ percent_met_bar_chart <- function(data, x_text_angle = 45, legend = "none", fill
            yaxis = yaxis_plots, xaxis = xaxis_plots)
   
 }
+
+
+# bar chart for uptake percentage
+
+percent_uptake_bar_chart <- function(data, x_text_angle = 45, legend = "none", fill = sex){
+  
+  yaxis_plots[["title"]] <- ""
+  xaxis_plots[["title"]] <- ""
+  
+  plot <-  data %>% ggplot(aes(simd, perc_accepted, fill = {{fill}},
+                               text = paste0(simd, "<br>",
+                                             "Percentage of patients that accepted PDS: ", perc_accepted, "%"))) +
+    geom_col(position=position_dodge()) +
+    
+    scale_y_continuous(limits = c(0, 100),
+                       labels=function(x) paste0(x,"%")) +
+    
+    phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+    
+    theme(legend.title = element_blank(),
+          legend.position = legend,
+          axis.text.x = element_text(angle=x_text_angle))
+  
+  ggplotly(plot, tooltip = "text") %>%
+    
+    config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
+           displaylogo = F, editable = F) %>%
+    layout(margin = list(b = 30, t = 30), # to avoid labels getting cut out
+           yaxis = yaxis_plots, xaxis = xaxis_plots)
+  
+}
