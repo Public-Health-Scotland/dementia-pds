@@ -79,8 +79,7 @@ cl_out <- case_when(
 ### 3 - SIMD Lookup ----
 
 simd <- function(){
-  read_rds(glue("{cl_out}/lookups/Unicode/",
-                "Deprivation/postcode_2024_2_simd2020v2.rds")) %>%
+  simd <- read_rds(get_simd_path()) %>% 
     clean_names() %>%
     select(pc7, simd = simd2020v2_sc_quintile) %>%
     mutate(
@@ -90,6 +89,8 @@ simd <- function(){
         TRUE ~ as.character(simd)
       )
     )
+  
+  return(simd)
 }
 
 
