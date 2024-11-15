@@ -13,18 +13,34 @@ output$page_5_ui <-  renderUI({
                          label = "Select Health Board/IJB:",
                          choices = c("Scotland", boards, ijb_list)),width=6),
       
-      
-      #uiOutput("page_5_ui"),
-      
       fluidRow(column(
         # outputs
         h3(strong(htmlOutput("table_title_add"))),
         DT::dataTableOutput("table_add"),
         linebreaks(1),
         h3(strong(htmlOutput("chart_title_add_referrals"))),
-        plotlyOutput("plot_add_referrals", height = "600px"),
-        h3(strong(htmlOutput("chart_title_add"))),
-        plotlyOutput("plot_add", height = "600px"),width = 12))
+        
+        
+        conditionalPanel(condition= 'input.select_sex_add == "All"',
+                         radioButtons("select_sex_chart_1_add",
+                                      label="Choose how genders are displayed in chart:",
+                                      choices=c("show all genders combined" = "All",
+                                                "show female/male comparison" = "Male/Female"),
+                                      inline =TRUE),
+                         plotlyOutput("plot_add_referrals_all", height = "550px"),
+                         h3(strong(htmlOutput("chart_title_add_ldp_all"))),
+                         radioButtons("select_sex_chart_2_add",
+                                      label="Choose how genders are displayed in chart:",
+                                      choices=c("show all genders combined" = "All",
+                                                "show female/male comparison" = "Male/Female"),
+                                      inline =TRUE),
+                         plotlyOutput("plot_add_ldp_all", height = "550px")),
+        
+        conditionalPanel(condition= 'input.select_sex_add != "All"',
+                         plotlyOutput("plot_add_referrals", height = "550px"),
+                         h3(strong(htmlOutput("chart_title_add_ldp"))),
+                         plotlyOutput("plot_add_ldp", height = "550px")), width = 12)
+      ) # fluid Row
     ), #cond panel 1
     
     #uptake----
@@ -103,7 +119,7 @@ output$page_5_ui <-  renderUI({
  
 # SERVER ----
 
-# create table for variables other than pathways and uptake ----
+# create table for subtype, stage, referral source, and model of care ----
 # title 
  
 output$table_title_add <- renderUI({HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support by ", 
@@ -144,15 +160,16 @@ output$table_add <- DT::renderDataTable({
     table_data_add <- data_selected_add() %>% 
            mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
            filter(ijb == input$select_hb_ijb_add, fy == input$select_year_add, sex == input$select_sex_add) %>%  
-           select(type, total_referrals, percent_met) %>% 
-          mutate(percent_met = paste0(percent_met,"%")) %>% 
-           rename(" " = "type","Number of People Referred to PDS" = "total_referrals", "Percentage of LDP standard achieved" = "percent_met")
-    make_table(table_data_add, right_align = 1:2, table_elements = "t") %>% 
-      formatCurrency(2, currency = "", interval = 3, mark = ",", digits = 0)
+      select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met) %>% 
+      mutate(percent_met = paste0(percent_met,"%")) %>% 
+      set_colnames(c(" ","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
+    make_table(table_data_add, right_align = 1:6, table_elements = "t") %>% 
+      formatCurrency(2:5, currency = "", interval = 3, mark = ",", digits = 0)
   })
 
 
-#create plots  for variables other than pathways and uptake ----
+#create plots for subtype, stage, referral source, and model of care ----
+
 # proportion plot
 output$chart_title_add_referrals <- renderUI({HTML(paste0("Proportion of total referrals for dementia post-diagnostic support by ", 
                                                           
@@ -170,6 +187,21 @@ output$chart_title_add_referrals <- renderUI({HTML(paste0("Proportion of total r
 })
 
 
+
+#plot 1 if all genders are selected
+output$plot_add_referrals_all <- renderPlotly({
+  proportion_bar_chart(if(input$select_sex_chart_1_add == "All"){
+    data_selected_add() %>% filter(sex == "All") %>% mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+      filter(ijb == input$select_hb_ijb_add, fy == input$select_year_add)
+  }else if(input$select_sex_chart_1_add == "Male/Female"){
+    data_selected_add() %>% filter(sex == "Male" | sex == "Female") %>% mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+      filter(ijb == input$select_hb_ijb_add, fy == input$select_year_add)
+  },
+  legend = if_else(input$select_sex_chart_1_add == "All", "none", "right")
+  )
+})
+
+# plot 1 if specific gender is selected
 output$plot_add_referrals <- renderPlotly({
   proportion_bar_chart(data_selected_add() %>% mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
                          filter(ijb == input$select_hb_ijb_add, fy == input$select_year_add, sex == input$select_sex_add))
@@ -177,7 +209,7 @@ output$plot_add_referrals <- renderPlotly({
 
 # ldp plot
 
-output$chart_title_add <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one 
+output$chart_title_add_ldp_all <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one 
 year’s post-diagnostic support by ", 
 
 if (input$select_data_add == "data_model"){
@@ -193,7 +225,38 @@ if (input$select_data_add == "data_model"){
 ))
 })
 
-output$plot_add <- renderPlotly({
+
+output$chart_title_add_ldp <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one 
+year’s post-diagnostic support by ", 
+
+if (input$select_data_add == "data_model"){
+  "PDS Model of Care"
+} else if(input$select_data_add == "data_subtype"){
+  "Subtype of Dementia"
+} else if(input$select_data_add == "data_referral"){
+  "Source of Referral to PDS"
+} else if(input$select_data_add == "data_stage"){
+  "Clinical Impression of Stage of Dementia at Date of Referral"
+},
+": ", input$select_hb_ijb_add, ", Financial Year ", input$select_year_add, ", Gender: ", input$select_sex_add
+))
+})
+
+#plot 2 if all genders are selected
+output$plot_add_ldp_all <- renderPlotly({
+  percent_met_bar_chart(if(input$select_sex_chart_2_add == "All"){
+    data_selected_add() %>% filter(sex == "All") %>% mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+      filter(ijb == input$select_hb_ijb_add, fy == input$select_year_add)
+  }else if(input$select_sex_chart_2_add == "Male/Female"){
+    data_selected_add() %>% filter(sex == "Male" | sex == "Female") %>% mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+      filter(ijb == input$select_hb_ijb_add, fy == input$select_year_add)
+  },
+  legend = if_else(input$select_sex_chart_2_add == "All", "none", "right")
+  )
+})
+
+#plot 2 if specific gender is selected
+output$plot_add_ldp <- renderPlotly({
   percent_met_bar_chart(data_selected_add() %>% mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
                           filter(ijb == input$select_hb_ijb_add, fy == input$select_year_add, sex == input$select_sex_add))
 })

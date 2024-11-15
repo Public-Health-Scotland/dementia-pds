@@ -7,7 +7,7 @@ output$page_4_ui <-  renderUI({
                      
                      column(selectInput("select_simd_demo",
                                          label = "Select SIMD Quintile:",
-                                         choices = simd_list), width=6),
+                                         choices = c("All",simd_list)), width=6),
                       
                            #outputs
                               fluidRow(
@@ -80,7 +80,7 @@ output$table_gender <- DT::renderDataTable({
     mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
     filter(ijb == input$select_hb_ijb_demo,
            fy == input$select_year_demo,
-           simd == "All") %>% 
+           simd == input$select_simd_demo) %>% 
     select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met) %>% 
     mutate(percent_met = paste0(percent_met,"%")) %>% 
     set_colnames(c(" ","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
@@ -99,7 +99,7 @@ output$chart_title_gender_referrals <- renderUI({HTML(paste0("Proportion of tota
 output$plot_gender_referrals <- renderPlotly({
   proportion_bar_chart(data_sex %>%
                          mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-                         filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo, simd == "All"),
+                         filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo, simd == input$select_simd_demo),
   x_text_angle = 0, fill = type
   )
 })

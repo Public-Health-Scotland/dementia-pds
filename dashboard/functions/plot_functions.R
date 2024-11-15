@@ -183,7 +183,7 @@ proportion_bar_chart <- function(data, x_text_angle = 45, legend = "none", fill 
   plot <-  data %>% ggplot(aes(x = type, y = total_referrals/sum(total_referrals)*100, fill = {{fill}},
                                text = paste0(type, "<br>",
                                              "Proportion of total referrals: ", round(total_referrals/sum(total_referrals)*100,1), "%"))) +
-    geom_col(position=position_dodge()) +
+    geom_col(position=position_stack()) +
     
     scale_y_continuous(limits = c(0, NA),
                        labels=function(x) paste0(x,"%")) +
