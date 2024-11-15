@@ -46,12 +46,21 @@ output$page_5_ui <-  renderUI({
         h3(strong(htmlOutput("table_uptake_2_title"))),
         linebreaks(1),
         column(selectInput("select_hb_ijb_uptake_2",
+<<<<<<< HEAD
                            label = "Select Health Board/IJB to show in table and chart below:",
                            choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"), width = 5),
         
         DT::dataTableOutput("table_uptake_2"),
         h3(strong(htmlOutput("simd_uptake_plot_title"))),
         plotlyOutput("plot_simd_uptake"),
+=======
+                           label = "Select Health Board/IJB to show in table below:",
+                           choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"), width = 5),
+        
+        DT::dataTableOutput("table_uptake_2"),
+        #h3(htmlOutput("")),
+        plotlyOutput("plot_simd_uptake", height = "600px"),
+>>>>>>> 51d303058aa02eb2c3a7c2c80e0aaf22add719f0
       width = 12)), # fluidrow
       linebreaks(2)
     ), #cond panel 2
@@ -267,10 +276,13 @@ output$table_uptake_2 <- DT::renderDataTable({
     formatCurrency(c(3:5), currency = "", interval = 3, mark = ",", digits = 0)
 })
 
+<<<<<<< HEAD
 output$simd_uptake_plot_title<- renderUI({HTML(paste0("Percentage of People that Accepted PDS by Scottish Index of Multiple Deprivation (SIMD), Financial Year ",
                                                     input$select_year_add, ", ", input$select_hb_ijb_uptake_2, ", Gender: ", input$select_sex_add))
 })
 
+=======
+>>>>>>> 51d303058aa02eb2c3a7c2c80e0aaf22add719f0
 # simd chart
 output$plot_simd_uptake <- renderPlotly({
   percent_uptake_bar_chart(data_uptake %>% 
@@ -282,8 +294,12 @@ output$plot_simd_uptake <- renderPlotly({
                                     sex == input$select_sex_add,
                                     simd != "All",
                                     simd != "Unknown") %>%
+<<<<<<< HEAD
                              rowwise() %>% mutate(perc_accepted = round(sum(c_across(c(6,7)))/sum(c_across(c(6:9)))*100,1)),
                            x_text_angle = 0
+=======
+                             rowwise() %>% mutate(perc_accepted = round(sum(c_across(c(6,7)))/sum(c_across(c(6:9)))*100,1))
+>>>>>>> 51d303058aa02eb2c3a7c2c80e0aaf22add719f0
   )
 })
 
