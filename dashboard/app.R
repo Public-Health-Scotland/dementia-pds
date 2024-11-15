@@ -62,7 +62,7 @@ tabPanel(title = "Scotland LDP Standard",
     h1("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard - Scotland"),
     linebreaks(1),
     fluidRow(selectInput("select_year_p1",
-                label = "Financial Year",
+                label = "Select Financial Year of Diagnosis:",
                 choices = included_years,
                 selected= provisional_year
                 )),
@@ -82,12 +82,12 @@ tabPanel(title = "Health Boards LDP Standard",
          linebreaks(1),
          fluidRow(
             selectInput("select_year_p2",
-                             label = "Financial Year of Diagnosis",
+                             label = "Select Financial Year of Diagnosis:",
                              choices = included_years,
                              selected = provisional_year)),
          fluidRow(
            selectInput("select_hb_p2",
-                     label = "Health Board",
+                     label = "Select Health Board:",
                      choices = boards)),
          linebreaks(1),
          uiOutput("page_2_ui")
@@ -138,14 +138,14 @@ tabPanel(title = "Demographics",
            mainPanel(width = 10,
                     
                        column(selectInput("select_year_demo",
-                                          label = "Financial Year of Diagnosis",
+                                          label = "Select Financial Year of Diagnosis:",
                                           choices = included_years,
                                           selected = provisional_year),
                      
                    
-                              selectInput("select_hb_demo",
-                                          label = "Health Board",
-                                          choices = c("Scotland", boards)),width=6),   
+                              selectInput("select_hb_ijb_demo",
+                                          label = "Select Health Board/IJB:",
+                                          choices = c("Scotland", boards, ijb_list)),width=6),   
         
            uiOutput("page_4_ui") 
            ) #main panel
@@ -175,11 +175,11 @@ tabPanel(title = "Additional Analysis",
            mainPanel(width = 10,
             
               column(selectInput("select_year_add",
-                                                 label = "Financial Year of Diagnosis",
+                                                 label = "Select Financial Year of Diagnosis:",
                                                  choices = included_years,
                                                  selected = provisional_year),width=6),
              column(selectInput("select_sex_add",
-                                label="Gender",
+                                label="Select Gender:",
                                 choices=c("All", "Female", "Male")),width=6),
              uiOutput("page_5_ui") 
            ) # main panel

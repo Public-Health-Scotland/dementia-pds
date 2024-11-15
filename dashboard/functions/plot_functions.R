@@ -245,7 +245,7 @@ percent_uptake_bar_chart <- function(data, x_text_angle = 45, legend = "none", f
   
   plot <-  data %>% ggplot(aes(simd, perc_accepted, fill = {{fill}},
                                text = paste0(simd, "<br>",
-                                             "Percentage of patients that accepted PDS: ", perc_accepted, "%"))) +
+                                             "Percentage of people that accepted PDS: ", perc_accepted, "%"))) +
     geom_col(position=position_dodge()) +
     
     scale_y_continuous(limits = c(0, 100),

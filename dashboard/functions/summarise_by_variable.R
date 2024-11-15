@@ -1,38 +1,66 @@
 summarise_by_variable <- function(variable){
   bind_rows(
     
-    ldp %>% group_by(health_board = "Scotland", fy, sex = "All", {{variable}}) %>% 
+    ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
-                complete_exempt = sum(ldp == "complete" | ldp == "exempt"),
-                total_minus_ongoing = sum(ldp != "ongoing"),  .groups = "drop"),
+                complete = sum(ldp == "complete"),
+                exempt = sum(ldp == "exempt"),
+                ongoing = sum(ldp == "ongoing"),
+                not_met = sum(ldp == "fail"),
+                .groups = "drop"),
     
-    ldp %>% group_by(health_board, fy, sex = "All", {{variable}}) %>% 
+    ldp %>% group_by(health_board, ijb, fy, sex = "All", {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
-                complete_exempt = sum(ldp == "complete" | ldp == "exempt"),
-                total_minus_ongoing = sum(ldp != "ongoing"),  .groups = "drop"),
+                complete = sum(ldp == "complete"),
+                exempt = sum(ldp == "exempt"),
+                ongoing = sum(ldp == "ongoing"),
+                not_met = sum(ldp == "fail"),
+                .groups = "drop"),
     
-    ldp %>% group_by(health_board = "Scotland", fy, sex, {{variable}}) %>% 
+    ldp %>% group_by(health_board, ijb = "All", fy, sex = "All", {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
-                complete_exempt = sum(ldp == "complete" | ldp == "exempt"),
-                total_minus_ongoing = sum(ldp != "ongoing"),  .groups = "drop"),
+                complete = sum(ldp == "complete"),
+                exempt = sum(ldp == "exempt"),
+                ongoing = sum(ldp == "ongoing"),
+                not_met = sum(ldp == "fail"),
+                .groups = "drop"),
     
-    ldp %>% group_by(health_board, fy, sex, {{variable}}) %>% 
+    ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
-                complete_exempt = sum(ldp == "complete" | ldp == "exempt"),
-                total_minus_ongoing = sum(ldp != "ongoing"),  .groups = "drop")
-  
-   ) %>% 
-    mutate(percent_met = round(complete_exempt/total_minus_ongoing*100, 1)) %>% 
+                complete = sum(ldp == "complete"),
+                exempt = sum(ldp == "exempt"),
+                ongoing = sum(ldp == "ongoing"),
+                not_met = sum(ldp == "fail"),
+                .groups = "drop"),
+    
+    ldp %>% group_by(health_board, ijb, fy, sex, {{variable}}) %>% 
+      summarise(total_referrals = sum(n_referrals),
+                complete = sum(ldp == "complete"),
+                exempt = sum(ldp == "exempt"),
+                ongoing = sum(ldp == "ongoing"),
+                not_met = sum(ldp == "fail"),
+                .groups = "drop"),
+    
+    ldp %>% group_by(health_board, ijb = "All", fy, sex, {{variable}}) %>% 
+      summarise(total_referrals = sum(n_referrals),
+                complete = sum(ldp == "complete"),
+                exempt = sum(ldp == "exempt"),
+                ongoing = sum(ldp == "ongoing"),
+                not_met = sum(ldp == "fail"),
+                .groups = "drop")
+    
+  ) %>% 
+    mutate(percent_met = round(((complete + exempt)/(total_referrals - ongoing))*100, 1)) %>% 
     rename(type = {{variable}})
   
 }
 
-#for demographics tab
 
-summarise_by_variable_demo <- function(variable){
+# simd
+summarise_by_variable_simd <- function(variable){
   bind_rows(
     
-    ldp %>% group_by(health_board = "Scotland", fy, sex = "All", {{variable}}) %>% 
+    ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
@@ -40,7 +68,7 @@ summarise_by_variable_demo <- function(variable){
                 not_met = sum(ldp == "fail"),
                 .groups = "drop"),
     
-    ldp %>% group_by(health_board, fy, sex = "All", {{variable}}) %>% 
+    ldp %>% group_by(health_board, ijb, fy, sex = "All", {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
@@ -48,7 +76,7 @@ summarise_by_variable_demo <- function(variable){
                 not_met = sum(ldp == "fail"),
                 .groups = "drop"),
     
-    ldp %>% group_by(health_board = "Scotland", fy, sex, {{variable}}) %>% 
+    ldp %>% group_by(health_board, ijb = "All", fy, sex = "All", {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
@@ -56,7 +84,23 @@ summarise_by_variable_demo <- function(variable){
                 not_met = sum(ldp == "fail"),
                 .groups = "drop"),
     
-    ldp %>% group_by(health_board, fy, sex, {{variable}}) %>% 
+    ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, {{variable}}) %>% 
+      summarise(total_referrals = sum(n_referrals),
+                complete = sum(ldp == "complete"),
+                exempt = sum(ldp == "exempt"),
+                ongoing = sum(ldp == "ongoing"),
+                not_met = sum(ldp == "fail"),
+                .groups = "drop"),
+    
+    ldp %>% group_by(health_board, ijb, fy, sex, {{variable}}) %>% 
+      summarise(total_referrals = sum(n_referrals),
+                complete = sum(ldp == "complete"),
+                exempt = sum(ldp == "exempt"),
+                ongoing = sum(ldp == "ongoing"),
+                not_met = sum(ldp == "fail"),
+                .groups = "drop"),
+    
+    ldp %>% group_by(health_board, ijb = "All", fy, sex, {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
@@ -75,7 +119,15 @@ summarise_by_variable_demo <- function(variable){
 summarise_by_variable_gender <- function(variable){
   bind_rows(
     
-    ldp %>% group_by(health_board = "Scotland", fy, simd = "All", {{variable}}) %>% 
+    ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, simd = "All", {{variable}}) %>% 
+      summarise(total_referrals = sum(n_referrals),
+                complete = sum(ldp == "complete"),
+                exempt = sum(ldp == "exempt"),
+                ongoing = sum(ldp == "ongoing"),
+                not_met = sum(ldp == "fail"),
+                .groups = "drop"),
+   
+    ldp %>% group_by(health_board, ijb, fy, simd = "All", {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
@@ -83,7 +135,7 @@ summarise_by_variable_gender <- function(variable){
                 not_met = sum(ldp == "fail"),
                 .groups = "drop"),
     
-    ldp %>% group_by(health_board, fy, simd = "All", {{variable}}) %>% 
+    ldp %>% group_by(health_board, ijb = "All", fy, simd = "All", {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
@@ -91,7 +143,7 @@ summarise_by_variable_gender <- function(variable){
                 not_met = sum(ldp == "fail"),
                 .groups = "drop"),
     
-    ldp %>% group_by(health_board = "Scotland", fy, simd, {{variable}}) %>% 
+    ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, simd, {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
@@ -99,7 +151,16 @@ summarise_by_variable_gender <- function(variable){
                 not_met = sum(ldp == "fail"),
                 .groups = "drop"),
     
-    ldp %>% group_by(health_board, fy, simd, {{variable}}) %>% 
+    ldp %>% group_by(health_board, ijb, fy, simd, {{variable}}) %>% 
+      summarise(total_referrals = sum(n_referrals),
+                complete = sum(ldp == "complete"),
+                exempt = sum(ldp == "exempt"),
+                ongoing = sum(ldp == "ongoing"),
+                not_met = sum(ldp == "fail"),
+                .groups = "drop"),
+    
+    
+    ldp %>% group_by(health_board, ijb = "All", fy, simd, {{variable}}) %>% 
       summarise(total_referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),

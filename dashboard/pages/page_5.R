@@ -9,9 +9,9 @@ output$page_5_ui <-  renderUI({
       # inputs
       
       
-      column(selectInput("select_hb_add",
-                         label = "Health Board",
-                         choices = c("Scotland", boards)),width=6),
+      column(selectInput("select_hb_ijb_add",
+                         label = "Select Health Board/IJB:",
+                         choices = c("Scotland", boards, ijb_list)),width=6),
       
       
       #uiOutput("page_5_ui"),
@@ -33,7 +33,7 @@ output$page_5_ui <-  renderUI({
       
       fluidRow(column(
         # outputs
-       
+        
         h3(strong(htmlOutput("hb_ijb_table_title_uptake"))),
         column(radioButtons("select_uptake_table",
                             label = "In the table below show Scotland and: ",
@@ -44,24 +44,20 @@ output$page_5_ui <-  renderUI({
         DT::dataTableOutput("table_hb_ijb_uptake"),
         linebreaks(2),
         h3(strong(htmlOutput("table_uptake_2_title"))),
-        linebreaks(1),
+        fluidRow(
         column(selectInput("select_hb_ijb_uptake_2",
-<<<<<<< HEAD
                            label = "Select Health Board/IJB to show in table and chart below:",
-                           choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"), width = 5),
-        
-        DT::dataTableOutput("table_uptake_2"),
-        h3(strong(htmlOutput("simd_uptake_plot_title"))),
-        plotlyOutput("plot_simd_uptake"),
-=======
-                           label = "Select Health Board/IJB to show in table below:",
-                           choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"), width = 5),
-        
-        DT::dataTableOutput("table_uptake_2"),
-        #h3(htmlOutput("")),
-        plotlyOutput("plot_simd_uptake", height = "600px"),
->>>>>>> 51d303058aa02eb2c3a7c2c80e0aaf22add719f0
-      width = 12)), # fluidrow
+                           choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"),
+               width = 6)),
+       
+      fluidRow(
+          column(
+            linebreaks(1),
+            DT::dataTableOutput("table_uptake_2"), width = 6),
+          # h3(strong(htmlOutput("simd_uptake_plot_title"))),
+          column(plotlyOutput("plot_simd_uptake"), width = 6)
+        ), # fluidrow
+      width = 12)),
       linebreaks(2)
     ), #cond panel 2
     
@@ -121,7 +117,7 @@ output$table_title_add <- renderUI({HTML(paste0("Number and percentage of people
                                               } else if(input$select_data_add == "data_stage"){
                                                 "Clinical Impression of Stage of Dementia at Date of Referral"
                                               },
-                                              ": ", input$select_hb_add, ", Financial Year ", input$select_year_add, ", Gender: ", input$select_sex_add
+                                              ": ", input$select_hb_ijb_add, ", Financial Year ", input$select_year_add, ", Gender: ", input$select_sex_add
                                               )
                                          )
 })
@@ -146,7 +142,8 @@ data_selected_add <-reactive({
 
 output$table_add <- DT::renderDataTable({
     table_data_add <- data_selected_add() %>% 
-           filter(health_board == input$select_hb_add, fy == input$select_year_add, sex == input$select_sex_add) %>%  
+           mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+           filter(ijb == input$select_hb_ijb_add, fy == input$select_year_add, sex == input$select_sex_add) %>%  
            select(type, total_referrals, percent_met) %>% 
           mutate(percent_met = paste0(percent_met,"%")) %>% 
            rename(" " = "type","Number of People Referred to PDS" = "total_referrals", "Percentage of LDP standard achieved" = "percent_met")
@@ -168,14 +165,14 @@ output$chart_title_add_referrals <- renderUI({HTML(paste0("Proportion of total r
                                                          } else if(input$select_data_add == "data_stage"){
                                                            "Clinical Impression of Stage of Dementia at Date of Referral"
                                                          },
-                                                         ": ", input$select_hb_add, ", Financial Year ", input$select_year_add, ", Gender: ", input$select_sex_add
+                                                         ": ", input$select_hb_ijb_add, ", Financial Year ", input$select_year_add, ", Gender: ", input$select_sex_add
                                                          ))
 })
 
 
 output$plot_add_referrals <- renderPlotly({
-  proportion_bar_chart(data_selected_add() %>% 
-                         filter(health_board == input$select_hb_add, fy == input$select_year_add, sex == input$select_sex_add))
+  proportion_bar_chart(data_selected_add() %>% mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+                         filter(ijb == input$select_hb_ijb_add, fy == input$select_year_add, sex == input$select_sex_add))
 })
 
 # ldp plot
@@ -192,13 +189,13 @@ if (input$select_data_add == "data_model"){
 } else if(input$select_data_add == "data_stage"){
   "Clinical Impression of Stage of Dementia at Date of Referral"
 },
-": ", input$select_hb_add, ", Financial Year ", input$select_year_add, ", Gender: ", input$select_sex_add
+": ", input$select_hb_ijb_add, ", Financial Year ", input$select_year_add, ", Gender: ", input$select_sex_add
 ))
 })
 
 output$plot_add <- renderPlotly({
-  percent_met_bar_chart(data_selected_add() %>% 
-                          filter(health_board == input$select_hb_add, fy == input$select_year_add, sex == input$select_sex_add))
+  percent_met_bar_chart(data_selected_add() %>% mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+                          filter(ijb == input$select_hb_ijb_add, fy == input$select_year_add, sex == input$select_sex_add))
 })
  
 
@@ -254,7 +251,7 @@ output$table_hb_ijb_uptake <- DT::renderDataTable({
 
 
 #table 2 (simd)
-output$table_uptake_2_title<- renderUI({HTML(paste0("Number of Referrals by PDS Uptake Decision and Scottish Index of Multiple Deprivation (SIMD), Financial Year ",
+output$table_uptake_2_title<- renderUI({HTML(paste0("Number of Referrals and Percentage of People that Accepted PDS by Scottish Index of Multiple Deprivation (SIMD), Financial Year ",
                                                   input$select_year_add, ", ", input$select_hb_ijb_uptake_2, ", Gender: ", input$select_sex_add))
 })
 
@@ -269,20 +266,19 @@ output$table_uptake_2 <- DT::renderDataTable({
            simd != "All",
            simd != "Unknown") %>%
     select(5:9) %>% 
-    rowwise() %>% mutate(perc_accepted = paste0(round(sum(c_across(c(2,3)))/sum(c_across(c(2:5)))*100,1), "%")) %>% 
-    rename("SIMD" = "simd",
-           "Percentage Accepted" = "perc_accepted")
-  make_table(uptake_table_2_data, right_align = 1:5, table_elements = "t") %>%
-    formatCurrency(c(3:5), currency = "", interval = 3, mark = ",", digits = 0)
+   # rowwise() %>% mutate(perc_accepted = paste0(round(sum(c_across(c(2,3)))/sum(c_across(c(2:5)))*100,1), "%")) %>% 
+    rename("SIMD" = "simd")
+        #   "Percentage Accepted" = "perc_accepted")
+  make_table(uptake_table_2_data, right_align = 1:4, table_elements = "t") %>%
+    formatCurrency(c(2:4), currency = "", interval = 3, mark = ",", digits = 0)
 })
 
-<<<<<<< HEAD
-output$simd_uptake_plot_title<- renderUI({HTML(paste0("Percentage of People that Accepted PDS by Scottish Index of Multiple Deprivation (SIMD), Financial Year ",
-                                                    input$select_year_add, ", ", input$select_hb_ijb_uptake_2, ", Gender: ", input$select_sex_add))
-})
 
-=======
->>>>>>> 51d303058aa02eb2c3a7c2c80e0aaf22add719f0
+# output$simd_uptake_plot_title<- renderUI({HTML(paste0("Percentage of People that Accepted PDS by Scottish Index of Multiple Deprivation (SIMD), Financial Year ",
+#                                                     input$select_year_add, ", ", input$select_hb_ijb_uptake_2, ", Gender: ", input$select_sex_add))
+# })
+
+
 # simd chart
 output$plot_simd_uptake <- renderPlotly({
   percent_uptake_bar_chart(data_uptake %>% 
@@ -293,13 +289,10 @@ output$plot_simd_uptake <- renderPlotly({
                                     fy == input$select_year_add,
                                     sex == input$select_sex_add,
                                     simd != "All",
-                                    simd != "Unknown") %>%
-<<<<<<< HEAD
-                             rowwise() %>% mutate(perc_accepted = round(sum(c_across(c(6,7)))/sum(c_across(c(6:9)))*100,1)),
-                           x_text_angle = 0
-=======
+                                    simd != "Unknown") %>% 
                              rowwise() %>% mutate(perc_accepted = round(sum(c_across(c(6,7)))/sum(c_across(c(6:9)))*100,1))
->>>>>>> 51d303058aa02eb2c3a7c2c80e0aaf22add719f0
+                           #x_text_angle = 0
+
   )
 })
 

@@ -1,9 +1,13 @@
 ####################### Page 4 DEMOGRAPHICS #######################
 #UI----
 output$page_4_ui <-  renderUI({
-  
+  #gender ----
   div(
     conditionalPanel(condition = 'input.select_data_demo == "data_sex"',
+                     
+                     column(selectInput("select_simd_demo",
+                                         label = "Select SIMD Quintile:",
+                                         choices = simd_list), width=6),
                       
                            #outputs
                               fluidRow(
@@ -21,12 +25,13 @@ output$page_4_ui <-  renderUI({
                                  width = 12) 
                                ) # fluid row
                     
-    ), #cond panel 1 (gender)
+    ), #cond panel 1 
     
+    # age, simd, accommodation ----
     conditionalPanel(condition = 'input.select_data_demo != "data_sex"',
                            # inputs
                               column(selectInput("select_sex_demo",
-                                                    label="Gender",
+                                                    label="Select Gender:",
                                                     choices=c("All", "Female", "Male")),width=6),
                                
                          #outputs
@@ -57,7 +62,7 @@ output$page_4_ui <-  renderUI({
                                                   h3(htmlOutput("chart_title_demo_ldp")),
                                                   plotlyOutput("plot_demo_ldp", height = "500px")), width = 12)
                                ) # fluid row
-                     ) # cond panel 2 (everything but gender)
+                     ) # cond panel 2 
   ) # div
 }) # renderUI
 
@@ -66,12 +71,16 @@ output$page_4_ui <-  renderUI({
 # create table for gender ----
 # table title
 output$table_title_gender <- renderUI({HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support by Gender: ",
-                                                   input$select_hb_demo, ", Financial Year ", input$select_year_demo))
+                                                   input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo))
   
 })
 
 output$table_gender <- DT::renderDataTable({
-  table_data_gender <- data_sex %>% filter(health_board == input$select_hb_demo, fy == input$select_year_demo, simd == "All") %>% 
+  table_data_gender <- data_sex %>% 
+    mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+    filter(ijb == input$select_hb_ijb_demo,
+           fy == input$select_year_demo,
+           simd == "All") %>% 
     select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met) %>% 
     mutate(percent_met = paste0(percent_met,"%")) %>% 
     set_colnames(c(" ","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
@@ -81,30 +90,33 @@ output$table_gender <- DT::renderDataTable({
 
 
 #create plots for gender----
-#chart 1 title
+#plot 1 title
 output$chart_title_gender_referrals <- renderUI({HTML(paste0("Proportion of total referrals for PDS by Gender: ", 
-                                                           
-                                                           input$select_hb_demo, ", Financial Year ", input$select_year_demo))
+                                                     input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo))
 })
 
 #plot 1 
 output$plot_gender_referrals <- renderPlotly({
-  proportion_bar_chart(data_sex %>% filter(health_board == input$select_hb_demo, fy == input$select_year_demo, simd == "All"),
-  x_text_angle = if_else(input$select_data_demo == "data_accom", 45, 0), fill = type
+  proportion_bar_chart(data_sex %>%
+                         mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+                         filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo, simd == "All"),
+  x_text_angle = 0, fill = type
   )
 })
 
 
-# chart 2 title
+# plot 2 title
 output$chart_title_gender_ldp <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one 
 year’s post-diagnostic support by Gender: ", 
-input$select_hb_demo, ", Financial Year ", input$select_year_demo))
+input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo))
 })
 
 #plot 2
 output$plot_gender_ldp <- renderPlotly({
-  percent_met_bar_chart(data_sex %>% filter(health_board == input$select_hb_demo, fy == input$select_year_demo, simd == "All"),
-  x_text_angle = if_else(input$select_data_demo == "data_accom", 45, 0), fill = type
+  percent_met_bar_chart(data_sex %>%
+                          mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+                          filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo, simd == "All"),
+  x_text_angle = 0, fill = type
   )
 })
 
@@ -112,13 +124,7 @@ output$plot_gender_ldp <- renderPlotly({
 
 
 
-
-
-
-
-
-
-# create table other than gender----
+# create table for age, simd, accommodation----
 
 #filter data
 data_selected <-reactive({
@@ -129,7 +135,9 @@ data_selected <-reactive({
   }
 })
 
-data_demo <- reactive({data_selected() %>% filter(health_board == input$select_hb_demo, fy == input$select_year_demo)
+data_demo <- reactive({data_selected() %>%
+    mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+    filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo)
 })
 # table title
 output$table_title_demo <- renderUI({HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support by ", 
@@ -141,7 +149,7 @@ output$table_title_demo <- renderUI({HTML(paste0("Number and percentage of peopl
                                                  } else if(input$select_data_demo == "data_accom"){
                                                    "Accommodation Type"
                                                  },
-                                                 ": ", input$select_hb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
+                                                 ": ", input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
 )
 )
 })
@@ -157,7 +165,7 @@ output$table_demo <- DT::renderDataTable({
 })
 
 
-#create plots other than gender----
+#create plots for age, simd, accommodation----
 #chart 1 title
 output$chart_title_demo_referrals <- renderUI({HTML(paste0("Proportion of total referrals for PDS by ", 
                                                            
@@ -168,7 +176,7 @@ output$chart_title_demo_referrals <- renderUI({HTML(paste0("Proportion of total 
                                                            } else if(input$select_data_demo == "data_accom"){
                                                              "Accommodation Type"
                                                            },
-                                                           ": ", input$select_hb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
+                                                           ": ", input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
 )
 )
 })
@@ -202,7 +210,7 @@ if (input$select_data_demo == "data_age"){
 } else if(input$select_data_demo == "data_accom"){
   "Accommodation Type"
 },
-": ", input$select_hb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
+": ", input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
 )
 )
 })
@@ -217,7 +225,7 @@ if (input$select_data_demo == "data_age"){
 } else if(input$select_data_demo == "data_accom"){
   "Accommodation Type"
 },
-": ", input$select_hb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
+": ", input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
 )
 )
 })
