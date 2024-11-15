@@ -1,33 +1,44 @@
 ####################### Page 4 DEMOGRAPHICS #######################
 #UI----
 output$page_4_ui <-  renderUI({
-  #gender ----
+  #1 gender ----
   div(
     conditionalPanel(condition = 'input.select_data_demo == "data_sex"',
                      
                      column(selectInput("select_simd_demo",
                                          label = "Select SIMD Quintile:",
-                                         choices = simd_list), width=6),
+                                         choices = c("All",simd_list)), width=6),
                       
                            #outputs
-                              fluidRow(
-                                 column(
-                                 h3(htmlOutput("table_title_gender")),
+                   fluidRow(
+                           column(
+                                 h3(strong(htmlOutput("table_title_gender"))),
                                  DT::dataTableOutput("table_gender"),
                                  linebreaks(1),
                                  column(
-                                 h3(htmlOutput("chart_title_gender_referrals")),
+                                 h3(strong(htmlOutput("chart_title_gender_referrals"))),
                                  linebreaks(1),
                                  plotlyOutput("plot_gender_referrals"), width = 6),
                                  column(
-                                 h3(htmlOutput("chart_title_gender_ldp")),
+                                 h3(strong(htmlOutput("chart_title_gender_ldp"))),
                                  plotlyOutput("plot_gender_ldp"), width = 6),
                                  width = 12) 
-                               ) # fluid row
+                               ), # fluid row
+                   
+                     fluidRow(column(
+                       h3(strong(htmlOutput("chart_title_gender_referrals_trend"))),
+                       #DT::dataTableOutput("gender_trend_table"),
+                         plotlyOutput("plot_gender_referrals_trend"),
+                       h3(strong(htmlOutput("chart_title_gender_ldp_trend"))),
+                         plotlyOutput("plot_gender_ldp_trend"),
+                       width = 12) 
+                     ), # fluid row
+                       
+                     
                     
     ), #cond panel 1 
     
-    # age, simd, accommodation ----
+    #2 age, simd, accommodation ----
     conditionalPanel(condition = 'input.select_data_demo != "data_sex"',
                            # inputs
                               column(selectInput("select_sex_demo",
@@ -37,10 +48,10 @@ output$page_4_ui <-  renderUI({
                          #outputs
                                fluidRow(
                                  column(
-                                 h3(htmlOutput("table_title_demo")),
+                                 h3(strong(htmlOutput("table_title_demo"))),
                                  DT::dataTableOutput("table_demo"),
                                  linebreaks(1),
-                                 h3(htmlOutput("chart_title_demo_referrals")),
+                                 h3(strong(htmlOutput("chart_title_demo_referrals"))),
                                  
                                  conditionalPanel(condition= 'input.select_sex_demo == "All"',
                                                   radioButtons("select_sex_chart_1",
@@ -49,7 +60,7 @@ output$page_4_ui <-  renderUI({
                                                                          "show female/male comparison" = "Male/Female"),
                                                                inline =TRUE),
                                                   plotlyOutput("plot_demo_referrals_all", height = "500px"),
-                                                  h3(htmlOutput("chart_title_demo_ldp_all")),
+                                                  h3(strong(htmlOutput("chart_title_demo_ldp_all"))),
                                                   radioButtons("select_sex_chart_2",
                                                                label="Choose how genders are displayed in chart:",
                                                                choices=c("show all genders combined" = "All",
@@ -59,7 +70,7 @@ output$page_4_ui <-  renderUI({
                                  
                                  conditionalPanel(condition= 'input.select_sex_demo != "All"',
                                                   plotlyOutput("plot_demo_referrals", height = "500px"),
-                                                  h3(htmlOutput("chart_title_demo_ldp")),
+                                                  h3(strong(htmlOutput("chart_title_demo_ldp"))),
                                                   plotlyOutput("plot_demo_ldp", height = "500px")), width = 12)
                                ) # fluid row
                      ) # cond panel 2 
@@ -68,7 +79,7 @@ output$page_4_ui <-  renderUI({
 
 # SERVER ----
 
-# create table for gender ----
+#1a table for gender ----
 # table title
 output$table_title_gender <- renderUI({HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support by Gender: ",
                                                    input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo))
@@ -80,7 +91,7 @@ output$table_gender <- DT::renderDataTable({
     mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
     filter(ijb == input$select_hb_ijb_demo,
            fy == input$select_year_demo,
-           simd == "All") %>% 
+           simd == input$select_simd_demo) %>% 
     select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met) %>% 
     mutate(percent_met = paste0(percent_met,"%")) %>% 
     set_colnames(c(" ","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
@@ -89,42 +100,66 @@ output$table_gender <- DT::renderDataTable({
 })
 
 
-#create plots for gender----
-#plot 1 title
+#1b plots for gender----
+#proportion plot title
 output$chart_title_gender_referrals <- renderUI({HTML(paste0("Proportion of total referrals for PDS by Gender: ", 
                                                      input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo))
 })
 
-#plot 1 
+#proportion plot 
 output$plot_gender_referrals <- renderPlotly({
   proportion_bar_chart(data_sex %>%
                          mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-                         filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo, simd == "All"),
+                         filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo, simd == input$select_simd_demo),
   x_text_angle = 0, fill = type
   )
 })
 
 
-# plot 2 title
+# percent met title
 output$chart_title_gender_ldp <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one 
 year’s post-diagnostic support by Gender: ", 
 input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo))
 })
 
-#plot 2
+#percent met plot
 output$plot_gender_ldp <- renderPlotly({
   percent_met_bar_chart(data_sex %>%
                           mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-                          filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo, simd == "All"),
-  x_text_angle = 0, fill = type
-  )
+                          filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo, simd == input$select_simd_demo),
+  x_text_angle = 0, fill = type)
+})
+
+#referrals trend plot title
+output$chart_title_gender_referrals_trend <- renderUI({HTML(paste0("Number of individuals diagnosed with dementia and referred for PDS by Gender - Trend; ", 
+input$select_hb_ijb_demo, ", SIMD Quintile: ", input$select_simd_demo))
+})
+
+#referrals trend plot
+output$plot_gender_referrals_trend <- renderPlotly({
+plot_trend_referrals(data_sex %>% 
+mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+  filter(ijb == input$select_hb_ijb_demo, simd == input$select_simd_demo, type != "Unknown", type != "Not Specified"),
+  measure = total_referrals, group = type)
+})
+
+
+#percent met trend plot title
+output$chart_title_gender_ldp_trend <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one year’s PDS by Gender - Trend; ", 
+                                                                   input$select_hb_ijb_demo, ", SIMD Quintile: ", input$select_simd_demo))
+})
+
+#percent met trend plot
+output$plot_gender_ldp_trend <- renderPlotly({
+  plot_trend(data_sex %>% 
+                         mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+                         filter(ijb == input$select_hb_ijb_demo, simd == input$select_simd_demo, type != "Unknown", type != "Not Specified"),
+                       measure = percent_met, group = type)
 })
 
 
 
-
-
-# create table for age, simd, accommodation----
+#2a  create table for age, simd, accommodation----
 
 #filter data
 data_selected <-reactive({
@@ -165,7 +200,7 @@ output$table_demo <- DT::renderDataTable({
 })
 
 
-#create plots for age, simd, accommodation----
+#2b create plots for age, simd, accommodation----
 #chart 1 title
 output$chart_title_demo_referrals <- renderUI({HTML(paste0("Proportion of total referrals for PDS by ", 
                                                            

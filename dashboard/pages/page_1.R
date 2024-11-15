@@ -25,10 +25,10 @@ output$page_1_ui <-  renderUI({
           ), #fluidRow
     fluidRow(
       linebreaks(1),
-      h3(htmlOutput("chart_title_p1")),
+      h3(strong(htmlOutput("chart_title_p1"))),
       plotlyOutput("ldp_scotland"),
       linebreaks(1),
-      h3(htmlOutput("pds_table_title_p1")),
+      h3(strong(htmlOutput("pds_table_title_p1"))),
       
       fluidRow(column(
         radioButtons("select_hb_ijb",
@@ -40,7 +40,7 @@ output$page_1_ui <-  renderUI({
       
       DT::dataTableOutput("table_pds"),
       linebreaks(1),
-      h3(htmlOutput("hb_exp_table_title_p1")),
+      h3(strong(htmlOutput("hb_exp_table_title_p1"))),
       DT::dataTableOutput("table_hb_exp"),
       linebreaks(1)
     ) # fluid Row

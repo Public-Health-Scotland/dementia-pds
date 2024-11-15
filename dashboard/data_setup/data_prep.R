@@ -273,31 +273,3 @@ write_csv(data_wait_2,
 ##### END OF SCRIPT #####
 
 
-
-# test<-data_wait_2 %>%
-#   filter(ijb == "Scotland",
-#          fy == provisional_year,
-#          sex == "All") %>%
-#   pivot_wider(names_from = ldp, values_from = c(referrals, median_contact_to_termination)) %>%
-#   mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
-#  # mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>%
-#   select(termination_or_transition_reason,
-#          referrals_All, median_contact_to_termination_All,
-#          referrals_complete, median_contact_to_termination_complete,
-#          referrals_exempt, median_contact_to_termination_exempt,
-#          referrals_fail, median_contact_to_termination_fail)
-# 
-
-# 
-# test<-data_uptake %>% 
-#   pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>%
-#   mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>%
-#   mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
-#   filter(ijb == "Scotland",
-#          fy == provisional_year,
-#          sex == "All",
-#          simd != "All",
-#          simd != "Unknown") %>%
-#   rowwise() %>% mutate(perc_accepted = (round(sum(c_across(c(6,7)))/sum(c_across(c(6:9)))*100,1)))
-# 
-# percent_uptake_bar_chart(test)

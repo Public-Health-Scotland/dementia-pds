@@ -83,7 +83,7 @@ quality_list <- c("Queries/Errors" = "errors",
 boards <- sort(unique(pds_plot_data$health_board))
 ijb_list <- as.character(sort(unique(filter(err, ijb != "" & ijb != "Unknown")$ijb)))
 
-simd_list <- sort(unique(data_simd$type))
+simd_list <- as.character(sort(unique(filter(data_simd, type != "Unknown")$type)))
 
 
 

@@ -25,10 +25,10 @@ output$page_2_ui <-  renderUI({
          ), #fluidRow
     fluidRow(
       linebreaks(1),
-      h3(htmlOutput("table_title_p2")),
+      h3(strong(htmlOutput("table_title_p2"))),
       DT::dataTableOutput("table_hb_ijb"),
       linebreaks(1),
-      h3(htmlOutput("chart_title_p2")),
+      h3(strong(htmlOutput("chart_title_p2"))),
       plotlyOutput("hb_ijb_plot"),
       linebreaks(1)
     )# fluidRow

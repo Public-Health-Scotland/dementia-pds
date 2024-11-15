@@ -76,25 +76,17 @@ plot_referrals <- function(data,
 }
 
 # yearly trend plot function for percentages
-plot_trend <- function(data, measure){
+plot_trend <- function(data, measure, group = ijb){
   
   yaxis_plots[["title"]] <- ""
   xaxis_plots[["title"]] <- ""
   
-  data %<>%
-    
-    select(ijb, fy, {{measure}}) %>%
-    filter(!is.na({{measure}})) %>% 
-    distinct(ijb, fy, .keep_all = T)
-  
-  
-  
-  plot <- data %>%
+    plot <- data %>%
     
     ggplot(aes(x = fy,
                y = {{measure}},
-               group = ijb,
-               colour = ijb,
+               group = {{group}},
+               colour = {{group}},
                text = paste0(ijb, "<br>",
                              fy, "<br>",
                              {{measure}}, "%"))) +
@@ -124,25 +116,18 @@ plot_trend <- function(data, measure){
 }
 
 # yearly trend plot function for referrals
-plot_trend_referrals <- function(data, measure){
+plot_trend_referrals <- function(data, measure, group = ijb){
   
   yaxis_plots[["title"]] <- ""
   xaxis_plots[["title"]] <- ""
   
-  data %<>%
     
-    select(ijb, fy, {{measure}}) %>%
-    filter(!is.na({{measure}})) %>% 
-    distinct(ijb, fy, .keep_all = T)
-  
-  
-  
   plot <- data %>%
     
     ggplot(aes(x = fy,
                y = {{measure}},
-               group = ijb,
-               colour = ijb,
+               group = {{group}},
+               colour = {{group}},
                text = paste0(ijb, "<br>",
                              fy, "<br>",
                              {{measure}}))) +
@@ -183,7 +168,7 @@ proportion_bar_chart <- function(data, x_text_angle = 45, legend = "none", fill 
   plot <-  data %>% ggplot(aes(x = type, y = total_referrals/sum(total_referrals)*100, fill = {{fill}},
                                text = paste0(type, "<br>",
                                              "Proportion of total referrals: ", round(total_referrals/sum(total_referrals)*100,1), "%"))) +
-    geom_col(position=position_dodge()) +
+    geom_col(position=position_stack()) +
     
     scale_y_continuous(limits = c(0, NA),
                        labels=function(x) paste0(x,"%")) +
