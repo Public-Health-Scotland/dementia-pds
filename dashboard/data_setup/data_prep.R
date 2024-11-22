@@ -205,9 +205,9 @@ data_subtype <- summarise_by_variable(subtype_of_dementia)
 data_stage <- summarise_by_variable(clinical_impression_of_stage_of_illness)
 data_referral <- summarise_by_variable(pds_referral_source)
 data_model <- summarise_by_variable(model_of_care)
-data_age <- summarise_by_variable_demo(age_grp)
-data_simd <- summarise_by_variable_demo(simd)
-data_accom <- summarise_by_variable_demo(accommodation_type)
+data_age <- summarise_by_variable(age_grp)
+data_simd <- summarise_by_variable_simd(simd)
+data_accom <- summarise_by_variable(accommodation_type)
 data_uptake <- summarise_uptake(ldp)
 
 write_csv(data_sex, 

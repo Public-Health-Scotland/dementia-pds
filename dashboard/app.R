@@ -133,10 +133,11 @@ tabPanel(title = "Demographics",
                                           status = "secondary",
                                           direction = "vertical", 
                                           justified = T,
-                                          size = "normal"), width = 2),
+                                          size = "normal"
+                                          ), width = 2, style = "position:fixed;width:inherit;"),
            
            mainPanel(width = 10,
-                    
+                   
                        column(selectInput("select_year_demo",
                                           label = "Select Financial Year of Diagnosis:",
                                           choices = included_years,
@@ -145,11 +146,11 @@ tabPanel(title = "Demographics",
                    
                               selectInput("select_hb_ijb_demo",
                                           label = "Select Health Board/IJB:",
-                                          choices = c("Scotland", boards, ijb_list)),width=6),   
+                                          choices = c("Scotland", boards, ijb_list)),width=6),
         
            uiOutput("page_4_ui") 
            ) #main panel
-         ) #sidebar layout
+        ) #sidebar layout
 
       ), # tabpanel
 
@@ -170,7 +171,7 @@ tabPanel(title = "Additional Analysis",
                                           status = "secondary",
                                           direction = "vertical", 
                                           justified = T,
-                                          size = "normal"), width = 2),
+                                          size = "normal"), width = 2, style = "position:fixed;width:inherit;"),
            
            mainPanel(width = 10,
             
