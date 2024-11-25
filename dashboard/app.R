@@ -134,19 +134,36 @@ tabPanel(title = "Demographics",
                                           direction = "vertical", 
                                           justified = T,
                                           size = "normal"
-                                          ), width = 2, style = "position:fixed;width:inherit;"),
+                                          ),
+                        linebreaks(1),
+                        selectInput("select_year_demo",
+                                           label = "Select Financial Year of Diagnosis:",
+                                           choices = included_years,
+                                           selected = provisional_year),
+                               
+                               
+                        selectInput("select_hb_ijb_demo",
+                                           label = "Select Health Board/IJB:",
+                                           choices = c("Scotland", boards, ijb_list)),
+                        
+         conditionalPanel(condition = 'input.select_data_demo == "data_sex"',
+                                         
+                        selectInput("select_simd_demo",
+                                           label = "Select SIMD Quintile:",
+                                           choices = c("All",simd_list))), 
+         
+         conditionalPanel(condition = 'input.select_data_demo != "data_sex"',
+                          
+                        selectInput("select_sex_demo",
+                                            label="Select Gender:",
+                                            choices=c("All", "Female", "Male"))),
+                        
+                        
+                        width = 2, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
            
            mainPanel(width = 10,
                    
-                       column(selectInput("select_year_demo",
-                                          label = "Select Financial Year of Diagnosis:",
-                                          choices = included_years,
-                                          selected = provisional_year),
-                     
-                   
-                              selectInput("select_hb_ijb_demo",
-                                          label = "Select Health Board/IJB:",
-                                          choices = c("Scotland", boards, ijb_list)),width=6),
+                       
         
            uiOutput("page_4_ui") 
            ) #main panel
@@ -171,18 +188,30 @@ tabPanel(title = "Additional Analysis",
                                           status = "secondary",
                                           direction = "vertical", 
                                           justified = T,
-                                          size = "normal"), width = 2, style = "position:fixed;width:inherit;"),
+                                          size = "normal"), 
+          linebreaks(1),              
+                        selectInput("select_year_add",
+                                           label = "Select Financial Year of Diagnosis:",
+                                           choices = included_years,
+                                           selected = provisional_year),
+          
+  conditionalPanel(condition= 'input.select_data_add == "data_subtype" || input.select_data_add == "data_stage" || input.select_data_add == "data_referral" || input.select_data_add == "data_model"',      
+           
+                       selectInput("select_hb_ijb_add",
+                                           label = "Select Health Board/IJB:",
+                                           choices = c("Scotland", boards, ijb_list))),
+          
+                        selectInput("select_sex_add",
+                                           label="Select Gender:",
+                                           choices=c("All", "Female", "Male")),
+   
+                        
+                        width = 2, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+          
            
            mainPanel(width = 10,
             
-              column(selectInput("select_year_add",
-                                                 label = "Select Financial Year of Diagnosis:",
-                                                 choices = included_years,
-                                                 selected = provisional_year),width=6),
-             column(selectInput("select_sex_add",
-                                label="Select Gender:",
-                                choices=c("All", "Female", "Male")),width=6),
-             uiOutput("page_5_ui") 
+               uiOutput("page_5_ui") 
            ) # main panel
          )  #sidebar layout
      ), # tabpanel

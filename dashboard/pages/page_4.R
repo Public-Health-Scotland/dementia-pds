@@ -5,85 +5,70 @@ output$page_4_ui <-  renderUI({
   div(
     conditionalPanel(condition = 'input.select_data_demo == "data_sex"',
                      
-                     column(selectInput("select_simd_demo",
-                                         label = "Select SIMD Quintile:",
-                                         choices = c("All",simd_list)), width=6),
-                      
-                           #outputs
-                   fluidRow(
-                           column(
-                                 h3(strong(htmlOutput("table_title_gender"))),
-                                 DT::dataTableOutput("table_gender"),
-                                 linebreaks(1),
-                                 column(
-                                 h3(strong(htmlOutput("chart_title_gender_referrals"))),
-                                 linebreaks(1),
-                                 plotlyOutput("plot_gender_referrals"), width = 6),
-                                 column(
-                                 h3(strong(htmlOutput("chart_title_gender_ldp"))),
-                                 plotlyOutput("plot_gender_ldp"), width = 6),
-                                 width = 12) 
-                               ), # fluid row
-                   
-                     fluidRow(column(
-                       h3(strong(htmlOutput("chart_title_gender_referrals_trend"))),
-                       #DT::dataTableOutput("gender_trend_table"),
+                    fluidRow(
+                       column(
+                         h3(strong(htmlOutput("table_title_gender"))),
+                         DT::dataTableOutput("table_gender"),
+    linebreaks(1),
+                         column(
+                           h3(strong(htmlOutput("chart_title_gender_referrals"))),
+    linebreaks(1),
+                           plotlyOutput("plot_gender_referrals"), width = 6),
+                         column(
+                           h3(strong(htmlOutput("chart_title_gender_ldp"))),
+                           plotlyOutput("plot_gender_ldp"), width = 6),
+    linebreaks(1),                          
+                         h3(strong(htmlOutput("chart_title_gender_referrals_trend"))),
+                         #DT::dataTableOutput("gender_trend_table"),
                          plotlyOutput("plot_gender_referrals_trend"),
-                       h3(strong(htmlOutput("chart_title_gender_ldp_trend"))),
+    linebreaks(1),
+                         h3(strong(htmlOutput("chart_title_gender_ldp_trend"))),
                          plotlyOutput("plot_gender_ldp_trend"),
-                       width = 12) 
+    linebreaks(1),
+                         width = 12,
+                         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available") 
                      ), # fluid row
-                       
-                     
-                    
     ), #cond panel 1 
     
     #2 age, simd, accommodation ----
     conditionalPanel(condition = 'input.select_data_demo != "data_sex"',
-                           # inputs
-                              column(selectInput("select_sex_demo",
-                                                    label="Select Gender:",
-                                                    choices=c("All", "Female", "Male")),width=6),
-                               
-                         #outputs
-                               fluidRow(
-                                 column(
-                                 h3(strong(htmlOutput("table_title_demo"))),
-                                 DT::dataTableOutput("table_demo"),
-                                 linebreaks(1),
-                                 h3(strong(htmlOutput("chart_title_demo_referrals"))),
+                          
+                fluidRow(
+                    column(
+                          h3(strong(htmlOutput("table_title_demo"))),
+                          DT::dataTableOutput("table_demo"),
+      linebreaks(1),
+                          h3(strong(htmlOutput("chart_title_demo_referrals"))),
                                  
-                                 conditionalPanel(condition= 'input.select_sex_demo == "All"',
-                                                  radioButtons("select_sex_chart_1",
-                                                               label="Choose how genders are displayed in chart:",
-                                                               choices=c("show all genders combined" = "All",
-                                                                         "show female/male comparison" = "Male/Female"),
-                                                               inline =TRUE),
-                                                  plotlyOutput("plot_demo_referrals_all", height = "500px"),
-                                                  h3(strong(htmlOutput("chart_title_demo_ldp_all"))),
-                                                  radioButtons("select_sex_chart_2",
-                                                               label="Choose how genders are displayed in chart:",
-                                                               choices=c("show all genders combined" = "All",
-                                                                         "show female/male comparison" = "Male/Female"),
-                                                               inline =TRUE),
-                                                  plotlyOutput("plot_demo_ldp_all", height = "500px")),
+                     conditionalPanel(condition= 'input.select_sex_demo == "All"',
+                          radioButtons("select_sex_chart_1",
+                                        label="Choose how genders are displayed in chart:",
+                                        choices=c("show all genders combined" = "All",
+                                                  "show female/male comparison" = "Male/Female"),
+                                                   inline =TRUE),
+                          plotlyOutput("plot_demo_referrals_all", height = "500px"),
+                          h3(strong(htmlOutput("chart_title_demo_ldp_all"))),
+                          radioButtons("select_sex_chart_2",
+                                        label="Choose how genders are displayed in chart:",
+                                        choices=c("show all genders combined" = "All",
+                                                   "show female/male comparison" = "Male/Female"),
+                                                    inline =TRUE),
+                          plotlyOutput("plot_demo_ldp_all", height = "500px")),
                                  
-                                 conditionalPanel(condition= 'input.select_sex_demo != "All"',
-                                                  plotlyOutput("plot_demo_referrals", height = "500px"),
-                                                  h3(strong(htmlOutput("chart_title_demo_ldp"))),
-                                                  plotlyOutput("plot_demo_ldp", height = "500px")), width = 12)
-                               ), # fluid row
-                     
-                     fluidRow(column(
-                       h3(strong(htmlOutput("chart_title_demo_referrals_trend"))),
-                       #DT::dataTableOutput("gender_trend_table"),
-                       plotlyOutput("plot_demo_referrals_trend"),
-                       h3(strong(htmlOutput("chart_title_demo_ldp_trend"))),
-                       plotlyOutput("plot_demo_ldp_trend"),
-                       width = 12) 
+                     conditionalPanel(condition= 'input.select_sex_demo != "All"',
+                          plotlyOutput("plot_demo_referrals", height = "500px"),
+                          h3(strong(htmlOutput("chart_title_demo_ldp"))),
+                          plotlyOutput("plot_demo_ldp", height = "500px")),
+                          h3(strong(htmlOutput("chart_title_demo_referrals_trend"))),
+                          #DT::dataTableOutput("gender_trend_table"),
+                          plotlyOutput("plot_demo_referrals_trend"),
+                          h3(strong(htmlOutput("chart_title_demo_ldp_trend"))),
+                          plotlyOutput("plot_demo_ldp_trend"),
+      linebreaks(1),
+                          width = 12,
+                          style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available") 
                      ), # fluid row
-                     
-                     ) # cond panel 2 
+               ) # cond panel 2 
   ) # div
 }) # renderUI
 

@@ -52,7 +52,8 @@ output$page_3_ui <-  renderUI({
                            label = "Select Health Board/IJB to show in chart:",
                            choices = c(boards, ijb_list), width = "100%"), width = 4)),
       
-      plotlyOutput("trend_plot")
+      plotlyOutput("trend_plot"),
+      linebreaks(1)
     ), # cond panel 2
     
     #3 percentage of estimated diagnoses----
@@ -70,7 +71,8 @@ output$page_3_ui <-  renderUI({
                            label = "Select Health Board to show in chart:",
                            choices = boards, width = "100%"), width = 4)),
       
-      plotlyOutput("trend_plot_2")
+      plotlyOutput("trend_plot_2"),
+      linebreaks(1)
     ) # cond panel 3
  	     ) # div
  }) # renderUI

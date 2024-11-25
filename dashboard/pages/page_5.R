@@ -3,15 +3,11 @@
 output$page_5_ui <-  renderUI({
   
   div(
+    
     #subtype, stage, referral source, and model of care----
     conditionalPanel(
       condition= 'input.select_data_add == "data_subtype" || input.select_data_add == "data_stage" || input.select_data_add == "data_referral" || input.select_data_add == "data_model"',
       # inputs
-      
-      
-      column(selectInput("select_hb_ijb_add",
-                         label = "Select Health Board/IJB:",
-                         choices = c("Scotland", boards, ijb_list)),width=6),
       
       fluidRow(column(
         # outputs
@@ -39,7 +35,10 @@ output$page_5_ui <-  renderUI({
         conditionalPanel(condition= 'input.select_sex_add != "All"',
                          plotlyOutput("plot_add_referrals", height = "550px"),
                          h3(strong(htmlOutput("chart_title_add_ldp"))),
-                         plotlyOutput("plot_add_ldp", height = "550px")), width = 12)
+                         plotlyOutput("plot_add_ldp", height = "550px")), 
+        linebreaks(1),
+         width = 12,
+        style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available")
       ) # fluid Row
     ), #cond panel 1
     
@@ -73,8 +72,9 @@ output$page_5_ui <-  renderUI({
           # h3(strong(htmlOutput("simd_uptake_plot_title"))),
           column(plotlyOutput("plot_simd_uptake"), width = 6)
         ), # fluidrow
-      width = 12)),
-      linebreaks(2)
+      linebreaks(1),
+           width = 12,
+           style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available"))
     ), #cond panel 2
     
     
@@ -102,6 +102,7 @@ output$page_5_ui <-  renderUI({
         
         #h4(strong("Referrals where post-diagnostic support has ended after being contacted by PDS practitioner:")),
         DT::dataTableOutput("table_wait_2"),
+        linebreaks(1),
         #  column(
         # h4(strong("Referrals exempt from LDP Standard, where post-diagnostic support has ended after being contacted by PDS practitioner:")),
         # DT::dataTableOutput("table_wait_2_exempt"), width = 6)
@@ -109,10 +110,11 @@ output$page_5_ui <-  renderUI({
         # h3(htmlOutput("")),
         # plotlyOutput("", height = "600px"))
         
-      width = 12)), # fluidrow
-      linebreaks(2)
-    ) #cond panel 3
-    
+      width = 12,
+      style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available")
+      ), # fluidrow
+    ), #cond panel 3
+  
   ) #div   
 }) # renderUI
  

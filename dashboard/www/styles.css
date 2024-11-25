@@ -399,7 +399,6 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 .btn.radiobtn.btn-secondary {
   border-radius: 0px; 
   color: #FFFFFF;
-  margin-left: -40px;
   width: 100%;
   max-width: none;
   font-size: 15px;
