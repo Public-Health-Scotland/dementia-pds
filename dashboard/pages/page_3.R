@@ -14,7 +14,7 @@ output$page_3_ui <-  renderUI({
         column(
           radioButtons("select_referrals_trend_table",
                        label = "In the table below show Scotland and: ",
-                       choices = c("Health Boards", "Integration Joint Boards"),
+                       choices = c("Health Boards", "Integration Authority Areas"),
                        selected = "Health Boards",
                        inline = TRUE
           ), width = 12)),
@@ -23,7 +23,7 @@ output$page_3_ui <-  renderUI({
       h3(strong(htmlOutput("chart_title_referrals_trend"))),
       fluidRow(
         column(selectInput("select_referrals_trend_plot",
-                           label = "Select Health Board/IJB to show in chart:",
+                           label = "Select Health Board/Integration Authority Area to show in chart:",
                            choices = c("Scotland", boards, ijb_list), width = "100%"), width = 4)),
       
       plotlyOutput("referrals_trend_plot")
@@ -40,7 +40,7 @@ output$page_3_ui <-  renderUI({
         column(
           radioButtons("select_pds_trend_table",
                        label = "In the table below show Scotland and: ",
-                       choices = c("Health Boards", "Integration Joint Boards"),
+                       choices = c("Health Boards", "Integration Authority Areas"),
                        selected = "Health Boards",
                        inline = TRUE
           ), width = 12)),
@@ -49,7 +49,7 @@ output$page_3_ui <-  renderUI({
       h3(strong(htmlOutput("chart_title_trend"))),
       fluidRow(
         column(selectInput("select_hb_ijb_trend",
-                           label = "Select Health Board/IJB to show in chart:",
+                           label = "Select Health Board/Integration Authority Area to show in chart:",
                            choices = c(boards, ijb_list), width = "100%"), width = 4)),
       
       plotlyOutput("trend_plot"),

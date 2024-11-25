@@ -56,7 +56,7 @@ conditionalPanel(
   fluidRow(column(
     p("In December 2016, the Scottish Government published a report:",
              a("Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020.", href="https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/"),
-             "Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report."),
+             "Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by Integration Authority Area or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report."),
            p("For financial years ",
              em("2021/22 and 2022/23"),
              " the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates."),
@@ -74,7 +74,7 @@ conditionalPanel(
                          tags$li("Keep record with earliest first contact date.")
                )
                ), 
-               p("There also exists a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IJB. The support provided to these service users has been apportioned to NHS Highland in this report, as part of the LDP Standard is a population based measure, and so by not including these Argyll & Bute residents this figure may be skewed."),
+               p("There also exists a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire Integration Authority Area. The support provided to these service users has been apportioned to NHS Highland in this report, as part of the LDP Standard is a population based measure, and so by not including these Argyll & Bute residents this figure may be skewed."),
                p("If you have any queries regarding the above, please contact ", a("phs.dementiapds@phs.scot", href="mailto:phs.dementiapds@phs.scot")),
                
       width = 12)) #fluid Row

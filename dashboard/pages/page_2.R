@@ -68,7 +68,7 @@ output$page_2_title <- renderUI({HTML(paste0("Dementia Post-Diagnostic Support; 
   
 #data table	----
 output$table_title_p2 <- renderUI({HTML(paste0("Number of Individuals relating to LDP Standard: Financial Year ", 
-                                                input$select_year_p2, ", ", input$select_hb_p2, " and Integration Joint Board(s)"))
+                                                input$select_year_p2, ", ", input$select_hb_p2, " andIntegration Authority Area(s)"))
   })
 
 hb_ijb_data_1 <- reactive({annual_table_data %>%
@@ -100,7 +100,7 @@ output$table_hb_ijb <- DT::renderDataTable({
 
 #referrals monthly plot ----
 output$chart_title_p2 <- renderUI({HTML(paste0("Number of Individuals Diagnosed and Referred for PDS: Financial Year ", 
-                                              input$select_year_p2, ", ", input$select_hb_p2, " and Integration Joint Board(s)"))
+                                              input$select_year_p2, ", ", input$select_hb_p2, " and Integration Authority Area(s)"))
 })
 
 hb_ijb_chart_data <- reactive({

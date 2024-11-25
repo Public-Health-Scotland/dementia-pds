@@ -52,7 +52,7 @@ output$page_5_ui <-  renderUI({
         h3(strong(htmlOutput("hb_ijb_table_title_uptake"))),
         column(radioButtons("select_uptake_table",
                             label = "In the table below show Scotland and: ",
-                            choices = c("Health Boards", "Integration Joint Boards"),
+                            choices = c("Health Boards", "Integration Authority Areas"),
                             selected = "Health Boards",
                             inline = TRUE
         ), width = 6),
@@ -61,7 +61,7 @@ output$page_5_ui <-  renderUI({
         h3(strong(htmlOutput("table_uptake_2_title"))),
         fluidRow(
         column(selectInput("select_hb_ijb_uptake_2",
-                           label = "Select Health Board/IJB to show in table and chart below:",
+                           label = "Select Health Board/Integration Authority Area to show in table and chart below:",
                            choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"),
                width = 6)),
        
@@ -88,7 +88,7 @@ output$page_5_ui <-  renderUI({
         h3(strong(htmlOutput("hb_ijb_table_title_wait"))),
         column(radioButtons("select_wait_table",
                             label = "In the table below show Scotland and: ",
-                            choices = c("Health Boards", "Integration Joint Boards"),
+                            choices = c("Health Boards", "Integration Authority Areas"),
                             selected = "Health Boards",
                             inline = TRUE
         ), width = 6),
@@ -97,7 +97,7 @@ output$page_5_ui <-  renderUI({
         h3(strong(htmlOutput("table_wait_2_title"))),
         #linebreaks(1),
         column(selectInput("select_hb_ijb_wait_2",
-                           label = "Select Health Board/IJB to show in table below:",
+                           label = "Select Health Board/Integration Authority Area to show in table below:",
                            choices = c("Scotland", boards, ijb_list), selected = data_wait_2$ijb == "Scotland", width = "100%"), width = 5),
         
         #h4(strong("Referrals where post-diagnostic support has ended after being contacted by PDS practitioner:")),
@@ -307,7 +307,7 @@ output$table_hb_ijb_uptake <- DT::renderDataTable({
       select(2,10,6,7,8,9) %>% 
       rowwise() %>% mutate(perc_accepted = paste0(round(sum(c_across(c(3:4)))/sum(c_across(c(2)))*100,1), "%")) %>%
       rename("Number of People Referred to PDS" = "Total",
-             "IJB" = "ijb",
+             "Integration Authority Area" = "ijb",
              "Percentage Accepted" = "perc_accepted")
     make_table(table_hb_data_uptake, right_align = 1:5, selected = 1, table_elements = "t", rows_to_display = 32) %>%
       formatCurrency(c(2:6), currency = "", interval = 3, mark = ",", digits = 0)
@@ -407,7 +407,7 @@ output$table_hb_ijb_wait <- DT::renderDataTable({
       mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
       arrange(ijb) %>% 
       mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
-      set_colnames(c("IJB","Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
+      set_colnames(c("Integration Authority Area","Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
                      "Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
                      "Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
                      "Average (median) days from diagnosis to first contact"

@@ -33,7 +33,7 @@ output$page_1_ui <-  renderUI({
       fluidRow(column(
         radioButtons("select_hb_ijb",
                      label = "In the table below show Scotland and: ",
-                     choices = c("Health Boards", "Integration Joint Boards"),
+                     choices = c("Health Boards", "Integration Authority Areas"),
                      selected = "Health Boards",
                      inline = TRUE
         ), width = 4)),
@@ -131,7 +131,7 @@ output$table_pds <- DT::renderDataTable({
      arrange(ijb) %>% 
      mutate(ijb = if_else(ijb == "AAA Scotland","Scotland", ijb)) %>% 
     mutate(rate = paste0(rate, "%")) %>% 
-    set_colnames(c("IJB","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
+    set_colnames(c("Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
   make_table(table_ijb_data, right_align = 1:6, selected = 1, rows_to_display = 32, table_elements = "t") %>% formatCurrency(c(2:6), currency = "", interval = 3, mark = ",", digits = 0)
   
 }

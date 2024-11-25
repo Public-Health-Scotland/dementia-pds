@@ -143,7 +143,7 @@ tabPanel(title = "Demographics",
                                
                                
                         selectInput("select_hb_ijb_demo",
-                                           label = "Select Health Board/IJB:",
+                                           label = "Select Health Board/Integration Authority Area:",
                                            choices = c("Scotland", boards, ijb_list)),
                         
          conditionalPanel(condition = 'input.select_data_demo == "data_sex"',
@@ -198,7 +198,7 @@ tabPanel(title = "Additional Analysis",
   conditionalPanel(condition= 'input.select_data_add == "data_subtype" || input.select_data_add == "data_stage" || input.select_data_add == "data_referral" || input.select_data_add == "data_model"',      
            
                        selectInput("select_hb_ijb_add",
-                                           label = "Select Health Board/IJB:",
+                                           label = "Select Health Board/Integration Authority Area:",
                                            choices = c("Scotland", boards, ijb_list))),
           
                         selectInput("select_sex_add",

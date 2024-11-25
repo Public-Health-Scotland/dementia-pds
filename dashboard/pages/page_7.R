@@ -101,7 +101,7 @@ err %>%
               values_fill = list(records = "0")) %>%
   arrange(health_board, ijb) %>%
   rename(`Health Board` = health_board,
-         `Integration Joint Board (IJB)` = ijb) %>%
+         `Integration Authority Area` = ijb) %>%
   kable(align = c("l", "l", rep("r", length(unique(err$fy)) + 1))) %>%
   kable_styling(full_width = TRUE) %>%
   row_spec(length(unique(paste(err$health_board, err$ijb))), bold = TRUE) %>%
