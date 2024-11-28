@@ -4,46 +4,54 @@ output$page_1_ui <-  renderUI({
 
   div(
     fluidRow(
-      shinydashboard::valueBox(
-        value = textOutput("scot_exp_perc"),
-        subtitle = "of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support.",
-        width = 7,
-        color = "blue"), #valueBox
-      box(htmlOutput("scot_exp_text"),
-          title = (p(strong("How is this figure calculated?"))),
-          width = 5, background = "black", solidHeader = TRUE), #box background set to black in order to edit ccs styles
-    ), #fluidRow
+        column(
+ # percentage of expected diagnoses ----
     fluidRow(
-      shinydashboard::valueBox(
-        value = textOutput("scot_pds_perc"),
-        subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
-        width = 7,
-        color = "blue"), #valueBox
-      box(htmlOutput("scot_pds_text"),
-          title = (p(strong("How is this figure calculated?"))),
-          width = 5, background = "black"), #box
-          ), #fluidRow
+          shinydashboard::valueBox(
+               value = textOutput("scot_exp_perc"),
+               subtitle = "of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support.",
+               width = 7,
+               color = "blue"), #valueBox
+          box(htmlOutput("scot_exp_text"),
+              title = (p(strong("How is this figure calculated?"))),
+              width = 5, background = "black", solidHeader = TRUE), #box background set to black in order to edit ccs styles
+         ), #fluidRow
+ # percentage acheived ldp standard ----
     fluidRow(
-      linebreaks(1),
-      h3(strong(htmlOutput("chart_title_p1"))),
-      plotlyOutput("ldp_scotland"),
-      linebreaks(1),
-      h3(strong(htmlOutput("pds_table_title_p1"))),
-      
-      fluidRow(column(
-        radioButtons("select_hb_ijb",
+          shinydashboard::valueBox(
+               value = textOutput("scot_pds_perc"),
+               subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
+               width = 7,
+               color = "blue"), #valueBox
+          box(htmlOutput("scot_pds_text"),
+               title = (p(strong("How is this figure calculated?"))),
+               width = 5, background = "black"), #box
+        ), #fluidRow
+ # monthly referrals plot ----
+    fluidRow(
+linebreaks(1),
+            h3(strong(htmlOutput("chart_title_p1"))),
+            plotlyOutput("monthly_referrals_plot_scotland"),
+linebreaks(1),
+# ldp standard table ----
+            h3(strong(htmlOutput("pds_table_title_p1"))),
+    fluidRow(column(
+            radioButtons("select_hb_ijb",
                      label = "In the table below show Scotland and: ",
                      choices = c("Health Boards", "Integration Authority Areas"),
                      selected = "Health Boards",
-                     inline = TRUE
-        ), width = 4)),
-      
-      DT::dataTableOutput("table_pds"),
-      linebreaks(1),
-      h3(strong(htmlOutput("hb_exp_table_title_p1"))),
-      DT::dataTableOutput("table_hb_exp"),
-      linebreaks(1)
-    ) # fluid Row
+                     inline = TRUE),
+                width = 4)),
+            DT::dataTableOutput("table_pds"),
+linebreaks(1),
+# expected diagnoses table ----
+            h3(strong(htmlOutput("hb_exp_table_title_p1"))),
+            DT::dataTableOutput("table_hb_exp"),
+linebreaks(1)
+           ), # fluid Row
+            width = 12,
+            style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"),
+         ) #fluidRow
       ) # div
 }) # renderUI
 
@@ -80,7 +88,7 @@ scotland_chart_data <- reactive({pds_plot_data %>%
     filter(fy == input$select_year_p1)})
 
 
-output$ldp_scotland <- renderPlotly({
+output$monthly_referrals_plot_scotland <- renderPlotly({
     plot_referrals(scotland_chart_data(), scotland = TRUE)
 })
 

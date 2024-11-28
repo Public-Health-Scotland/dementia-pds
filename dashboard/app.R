@@ -60,7 +60,7 @@ tabPanel(title = "Scotland LDP Standard",
     value = "ldp-scot",
     
     h1("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard - Scotland"),
-    linebreaks(1),
+    #linebreaks(1),
     fluidRow(selectInput("select_year_p1",
                 label = "Select Financial Year of Diagnosis:",
                 choices = included_years,
@@ -79,7 +79,7 @@ tabPanel(title = "Health Boards LDP Standard",
          value = "ldp-hb",
 
          h1(htmlOutput("page_2_title")),
-         linebreaks(1),
+         #linebreaks(1),
          fluidRow(
             selectInput("select_year_p2",
                              label = "Select Financial Year of Diagnosis:",
@@ -103,14 +103,15 @@ tabPanel(title = "Trends",
          value = "trends",
          
          h1("Dementia Post-Diagnostic Support - Trends"),
-         linebreaks(1),
+        # linebreaks(1),
       fluidRow(column(
-        
-        radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
+                radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
                           status = "tab",
                           direction = "horizontal", 
                           justified = T,
-                          size = "lg"), width = 12)),
+                          size = "lg"), 
+                  width = 12)
+                ), #fluidRow
         
            uiOutput("page_3_ui")
   
@@ -241,7 +242,7 @@ tabPanel(title = "Methodology",
                              size = "lg"), width = 12)),
          uiOutput("page_6_ui")
       
-) # tabPanel
+), # tabPanel
 
 ##############################################.
 # PAGE 7: Data Quality ----
@@ -258,7 +259,7 @@ tabPanel(title = "Methodology",
 
 
 
-    ) # navbar
+    collapsible = TRUE) # navbar
   ) # taglist
 ) # ui fluidpage
 

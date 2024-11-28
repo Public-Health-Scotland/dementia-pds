@@ -3,6 +3,7 @@
 output$page_2_ui <-  renderUI({
   
   div(
+# percentage of expected diagnoses ----
     fluidRow(
       shinydashboard::valueBox(
         value = textOutput("hb_exp_perc"),
@@ -13,6 +14,7 @@ output$page_2_ui <-  renderUI({
           title = (p(strong("How is this figure calculated?"))),
           width = 5, background = "black", solidHeader = TRUE), #box background set to black in order to edit ccs styles
     ), #fluidRow
+# percentage acheived ldp standard ----
     fluidRow(
       shinydashboard::valueBox(
         value = textOutput("hb_pds_perc"),

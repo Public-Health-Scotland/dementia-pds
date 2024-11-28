@@ -60,6 +60,11 @@ table.dataTable tr.active td, table.dataTable tr.active {
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
     color: var(--phs-purple);
   }
+  
+h1, .h1 {
+    margin-top: 0px;
+    margin-bottom: 20px;
+}
 
 /* Body styles */
 body {
@@ -197,6 +202,15 @@ a:hover {
 }
 .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
   color: var(--white);     background-color: var(--phs-purple-80);}
+  
+.navbar-nav {
+  float: none;
+}
+
+.nav {
+    padding-left: 115px;
+}
+   
 
 /* Border tables - th, td puts within the table as well */
   .border-table{border:0px solid var(--phs-purple);}
@@ -373,6 +387,8 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
   /*color: rgba(0, 0, 0, 0.15);*/
 }
 
+
+
 /* intro page side bar buttons */
 .btn.radiobtn.btn-primary {
   border-radius: 0px; 
@@ -414,6 +430,7 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
     border-color: var(--phs-purple-50);
     border-right-width: 4px;
     border-right-color: var(--phs-purple);
+    font-size: 16px;
 }
 
 
@@ -422,9 +439,17 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
     border-radius: 0px;
     color: #FFFFFF;
     border-color: var(--phs-purple-80);
+    font-size: 16px;
 }
 
 /* trend and methodology tab buttons */
+#trend_tab, #method_tab {
+  
+  border-bottom: solid; 
+  border-color: var(--phs-purple-50);
+  border-width: medium
+}
+
 .btn.radiobtn.btn-tab {
   border-radius: 0px; 
   color: #FFFFFF;
@@ -434,14 +459,15 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 
 .btn.radiobtn.btn-tab.active, .btn.radiobtn.btn-tab:active,
 .btn.radiobtn.btn-tab.focus, .btn.radiobtn.btn-tab:focus {
-  background-color: var(--phs-purple-80); 
+  background-color: var(--phs-purple-50); 
   border-radius: 0px;
   font-weight: 600;
-  color: #FFFFFF;
-  border-color: var(--phs-purple);
-  border-bottom-color: var(--phs-purple-80);
-  border-width: 3px;
-  font-size: 16px;
+  color: var(--phs-purple);
+  border-color: var(--phs-purple-50);
+  border-width: 2px;
+  font-size: 17px;
+  border-top-color: var(--phs-purple);
+  border-top-width: 3.5px;
   
 } 
 
@@ -450,7 +476,8 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
     border-radius: 0px;
     color: #FFFFFF;
     border-color: var(--phs-purple-80);
-    font-size: 16px;
+    font-size: 17px;
+    border-width: 2px;
 }
 
 /*intro page ldp description box intro page*/

@@ -4,76 +4,74 @@ output$page_3_ui <-  renderUI({
 
   div(
     # 1 referrals----
-    conditionalPanel(
-      condition= 'input.trend_tab == "referrals_trend"',
-      fluidRow(
-        column(
-          h3(strong(htmlOutput("table_referrals_trend_title"))),
-          width = 12)),
-      fluidRow(
-        column(
-          radioButtons("select_referrals_trend_table",
+    conditionalPanel(condition= 'input.trend_tab == "referrals_trend"',
+            fluidRow(
+                column(
+                  h3(strong(htmlOutput("table_referrals_trend_title"))),
+                  radioButtons("select_referrals_trend_table",
                        label = "In the table below show Scotland and: ",
                        choices = c("Health Boards", "Integration Authority Areas"),
                        selected = "Health Boards",
-                       inline = TRUE
-          ), width = 12)),
-      DT::dataTableOutput("table_referrals_trend"),
-      linebreaks(1),
-      h3(strong(htmlOutput("chart_title_referrals_trend"))),
-      fluidRow(
-        column(selectInput("select_referrals_trend_plot",
-                           label = "Select Health Board/Integration Authority Area to show in chart:",
-                           choices = c("Scotland", boards, ijb_list), width = "100%"), width = 4)),
-      
-      plotlyOutput("referrals_trend_plot")
-    ), # cond panel 1
+                       inline = TRUE),
+                  DT::dataTableOutput("table_referrals_trend"),
+  linebreaks(1),
+                  h3(strong(htmlOutput("chart_title_referrals_trend"))),
+            fluidRow(
+                column(
+                  selectInput("select_referrals_trend_plot",
+                       label = "Select Health Board/Integration Authority Area to show in chart:",
+                       choices = c("Scotland", boards, ijb_list), width = "100%"), width = 4)),
+                  plotlyOutput("referrals_trend_plot"),
+  linebreaks(1),
+              width = 12,
+              style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available")
+    ) # fluidRow
+  ), # cond panel 1 (referrals)
     
-    #2 percentage met standard----
-    conditionalPanel(
-      condition= 'input.trend_tab == "pds_perc_trend"',
-      fluidRow(
-        column(
-          h3(strong(htmlOutput("table_pds_trend_title")))
-          , width = 12)),
-      fluidRow(
-        column(
-          radioButtons("select_pds_trend_table",
-                       label = "In the table below show Scotland and: ",
-                       choices = c("Health Boards", "Integration Authority Areas"),
-                       selected = "Health Boards",
-                       inline = TRUE
-          ), width = 12)),
-      DT::dataTableOutput("table_hb_ijb_trend"),
-      linebreaks(1),
-      h3(strong(htmlOutput("chart_title_trend"))),
-      fluidRow(
-        column(selectInput("select_hb_ijb_trend",
-                           label = "Select Health Board/Integration Authority Area to show in chart:",
-                           choices = c(boards, ijb_list), width = "100%"), width = 4)),
-      
-      plotlyOutput("trend_plot"),
-      linebreaks(1)
-    ), # cond panel 2
+#2 percentage met standard----
+    conditionalPanel(condition= 'input.trend_tab == "pds_perc_trend"',
+            fluidRow(
+                column(
+                   h3(strong(htmlOutput("table_pds_trend_title"))),
+                   radioButtons("select_pds_trend_table",
+                        label = "In the table below show Scotland and: ",
+                        choices = c("Health Boards", "Integration Authority Areas"),
+                        selected = "Health Boards",
+                        inline = TRUE),
+                   DT::dataTableOutput("table_hb_ijb_trend"),
+  linebreaks(1),
+                   h3(strong(htmlOutput("chart_title_trend"))),
+            fluidRow(
+                column(
+                    selectInput("select_hb_ijb_trend",
+                        label = "Select Health Board/Integration Authority Area to show in chart:",
+                        choices = c(boards, ijb_list), width = "100%"), width = 4)),
+                    plotlyOutput("trend_plot"),
+  linebreaks(1),
+            width = 12,
+            style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"),
+      ) # fluidRow
+  ), # cond panel 2 (percent met)
     
-    #3 percentage of estimated diagnoses----
-    conditionalPanel(
-      condition= 'input.trend_tab == "exp_perc_trend"',
-      fluidRow(
-        column(
-          h3(strong("Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support; Scotland and Health Boards")),
-          DT::dataTableOutput("table_hb_trend_2"),
-          linebreaks(1),
-          h3(strong(htmlOutput("chart_title_trend_2")))
-          , width = 12)),
-      fluidRow(
-        column(selectInput("select_hb_ijb_trend_2",
-                           label = "Select Health Board to show in chart:",
-                           choices = boards, width = "100%"), width = 4)),
-      
-      plotlyOutput("trend_plot_2"),
-      linebreaks(1)
-    ) # cond panel 3
+ #3 percentage of estimated diagnoses----
+       conditionalPanel(condition= 'input.trend_tab == "exp_perc_trend"',
+            fluidRow(
+                column(
+                  h3(strong("Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support; Scotland and Health Boards")),
+                  DT::dataTableOutput("table_hb_trend_2"),
+  linebreaks(1),
+                  h3(strong(htmlOutput("chart_title_trend_2"))),
+            fluidRow(
+                column(
+                  selectInput("select_hb_ijb_trend_2",
+                      label = "Select Health Board to show in chart:",
+                      choices = boards, width = "100%"), width = 4)),
+                  plotlyOutput("trend_plot_2"),
+  linebreaks(1),
+            width = 12,
+            style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"),
+         ) # fluidRow
+    ) # cond panel 3 (percent of estimated diagnoses)
  	     ) # div
  }) # renderUI
    

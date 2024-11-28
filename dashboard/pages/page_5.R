@@ -280,20 +280,25 @@ output$table_hb_ijb_uptake <- DT::renderDataTable({
       filter(ijb == "All" | ijb == "Scotland", simd == "All") %>% 
       pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>% 
       mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
-      adorn_totals("col") %>% 
-      select(1,10,6,7,8,9) %>% 
-      rowwise() %>% mutate(perc_accepted = paste0(round(sum(c_across(c(3:4)))/sum(c_across(c(3:6)))*100,1), "%")) %>% 
+      adorn_totals("col") 
+    
+    last_column <- ncol(table_hb_data_uptake)
+    
+    table_hb_data_uptake_2 <- table_hb_data_uptake %>%  select(1,last_column,6:(last_column - 1)) %>% 
+      rowwise() %>% mutate(perc_accepted = paste0(round(sum(c_across(c(3:4)))/sum(c_across(c(2)))*100,1), "%")) %>% 
       rename("Number of People Referred to PDS" = "Total", 
              "Health Board" = "health_board",
              "Percentage Accepted" = "perc_accepted")
-    make_table(table_hb_data_uptake, right_align = 1:5, selected = 1, table_elements = "t") %>%
-      formatCurrency(c(2:6), currency = "", interval = 3, mark = ",", digits = 0)
+    
+    last_column_2 <- ncol(table_hb_data_uptake_2)
+    
+    make_table(table_hb_data_uptake_2, right_align = 2:(last_column_2 - 1), selected = 1, table_elements = "t") %>%
+      formatCurrency(c(3:last_column_2 - 1), currency = "", interval = 3, mark = ",", digits = 0)
     
     
   }else{    
     
-    
-    # # Data table ijb
+# Data table ijb
     
     table_hb_data_uptake <- data_uptake %>% 
       filter(fy == input$select_year_add, sex == input$select_sex_add, simd == "All") %>% 
@@ -303,14 +308,20 @@ output$table_hb_ijb_uptake <- DT::renderDataTable({
       mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
       pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>% 
       mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
-      adorn_totals("col") %>% 
-      select(2,10,6,7,8,9) %>% 
+      adorn_totals("col") 
+    
+      last_column <- ncol(table_hb_data_uptake)
+      
+      table_hb_data_uptake_2 <- table_hb_data_uptake %>% select(2,last_column,6:(last_column - 1)) %>% 
       rowwise() %>% mutate(perc_accepted = paste0(round(sum(c_across(c(3:4)))/sum(c_across(c(2)))*100,1), "%")) %>%
       rename("Number of People Referred to PDS" = "Total",
              "Integration Authority Area" = "ijb",
              "Percentage Accepted" = "perc_accepted")
-    make_table(table_hb_data_uptake, right_align = 1:5, selected = 1, table_elements = "t", rows_to_display = 32) %>%
-      formatCurrency(c(2:6), currency = "", interval = 3, mark = ",", digits = 0)
+      
+      last_column_2 <- ncol(table_hb_data_uptake_2)
+      
+    make_table(table_hb_data_uptake_2, right_align = 2:(last_column_2 - 1), selected = 1, table_elements = "t", rows_to_display = 32) %>%
+      formatCurrency(c(3:last_column_2 - 1), currency = "", interval = 3, mark = ",", digits = 0)
   }
 })
 

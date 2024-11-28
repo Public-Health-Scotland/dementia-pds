@@ -5,19 +5,26 @@ output$page_4_ui <-  renderUI({
   div(
     conditionalPanel(condition = 'input.select_data_demo == "data_sex"',
                      
-                    fluidRow(
-                       column(
+            fluidRow(
+                column(
                          h3(strong(htmlOutput("table_title_gender"))),
                          DT::dataTableOutput("table_gender"),
     linebreaks(1),
-                         column(
+                  fluidRow(
+                      column(
                            h3(strong(htmlOutput("chart_title_gender_referrals"))),
-    linebreaks(1),
-                           plotlyOutput("plot_gender_referrals"), width = 6),
-                         column(
+                           width = 6),
+                      column(
                            h3(strong(htmlOutput("chart_title_gender_ldp"))),
+                           width = 6)
+                      ), #fluidRow
+                  fluidRow(                      
+                       column(
+                           plotlyOutput("plot_gender_referrals"), width = 6),
+                       column(
                            plotlyOutput("plot_gender_ldp"), width = 6),
-    linebreaks(1),                          
+    linebreaks(1)), #fluidRow
+                             
                          h3(strong(htmlOutput("chart_title_gender_referrals_trend"))),
                          #DT::dataTableOutput("gender_trend_table"),
                          plotlyOutput("plot_gender_referrals_trend"),
@@ -26,8 +33,9 @@ output$page_4_ui <-  renderUI({
                          plotlyOutput("plot_gender_ldp_trend"),
     linebreaks(1),
                          width = 12,
-                         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available") 
-                     ), # fluid row
+                         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available"
+                      ) # column
+                  ), # fluid row
     ), #cond panel 1 
     
     #2 age, simd, accommodation ----
@@ -77,7 +85,8 @@ output$page_4_ui <-  renderUI({
 #1a table for gender ----
 # table title
 output$table_title_gender <- renderUI({HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support by Gender: ",
-                                                   input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo))
+                                                   input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo,
+                                                   ", SIMD Quintile: ", input$select_simd_demo))
   
 })
 
@@ -98,7 +107,8 @@ output$table_gender <- DT::renderDataTable({
 #1b plots for gender----
 #proportion plot title
 output$chart_title_gender_referrals <- renderUI({HTML(paste0("Proportion of total referrals for PDS by Gender: ", 
-                                                     input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo))
+                                      input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo,
+                                      ", SIMD Quintile: ", input$select_simd_demo))
 })
 
 #proportion plot 
@@ -112,9 +122,9 @@ output$plot_gender_referrals <- renderPlotly({
 
 
 # percent met title
-output$chart_title_gender_ldp <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one 
-year’s post-diagnostic support by Gender: ", 
-input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo))
+output$chart_title_gender_ldp <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one year’s post-diagnostic support by Gender: ", 
+                                input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo, ", SIMD Quintile: "
+                                , input$select_simd_demo))
 })
 
 #percent met plot
@@ -127,7 +137,7 @@ output$plot_gender_ldp <- renderPlotly({
 
 #referrals trend plot title
 output$chart_title_gender_referrals_trend <- renderUI({HTML(paste0("Number of individuals diagnosed with dementia and referred for PDS by Gender - Trend; ", 
-input$select_hb_ijb_demo, ", SIMD Quintile: ", input$select_simd_demo))
+                                                    input$select_hb_ijb_demo, ", SIMD Quintile: ", input$select_simd_demo))
 })
 
 #referrals trend plot
