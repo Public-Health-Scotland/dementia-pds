@@ -9,6 +9,7 @@ output:
 
 ```{r load-setup, include=FALSE}
 source(here::here("code", "00_setup-environment.R"))
+library(crosstalk) # for drop down menus
 
 # Write numbers with thousands separator
 knit_hooks$set(inline = function(x){
@@ -145,6 +146,12 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
 ```
 
 `r paste(knitr::knit_child(text = health_boards), collapse = '')`
+
+<!-- TRENDS -->
+
+`r knitr::knit_child("subpage-trends.Rmd")`
+
+
 
 
 Methodology

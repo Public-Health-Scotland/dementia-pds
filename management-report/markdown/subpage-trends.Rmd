@@ -1,0 +1,61 @@
+Trends
+=================================================
+
+```{r summary figures, include=FALSE}
+
+
+   
+ 
+```
+
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+
+
+### 
+
+Select health board/Integration Authority Area
+
+```{r dropdown, results='asis'}
+
+```
+
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+
+
+Row {.data-height=1000}
+----------------------------------------------------------------------
+
+### **Trend plot** {data-width=800}
+
+```{r trend-plot}
+
+
+
+```
+
+
+Row 
+----------------------------------------------------------------------
+
+### **trend table**
+
+```{r trend-table}
+
+
+```
+
+
+
