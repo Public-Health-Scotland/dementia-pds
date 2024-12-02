@@ -3,38 +3,48 @@
 output$page_2_ui <-  renderUI({
   
   div(
-# percentage of expected diagnoses ----
-    fluidRow(
-      shinydashboard::valueBox(
-        value = textOutput("hb_exp_perc"),
-        subtitle = "of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support.",
-        width = 7,
-        color = "blue"), #valueBox
-      box(htmlOutput("hb_exp_text"),
-          title = (p(strong("How is this figure calculated?"))),
-          width = 5, background = "black", solidHeader = TRUE), #box background set to black in order to edit ccs styles
-    ), #fluidRow
+         fluidRow(
+             column(
+linebreaks(1),          
+        # percentage of expected diagnoses ----
+          fluidRow(
+               shinydashboard::valueBox(
+                    value = textOutput("hb_exp_perc"),
+                     subtitle = "of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support.",
+                     width = 7,
+                     color = "blue"), #valueBox
+                box(htmlOutput("hb_exp_text"),
+                      status = "primary", 
+                     title = (p(strong("How is this figure calculated?"))),
+                     width = 5),# box
+        ), #fluidRow
 # percentage acheived ldp standard ----
-    fluidRow(
-      shinydashboard::valueBox(
-        value = textOutput("hb_pds_perc"),
-        subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
-        width = 7,
-        color = "blue"), #valueBox
-      box(htmlOutput("hb_pds_text"),
-          title = (p(strong("How is this figure calculated?"))),
-          width = 5, background = "black"), #box
+         fluidRow(
+              shinydashboard::valueBox(
+                      value = textOutput("hb_pds_perc"),
+                      subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
+                      width = 7,
+                      color = "blue"), #valueBox
+              box(htmlOutput("hb_pds_text"),
+                      status = "primary", 
+                      title = (p(strong("How is this figure calculated?"))),
+                      width = 5), #box
          ), #fluidRow
-    fluidRow(
-      linebreaks(1),
-      h3(strong(htmlOutput("table_title_p2"))),
-      DT::dataTableOutput("table_hb_ijb"),
-      linebreaks(1),
-      h3(strong(htmlOutput("chart_title_p2"))),
-      plotlyOutput("hb_ijb_plot"),
-      linebreaks(1)
-    )# fluidRow
-   ) # div
+# ldp standard table ----
+         fluidRow(
+linebreaks(1),
+                h3(strong(htmlOutput("table_title_p2"))),
+                DT::dataTableOutput("table_hb_ijb"),
+linebreaks(1),
+ # monthly referrals plot ----
+               h3(strong(htmlOutput("chart_title_p2"))),
+               plotlyOutput("hb_ijb_plot"),
+linebreaks(1)
+         ),# fluidRow
+            width = 12,
+            style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"),
+         ) #fluidRow
+      ) # div
 }) # renderUI
 
 
@@ -70,7 +80,7 @@ output$page_2_title <- renderUI({HTML(paste0("Dementia Post-Diagnostic Support; 
   
 #data table	----
 output$table_title_p2 <- renderUI({HTML(paste0("Number of Individuals relating to LDP Standard: Financial Year ", 
-                                                input$select_year_p2, ", ", input$select_hb_p2, " andIntegration Authority Area(s)"))
+                                                input$select_year_p2, ", ", input$select_hb_p2, " and Integration Authority Area(s)"))
   })
 
 hb_ijb_data_1 <- reactive({annual_table_data %>%

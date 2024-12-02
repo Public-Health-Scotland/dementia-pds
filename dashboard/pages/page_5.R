@@ -38,7 +38,7 @@ output$page_5_ui <-  renderUI({
                          plotlyOutput("plot_add_ldp", height = "550px")), 
         linebreaks(1),
          width = 12,
-        style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available")
+        style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white")
       ) # fluid Row
     ), #cond panel 1
     
@@ -74,7 +74,7 @@ output$page_5_ui <-  renderUI({
         ), # fluidrow
       linebreaks(1),
            width = 12,
-           style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available"))
+           style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white"))
     ), #cond panel 2
     
     

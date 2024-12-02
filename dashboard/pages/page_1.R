@@ -4,49 +4,52 @@ output$page_1_ui <-  renderUI({
 
   div(
     fluidRow(
-        column(
+       column(
+linebreaks(1),          
  # percentage of expected diagnoses ----
-    fluidRow(
-          shinydashboard::valueBox(
-               value = textOutput("scot_exp_perc"),
-               subtitle = "of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support.",
-               width = 7,
-               color = "blue"), #valueBox
-          box(htmlOutput("scot_exp_text"),
-              title = (p(strong("How is this figure calculated?"))),
-              width = 5, background = "black", solidHeader = TRUE), #box background set to black in order to edit ccs styles
+         fluidRow(
+             shinydashboard::valueBox(
+                 value = textOutput("scot_exp_perc"),
+                 subtitle = "of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support.",
+                 width = 7,
+                 color = "blue"), #valueBox
+             box(htmlOutput("scot_exp_text"),
+                    status = "primary", 
+                    title = (p(strong("How is this figure calculated?"))),
+                    width = 5), # box
          ), #fluidRow
  # percentage acheived ldp standard ----
-    fluidRow(
-          shinydashboard::valueBox(
-               value = textOutput("scot_pds_perc"),
-               subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
-               width = 7,
-               color = "blue"), #valueBox
-          box(htmlOutput("scot_pds_text"),
-               title = (p(strong("How is this figure calculated?"))),
-               width = 5, background = "black"), #box
+        fluidRow(
+              shinydashboard::valueBox(
+                 value = textOutput("scot_pds_perc"),
+                 subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
+                 width = 7,
+                 color = "blue"), #valueBox
+              box(htmlOutput("scot_pds_text"),
+                    status = "primary", 
+                    title = (p(strong("How is this figure calculated?"))),
+                    width = 5), #box
         ), #fluidRow
  # monthly referrals plot ----
-    fluidRow(
+        fluidRow(
 linebreaks(1),
-            h3(strong(htmlOutput("chart_title_p1"))),
-            plotlyOutput("monthly_referrals_plot_scotland"),
+              h3(strong(htmlOutput("chart_title_p1"))),
+              plotlyOutput("monthly_referrals_plot_scotland"),
 linebreaks(1),
 # ldp standard table ----
-            h3(strong(htmlOutput("pds_table_title_p1"))),
-    fluidRow(column(
-            radioButtons("select_hb_ijb",
+              h3(strong(htmlOutput("pds_table_title_p1"))),
+       fluidRow(column(
+              radioButtons("select_hb_ijb",
                      label = "In the table below show Scotland and: ",
                      choices = c("Health Boards", "Integration Authority Areas"),
                      selected = "Health Boards",
                      inline = TRUE),
                 width = 4)),
-            DT::dataTableOutput("table_pds"),
+              DT::dataTableOutput("table_pds"),
 linebreaks(1),
 # expected diagnoses table ----
-            h3(strong(htmlOutput("hb_exp_table_title_p1"))),
-            DT::dataTableOutput("table_hb_exp"),
+              h3(strong(htmlOutput("hb_exp_table_title_p1"))),
+              DT::dataTableOutput("table_hb_exp"),
 linebreaks(1)
            ), # fluid Row
             width = 12,
@@ -163,8 +166,6 @@ output$table_hb_exp <- DT::renderDataTable({
     set_colnames(c("Health Board","Estimated Number of People Newly Diagnosed with Dementia", "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS"))
   make_table(table_hb_exp_data, right_align = 1:3, selected = 1, table_elements = "t") %>% formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
 })
-
-
 
 
 

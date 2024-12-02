@@ -33,7 +33,7 @@ output$page_4_ui <-  renderUI({
                          plotlyOutput("plot_gender_ldp_trend"),
     linebreaks(1),
                          width = 12,
-                         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available"
+                         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white"
                       ) # column
                   ), # fluid row
     ), #cond panel 1 
@@ -74,7 +74,7 @@ output$page_4_ui <-  renderUI({
                           plotlyOutput("plot_demo_ldp_trend"),
       linebreaks(1),
                           width = 12,
-                          style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available") 
+                          style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white") 
                      ), # fluid row
                ) # cond panel 2 
   ) # div

@@ -26,7 +26,8 @@ navbarPage(
                target = "_blank"), # PHS logo links to PHS website
     style = "position: relative; top: -5px;"),
     windowTitle = "Dementia PDS",# Title for browser tab
-    header = tags$head(includeCSS("www/styles.css"),  # CSS stylesheet
+    header = tags$head(includeCSS("www/styles.css"), # CSS stylesheet
+                       includeScript("www/app.js"),
     tags$link(rel = "shortcut icon", href = "favicon_phs.ico") # Icon for browser tab
     ), 
 ##############################################.
@@ -35,7 +36,7 @@ navbarPage(
 tabPanel(title = "Home",
     icon = icon_no_warning_fn("circle-info"),
     value = "intro",
-
+    
     h1("Dementia Post-Diagnostic Support (PDS)"),
     linebreaks(1),
     sidebarLayout(
@@ -59,15 +60,19 @@ tabPanel(title = "Scotland LDP Standard",
     icon = icon_no_warning_fn("clipboard"),
     value = "ldp-scot",
     
-    h1("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard - Scotland"),
+    box(h1("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard - Scotland"),
+        width = 12,
+        collapsible = TRUE, collapsed = FALSE),
     #linebreaks(1),
-    fluidRow(selectInput("select_year_p1",
+    fluidRow(
+      column(
+        selectInput("select_year_p1",
                 label = "Select Financial Year of Diagnosis:",
                 choices = included_years,
-                selected= provisional_year
-                )),
-    linebreaks(1),
-    uiOutput("page_1_ui")
+                selected= provisional_year),
+        width = 2, style = "width: auto; margin-top: -10px"),
+            style = "border-bottom: solid; border-bottom-width: medium; border-bottom-color: var(--phs-purple-50);"),
+      uiOutput("page_1_ui")
    ), # tabpanel
 
 ##############################################.
@@ -78,21 +83,24 @@ tabPanel(title = "Health Boards LDP Standard",
          icon = icon_no_warning_fn("clipboard-list"),
          value = "ldp-hb",
 
-         h1(htmlOutput("page_2_title")),
+            box(h1(htmlOutput("page_2_title")), width = 12,
+                collapsible = TRUE, collapsed = FALSE),
          #linebreaks(1),
-         fluidRow(
-            selectInput("select_year_p2",
+            fluidRow(
+                column(
+                  selectInput("select_year_p2",
                              label = "Select Financial Year of Diagnosis:",
                              choices = included_years,
-                             selected = provisional_year)),
-         fluidRow(
-           selectInput("select_hb_p2",
-                     label = "Select Health Board:",
-                     choices = boards)),
-         linebreaks(1),
-         uiOutput("page_2_ui")
-        
-     ), # tabpanel
+                             selected = provisional_year),
+                width = 2, style = "width: auto; margin-top: -10px"),
+                column(
+                  selectInput("select_hb_p2",
+                            label = "Select Health Board:",
+                            choices = boards),
+                width = 2, style = "width: auto; margin-top: -10px"),
+             style = "border-bottom: solid; border-bottom-width: medium; border-bottom-color: var(--phs-purple-50);"),
+          uiOutput("page_2_ui")
+        ), # tabpanel
 
 ##############################################.
 # PAGE 3: Trend  ----

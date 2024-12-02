@@ -225,6 +225,8 @@ th, td {
   margin-left: 15px;
 }
 
+
+
 /* Title of selectize input boxes*/
   label {
     display: inline-block;
@@ -233,6 +235,11 @@ th, td {
     font-weight: bold;
     color: var(--phs-purple);
   }
+
+.selectize-input, .selectize-control.single .selectize-input.input-active {
+    border-radius: 0px;   
+}
+  
 /* Links */
   a {
     color: var(--phs-purple);
@@ -387,7 +394,19 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
   /*color: rgba(0, 0, 0, 0.15);*/
 }
 
+/*hide box buttons*/
+.btn.btn-box-tool {
+  padding: 0px 6px;
+}
 
+.btn.btn-box-tool.hover, .btn.btn-box-tool:hover,
+.btn.btn-box-tool.focus, .btn.btn-box-tool:focus{
+  color: var(--white);
+} 
+
+.tab-pane.active {
+  margin-top: -10px;
+}
 
 /* intro page side bar buttons */
 .btn.radiobtn.btn-primary {
@@ -450,6 +469,9 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
   border-width: medium
 }
 
+#trend_tab {
+  margin-bottom: -15px;
+}
 .btn.radiobtn.btn-tab {
   border-radius: 0px; 
   color: #FFFFFF;
@@ -486,11 +508,13 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 /*value box for page 1 and 2 */
 .small-box.bg-blue {background-color: var(--phs-blue); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
 
+
+
 /* description box for page 1 and 2 */
-.box.box-solid.bg-black {background-color: #FFFFFF; padding: 0px; margin-bottom: 10px; margin-left: 0px} 
-.box-header {background-color: var(--phs-blue-10); padding: 4px}
-.box-title {margin-top: 3px; margin-bottom: -12px; padding: 4px}
-.box-body {padding: 8px}
+.box.box-primary {background-color: #FFFFFF; padding: 0px; margin-bottom: 0px; margin-left: 0px} 
+.box-header {background-color: var(--phs-blue-10); padding: 0px}
+.box-title {margin-top: 0px; margin-bottom: -5px; padding-left: 6px; padding-top: 12px; padding-bottom: 1px}
+.box-body {padding: 6px;}
 .col-sm-5 {padding-right: 4px; padding-left: 4px}
 .col-sm-7 {padding-right: 4px; padding-left: 4px}
 
