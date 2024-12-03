@@ -117,7 +117,7 @@ Row
 
 <!-- Scotland -->
 
-```{r scotland, include=FALSE}
+```{r scotland, eval=FALSE, include=FALSE}
 
 scotland <- map(.x = sort(unique(pds$fy)),
                 .f = ~ set_env(data = pds,
@@ -128,12 +128,12 @@ scotland <- map(.x = sort(unique(pds$fy)),
 
 ```
 
-`r paste(knitr::knit_child(text = scotland), collapse = '')`
+<!-- r paste(knitr::knit_child(text = scotland), collapse = '')` -->
 
 
 <!-- HEALTH BOARDS -->
 
-```{r health-boards, include=FALSE}
+```{r health-boards, eval=FALSE, include=FALSE}
 
 health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
                                   sort(unique(pds$health_board))), 
@@ -145,13 +145,11 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
 
 ```
 
-`r paste(knitr::knit_child(text = health_boards), collapse = '')`
+<!-- r paste(knitr::knit_child(text = health_boards), collapse = '')` -->
+
 
 <!-- TRENDS -->
-
 `r knitr::knit_child("subpage-trends.Rmd")`
-
-
 
 
 Methodology
