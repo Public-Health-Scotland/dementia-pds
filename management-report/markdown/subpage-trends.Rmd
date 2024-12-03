@@ -51,7 +51,7 @@ err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_o
 ```
 <!-- delete all of above when finished tetsing -->
 
-Trends
+All Referrals
 =================================================
 
 ```{r data setup, include=FALSE}
@@ -69,9 +69,11 @@ pds_hb <- pds %>% group_by(health_board, fy, month, ldp, age_grp, simd) %>%
 
 pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
 
-pds_all$ijb <- factor(pds_all$ijb, levels = unique(pds_all$ijb))
+pds_all %<>% rename(geog = ijb) 
 
-pds_all %<>% group_by(ijb, fy) %>% summarise(total_referrals = sum(referrals))
+pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
+
+pds_all %<>% group_by(geog, fy) %>% summarise(total_referrals = sum(referrals))
 
 # assigns data to filter_select in sidebar
 pds_trends_data <- SharedData$new(pds_all)
@@ -83,7 +85,8 @@ pds_trends_data <- SharedData$new(pds_all)
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
-### 
+### All Referrals - Trend
+***
 
 <font size="2"> 
 <span style="color:red"> 
@@ -93,10 +96,18 @@ Sidebar {.sidebar}
 
 ***
 
+<ul>
+  <li>[All Referrals - Trend](#all-referrals)</li>
+  <li>[All Referrals per 10,000 population - Trend](#pop-trend)</li>
+  <li>[All Referrals per 10,000 population - by Integration Authority Area](#pop-ijb)</li>
+</ul>
+
+***
+
 ```{r dropdown}
 data_filter_hb_ijb <- filter_select(id = "trend_filter",
                                     label = "Select Health Board or Integration Authority Area:",
-                                    group = ~ijb,
+                                    group = ~geog,
                                     sharedData = pds_trends_data
                                    )
 data_filter_hb_ijb
@@ -110,6 +121,19 @@ function filter_default() {
 
   document.getElementById("trend_filter").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
+  
+   document.getElementById("trend_filter_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+      document.getElementById("trend_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
   
   }
   
@@ -146,41 +170,232 @@ trends_plot
 Row {.tabset data-height=750}
 ----------------------------------------------------------------------
 
-### **Scotland/Health Board - Number of Individuals referred to Post-Diagnostic Support by Financial Year**
+### **Scotland/Health Board**
+
+**Number of Individuals referred to Post-Diagnostic Support by Financial Year**
 
 ```{r trend-table-hb}
 
-pds_all %>% filter(ijb == "Scotland" | grepl("NHS", ijb)) %>% 
+pds_all %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
             pivot_wider(names_from = fy, values_from = total_referrals) %>%
-            rename(`Health Board` = ijb) %>%
-            kable() %>%
+            rename(`Health Board` = geog) %>%
+            kable(align = c("l", rep("r", length(unique(pds$fy))))) %>%
             kable_styling(full_width = FALSE) %>%
             column_spec(1, bold = TRUE) %>%
   # Add header above table 
             add_header_above(
                     c(" " = 1,
-                     "Financial Year of Diagnosis" = 9)) 
+                     "Financial Year of Diagnosis" = length(unique(pds$fy))))
 
 ```
 
-### **Scotland/Integration Authority Area - Number of Individuals referred to Post-Diagnostic Support by Financial Year**
+### **Scotland/Integration Authority Area**
+
+**Number of Individuals referred to Post-Diagnostic Support by Financial Year**
 
 ```{r trend-table-ijb}
 
-pds_all %>% filter(ijb == "Scotland" | !grepl("NHS", ijb)) %>% 
+pds_all %>% filter(geog == "Scotland" | !grepl("NHS", geog)) %>% 
             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
             pivot_wider(names_from = fy, values_from = total_referrals) %>% 
-            rename(`Integration Authority Area` = ijb) %>%
-            kable() %>%
+            rename(`Integration Authority Area` = geog) %>%
+            kable(align = c("l", rep("r", length(unique(pds$fy))))) %>% 
             kable_styling(full_width = FALSE) %>%
             column_spec(1, bold = TRUE) %>%
   # Add header above table 
             add_header_above(
                        c(" " = 1,
-                         "Financial Year of Diagnosis" = 9)) %>%
+                         "Financial Year of Diagnosis" = length(unique(pds$fy)))) %>%
             scroll_box(height = "740px")
  
 
 ```
 
+Pop Trend {.hidden}
+=====================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+### All Referrals per 10,000 population - Trend 
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+<ul>
+  <li>[All Referrals - Trend](#all-referrals)</li>
+  <li>[All Referrals per 10,000 population - Trend](#pop-trend)</li>
+  <li>[All Referrals per 10,000 population - by Integration Authority Area](#pop-ijb)</li>
+</ul>
+
+***
+
+```{r dropdown-pop}
+data_filter_hb_ijb_pop <- filter_select(id = "trend_filter_pop",
+                                    label = "Select Health Board or Integration Authority Area:",
+                                    group = ~geog,
+                                    sharedData = pds_trends_data
+                                   )
+data_filter_hb_ijb_pop
+
+```
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {.data-height=1000}
+----------------------------------------------------------------------
+
+### **Number of Individuals referred to Post-Diagnostic Support per 10,000 population by Financial Year** {data-width=800}
+
+```{r trend-plot-pop}
+
+# trends_plot <- plot_yearly_referrals(pds_trends_data)
+# trends_plot
+
+```
+
+
+Row {.tabset data-height=750}
+----------------------------------------------------------------------
+
+### **Scotland/Health Board**
+
+**Number of Individuals referred to Post-Diagnostic Support per 10,000 population by Financial Year**
+
+```{r trend-table-hb-pop}
+
+# pds_all %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+#             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
+#             pivot_wider(names_from = fy, values_from = total_referrals) %>%
+#             rename(`Health Board` = geog) %>%
+#             kable(align = c("l", rep("r", length(unique(pds$fy))))) %>%
+#             kable_styling(full_width = FALSE) %>%
+#             column_spec(1, bold = TRUE) %>%
+#   # Add header above table 
+#             add_header_above(
+#                     c(" " = 1,
+#                      "Financial Year of Diagnosis" = length(unique(pds$fy))))
+
+```
+
+### **Scotland/Integration Authority Area**
+
+**Number of Individuals referred to Post-Diagnostic Support per 10,000 population by Financial Year**
+
+```{r trend-table-ijb-pop}
+
+# pds_all %>% filter(geog == "Scotland" | !grepl("NHS", geog)) %>% 
+#             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
+#             pivot_wider(names_from = fy, values_from = total_referrals) %>% 
+#             rename(`Integration Authority Area` = geog) %>%
+#             kable(align = c("l", rep("r", length(unique(pds$fy))))) %>% 
+#             kable_styling(full_width = FALSE) %>%
+#             column_spec(1, bold = TRUE) %>%
+#   # Add header above table 
+#             add_header_above(
+#                        c(" " = 1,
+#                          "Financial Year of Diagnosis" = length(unique(pds$fy)))) %>%
+#             scroll_box(height = "740px")
+ 
+
+```
+
+Pop IJB {.hidden}
+=====================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+### All Referrals per 10,000 population - by Integration Authority Area
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+
+***
+<ul>
+  <li>[All Referrals - Trend](#all-referrals)</li>
+  <li>[All Referrals per 10,000 population - Trend](#pop-trend)</li>
+  <li>[All Referrals per 10,000 population - by Integration Authority Area](#pop-ijb)</li>
+</ul>
+
+***
+
+```{r dropdown-pop-iaa}
+data_filter_year <- filter_select(id = "trend_filter_year",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = pds_trends_data
+                                   )
+data_filter_year
+
+```
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {.data-height=1000}
+----------------------------------------------------------------------
+
+### **Number of Individuals referred to Post-Diagnostic Support per 10,000 population by Integration Authority Area** {data-width=800}
+
+```{r plot-ijb-pop}
+
+# trends_plot <- plot_yearly_referrals(pds_trends_data)
+# trends_plot
+
+```
+
+
+Row {.tabset data-height=750}
+----------------------------------------------------------------------
+
+### **Number of Individuals referred to Post-Diagnostic Support per 10,000 population by Integration Authority Area**
+
+```{r table-ijb-pop}
+
+# pds_all %>% filter(geog == "Scotland" | !grepl("NHS", geog)) %>% 
+#             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
+#             pivot_wider(names_from = fy, values_from = total_referrals) %>% 
+#             rename(`Integration Authority Area` = geog) %>%
+#             kable(align = c("l", rep("r", length(unique(pds$fy))))) %>% 
+#             kable_styling(full_width = FALSE) %>%
+#             column_spec(1, bold = TRUE) %>%
+#   # Add header above table 
+#             add_header_above(
+#                        c(" " = 1,
+#                          "Financial Year of Diagnosis" = length(unique(pds$fy)))) %>%
+#             scroll_box(height = "740px")
+ 
+
+```

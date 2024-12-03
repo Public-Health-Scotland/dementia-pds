@@ -251,9 +251,12 @@ cls_pop<-cl_stirling %>% group_by(ijb, year, age_grp, sex, simd) %>% summarise(p
 
 simd_pop_summary %<>% filter(geog != "Clackmannanshire" & geog != "Stirling") 
 
-simd_pop_summary <- bind_rows(simd_pop_summary, cls_pop)
+simd_pop_data <- bind_rows(simd_pop_summary, cls_pop)
 
 
-simd_pop_summary %>% 
+simd_pop_data %>% 
   write_file(path = "//conf/dementia/A&I/Outputs/management-report/lookups/simd_pop_data.rds")
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+### END OF SCRIPT
+
