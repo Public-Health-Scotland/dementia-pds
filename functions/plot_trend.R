@@ -1,4 +1,4 @@
-plot_yearly_referrals <- function(data){
+plot_trend <- function(data, measure){
   
   xaxis_plots <- list(title = FALSE, tickfont = list(size=14), titlefont = list(size=14),
                       showline = TRUE, fixedrange=TRUE)
@@ -10,18 +10,18 @@ plot_yearly_referrals <- function(data){
                        'autoScale2d',   'toggleSpikelines',  'hoverCompareCartesian',
                        'hoverClosestCartesian')
   
-  yaxis_plots[["title"]] <- "Number of Referrals" 
-  xaxis_plots[["title"]] <- "Financial Year of Diagnosis"
+  yaxis_plots[["title"]] <- "" 
+  xaxis_plots[["title"]] <- ""
   
   plot <- data %>%
     
     ggplot(aes(x = fy,
-               y = total_referrals,
+               y = {{measure}},
                group = geog,
                colour = geog,
                text = paste0(geog, "<br>",
                              fy, "<br>",
-                             total_referrals))) +
+                             {{measure}}))) +
     
     geom_point() +
     
@@ -31,9 +31,6 @@ plot_yearly_referrals <- function(data){
     ) + 
     
     #phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
-    
-    theme(legend.title = element_blank(),
-    ) +
     
     labs(colour = NULL)
   

@@ -10,6 +10,7 @@ output:
 ```{r load-setup, include=FALSE}
 source(here::here("code", "00_setup-environment.R"))
 library(crosstalk) # for drop down menus
+library(phsstyles)
 
 # Write numbers with thousands separator
 knit_hooks$set(inline = function(x){
@@ -117,7 +118,7 @@ Row
 
 <!-- Scotland -->
 
-```{r scotland, eval=FALSE, include=FALSE}
+```{r scotland, include=FALSE}
 
 scotland <- map(.x = sort(unique(pds$fy)),
                 .f = ~ set_env(data = pds,
@@ -128,12 +129,12 @@ scotland <- map(.x = sort(unique(pds$fy)),
 
 ```
 
-<!-- r paste(knitr::knit_child(text = scotland), collapse = '')` -->
+`r paste(knitr::knit_child(text = scotland), collapse = '')`
 
 
 <!-- HEALTH BOARDS -->
 
-```{r health-boards, eval=FALSE, include=FALSE}
+```{r health-boards, include=FALSE}
 
 health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
                                   sort(unique(pds$health_board))), 
@@ -145,7 +146,7 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
 
 ```
 
-<!-- r paste(knitr::knit_child(text = health_boards), collapse = '')` -->
+`r paste(knitr::knit_child(text = health_boards), collapse = '')`
 
 
 <!-- TRENDS -->
