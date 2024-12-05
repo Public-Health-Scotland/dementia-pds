@@ -61,8 +61,6 @@ This report has been produced by Public Health Scotland (PHS) and contains analy
 
 <span style="color:red"> **The information contained in this report is for management information only and should not be distributed widely.** </span>
 
-**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**
-
 These reports reflect the [Dementia PDS dataset](https://publichealthscotland.scot/media/20921/2023-12-14-dementia-pds-definitions-and-recording-guidance-v14.pdf) effective 01 April 2019 and contain data for individuals diagnosed with dementia between **`r format(dmy(01042016), "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`** who were referred for post diagnostic support.
 
 Data are submitted to PHS by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(start_date, "%d %B %Y")` onwards. Therefore, data for diagnoses from this date onwards are refreshed in each management report and are based on the most recently submitted data. 
@@ -102,6 +100,8 @@ Row
 ### **Additional Notes**
 
 *Please note the following:*
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
 **NHS Orkney** – NHS Orkney had no referrals in *2022/23* (*Q3* and *Q4*) and *2023/24* (*Q1* and *Q2*) as they were unable to access a consultant psychiatrist.
 

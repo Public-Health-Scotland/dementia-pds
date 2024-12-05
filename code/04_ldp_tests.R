@@ -22,13 +22,14 @@ source(here::here("functions", "produce_tests.R"))
 # Read latest data---
 latest_data <- read_rds(get_mi_data_path(type = "final_data", 
                                          "rds", 
-                                         test_output = FALSE)) %>% 
+                                         test_output = test_output)) %>% 
               # Remove codes from board and IJB
               clean_geog_codes()
 
 # read previous years data---
 previous_data <- read_rds(get_mi_data_path(type = "final_data", 
                                            "rds", 
+                                           test_output = FALSE,
                                            previous_data = TRUE)) %>% 
               # Remove codes from board and IJB
               clean_geog_codes()

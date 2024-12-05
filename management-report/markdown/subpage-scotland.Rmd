@@ -29,6 +29,14 @@ qt_text <-
     }
   }
 
+# text to state impact of Covid 19
+covid_text <-
+  case_when(
+    str_sub(sel_fy, 1, 4) == "2020" ~
+    "**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**",
+    TRUE ~ ""
+    )
+
 # Text to explain incomplete years / referrals still ongoing
 latest_final_year <- dmy(paste0("0104",substr(finalised_years[length(finalised_years)],1,4)))
 
@@ -205,7 +213,7 @@ Row
 
 ### **Note**
 
-**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**
+`r covid_text`
 
 `r completeness_text`
 
