@@ -85,7 +85,7 @@ la_pop_data <-
 la_pop_data %<>% 
   mutate (geog =
             case_when(
-              str_detect(geog, "City of Edinburgh") ~ "Edinburgh City",
+              str_detect(geog, "Edinburgh") ~ "Edinburgh City",
               str_detect(geog, "Na h-Eileanan Siar") ~ "Western Isles",
               TRUE ~ geog
             ))
@@ -259,4 +259,5 @@ simd_pop_data %>%
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 ### END OF SCRIPT
+
 
