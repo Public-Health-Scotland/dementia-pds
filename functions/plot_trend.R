@@ -1,18 +1,5 @@
 plot_trend <- function(data, measure){
   
-  xaxis_plots <- list(title = FALSE, tickfont = list(size=14), titlefont = list(size=14),
-                      showline = TRUE, fixedrange=TRUE)
-  
-  yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE, size = 4,
-                      tickfont = list(size=14), titlefont = list(size=14))
-  
-  bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
-                       'autoScale2d',   'toggleSpikelines',  'hoverCompareCartesian',
-                       'hoverClosestCartesian')
-  
-  yaxis_plots[["title"]] <- "" 
-  xaxis_plots[["title"]] <- ""
-  
   plot <- data %>%
     
     ggplot(aes(x = fy,
@@ -27,20 +14,28 @@ plot_trend <- function(data, measure){
     
     geom_line() + 
     
-    scale_y_continuous(limits = c(0, NA)
-    ) + 
+    scale_y_continuous(limits = c(0, NA), breaks = integer_breaks()
+                         ) + 
     
     #phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
     
-    labs(colour = NULL)
+    labs(title = NULL,
+         x = "",
+         y = "",
+         colour = NULL)
   
   ggplotly(plot, tooltip = "text") %>%
     
-    config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
+    config(displayModeBar = TRUE,
+           modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                         'zoomOut2d', 'autoScale2d', 
+                                         'toggleSpikelines', 
+                                         'hoverCompareCartesian', 
+                                         'hoverClosestCartesian'), 
            displaylogo = F, editable = F) %>%
-    layout(legend = list(orientation = "h", x = 0.5 , y = -0.3,
+    layout(legend = list(orientation = "h", x = 0.5 , y = -0.2,
                          xanchor = "center", yanchor = "bottom")) %>% 
-    layout(margin = list(b = 30, t = 10), # to avoid labels getting cut out
-           yaxis = yaxis_plots, xaxis = xaxis_plots)
+    layout(margin = list(b = 30, t = 30) # to avoid labels getting cut out
+           )
   
 }

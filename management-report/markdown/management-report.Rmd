@@ -149,8 +149,11 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
 `r paste(knitr::knit_child(text = health_boards), collapse = '')`
 
 
-<!-- TRENDS -->
+<!-- TOTAL REFERRALS - TRENDS & RATES -->
 `r knitr::knit_child("subpage-trends.Rmd")`
+
+<!-- DEMOGRAPHICS -->
+`r knitr::knit_child("subpage-demographics.Rmd")`
 
 
 Methodology
