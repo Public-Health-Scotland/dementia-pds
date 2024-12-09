@@ -306,10 +306,11 @@ data_filter_age_prop
 ```
 
 <div>
-```{r plot-prop-age, fig.height=5}
-
-  trends_prop_plot <- plot_trend_prop(pds_age_data)
-  trends_prop_plot
+```{r plot-prop-age}
+bscols(widths = c(10,2),
+  plot_trend_prop(pds_age_data),
+  plot_trend_prop_legend(pds_age_data)
+)
 
 ```
 </div>
