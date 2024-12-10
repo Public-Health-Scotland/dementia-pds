@@ -15,18 +15,21 @@ plot_trend_prop <- function(data){
          scale_y_continuous(labels = scales::percent_format()) +
     
   
-    labs(title = "Proportion of referrals by Age Group and Financial Year ",
+    labs(title = "Proportion of Referrals by Age Group",
          x = "Financial Year of Diagnosis",
          y = "",
          fill = NULL) +
     
      theme(strip.background = element_blank(),
          strip.text.x = element_blank(),
-         legend.position = "none") + 
+         legend.position = "none",
+         axis.title.x = element_text(size = 11,
+                                    face = "bold",
+                                    margin = margin(t = 7)),
+         title = element_text(size = 14)) + 
     
-    theme(panel.spacing = unit(2000, "pt"))
+    theme(panel.spacing = unit(700, "pt")) #this is for 'stacking facets' so only one the selected one is visible
 
-  
   ggplotly(plot, tooltip = "text") %>%
      
     config(displayModeBar = TRUE,
@@ -39,8 +42,8 @@ plot_trend_prop <- function(data){
     # layout(legend = list(orientation = "v")) %>% 
                           #, x = 0.5 , y = -0.4,
                            #xanchor = "right", yanchor = "right")) %>% 
-     layout(margin = list(b = 50, t = 30) # to avoid labels getting cut out
-          ) 
+     layout(margin = list(b = 50, t = 40) # to avoid labels getting cut out
+           )
  
 }
 
@@ -48,7 +51,7 @@ plot_trend_prop_legend <- function(data) {
  legend <- data %>% ggplot(aes(x = fy, y = total_referrals, fill = age_grp))+
    geom_col(width = 0)+
    
-  labs(fill = "Age Group") +
+  labs(fill = "Age Group:") +
    
       theme(axis.title = element_blank(),
          axis.text = element_blank(),

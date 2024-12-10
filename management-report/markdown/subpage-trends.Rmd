@@ -100,6 +100,8 @@ pds_all_cal_year <- pds_all_totals %>%
 pds_all_rates <- left_join(pds_all_cal_year, pop_data) %>% select(geog, fy, total_referrals, pop_est) %>% 
   mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 2)) %>% select(geog, fy, pop_rate_10000)
 
+pds_all_rates$geog<- factor(pds_all_rates$geog, levels = unique(pds_all_rates$geog))
+
 pds_scot_rates <- pds_all_rates %>% filter(geog == "Scotland")
 
 pds_ijb_rates <- pds_all_rates %>% filter(geog != "Scotland", !grepl("NHS", geog))
@@ -133,7 +135,7 @@ Sidebar {.sidebar}
 ***
 
 <ul>
-  <li>[All Referrals - Trend](#all-referrals)</li>
+  <li>[All Referrals - Trend](#all-referrals---trends-rates)</li>
   <li>[All Referrals per 10,000 population](#pop-trend)</li>
 </ul>
 
@@ -266,7 +268,7 @@ Sidebar {.sidebar}
 
 ***
 <ul>
-  <li>[All Referrals - Trend](#all-referrals)</li>
+  <li>[All Referrals - Trend](#all-referrals---trends-rates)</li>
   <li>[All Referrals per 10,000 population](#pop-trend)</li>
 </ul>
 
