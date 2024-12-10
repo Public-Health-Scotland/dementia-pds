@@ -69,7 +69,7 @@ pds <-
   )
 
 
-### 4 - Save out error summary
+### 4 - Save out error summary ----
 
 err <- pds %>%
   mutate(health_board = if_else(is.na(health_board),
@@ -182,7 +182,7 @@ dupes <-
   write_file(path = get_mi_data_path("dupe_data", ext = "csv", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-### 7 - Remove duplicate records ---
+### 7 - Remove duplicate records ----
 pds %<>%
   
   filter(dupe_keep == 1) %>%
@@ -195,7 +195,7 @@ pds %<>%
   select(-contains("dupe"))
 
 
-### 8 - Save data ---
+### 8 - Save data ----
 
 pds %>% 
 write_file(path = get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
