@@ -99,26 +99,6 @@ write_tests_xlsx <- function(comparison_data,
     widths = 15L
   )
   
-  # Apply conditional formatting to highlight issues
-  openxlsx::conditionalFormatting(
-    wb = wb,
-    sheet = sheet_name_dated,
-    cols = issue_col,
-    rows = 2L:(nrow(comparison_data) + 1L),
-    rule = "GREATER",
-    type = "contains"
-  )
-  
-  # Apply conditional formatting to highlight issues
-  openxlsx::conditionalFormatting(
-    wb = wb,
-    sheet = sheet_name_dated,
-    cols = issue_col,
-    rows = 2L:(nrow(comparison_data) + 1L),
-    rule = "LOWER",
-    type = "contains"
-  )
-  
 
   # Write workbook to disk -----------------------------------------------------
   
