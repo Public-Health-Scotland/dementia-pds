@@ -14,8 +14,9 @@ plot_trend_prop <- function(data){
     
          scale_y_continuous(labels = scales::percent_format()) +
     
-  
-    labs(title = "Proportion of Referrals by Age Group",
+    phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+    
+      labs(title = "Proportion of Referrals by Age Group",
          x = "Financial Year of Diagnosis",
          y = "",
          fill = NULL) +
@@ -28,7 +29,7 @@ plot_trend_prop <- function(data){
                                     margin = margin(t = 7)),
          title = element_text(size = 14)) + 
     
-    theme(panel.spacing = unit(700, "pt")) #this is for 'stacking facets' so only one the selected one is visible
+    theme(panel.spacing = unit(700, "pt")) #this is for 'stacking facets' so only the selected one is visible
 
   ggplotly(plot, tooltip = "text") %>%
      
@@ -53,6 +54,8 @@ plot_trend_prop_legend <- function(data) {
    
   labs(fill = "Age Group:") +
    
+   phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+   
       theme(axis.title = element_blank(),
          axis.text = element_blank(),
          axis.ticks = element_blank(),
@@ -65,6 +68,6 @@ plot_trend_prop_legend <- function(data) {
    
  config(legend_plotly, staticPlot = TRUE) %>%
  layout(legend = list(orientation = "v",
-          x = 0, y = 0.5))  
+          x = -1, y = 0.5))  
 }
 

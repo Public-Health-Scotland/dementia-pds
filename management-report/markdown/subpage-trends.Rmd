@@ -57,7 +57,7 @@ err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_o
 # to be automated based on whether current year is complete or not??
 #included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
 
-#prepare referrals data for plot_trend() function
+#prepare referrals data for plot functions
 pds_ijb <- pds %>% arrange(ijb)
 
 pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp, age_grp, simd) %>% 
@@ -72,6 +72,7 @@ pds_all %<>% rename(geog = ijb)
 
 pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
 
+#get totals for scotland, hbs and ijbs
 pds_all_totals <- pds_all %<>% group_by(geog, fy) %>% summarise(total_referrals = sum(referrals))
 
 pds_ijb %<>% rename(geog = ijb) 
@@ -91,13 +92,14 @@ pds_scot %<>% rename(geog = ijb)
 pds_scot %<>% group_by(geog, fy) %>% summarise(total_referrals = sum(referrals))
 
 #prepare population rate data
-pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds") %>% 
-  filter(age_grp == "All", sex == "All") %>% select(geog, year, pop_est)
+pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
+ 
+pop_data_trends <- pop_data %>%  filter(age_grp == "All", sex == "All") %>% select(geog, year, pop_est)
 
 pds_all_cal_year <- pds_all_totals %>% 
   mutate(year = as.numeric(substr(fy, 1, 4)))
 
-pds_all_rates <- left_join(pds_all_cal_year, pop_data) %>% select(geog, fy, total_referrals, pop_est) %>% 
+pds_all_rates <- left_join(pds_all_cal_year, pop_data_trends) %>% select(geog, fy, total_referrals, pop_est) %>% 
   mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 2)) %>% select(geog, fy, pop_rate_10000)
 
 pds_all_rates$geog<- factor(pds_all_rates$geog, levels = unique(pds_all_rates$geog))
@@ -110,8 +112,8 @@ pds_ijb_rates <- pds_all_rates %>% filter(geog != "Scotland", !grepl("NHS", geog
 pds_trends_data_ijb <- SharedData$new(pds_ijb)
 pds_trends_data_hb <- SharedData$new(pds_hb)
 pds_trends_pop_data <- SharedData$new(pds_all_rates)
-pds_ijb_pop_data <- SharedData$new(pds_ijb_rates, group = "group1")
-pds_scot_pop_data <- SharedData$new(pds_scot_rates, group = "group1")
+pds_ijb_pop_data <- SharedData$new(pds_ijb_rates, key = ~fy, group = "group1")
+pds_scot_pop_data <- SharedData$new(pds_scot_rates, key = ~fy, group = "group1")
    
  
 ```
@@ -319,14 +321,6 @@ data_filter_year <- filter_select(id = "trend_filter_year",
                                     multiple = FALSE
                                    )
 data_filter_year
-
-#this is a hidden dummy filter that is grouped with filter above so that scotland data is filtered to the same year as ijbs
-data_filter_year_2 <- filter_select(id = "trend_filter_year_2",
-                                    label = "Select Financial Year:",
-                                    group = ~fy,
-                                    sharedData = pds_scot_pop_data,
-                                    multiple = FALSE
-                                   )
 
 ```
 
