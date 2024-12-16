@@ -11,6 +11,7 @@ output:
 source(here::here("code", "00_setup-environment.R"))
 library(crosstalk) # for drop down menus
 library(phsstyles)
+library(htmltools)
 
 # Write numbers with thousands separator
 knit_hooks$set(inline = function(x){
@@ -154,61 +155,71 @@ Row
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
 
-Row {.tabset data-height=600}
+Row {.tabset data-height=550}
 ----------------------------------------------------------------------
 
 ### **Scotland**
 
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
+<div>
 ```{r trend-plot}
 
-trends_plot <- plot_trend(pds_scot, total_referrals)
+trends_plot <- plot_trend(pds_scot, total_referrals, x ="Financial Year of Diagnosis", y = "Number")
+
 trends_plot
 
 ```
+</div>
 
 ### **Health Boards**
-<div>
-```{r dropdown-hb, fig.width=2, fig.align='left'}
+
+```{r dropdown-hb}
 data_filter_hb <- filter_select(id = "trend_filter_hb",
                                     label = "Select Health Board:",
                                     group = ~geog,
                                     sharedData = pds_trends_data_hb
                                    )
-data_filter_hb
+
+bscols(widths = c(1,6,NA), NULL,
+data_filter_hb, NULL)
 
 ```
-</div>
 
-<div class="trend-plot-hb">
-```{r trend-plot-hb, fig.height=5}
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
+```{r trend-plot-hb}
 
-trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals)
-trends_plot_hb
+trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number")
+
+bscols(widths = 12,
+trends_plot_hb)
 
 ```
-</div>
+
 
 
 ### **Integration Authority Areas**
 
-```{r dropdown-ijb, fig.height=5}
+```{r dropdown-ijb}
 data_filter_ijb <- filter_select(id = "trend_filter_ijb",
                                     label = "Select Integration Authority Area:",
                                     group = ~geog,
                                     sharedData = pds_trends_data_ijb
                                    )
-data_filter_ijb
+
+bscols(widths = c(1,6,NA), NULL,
+data_filter_ijb, NULL)
 
 ```
 
-<div>
-```{r trend-plot-ijb, fig.height=5}
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
+```{r trend-plot-ijb}
 
-trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals)
-trends_plot_ijb
+trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number")
+
+bscols(widths = 12,
+trends_plot_ijb)
 
 ```
-</div>
 
 Row {.tabset data-height=750}
 ----------------------------------------------------------------------
@@ -287,7 +298,7 @@ Row
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
 
-Row {.tabset data-height=600}
+Row {.tabset data-height=560}
 ----------------------------------------------------------------------
 
 ### **Trend by Financial Year**
@@ -298,18 +309,21 @@ data_filter_hb_ijb_pop <- filter_select(id = "trend_filter_pop",
                                     group = ~geog,
                                     sharedData = pds_trends_pop_data
                                    )
-data_filter_hb_ijb_pop
+bscols(widths = c(1,6,NA),NULL,
+data_filter_hb_ijb_pop,NULL)
 
 ```
 
-<div>
-```{r trend-plot-pop, fig.height=5}
 
- trends_pop_plot <- plot_trend(pds_trends_pop_data, pop_rate_10000)
- trends_pop_plot
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population </h2>
+```{r trend-plot-pop}
+
+ trends_pop_plot <- plot_trend(pds_trends_pop_data, pop_rate_10000, x ="Financial Year of Diagnosis", y = "Rate Per 10,000 Popuation")
+
+bscols(widths = 12,
+ trends_pop_plot)
 
 ```
-</div>
 
 ### **Integration Authority Areas**
 
@@ -320,18 +334,21 @@ data_filter_year <- filter_select(id = "trend_filter_year",
                                     sharedData = pds_ijb_pop_data,
                                     multiple = FALSE
                                    )
-data_filter_year
+
+bscols(widths = c(1,3,NA),NULL,
+data_filter_year,NULL)
 
 ```
 
-<div>
-```{r plot-ijb-pop, fig.height=5}
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population by Integration Authority Area </h2>
+```{r plot-ijb-pop}
 
  ijb_rates_plot <- plot_bar_pop_rate(pds_ijb_pop_data, pds_scot_pop_data)
- ijb_rates_plot
+
+bscols(widths = 12,
+ ijb_rates_plot)
 
 ```
-</div>
 
 Row {.tabset data-height=750}
 ----------------------------------------------------------------------

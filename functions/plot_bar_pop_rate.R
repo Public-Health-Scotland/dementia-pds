@@ -13,9 +13,9 @@ plot_bar_pop_rate <- function(data1, data2){
     
     scale_colour_manual(values = "#C73918") +
     
-    labs(title = "Number of Individuals referred to Post-Diagnostic Support per 10,000 population",
+    labs(title = "",
          x = "",
-         y = "rate per 10,000 popuation",
+         y = "Rate per 10,000 Popuation",
          color = NULL) +
     
     scale_y_continuous(limits = c(0, NA)) +
@@ -31,9 +31,9 @@ plot_bar_pop_rate <- function(data1, data2){
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian'), 
            displaylogo = F, editable = F) %>%
-     layout(legend = list(orientation = "h", x = 0.5 , y = -0.4,
+     layout(legend = list(orientation = "h", x = 0.5 , y = -0.6,
                            xanchor = "center", yanchor = "bottom")) %>% 
-     layout(margin = list(b = 30, t = 30) # to avoid labels getting cut out
+     layout(margin = list(l = -10, b = 30, t = 30) # to avoid labels getting cut out
           ) 
  
 }

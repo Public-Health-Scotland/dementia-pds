@@ -1,49 +1,5 @@
 plot_ldp_simd <- function(data){
   
-  # xaxis_nf <- list(
-  #   title = "",
-  #   categoryorder = "array",
-  #   categoryarray = ldp_all_simd$geog,
-  #   showline = TRUE,
-  #   linecolor = "rgb(204, 204, 204)",
-  #   linewidth = 2,
-  #   showgrid = FALSE,
-  #   showticklabels = TRUE,
-  #   ticks = "inside",
-  #   tickcolor = "rgb(204, 204, 204)",
-  #   tickwidth = 2,
-  #   ticklen = 5,
-  #   tickfont = list(
-  #     family = "Arial",
-  #     size = 10,
-  #     color = "rgb(82, 82, 82)"
-  #   )
-  # )
-  
-  # yaxis_nf <- list(
-  #   title = "",
-  #   categoryorder = "array",
-  #   categoryarray = ldp_all_simd$geog,
-  #   showgrid = TRUE,
-  #   zeroline = FALSE,
-  #   showline = TRUE,
-  #   linecolor = "rgb(204, 204, 204)",
-  #   linewidth = 2,
-  #   showticklabels = TRUE,
-  #   ticks = "inside",
-  #   tickcolor = "rgb(204, 204, 204)",
-  #   tickwidth = 2,
-  #   ticklen = 5,
-  #   tickfont = list(
-  #     family = "Arial",
-  #     size = 12,
-  #     color = "rgb(82, 82, 82)"
-  #   ),
-  #   font = list(size = 12, family = "Arial"),
-  #   range = c(0, 108)
-  # )
-  
-  
   plot <-  data %>% ggplot() +
     
     geom_col(aes(x = simd, y = perc_met, fill = fy,
@@ -53,7 +9,7 @@ plot_ldp_simd <- function(data){
                                )),
              position = position_dodge()) +
     
-    labs(title = "Percentage of LDP standard achieved by SIMD Quintile and Financial Year",
+    labs(title = "",
          x = "",
          y = "",
         fill = NULL
@@ -62,15 +18,18 @@ plot_ldp_simd <- function(data){
     scale_y_continuous(limits = c(0, NA),
                        labels=function(x) paste0(x,"%")) +
     
+    phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+    
     facet_wrap(vars(geog), ncol = 1) + 
     
     theme(strip.background = element_blank(),
          strip.text.x = element_blank(),
-          #legend.position = "top",
+          legend.position = "none",
           #axis.title.x = element_text(size = 11,
                                       #face = "bold",
                                       #margin = margin(t = 7)),
-          title = element_text(size = 14)) +
+         # title = element_text(size = 14)
+         ) +
     
    theme(panel.spacing = unit(1000, "pt")) #this is for 'stacking' facets so only the selected one is visible
   
@@ -85,14 +44,43 @@ plot_ldp_simd <- function(data){
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian'), 
            displaylogo = F, editable = F) %>%
-      layout(legend = list(orientation = "h", x = 0.5 , y = 1,
-              xanchor = "center", yanchor = "top")) %>% 
-    layout(margin = list(b = 50, t = 40) # to avoid labels getting cut out
+     # layout(legend = list(orientation = "h", x = 0.5 , y = 1,
+            #  xanchor = "center", yanchor = "top")) %>% 
+    layout(margin = list(l = -5, b = 50, t = 40) # to avoid labels getting cut out
           # yaxis = yaxis_nf,
           # xaxis = xaxis_nf,
           # barmode = "grouped"
            ) 
   
 }
+
+plot_ldp_simd_legend <- function(data) {
+  
+  legend <- data %>% ggplot(aes(x = simd, y = 0, fill = fy)) +
+    
+    geom_col(width = 0) +
+      
+      labs(fill = NULL) +
+      
+      phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+    
+        theme(axis.title = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          legend.position = c(0.5, 1), # move the legend to the center
+          panel.grid = element_blank(),
+          panel.border = element_rect(colour = "white", fill='white', size=0)
+    )
+  
+  legend_plotly<-ggplotly(legend, tooltip = NULL)
+  
+  config(legend_plotly, staticPlot = TRUE) %>%
+    layout(legend = list(orientation = "h",
+                        x = 0.5, y = 1, xanchor = "center", yanchor = "top" ), 
+           margin = list(b = 353))  
+}
+
+
+
 
 

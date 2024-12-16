@@ -11,6 +11,7 @@ output:
 source(here::here("code", "00_setup-environment.R"))
 library(crosstalk) # for drop down menus
 library(phsstyles)
+library(htmltools)
 
 # Write numbers with thousands separator
 knit_hooks$set(inline = function(x){
@@ -104,7 +105,9 @@ legend_data <- tibble(
   y = c(0,0))
 
 #prepare simd data
-ldp_all_simd <- pds_all %>% group_by(geog, fy, simd, ldp) %>% filter(simd != "Unknown") %>% 
+ldp_all_simd <- pds_all %>%
+  filter(fy != "2024/25", simd != "Unknown") %>%
+  group_by(geog, fy, simd, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
   mutate(perc_met = round((complete + exempt)/(complete + exempt + fail)*100,1))
@@ -325,19 +328,18 @@ data_filter_age_prop <- filter_select(id = "trend_filter_age_prop",
                                     sharedData = pds_age_data,
                                     multiple = FALSE
                                    )
-bscols(widths = c(1,4,NA),
+bscols(widths = c(1,5,NA),
        NULL,
        data_filter_age_prop,
        NULL)
 
-
 ```
 
-
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Proportion of Referrals by Age Group </h2>
 ```{r plot-prop-age}
 bscols(widths = c(10,2),
   plot_trend_prop(pds_age_data),
-  plot_trend_prop_legend(pds_age_data)
+  plot_trend_prop_legend(pds_all_age)
 )
 
 ```
@@ -455,7 +457,7 @@ data_filter_pop_hb_ijb <- filter_select(id = "filter_pop_age_hb_ijb",
                                     multiple = FALSE
  
                                                                       )
-bscols(widths = c(1,4,4,NA),
+bscols(widths = c(1,5,5,NA),
        NULL,
        data_filter_pop_year,
        data_filter_pop_hb_ijb,
@@ -464,7 +466,7 @@ bscols(widths = c(1,4,4,NA),
 
 ```
 
-
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> People referred to PDS per 10,000 population by Age Group </h2>
 ```{r plot-pop-age}
 
 bscols(widths = c(10,2),
@@ -951,7 +953,7 @@ data_filter_ldp_simd <- filter_select(id = "filter_ldp_simd",
                                     multiple = FALSE
                                       )
 
-bscols(widths = c(1,4,NA),
+bscols(widths = c(1,5,NA),
        NULL,
        data_filter_ldp_simd,
        NULL)
@@ -959,12 +961,20 @@ bscols(widths = c(1,4,NA),
 
 ```
 
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Percentage of LDP standard achieved by SIMD Quintile and Financial Year </h2>
 
-```{r plot-ldp-simd}
+
+```{r plot-ldp-simd-legend}
 
 bscols(widths = 12,
-plot_ldp_simd(ldp_all_simd_data))
+div(id="ldpsimdlegend",plot_ldp_simd_legend(ldp_all_simd), style="margin-bottom:-353px"))
 
+```
+
+
+```{r plot-ldp-simd}
+bscols(widths = 12,
+plot_ldp_simd(ldp_all_simd_data))
 
 ```
 
@@ -1016,6 +1026,12 @@ function filter_default() {
   [0].selectize.setValue("NHS Ayrshire & Arran", false);
 
   document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("filter_ldp_simd").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_ldp_simd").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
     document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 

@@ -14,9 +14,9 @@ plot_bar_age_pop <- function(data){
                                "rate per 10,000 population: ", pop_rate_10000)),
              position = position_identity(), just = 1, width = 0.42, fill = "#3F3685") +
     
-    labs(title = "People referred to PDS per 10,000 population by Age Group",
+    labs(title = "",
          x = "Age Group",
-         y = "rate per 10,000 popuation",
+         y = "Rate per 10,000 Popuation",
          ) +
     
     scale_y_continuous(limits = c(0, NA)) +
@@ -28,8 +28,8 @@ plot_bar_age_pop <- function(data){
           legend.position = "none",
           axis.title.x = element_text(size = 11,
                                       face = "bold",
-                                      margin = margin(t = 7)),
-          title = element_text(size = 14)) +
+                                      margin = margin(t = 7))
+          ) +
     
     theme(panel.spacing = unit(700, "pt")) #this is for 'stacking' facets so only the selected one is visible
     

@@ -16,7 +16,7 @@ plot_trend_prop <- function(data){
     
     phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
     
-      labs(title = "Proportion of Referrals by Age Group",
+      labs(title = "",
          x = "Financial Year of Diagnosis",
          y = "",
          fill = NULL) +
