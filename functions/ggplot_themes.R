@@ -14,16 +14,71 @@ theme_dementia <- function(){
           plot.margin = margin(10, 10, 10, 10))
 }
 
-phs_colours <- c(
-  `purple` = "#3F3685",
-  `magenta` = "#9B4393",
-  `blue` = "#0078D4",
-  `green` = "#83BB26",
-  `graphite` = "#948DA3",
-  `teal` = "#1E7F84",
-  `liberty` = "#6B5C85",
-  `rust` = "#C73918"
+phs_colours_core <- c(
+  "#3F3685",
+  "#9B4393",
+ "#0078D4",
+  "#83BB26",
+  "#948DA3",
+ "#1E7F84",
+  "#6B5C85",
+  "#C73918"
 )
 
 
-### END OF SCRIPT ###
+phs_colour_names<-data.frame(c(
+"phs-purple" = "#3F3685",
+"phs-magenta" = "#9B4393",
+"phs-blue" = "#0078D4",
+"phs-green" = "#83BB26",
+"phs-graphite" = "#948DA3",
+"phs-teal" = "#1E7F84",
+"phs-liberty" = "#6B5C85",
+"phs-rust" = "#C73918",
+"phs-purple-80" = "#655E9D",
+"phs-magenta-80" = "#AF69A9",
+"phs-blue-80" = "#3393DD",
+"phs-green-80" = "#9CC951",
+"phs-graphite-80" = "#A9A4B5",
+"phs-teal-80" = "#4B999D",
+"phs-liberty-80" = "#897D9D",
+"phs-rust-80" = "#D26146",
+"phs-purple-30" = "#C5C3DA",
+"phs-magenta-30" = "#E1C7DF",
+"phs-blue-30" = "#B3D7F2",
+"phs-green-30" = "#DAEBBE",
+"phs-graphite-30" = "#DFDDE3",
+"phs-teal-30" = "#BCD9DA",
+"phs-liberty-30" = "#D3CEDA",
+"phs-rust-30" = "#EEC4BA",
+"phs-purple-50" = "#9F9BC2",
+"phs-magenta-50" = "#CDA1C9",
+"phs-blue-50" = "#80BCEA",
+"phs-green-50" = "#C1DD93",
+"phs-graphite-50" = "#CAC6D1",
+"phs-teal-50" = "#8FBFC2",
+"phs-liberty-50" = "#B5AEC2",
+"phs-rust-50" = "#E39C8C",
+"phs-purple-10" = "#ECEBF3",
+"phs-magenta-10" = "#F5ECF4",
+"phs-blue-10" = "#E6F2FB",
+"phs-green-10" = "#F3F8E9",
+"phs-graphite-10" = "#F4F4F6",
+"phs-teal-10" = "#E9F2F3",
+"phs-liberty-10" = "#F0EFF3",
+"phs-rust-10" = "#F9EBE8"))
+
+phs_colour_names %<>% rename("hexcode" = 1)
+
+phs_colours_wo_10 <- phs_colour_names %>% slice(1:32)
+phs_colours_dark<-phs_colours_wo_10$hexcode
+
+all_colours <- c(phs_colours_dark, "#FFFFFF","#AAAAAA","#DDDDDD") 
+                 
+                 all_colours <- c("#3F3685","#9B4393","#0078D4","#83BB26","#948DA3","#1E7F84","#6B5C85","#C73918","#655E9D","#9F9BC2", "#C5C3DA",
+                                  "#AF69A9","#CDA1C9", "#E1C7DF", "#3393DD","#80BCEA","#B3D7F2", "#9CC951","#C1DD93","#DAEBBE",
+                                  "#A9A4B5","#CAC6D1","#DFDDE3","#4B999D","#8FBFC2","#BCD9DA", "#897D9D","#B5AEC2", "#D3CEDA", "#D26146",
+                                  "#E39C8C", "#EEC4BA", "#FFFFFF","#AAAAAA","#DDDDDD","#004785","#9B4393","#0078D4","#83BB26")
+                 
+
+                            

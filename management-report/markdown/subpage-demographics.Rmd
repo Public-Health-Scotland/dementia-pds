@@ -12,6 +12,7 @@ source(here::here("code", "00_setup-environment.R"))
 library(crosstalk) # for drop down menus
 library(phsstyles)
 library(htmltools)
+library(phsstyles)
 
 # Write numbers with thousands separator
 knit_hooks$set(inline = function(x){
@@ -129,17 +130,10 @@ pds_all_simd_rates <- left_join(pds_all_simd_cal_year, pop_data_simd) %>% select
 
 pds_all_simd_rates$geog <- factor(pds_all_simd_rates$geog, levels = unique(pds_all_simd_rates$geog))
 pds_all_simd_rates$simd <- as.factor(pds_all_simd_rates$simd)
-
-# assigns data to filter_selects
-
-
-# pds_trends_data_hb <- SharedData$new(pds_hb)
-# pds_trends_pop_data <- SharedData$new(pds_all_rates)
-# pds_ijb_pop_data <- SharedData$new(pds_ijb_rates, group = "group1")
-# pds_scot_pop_data <- SharedData$new(pds_scot_rates, group = "group1")
    
  
 ```
+<!-- TO DO: consolidate above into data_prep file -->
 
 Age Groups {data-navmenu="Demographics"}
 =================================================

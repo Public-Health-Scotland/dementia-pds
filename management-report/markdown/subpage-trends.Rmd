@@ -13,6 +13,7 @@ library(crosstalk) # for drop down menus
 library(phsstyles)
 library(htmltools)
 
+
 # Write numbers with thousands separator
 knit_hooks$set(inline = function(x){
   if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
@@ -109,15 +110,13 @@ pds_scot_rates <- pds_all_rates %>% filter(geog == "Scotland")
 
 pds_ijb_rates <- pds_all_rates %>% filter(geog != "Scotland", !grepl("NHS", geog))
 
-# assigns data to filter_selects
-pds_trends_data_ijb <- SharedData$new(pds_ijb)
-pds_trends_data_hb <- SharedData$new(pds_hb)
-pds_trends_pop_data <- SharedData$new(pds_all_rates)
-pds_ijb_pop_data <- SharedData$new(pds_ijb_rates, key = ~fy, group = "group1")
-pds_scot_pop_data <- SharedData$new(pds_scot_rates, key = ~fy, group = "group1")
-   
+
+
+
  
 ```
+<!-- TO DO: consolidate above into data_prep file -->
+
 
 All Referrals - Trends & Rates
 =================================================
@@ -174,6 +173,8 @@ trends_plot
 ### **Health Boards**
 
 ```{r dropdown-hb}
+pds_trends_data_hb <- SharedData$new(pds_hb)
+
 data_filter_hb <- filter_select(id = "trend_filter_hb",
                                     label = "Select Health Board:",
                                     group = ~geog,
@@ -200,6 +201,8 @@ trends_plot_hb)
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb}
+pds_trends_data_ijb <- SharedData$new(pds_ijb)
+
 data_filter_ijb <- filter_select(id = "trend_filter_ijb",
                                     label = "Select Integration Authority Area:",
                                     group = ~geog,
@@ -304,6 +307,8 @@ Row {.tabset data-height=560}
 ### **Trend by Financial Year**
 
 ```{r dropdown-pop}
+pds_trends_pop_data <- SharedData$new(pds_all_rates)
+
 data_filter_hb_ijb_pop <- filter_select(id = "trend_filter_pop",
                                     label = "Select Health Board or Integration Authority Area:",
                                     group = ~geog,
@@ -328,6 +333,8 @@ bscols(widths = 12,
 ### **Integration Authority Areas**
 
 ```{r dropdown-pop-iaa}
+pds_ijb_pop_data <- SharedData$new(pds_ijb_rates, key = ~fy, group = "group1")
+
 data_filter_year <- filter_select(id = "trend_filter_year",
                                     label = "Select Financial Year:",
                                     group = ~fy,
@@ -342,8 +349,9 @@ data_filter_year,NULL)
 
 <h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population by Integration Authority Area </h2>
 ```{r plot-ijb-pop}
+pds_scot_pop_data <- SharedData$new(pds_scot_rates, key = ~fy, group = "group1")
 
- ijb_rates_plot <- plot_bar_pop_rate(pds_ijb_pop_data, pds_scot_pop_data)
+ijb_rates_plot <- plot_bar_pop_rate(pds_ijb_pop_data, pds_scot_pop_data)
 
 bscols(widths = 12,
  ijb_rates_plot)

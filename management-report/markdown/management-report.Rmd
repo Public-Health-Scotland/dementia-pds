@@ -12,6 +12,7 @@ source(here::here("code", "00_setup-environment.R"))
 library(crosstalk) # for drop down menus
 library(phsstyles)
 library(htmltools)
+library(phsstyles)
 
 # Write numbers with thousands separator
 knit_hooks$set(inline = function(x){
