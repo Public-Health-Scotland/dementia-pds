@@ -18,7 +18,9 @@ plot_ldp_simd <- function(data){
     scale_y_continuous(limits = c(0, NA),
                        labels=function(x) paste0(x,"%")) +
     
-    phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+    scale_fill_manual(values = phs_colours_32) +
+    
+    #phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
     
     facet_wrap(vars(geog), ncol = 1) + 
     

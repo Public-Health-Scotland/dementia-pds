@@ -90,7 +90,9 @@ get_mi_data_path <- function(type = c("error_data",
                                       "dupe_data",
                                       "clean_data",
                                       "ldp_data",
-                                      "final_data"),
+                                      "final_data",
+                                      "wait_data",
+                                      "wait_data_2"),
                              ext = c("rds", "csv"), 
                              test_output = FALSE, 
                              previous_data = FALSE) {
@@ -102,7 +104,9 @@ get_mi_data_path <- function(type = c("error_data",
       "dupe_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_dupes"),
       "clean_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_clean-data"),
       "ldp_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_individuals-with-ldp"),
-      "final_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_final-data"))
+      "final_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_final-data"),
+      "wait_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data"),
+      "wait_data_2" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data-2"))
   } else {
     file_name <- dplyr::case_match(
     type,
@@ -110,7 +114,9 @@ get_mi_data_path <- function(type = c("error_data",
     "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"),
     "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
     "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
-    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data"))
+    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data"),
+    "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data"),
+    "wait_data_2" ~ stringr::str_glue("{fy}-{qt}_wait-data-2"))
   }
   
   mi_data_path <- get_file_path(

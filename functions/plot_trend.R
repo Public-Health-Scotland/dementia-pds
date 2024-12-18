@@ -1,4 +1,4 @@
-plot_trend <- function(data, measure,  x = "", y = ""){
+plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_32){
   
   plot <- data %>%
     
@@ -17,9 +17,7 @@ plot_trend <- function(data, measure,  x = "", y = ""){
     scale_y_continuous(limits = c(0, NA), breaks = integer_breaks()
                          ) + 
     
-    scale_colour_manual(
-      values = all_colours
-      ) +
+    scale_colour_manual(values = {{colours}}) +
     
     theme_set(theme_minimal(base_size = 12)) +
     

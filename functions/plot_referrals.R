@@ -79,7 +79,7 @@ plot_referrals <- function(data,
     scale_y_continuous(limits = c(0, NA), breaks = integer_breaks()
                        ) +
     
-    scale_colour_discrete(name = NULL) +
+    scale_colour_manual(values = phs_colours_32) +
     #phsstyles::scale_colour_discrete_phs(name = NULL) +
     
     # Custom labels on x tick marks
