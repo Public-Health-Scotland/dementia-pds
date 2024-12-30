@@ -68,7 +68,8 @@ ldp_wait_times <- ldp %>%
          allocation_to_contact_days = time_length(interval(initial_pds_practitioner_allocation_date, date_of_initial_first_contact), "days"),
          referral_to_contact_days = time_length(interval(date_pds_referral_received, date_of_initial_first_contact), "days"),
          diagnosis_to_contact_days = time_length(interval(dementia_diagnosis_confirmed_date, date_of_initial_first_contact), "days"),
-         contact_to_termination_days = time_length(interval(date_of_initial_first_contact, termination_or_transition_date), "days")
+         contact_to_termination_days = time_length(interval(date_of_initial_first_contact, termination_or_transition_date), "days"),
+         referral_to_termination_days = time_length(interval(date_pds_referral_received, termination_or_transition_date), "days")
   )
 
 ldp_wait_times %<>%
@@ -79,15 +80,22 @@ ldp_wait_times %<>%
 # mutate(termination_or_transition_reason = str_trim(termination_or_transition_reason, "left"))
 
 
-
 # create summary
 data_wait <- summarise_pathways(ldp_wait_times)
 
-data_wait %<>% mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb))
+data_wait %<>% mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb),
+                      perc_allocated = round((allocated_referrals/total_referrals)*100,1),
+                      perc_contacted = round((contacted_referrals/total_referrals)*100,1))
+
 
 data_wait_2 <- summarise_pathways_2(ldp_wait_times)
 
 data_wait_2 %<>% mutate(ijb = if_else(ijb == "All", health_board, ijb))
+
+data_wait_3 <- summarise_pathways_3(ldp_wait_times)
+
+data_wait_3 %<>% mutate(ijb = if_else(ijb == "All", health_board, ijb))
+
 
 data_wait %>% 
   write_file(path = get_mi_data_path("wait_data", ext = "rds", test_output = test_output))
@@ -95,6 +103,10 @@ data_wait %>%
 
 data_wait_2 %>% 
   write_file(path = get_mi_data_path("wait_data_2", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+data_wait_3 %>% 
+  write_file(path = get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 

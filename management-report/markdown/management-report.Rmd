@@ -157,6 +157,9 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
 <!-- DEMOGRAPHICS -->
 `r knitr::knit_child("subpage-demographics.Rmd")`
 
+<!-- PATHWAYS -->
+`r knitr::knit_child("subpage-pathways.Rmd")`
+
 
 Methodology
 =================================================
