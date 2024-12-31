@@ -26,8 +26,8 @@ plot_trend_prop <- function(data){
          legend.position = "none",
          axis.title.x = element_text(size = 11,
                                     face = "bold",
-                                    margin = margin(t = 7)),
-         title = element_text(size = 14)) + 
+                                    margin = margin(t = 7))
+        ) + 
     
     theme(panel.spacing = unit(700, "pt")) #this is for 'stacking facets' so only the selected one is visible
 

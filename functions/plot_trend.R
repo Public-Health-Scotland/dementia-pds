@@ -45,7 +45,7 @@ plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_32)
                                          'zoomOut2d', 'autoScale2d', 
                                          'toggleSpikelines', 
                                          'hoverCompareCartesian', 
-                                         'hoverClosestCartesian'), 
+                                         'hoverClosestCartesian', 'toImage'), 
            displaylogo = F, editable = F) %>%
     layout(legend = list(orientation = "h", x = 0.5 , y = -0.35,
                          xanchor = "center", yanchor = "bottom")) %>% 

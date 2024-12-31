@@ -78,8 +78,8 @@ plot_ldp_simd_legend <- function(data) {
   
   config(legend_plotly, staticPlot = TRUE) %>%
     layout(legend = list(orientation = "h",
-                        x = 0.5, y = 1, xanchor = "center", yanchor = "top" ), 
-           margin = list(b = 353))  
+                        x = 0.5, y = 1, xanchor = "center", yanchor = "top" ) 
+           )  
 }
 
 
