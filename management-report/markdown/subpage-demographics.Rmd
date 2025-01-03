@@ -61,10 +61,10 @@ err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_o
 #prepare referrals data for plot functions
 pds_ijb <- pds %>% arrange(ijb)
 
-pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp, age_grp, simd) %>% 
+pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp, age_grp_2, age_grp, simd) %>% 
   summarise(referrals = sum(referrals), .groups = "drop")
 
-pds_hb <- pds %>% group_by(health_board, fy, month, ldp, age_grp, simd) %>% 
+pds_hb <- pds %>% group_by(health_board, fy, month, ldp, age_grp_2, age_grp, simd) %>% 
   summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
 
 pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
@@ -72,7 +72,6 @@ pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
 pds_all %<>% rename(geog = ijb) 
 
 pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
-
 #above can be REMOVED when pages are linked (copied from subpage-trends)
 
 #prepare age data
@@ -317,7 +316,7 @@ Row {.tabset data-height=1180}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
-```{r dropdown-prop-age}
+```{r dropdown-prop-age-ijb}
 pds_age_data_ijb <- SharedData$new(pds_ijb_age, key = ~fy, group = "age_prop")
 
 data_filter_age_prop <- filter_select(id = "trend_filter_age_prop",
@@ -335,7 +334,7 @@ bscols(widths = c(1,5,NA),
 
 <h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: 0px"> Proportion of Referrals by Age Group </h2>
 
-```{r plot-prop-age-legend}
+```{r plot-prop-age-legend-ijb}
 
 bscols(widths = 12,
 div(id="ageproplegend", plot_prop_legend(pds_ijb_age), style="margin-bottom:-353px"))
@@ -343,7 +342,7 @@ div(id="ageproplegend", plot_prop_legend(pds_ijb_age), style="margin-bottom:-353
 ```
 
 
-```{r plot-prop-age}
+```{r plot-prop-age-ijb}
 bscols(widths = 12,
   div(style = css(width="98%", height="530px"),
       plot_prop(pds_age_data_ijb, xlabel = "Integration Authority Area")
@@ -353,7 +352,7 @@ bscols(widths = 12,
 ```
 
 
-```{r trend-table-prop-age}
+```{r trend-table-prop-age-ijb}
 
 pds_prop_table_data <- pds_all_age %>% filter(!grepl("NHS", geog)) %>% group_by(geog, fy) %>% 
   mutate(perc_referrals = paste0(round((total_referrals/sum(total_referrals))*100,0),"%")) %>% ungroup() %>% 
@@ -367,20 +366,20 @@ pds_prop_table <- SharedData$new(pds_prop_table_data, key = ~fy, group = "age_pr
 
 bscols(widths = 12,
        div(style = css(width="98%", height="430px", margin="15px"),
-          DT::datatable(pds_prop_table, rownames = FALSE,
+          DT::datatable(pds_prop_table, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 10,
                              scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
                              scrollY = FALSE,
-                             responsive = FALSE,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                list(className = 'dt-right', targets = 2:33)
-                                               ))) %>%
-           DT::formatStyle(2, fontWeight = "bold", padding = "4px"
-                          )
-        )
-     )
+                             ))) %>%
+  DT::formatStyle(2, fontWeight = "bold", padding = "4px"
+                  )
+            )
+       )
 
 
 
@@ -951,14 +950,14 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
-Row {data-height=1000}
+Row {data-height=835}
 ----------------------------------------------------------------------
 
 ### 
 
 ```{r dropdown-ldp-simd}
 
-ldp_all_simd_data <- SharedData$new(ldp_all_simd)
+ldp_all_simd_data <- SharedData$new(ldp_all_simd, key = ~geog, group = "ldp_simd")
 
 data_filter_ldp_simd <- filter_select(id = "filter_ldp_simd",
                                     label = "Select Health Board/Integration Authority Area:",
@@ -976,8 +975,6 @@ bscols(widths = c(1,5,NA),
 ```
 
 <h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Percentage of LDP standard achieved by SIMD Quintile and Financial Year </h2>
-
-
 ```{r plot-ldp-simd-legend}
 
 bscols(widths = 12,
@@ -988,35 +985,41 @@ div(id="ldpsimdlegend",plot_ldp_simd_legend(ldp_all_simd), style="margin-bottom:
 
 ```{r plot-ldp-simd}
 bscols(widths = 12,
+  div(style = css(width="98%", height="385px"),
 plot_ldp_simd(ldp_all_simd_data))
+)
 
 ```
 
 
 ```{r table-ldp-simd}
 
-# pds_prop_table_data <- pds_all_simd %>% group_by(geog, fy) %>% 
-#   mutate(perc_referrals = paste0(round((total_referrals/sum(total_referrals))*100,0),"%")) %>% ungroup() %>% 
-#   select(-total_referrals) %>% 
-#   pivot_wider(names_from = fy, values_from = perc_referrals) %>%
-#              rename(`Age Group` = age_grp)
-# pds_prop_table_data[is.na(pds_prop_table_data)] <- "0%"
-# 
-# 
-# pds_prop_table <- SharedData$new(pds_prop_table_data, key = ~geog, group = "trend_prop")
-# 
-# 
-# DT::datatable(pds_prop_table, rownames = FALSE,
-#               options = list(pageLength = 10,
-#                              scrollX = FALSE,
-#                              scrollY = FALSE,
-#                              dom = "t",
-#                              ordering = FALSE,
-#                              columnDefs = list(list(visible = FALSE, targets = 0),
-#                                                list(className = 'dt-right', targets = 2:10),
-#                                                list(width = '10px', targets = 1:10)
-#                                                )))
-# 
+ldp_simd_table_data <- ldp_all_simd %>%
+  select(geog,fy,simd,perc_met) %>%
+   mutate(perc_met = paste0(perc_met,"%")) %>% 
+  pivot_wider(names_from = fy, values_from = perc_met) %>%
+             rename(`SIMD Quintile` = simd) 
+
+
+ldp_simd_table <- SharedData$new(ldp_simd_table_data, key = ~geog, group = "ldp_simd")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="235px", margin="20px"),
+DT::datatable(ldp_simd_table, rownames = FALSE,
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:9)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
 
 
 ```

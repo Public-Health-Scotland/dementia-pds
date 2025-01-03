@@ -62,10 +62,10 @@ err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_o
 #prepare referrals data for plot functions
 pds_ijb <- pds %>% arrange(ijb)
 
-pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp, age_grp, simd) %>% 
+pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp, age_grp_2, age_grp, simd) %>% 
   summarise(referrals = sum(referrals), .groups = "drop")
 
-pds_hb <- pds %>% group_by(health_board, fy, month, ldp, age_grp, simd) %>% 
+pds_hb <- pds %>% group_by(health_board, fy, month, ldp, age_grp_2, age_grp, simd) %>% 
   summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
 
 pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
@@ -96,7 +96,7 @@ pds_scot %<>% group_by(geog, fy) %>% summarise(total_referrals = sum(referrals))
 #prepare population rate data
 pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
  
-pop_data_trends <- pop_data %>%  filter(age_grp == "All", sex == "All") %>% select(geog, year, pop_est)
+pop_data_trends <- pop_data %>%  filter(age_grp == "All", age_grp_2 == "All", sex == "All") %>% select(geog, year, pop_est)
 
 pds_all_cal_year <- pds_all_totals %>% 
   mutate(year = as.numeric(substr(fy, 1, 4)))

@@ -149,6 +149,13 @@ pds %<>%
              age >= 90      ~ "90+"
            )) %>%
   
+  mutate(age_grp_2 = 
+           case_when(
+             age < 0 | is.na(age) ~ "Unknown",
+             age %in% 1:64 ~ "64 and Under",
+             age >= 65      ~ "65+"
+           )) %>%
+  
   mutate(postcode = format_postcode(postcode)) %>%
   left_join(simd(), by = c("postcode" = "pc7")) %>%
   mutate(simd = replace_na(simd, "Unknown"))
@@ -178,18 +185,22 @@ inc_months <-
 pds %<>%
   
   # Aggregate to create minimal tidy dataset
-  group_by(health_board, ijb, fy, month, ldp, age_grp, simd) %>%
+  group_by(health_board, ijb, fy, month, age_grp_2, age_grp, simd, sex, ldp) %>%
   summarise(referrals = n(), .groups = "drop") %>%
   
-  # Remove LDP reason detail
-  mutate(ldp = word(ldp, 1)) %>% 
-  
+
   # Add rows where no referrals were made
   # Doing this will make sure zeros are still shown in reports
   complete(nesting(health_board, ijb), fy, month, ldp,
            fill = list(referrals = 0,
                        age_grp = "Unknown",
-                       simd = "Unknown")) %>%
+                       simd = "Unknown",
+                       age_grp_2 = "Unknown",
+                       sex = "Unknown")) %>%
+  
+  # Remove LDP reason detail
+  rename(ldp_full = ldp) %>% 
+  mutate(ldp = word(ldp_full, 1), .after = ldp_full) %>% 
 
   # Remove completed rows for months in incomplete financial year
   # e.g. for Q1 reports, remove completed rows for July - March

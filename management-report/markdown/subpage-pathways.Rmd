@@ -176,10 +176,10 @@ data_filter_ijb_year, NULL)
 
 ```
 
-<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: 0px"> Pathways from diagnosis to contact by PDS practitioner </h2>
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from diagnosis to contact by PDS practitioner </h2>
 ```{r wait-table-ijb}
-bscols(widths = c(1,10,NA), NULL,
- div(style = css(width="100%", height="585px"),
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
     DT::datatable(wait_table_data_ijb, rownames = FALSE,  
                                         caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
@@ -193,7 +193,12 @@ bscols(widths = c(1,10,NA), NULL,
                              columnDefs = list(list(visible = FALSE, targets = 1),
                                                 list(className = 'dt-right', targets = 2:8)
                                                 #list(width = '10px', targets = 1:10)
-                                                )))),NULL) 
+                                                ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
   
 
 ```
@@ -231,10 +236,11 @@ data_filter_hb_year, NULL)
 
 ```
 
-<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: 0px"> Pathways from diagnosis to contact by PDS practitioner </h2>
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from diagnosis to contact by PDS practitioner </h2>
 ```{r wait-table-hb}
-bscols(widths = c(1,10,NA), NULL,
- div(style = css(width="100%", height="585px"),
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
   DT::datatable(wait_table_data_hb, rownames = FALSE,
                  caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
@@ -248,7 +254,12 @@ bscols(widths = c(1,10,NA), NULL,
                              columnDefs = list(list(visible = FALSE, targets = 1),
                                                 list(className = 'dt-right', targets = 2:8)
                                                 #list(width = '10px', targets = 1:10)
-                                                )))),NULL)
+                                                ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
 ```
 
 
@@ -286,7 +297,7 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
-Row {.tabset data-height=650}
+Row {.tabset data-height=670}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
@@ -339,10 +350,12 @@ data_filter_year_term_ijb, NULL)
 
 ```
 
-<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: 0px"> Pathways from referral to termination of PDS </h2>
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from referral to termination of PDS </h2>
 ```{r term-table-ijb}
-bscols(widths = c(1,10,NA), NULL,
- div(style = css(width="100%", height="500px"), DT::datatable(term_table_data_ijb, rownames = FALSE,
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="500px", margin="20px"),
+     DT::datatable(term_table_data_ijb, rownames = FALSE,
               options = list(pageLength = 33,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -351,7 +364,12 @@ bscols(widths = c(1,10,NA), NULL,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                 list(className = 'dt-right', targets = 2:6)
                                                 #list(width = '30px', targets = 6)
-                                                )))), NULL)
+                                                ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
 ```
 
 ### **Health Boards**
@@ -400,17 +418,16 @@ data_filter_year_term_hb <- filter_select(id = "term_filter_year_hb",
                                     multiple = FALSE
                                    )
 
-
 bscols(widths = c(1,4,NA), NULL,
 data_filter_year_term_hb, NULL)
 
-
 ```
 
-<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: 0px"> Pathways from referral to termination of PDS </h2>
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from referral to termination of PDS </h2>
 ```{r term-table-hb}
-bscols(widths = c(1,10,NA), NULL,
- div(style = css(width="100%", height="500px"), DT::datatable(term_table_data_hb, rownames = FALSE,
+bscols(widths = 12,
+       div(style = css(width="97%", height="500px", margin="20px"),
+     DT::datatable(term_table_data_hb, rownames = FALSE,
               options = list(pageLength = 15,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -419,7 +436,11 @@ bscols(widths = c(1,10,NA), NULL,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                 list(className = 'dt-right', targets = 2:6)
                                                 #list(width = '30px', targets = 6)
-                                                )))), NULL)
+                                                ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
 
 ```
 
@@ -428,7 +449,7 @@ Row {.tabset data-height=770}
 
 ### **Termination Reasons - PDS Ending Without Contact**
 
-```{r dropdown-term-2}
+```{r dropdown-term-1}
  term_data_2 <- wait_data_3 %>%
     filter(sex == "All") %>%
     pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
@@ -468,10 +489,12 @@ data_filter_year_term_2, data_filter_geog_term_2, NULL)
 
 ```
 
-<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: 0px"> Pathways from referral to termination of post-diagnostic support without contact </h2>
-```{r term-table-2}
-bscols(widths = c(1,10,NA), NULL,
- div(style = css(width="100%", height="590px"), DT::datatable(term_table_data_2, rownames = FALSE,
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from referral to termination of post-diagnostic support without contact </h2>
+```{r term-table-1}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="590px", margin="20px"),
+     DT::datatable(term_table_data_2, rownames = FALSE,
               options = list(pageLength = 14,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -480,12 +503,17 @@ bscols(widths = c(1,10,NA), NULL,
                              columnDefs = list(list(visible = FALSE, targets = 0:1),
                                                 list(className = 'dt-right', targets = 3:6)
                                                 #list(width = '30px', targets = 6)
-                                                )))), NULL)
+                                                ))) %>%
+           DT::formatStyle(3, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
 ```
 
 ### **Termination Reasons - PDS Ending On or After Contact**
 
-```{r dropdown-term-1}
+```{r dropdown-term-2}
  term_data <- wait_data_2 %>% 
     filter(sex == "All") %>% 
     pivot_wider(names_from = ldp, values_from = c(referrals, median_contact_to_termination)) %>% 
@@ -525,10 +553,12 @@ data_filter_year_term, data_filter_geog_term, NULL)
 
 ```
 
-<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: 0px"> Pathways from contact by PDS practitioner to end of post-diagnostic support </h2>
-```{r term-table-1}
-bscols(widths = c(1,10,NA), NULL,
- div(style = css(width="100%", height="590px"),DT::datatable(term_table_data, rownames = FALSE,
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from contact by PDS practitioner to end of post-diagnostic support </h2>
+```{r term-table-2}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="590px", margin="20px"),
+     DT::datatable(term_table_data, rownames = FALSE,
               options = list(pageLength = 14,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -537,7 +567,12 @@ bscols(widths = c(1,10,NA), NULL,
                              columnDefs = list(list(visible = FALSE, targets = 0:1),
                                                 list(className = 'dt-right', targets = 3:7)#,
                                                 #list(width = '10px', targets = 6)
-                                                )))), NULL)
+                                                ))) %>%
+           DT::formatStyle(3, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
 ```
 
 ```{js }
@@ -591,8 +626,8 @@ function filter_default() {
   document.getElementById("term_filter_geog_2").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
 
-  document.getElementById("trend_filter_age_prop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
+ document.getElementById("trend_filter_age_prop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
 
   document.getElementById("trend_filter_age_prop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
