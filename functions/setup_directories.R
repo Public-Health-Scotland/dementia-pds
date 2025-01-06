@@ -108,7 +108,8 @@ get_mi_data_path <- function(type = c("error_data",
       "final_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_final-data"),
       "wait_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data"),
       "wait_data_2" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data-2"),
-      "wait_data_3" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data-3")
+      "wait_data_3" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data-3"),
+      "comp_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_comp-data")
       )
   } else {
     file_name <- dplyr::case_match(
@@ -120,7 +121,8 @@ get_mi_data_path <- function(type = c("error_data",
     "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data"),
     "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data"),
     "wait_data_2" ~ stringr::str_glue("{fy}-{qt}_wait-data-2"),
-    "wait_data_3" ~ stringr::str_glue("{fy}-{qt}_wait-data-3")
+    "wait_data_3" ~ stringr::str_glue("{fy}-{qt}_wait-data-3"),
+    "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data")
     )
   }
   

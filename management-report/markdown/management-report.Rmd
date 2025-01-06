@@ -51,6 +51,30 @@ err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_o
   mutate(ijb = if_else(is.na(ijb),
                                 "Unknown",
                                 str_sub(ijb, 11, -1)))
+
+# calculate final data referrals for Scotland and health boards
+pds_ijb <- pds %>% arrange(ijb)
+
+pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>%   summarise(referrals = sum(referrals), .groups = "drop")
+
+pds_hb <- pds %>% group_by(health_board, fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
+
+# combine data for ijb, hb and Scotland
+pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
+
+pds_all %<>% rename(geog = ijb) 
+
+pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
+
+
+# load completion data
+
+comp_data <- read_rds(get_mi_data_path("comp_data", ext = "rds", test_output = test_output))
+
+comp_data$geog <- factor(comp_data$geog, levels = unique(pds_all$geog))
+
+comp_data %<>% arrange(fy, geog)
 ```
 
 Home
@@ -161,7 +185,7 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
 `r knitr::knit_child("subpage-pathways.Rmd")`
 
 
-Methodology
+Methodology 
 =================================================
 
 Row
@@ -230,7 +254,7 @@ There also exists a Service Level Agreement between NHS Highland and NHS Greater
 If you have any queries regarding the above, please contact [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot).
 
 
-Data Quality
+Queries/Errors {data-navmenu="Data Quality"}
 =================================================
 
 Row
@@ -241,7 +265,7 @@ Row
 This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
 
 
-Row {.tabset data-height=800}
+Row
 -------------------------------------------------
 
 ### **Queries/Errors**
@@ -277,6 +301,19 @@ err %>%
 ```
 
 
+Number of Records Submitted {data-navmenu="Data Quality"}
+=================================================
+
+Row
+-------------------------------------------------
+
+### <!-- No Title -->
+
+This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+
+Row
+-------------------------------------------------
+
 ### **Number of Records Submitted**
 
 The table below shows the number of records submitted by each Health Board. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
@@ -306,5 +343,263 @@ err %>%
   scroll_box(height = "740px")
 ```
 
+Data Completion {data-navmenu="Data Quality"}
+=================================================
+
+Row
+-------------------------------------------------
+
+### <!-- No Title -->
+
+This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+
+Row {.tabset data-height=765}
+-------------------------------------------------
+
+### **Ethnic Group**
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px"> Percentage of records with missing/unknown entry (NA/codes 98/99) for Ethnic Group</h2>
+
+```{r ethnic-group-table}
+ethnic_comp_data<-comp_data %>%
+  filter(field_name == "ethnic_group") %>% select(geog, fy, perc_of_records_missing_not_known) %>% 
+  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
+  pivot_wider(names_from = fy, values_from = perc_of_records_missing_not_known) %>% 
+  rename(`Health Board/Integration Authority` = geog) %>%
+  slice(2:46,1)# %>% 
+  # kable() %>%
+  # kable_styling(full_width = FALSE) %>%
+  # row_spec(46, bold = TRUE) %>%
+  # scroll_box(height = "700px")
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="650px", margin="15px"),
+          DT::datatable(ethnic_comp_data, 
+                        rownames = FALSE, 
+                        extensions = "FixedColumns",
+              options = list(pageLength = 46,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(className = 'dt-right', targets = 1:9)
+                             ))) %>%
+  DT::formatStyle(1, fontWeight = "bold"
+                  )
+
+            )
+       )
+
+```
+
+### **Accommodation Type**
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px"> Percentage of records with missing/unknown entry (NA/codes 98/99) for Accommodation Type</h2>
+
+```{r accommodation-table}
+accomm_comp_data <- comp_data %>%
+  filter(field_name == "accommodation_type") %>% select(geog, fy, perc_of_records_missing_not_known) %>% 
+  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
+  pivot_wider(names_from = fy, values_from = perc_of_records_missing_not_known) %>% 
+  rename(`Health Board/Integration Authority` = geog) %>%
+  slice(2:46,1)
+
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="650px", margin="15px"),
+          DT::datatable(accomm_comp_data, 
+                        rownames = FALSE, 
+                        extensions = "FixedColumns",
+              options = list(pageLength = 46,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(className = 'dt-right', targets = 1:9)
+                             ))) %>%
+  DT::formatStyle(1, fontWeight = "bold"
+                  )
+
+            )
+       )
+```
+
+### **Subtype of Dementia**
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px"> Percentage of records with missing/unknown entry (NA/codes 98/99) and Percentage of records Yet to be determined (YTBD) for Subtype of Dementia</h2>
+
+```{r subtype-table}
+subtype_comp_data<-comp_data %>%
+  filter(field_name == "subtype_of_dementia") %>% select(geog, fy, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
+  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
+  mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
+  pivot_wider(names_from = fy, values_from = c(perc_of_records_missing_not_known, perc_of_records_ytbd),
+              names_vary = "slowest") %>%
+  slice(2:46,1)
+
+headers <- htmltools::withTags(table(
+  class = 'display',
+  thead(
+    tr(
+      th(rowspan = 2, "Health Board/Integration Authority Area"),
+      th(colspan = 2, '    2016/17'),
+      th(colspan = 2, '    2017/18'),
+      th(colspan = 2, '    2018/19'),
+      th(colspan = 2, '    2019/20'),
+      th(colspan = 2, '    2020/21'),
+      th(colspan = 2, '    2021/22'),
+      th(colspan = 2, '    2022/23'),
+      th(colspan = 2, '    2023/24'),
+      th(colspan = 2, '    2024/25')
+    ),
+    tr(
+      lapply(rep(c("NA/98/99", "YTBD"), 9), th)
+    )
+  )
+))
+
+
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="650px", margin="15px"),
+          DT::datatable(subtype_comp_data, 
+                        container = headers, 
+                        rownames = FALSE, 
+                        caption = htmltools::tags$caption(
+                       style = 'caption-side: bottom; text-align: left;',
+                       "Note that Subtype of Dementia as an optional field"),
+                        extensions = "FixedColumns",
+              options = list(pageLength = 46,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(className = 'dt-right', targets = 1:18)
+                             ))) %>%
+  DT::formatStyle(1, fontWeight = "bold"
+                  )
+
+            )
+       )
+
+```
+
+### **Clinical Impression of Stage of Illness**
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px"> Percentage of records with missing/unknown entry (NA/codes 98/99) and Percentage of records Yet to be determined (YTBD) for Clinical Impression of Stage of Illness</h2>
+
+```{r stage-table}
+stage_comp_data <- comp_data %>%
+  filter(field_name == "clinical_impression_of_stage_of_illness") %>% select(geog, fy, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
+  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
+  mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
+  pivot_wider(names_from = fy, values_from = c(perc_of_records_missing_not_known, perc_of_records_ytbd),
+              names_vary = "slowest") %>%
+  slice(2:46,1)
+
+ 
+
+# kable(stage_comp_data) %>%
+#   kable_styling(full_width = FALSE, position = "right") %>%
+#   row_spec(46, bold = TRUE) %>%
+#   # Add header above table 
+#   add_header_above(
+#         c(" " = 1,
+#            "2016/17" = 2,
+#           "2017/18" = 2,
+#           "2018/19" = 2,
+#           "2019/20" = 2,
+#           "2020/21" = 2,
+#           "2021/22" = 2,
+#           "2022/23" = 2,
+#           "2023/24" = 2,
+#           "2024/25" = 2
+#       ))%>%
+#   scroll_box(height = "670px", width = "fit-content")
+
+
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="650px", margin="15px"),
+          DT::datatable(stage_comp_data,
+                        container = headers,
+                        rownames = FALSE,
+                        extensions = "FixedColumns",
+              options = list(pageLength = 46,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(className = 'dt-right', targets = 1:18)
+                             ))) %>%
+  DT::formatStyle(1, fontWeight = "bold"
+                  )
+
+            )
+       )
+
+```
+
+### **Model of Care**
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px"> Percentage of records with missing/unknown entry (NA/codes 98/99) and Percentage of records Yet to be determined (YTBD) for Model of Care</h2>
+
+```{r model-table}
+model_comp_data <- comp_data %>%
+  filter(field_name == "model_of_care") %>% select(geog, fy, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
+  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
+  mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
+  pivot_wider(names_from = fy, values_from = c(perc_of_records_missing_not_known, perc_of_records_ytbd),
+              names_vary = "slowest") %>%
+  slice(2:46,1)# %>% 
+#set_colnames(c("Health Board/Integration Authority", rep(c("NA/98/99", "YTBD"), 9)))
+ 
+ 
+
+# kable(model_comp_data) %>%
+#   kable_styling(full_width = FALSE) %>%
+#   row_spec(46, bold = TRUE) %>%
+#   # Add header above table
+#   add_header_above(
+#         c(" " = 1,
+#            "2016/17" = 2,
+#           "2017/18" = 2,
+#           "2018/19" = 2,
+#           "2019/20" = 2,
+#           "2020/21" = 2,
+#           "2021/22" = 2,
+#           "2022/23" = 2,
+#           "2023/24" = 2,
+#           "2024/25" = 2
+#       ))%>%
+#   scroll_box(height = "670px", width = "auto", fixed_thead = T)
+
+
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="650px", margin="15px"),
+          DT::datatable(model_comp_data,
+                        container = headers,
+                        rownames = FALSE,
+                        extensions = "FixedColumns",
+              options = list(pageLength = 46,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(className = 'dt-right', targets = 1:18)
+                             ))) %>%
+  DT::formatStyle(1, fontWeight = "bold"
+                  )
+
+            )
+       )
+
+```
 
 <!-- END OF SCRIPT -->

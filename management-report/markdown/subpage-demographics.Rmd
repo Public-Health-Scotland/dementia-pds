@@ -51,28 +51,29 @@ err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_o
   mutate(ijb = if_else(is.na(ijb),
                                 "Unknown",
                                 str_sub(ijb, 11, -1)))
+
+# calculate final data referrals for Scotland and health boards
+pds_ijb <- pds %>% arrange(ijb)
+
+pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>%   summarise(referrals = sum(referrals), .groups = "drop")
+
+pds_hb <- pds %>% group_by(health_board, fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
+
+# combine data for ijb, hb and Scotland
+pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
+
+pds_all %<>% rename(geog = ijb) 
+
+pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
+
+
 ```
 <!-- delete all of above when finished testing -->
 
 ```{r data setup-demo, include=FALSE}
 # to be automated based on whether current year is complete or not??
 #included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
-
-#prepare referrals data for plot functions
-pds_ijb <- pds %>% arrange(ijb)
-
-pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp, age_grp_2, age_grp, simd) %>% 
-  summarise(referrals = sum(referrals), .groups = "drop")
-
-pds_hb <- pds %>% group_by(health_board, fy, month, ldp, age_grp_2, age_grp, simd) %>% 
-  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
-
-pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
-
-pds_all %<>% rename(geog = ijb) 
-
-pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
-#above can be REMOVED when pages are linked (copied from subpage-trends)
 
 #prepare age data
 pds_all_age <- pds_all %>% filter(age_grp != "Unknown") #remove 6 unknowns from 2016/17 (add note to charts and tables?)

@@ -73,41 +73,53 @@ pds %<>%
     date_of_initial_first_contact < diag_12 & 
       end_date >= pds_12 &
       is.na(termination_or_transition_date)
-    ~ "complete - still receiving",
+    ~ "complete - Still receiving PDS",
     
     # Started PDS within 12m of diagnosis AND PDS ended after 11m
     date_of_initial_first_contact < diag_12 &
       termination_or_transition_date >= pds_11
-    ~ "complete - ended",
+    ~ "complete - PDS ended",
     
     #### FAIL ####
     
     # PDS started more than 12m after diagnosis
     date_of_initial_first_contact >= diag_12
-    ~ "fail - started >12m after diag",
+    ~ "fail - PDS started more than 12 months after diagnosis",
     
     # More than 12m since diagnosis and PDS not started
     end_date >= diag_12 & 
       is.na(date_of_initial_first_contact) &
       is.na(termination_or_transition_date)
-    ~ "fail - not started and >12m since diagnosis",
+    ~ "fail - PDS not started and more than 12 months since diagnosis",
     
     # PDS terminated before 11 months from start date
     termination_or_transition_date < pds_11 &
       !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
-    ~ "fail - term <11m from first contact",
+    ~ "fail - PDS terminated less than 11 months after first contact",
     
     # PDS terminated before first contact made
     is.na(date_of_initial_first_contact) & 
       !is.na(termination_or_transition_date) & 
       !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
-    ~ "fail - term before first contact",
+    ~ "fail - PDS terminated before first contact",
     
     #### EXEMPT ####
     
-    # Exempt termination reason; died/moved to other HB/refused/can't engage
-    substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons
-    ~ "exempt",
+    # Exempt termination reason; died
+    substr(termination_or_transition_reason, 1, 2) == "03"
+    ~ "exempt - 03 Service user has died",
+    
+    # Exempt termination reason; moved to other HB
+    substr(termination_or_transition_reason, 1, 2) == "04"
+    ~ "exempt - 04 Service user has moved to a different Health Board area",
+    
+    # Exempt termination reason; refused
+    substr(termination_or_transition_reason, 1, 2) == "05"
+    ~ "exempt - 05 Service user has terminated PDS early/refused",
+    
+    # Exempt termination reason; can't engage
+    substr(termination_or_transition_reason, 1, 2) == "06"
+    ~ "exempt - 06 Service user no longer able to engage in PDS",
     
     #### ONGOING ####
     
@@ -115,13 +127,13 @@ pds %<>%
     end_date < diag_12 & 
       is.na(date_of_initial_first_contact) & 
       is.na(termination_or_transition_date)
-    ~ "ongoing - not started",
+    ~ "ongoing - PDS not started and less than 12 months since diagnosis",
     
     # PDS started within 12m of diagnosis but not yet ended
     date_of_initial_first_contact < diag_12 &
       end_date < pds_12 &
       is.na(termination_or_transition_date)
-    ~ "ongoing - still receiving"
+    ~ "ongoing - Still receiving PDS and less than 12 months since first contact"
     
   ))
 
