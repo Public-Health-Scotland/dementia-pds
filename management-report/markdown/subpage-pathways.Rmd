@@ -51,6 +51,23 @@ err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_o
   mutate(ijb = if_else(is.na(ijb),
                                 "Unknown",
                                 str_sub(ijb, 11, -1)))
+
+# calculate final data referrals for Scotland and health boards
+pds_ijb <- pds %>% arrange(ijb)
+
+pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>%   summarise(referrals = sum(referrals), .groups = "drop")
+
+pds_hb <- pds %>% group_by(health_board, fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
+
+# combine data for ijb, hb and Scotland
+pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
+
+pds_all %<>% rename(geog = ijb) 
+
+pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
+
+
 ```
 <!-- delete all of above when finished testing -->
 
@@ -61,20 +78,6 @@ wait_data <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = t
 wait_data_2 <- read_rds(get_mi_data_path("wait_data_2", ext = "rds", test_output = test_output))
 
 wait_data_3 <- read_rds(get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
-
-pds_ijb <- pds %>% arrange(ijb)
-
-pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp, age_grp, simd) %>% 
-  summarise(referrals = sum(referrals), .groups = "drop")
-
-pds_hb <- pds %>% group_by(health_board, fy, month, ldp, age_grp, simd) %>% 
-  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
-
-pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
-
-pds_all %<>% rename(geog = ijb) 
-
-pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
 
 wait_data$health_board <- as.factor(wait_data$health_board)
 wait_data$fy <- as.factor(wait_data$fy)
@@ -122,7 +125,8 @@ Sidebar {.sidebar}
 ***
 
 <ul>
-  <li>[Pathways - Waiting Times](#pds-pathways)</li>
+  <li>[**Pathways - Waiting Times**](#pds-pathways)</li>
+  <li>[Pathways - PDS Outcomes](#outcomes)</li>
   <li>[Pathways - Termination of PDS](#termination-reasons)</li>
 </ul>
 
@@ -262,6 +266,243 @@ bscols(widths = 12,
 
 ```
 
+Outcomes {.hidden}
+=================================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Pathways - PDS Outcomes
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Pathways - Waiting Times](#pds-pathways)</li>
+  <li>[**Pathways - PDS Outcomes**](#outcomes)</li>
+  <li>[Pathways - Termination of PDS](#termination-reasons)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {.tabset data-height=760}
+----------------------------------------------------------------------
+
+### **Standard Met**
+
+```{r dropdown-met}
+met_data <- pds_all %>% filter(ldp == "complete") %>% group_by(geog, fy, ldp_full) %>% 
+  summarise(referrals = sum(referrals)) %>% mutate(ldp_full = substring(ldp_full, 12)) %>% 
+  pivot_wider(names_from = ldp_full, values_from = referrals) %>%
+  rename(`Health Board/Integration Authority Area` = geog) %>% 
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy)
+
+met_table_data <- SharedData$new(met_data)
+
+ data_filter_met_year <- filter_select(id = "met_filter_year",
+                                     label = "Select Financial Year of Diagnosis:",
+                                     group = ~fy,
+                                     sharedData = met_table_data,
+                                    multiple = FALSE
+                                    )
+
+ bscols(widths = c(1,4,NA), NULL,
+ data_filter_met_year, NULL)
+
+```
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px"> Individuals where PDS met LDP Standard</h2>
+```{r met-table}
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
+    DT::datatable(met_table_data, rownames = FALSE,
+                                       # caption = htmltools::tags$caption(
+                      # style = 'caption-side: bottom; text-align: left;',
+                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
+                        #      year."),
+                       options = list(pageLength = 46,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                                list(className = 'dt-right', targets = 2:4)
+                                                #list(width = '10px', targets = 1:10)
+                                                ))) %>%
+           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+```
+
+### **Standard Not Met**
+
+```{r dropdown-not-met}
+not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_full) %>% 
+  summarise(referrals = sum(referrals)) %>% mutate(ldp_full = substring(ldp_full, 7)) %>% 
+  pivot_wider(names_from = ldp_full, values_from = referrals) %>%
+  rename(`Health Board/Integration Authority Area` = geog) %>% 
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy)
+
+not_met_table_data <- SharedData$new(not_met_data)
+
+ data_filter_not_met_year <- filter_select(id = "not_met_filter_year",
+                                     label = "Select Financial Year of Diagnosis:",
+                                     group = ~fy,
+                                     sharedData = not_met_table_data,
+                                    multiple = FALSE
+                                    )
+
+ bscols(widths = c(1,4,NA), NULL,
+ data_filter_not_met_year, NULL)
+
+```
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px"> Individuals where PDS did not meet LDP Standard</h2>
+```{r not-met-table}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
+    DT::datatable(not_met_table_data, rownames = FALSE,
+                                       # caption = htmltools::tags$caption(
+                      # style = 'caption-side: bottom; text-align: left;',
+                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
+                        #      year."),
+                       options = list(pageLength = 46,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                                list(className = 'dt-right', targets = 2:6)
+                                                #list(width = '10px', targets = 1:10)
+                                                ))) %>%
+           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+```
+
+### **PDS Ongoing**
+
+```{r dropdown-ongoing}
+ongoing_data <- pds_all %>% filter(ldp == "ongoing") %>% group_by(geog, fy, ldp_full) %>% 
+  summarise(referrals = sum(referrals)) %>% mutate(ldp_full = substring(ldp_full, 11)) %>% 
+  pivot_wider(names_from = ldp_full, values_from = referrals) %>%
+  rename(`Health Board/Integration Authority Area` = geog) %>% 
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy)
+
+ongoing_table_data <- SharedData$new(ongoing_data)
+
+ data_filter_ongoing_year <- filter_select(id = "ongoing_filter_year",
+                                     label = "Select Financial Year of Diagnosis:",
+                                     group = ~fy,
+                                     sharedData = ongoing_table_data,
+                                    multiple = FALSE
+                                    )
+
+ bscols(widths = c(1,4,NA), NULL,
+ data_filter_ongoing_year, NULL)
+
+```
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px"> Individuals where LDP Standard cannot yet be determined (PDS Ongoing)</h2>
+```{r ongoing-table}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
+    DT::datatable(ongoing_table_data, rownames = FALSE,
+                                       # caption = htmltools::tags$caption(
+                      # style = 'caption-side: bottom; text-align: left;',
+                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
+                        #      year."),
+                       options = list(pageLength = 46,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                                list(className = 'dt-right', targets = 2:4)
+                                                #list(width = '10px', targets = 1:10)
+                                                ))) %>%
+           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+```
+
+### **Exempt**
+
+```{r dropdown-exempt}
+exempt_data <- pds_all %>% filter(ldp == "exempt") %>% group_by(geog, fy, ldp_full) %>% 
+  summarise(referrals = sum(referrals)) %>% mutate(ldp_full = substring(ldp_full, 10)) %>% 
+  pivot_wider(names_from = ldp_full, values_from = referrals) %>%
+  rename(`Health Board/Integration Authority Area` = geog) %>% 
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy)
+
+exempt_table_data <- SharedData$new(exempt_data)
+
+ data_filter_exempt_year <- filter_select(id = "exempt_filter_year",
+                                     label = "Select Financial Year of Diagnosis:",
+                                     group = ~fy,
+                                     sharedData = exempt_table_data,
+                                    multiple = FALSE
+                                    )
+
+ bscols(widths = c(1,4,NA), NULL,
+ data_filter_exempt_year, NULL)
+
+```
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px">Individuals exempt from LDP Standard</h2>
+```{r exempt-table}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
+    DT::datatable(exempt_table_data, rownames = FALSE,
+                                       # caption = htmltools::tags$caption(
+                      # style = 'caption-side: bottom; text-align: left;',
+                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
+                        #      year."),
+                       options = list(pageLength = 46,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                                list(className = 'dt-right', targets = 2:6)
+                                                #list(width = '10px', targets = 1:10)
+                                                ))) %>%
+           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+```
 
 Termination Reasons {.hidden}
 =================================================
@@ -283,7 +524,8 @@ Sidebar {.sidebar}
 
 <ul>
   <li>[Pathways - Waiting Times](#pds-pathways)</li>
-  <li>[Pathways - Termination of PDS](#termination-reasons)</li>
+  <li>[Pathways - PDS Outcomes](#outcomes)</li>
+  <li>[**Pathways - Termination of PDS**](#termination-reasons)</li>
 </ul>
 
 ***
@@ -575,8 +817,33 @@ bscols(widths = 12,
 
 ```
 
+
 ```{js }
 function filter_default() {
+
+  document.getElementById("met_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("met_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("not_met_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("not_met_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("ongoing_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("ongoing_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("exempt_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("exempt_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
 
   document.getElementById("wait_filter_ijb_year").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
