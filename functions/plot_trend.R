@@ -19,19 +19,7 @@ plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_32)
     
     scale_colour_manual(values = {{colours}}) +
     
-    theme_set(theme_minimal(base_size = 12)) +
-    
-    theme(
-      axis.ticks = element_line(color = "grey92"),
-      axis.line = element_line(colour = "grey70"),
-      # example of adjusting axis text
-      # axis.text.x = element_text(size = 10, angle = 50, vjust = 0.5, hjust = 0.5),
-      legend.position = "bottom",
-      panel.grid.minor = element_blank(),
-      panel.grid.major.x = element_blank(),
-      panel.grid.major.y = element_line(colour = "grey92"),
-      panel.background = element_blank()
-    ) +
+    theme_dementia() +
     
     labs(title = NULL,
          x = x,

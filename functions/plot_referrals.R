@@ -89,9 +89,11 @@ plot_referrals <- function(data,
     labs(x = "Month of Diagnosis",
          y = "Number") +
     
+    theme_dementia(xangle = 45) +
+    
     theme(legend.title = element_blank(),
-          legend.position = ifelse(ijb_group == FALSE, "none", "top"),
-          axis.text.x = element_text(angle=45))
+          legend.position = ifelse(ijb_group == FALSE, "none", "top")
+          )
   
    ggplotly(plot, tooltip = "text") %>%
      

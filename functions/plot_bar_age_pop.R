@@ -19,9 +19,11 @@ plot_bar_age_pop <- function(data){
          y = "Rate per 10,000 Popuation",
          ) +
     
-    scale_y_continuous(limits = c(0, NA)) +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) +
     
    facet_wrap(vars(fy), scales = "free_y", nrow = 1) + 
+    
+    theme_dementia() +
     
     theme(strip.background = element_blank(),
           strip.text.x = element_blank(),

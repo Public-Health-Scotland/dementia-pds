@@ -21,6 +21,8 @@ plot_trend_prop <- function(data){
          y = "",
          fill = NULL) +
     
+    theme_dementia() +
+    
      theme(strip.background = element_blank(),
          strip.text.x = element_blank(),
          legend.position = "none",

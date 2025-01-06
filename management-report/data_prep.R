@@ -1,3 +1,5 @@
+### PATHWAYS ----
+
 # Load PDS data
 pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
   
@@ -109,6 +111,130 @@ data_wait_3 %>%
   write_file(path = get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
+
+### DATA COMPLETION ----
+
+ldp <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output))
+
+ldp_select <- ldp %>% select(-contact_before_diag, -pds_calc_months, -date2, -ddcd_check,
+                                                  -fake_id, -simd, -age, -age_grp, -ldp, -pds_11, -pds_12,
+                                                  -diag_12, -month, -x29, -x30, -error_flag) %>% 
+  mutate(health_board = str_sub(health_board, 3, -1),
+         ijb          = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
+
+# calculate yet to be determined totals
+
+set_ytbd <- function(x){
+  case_when(str_detect(x, "Yet to be determined") ~ 1,
+                TRUE ~ 0)
+}
+
+cols <- names(ldp_select %>% select(-fy,-health_board,-ijb))
+
+
+ldp_select_ytbd <- ldp_select %>%  mutate(across(all_of(cols), set_ytbd))
+
+
+totals_hb <- bind_rows(
+  ldp_select_ytbd %>% group_by(fy, health_board) %>% summarise(number_of_records = n()),
+  
+  ldp_select_ytbd %>% group_by(fy, health_board = "Scotland") %>% summarise(number_of_records = n()))
+
+
+
+ytbd_hb <- bind_rows(
+  
+  ldp_select_ytbd %>% group_by(fy, health_board) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
+  
+  ldp_select_ytbd %>% group_by(fy, health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}")))
+
+
+hb <- full_join(ytbd_hb, totals_hb) %>% rename(geog = health_board)
+
+
+
+totals_ijb <- ldp_select_ytbd %>% group_by(fy, ijb) %>% summarise(number_of_records = n())
+
+ytbd_ijb <- ldp_select_ytbd %>% group_by(fy, ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}")) 
+
+
+ijb <- full_join(ytbd_ijb, totals_ijb) %>% rename(geog = ijb)
+
+summary_ytbd <- bind_rows(ijb,hb)  
+
+
+summary_ytbd %<>% pivot_longer(cols= cols,
+                          names_to='field_name',
+                          values_to='no_of_records_ytbd') %>% 
+  relocate(number_of_records, .after = field_name)
+
+
+
+
+# calculate na and unknown totals
+
+set_na <- function(x){
+  case_when(str_detect(x, "^99") ~ NA,
+            str_detect(x, "^98") ~ NA,
+            str_detect(x, "^N/A")  ~ NA,
+            str_detect(x, "^unknown")  ~ NA,
+            str_detect(x, "^Unknown")  ~ NA,
+            TRUE ~ x)
+}
+
+
+ldp_select_na <- ldp_select %>%  mutate(across(all_of(cols), set_na))
+
+na_fun <- function(x){  
+  if_else(is.na(x),1,0)
+}
+
+ldp_select_na %<>% mutate(across(all_of(cols), na_fun))
+
+
+missing_hb <- bind_rows(
+  
+  ldp_select_na %>% group_by(fy, health_board) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
+  
+  ldp_select_na %>% group_by(fy, health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}")))
+
+
+missing_hb %<>% rename(geog = health_board)
+
+
+missing_ijb <- ldp_select_na %>% group_by(fy, ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}")) 
+
+missing_ijb %<>% rename(geog = ijb)
+
+
+summary_na <- bind_rows(missing_ijb, missing_hb)  
+
+
+summary_na %<>% pivot_longer(cols= cols,
+                          names_to='field_name',
+                          values_to='no_of_records_missing_not_known')
+
+summary <- full_join(summary_ytbd, summary_na)
+
+
+summary %<>% mutate(mandatory_optional = 
+                      case_when(field_name %in% c("locality", "additional_disability", "living_alone", 
+                                                  "subtype_of_dementia", "practitioner_team_id", "carers_support") ~ "optional",
+                                field_name %in% c("date_pds_referral_received") ~ "conditional mandatory from 01/04/2019",
+                                field_name %in% c("initial_pds_practitioner_allocation_date", "date_of_initial_first_contact",
+                                                  "termination_or_transition_date", "termination_or_transition_reason") ~ "conditional mandatory",
+                                TRUE ~ "mandatory"), .after = field_name)
+
+summary %<>% mutate(perc_of_records_missing_not_known = round(100*no_of_records_missing_not_known/number_of_records, 1))
+
+summary %<>% mutate(perc_of_records_ytbd = round(100*no_of_records_ytbd/number_of_records, 1))
+
+summary %>% 
+   write_file(path = get_mi_data_path("comp_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+ 
 
 ### END OF SCRIPT ###
 

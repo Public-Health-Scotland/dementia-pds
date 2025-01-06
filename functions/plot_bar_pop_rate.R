@@ -18,9 +18,9 @@ plot_bar_pop_rate <- function(data1, data2){
          y = "Rate per 10,000 Popuation",
          color = NULL) +
     
-    scale_y_continuous(limits = c(0, NA)) +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) +
     
-     theme(axis.text.x = element_text(angle=45)) 
+    theme_dementia(xangle = 45)
   
   ggplotly(plot, tooltip = "text") %>%
      

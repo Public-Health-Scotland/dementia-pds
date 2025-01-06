@@ -15,7 +15,8 @@ plot_ldp_simd <- function(data){
         fill = NULL
     ) +
     
-    scale_y_continuous(limits = c(0, NA),
+    scale_y_continuous(expand = c(0, 0),
+                       limits = c(0, NA),
                        labels=function(x) paste0(x,"%")) +
     
     scale_fill_manual(values = phs_colours_32) +
@@ -23,6 +24,8 @@ plot_ldp_simd <- function(data){
     #phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
     
     facet_wrap(vars(geog), ncol = 1) + 
+    
+    theme_dementia() +
     
     theme(strip.background = element_blank(),
          strip.text.x = element_blank(),
@@ -49,9 +52,6 @@ plot_ldp_simd <- function(data){
      # layout(legend = list(orientation = "h", x = 0.5 , y = 1,
             #  xanchor = "center", yanchor = "top")) %>% 
     layout(margin = list(l = -5, b = 50, t = 40) # to avoid labels getting cut out
-          # yaxis = yaxis_nf,
-          # xaxis = xaxis_nf,
-          # barmode = "grouped"
            ) 
   
 }

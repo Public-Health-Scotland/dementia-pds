@@ -52,20 +52,35 @@ phs_colours_ordered %<>% rename("hexcode" = 1)
 phs_colours_46<-phs_colours_ordered$hexcode
 
 
-theme_dementia <- function(){
-  theme_gray() +
-    theme(panel.background = element_blank(),
-          panel.grid.minor = element_blank(),
-          panel.grid.major.x = element_blank(),
-          panel.grid.major.y = element_line(color = "#d9d9d9"),
-          axis.title.y = element_text(size = 10, angle = 0, 
-                                      hjust = 0.5, vjust = 0.5),
-          axis.title.x = element_text(size = 10, angle = 0, 
-                                      hjust = 0.5, vjust = 0.5),
-          axis.text = element_text(size = 10),
-          axis.line = element_line(),
-          legend.position = "none",
-          plot.margin = margin(10, 10, 10, 10))
+theme_dementia <- function(xangle = 0){
+  
+  theme_set(theme_minimal(base_size = 12)) +
+    
+    theme(
+      axis.ticks = element_line(color = "grey92"),
+      axis.line = element_line(colour = "grey70"),
+      axis.text.x = element_text(size = 10, angle = xangle, vjust = 0.5, hjust = 0.5),
+      legend.position = "bottom",
+      panel.grid.minor = element_blank(),
+      panel.grid.major.x = element_blank(),
+      panel.grid.major.y = element_line(colour = "grey92"),
+      panel.background = element_blank()
+    )
+  
+  
+  # theme_gray() +
+  #   theme(panel.background = element_blank(),
+  #         panel.grid.minor = element_blank(),
+  #         panel.grid.major.x = element_blank(),
+  #         panel.grid.major.y = element_line(color = "#d9d9d9"),
+  #         axis.title.y = element_text(size = 10, angle = 0, 
+  #                                     hjust = 0.5, vjust = 0.5),
+  #         axis.title.x = element_text(size = 10, angle = 0, 
+  #                                     hjust = 0.5, vjust = 0.5),
+  #         axis.text = element_text(size = 10),
+  #         axis.line = element_line(),
+  #         legend.position = "none",
+  #         plot.margin = margin(10, 10, 10, 10))
 }
 
 phs_colours_core <- c(
