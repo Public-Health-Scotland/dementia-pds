@@ -72,6 +72,9 @@ pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
 <!-- delete all of above when finished testing -->
 
 
+PDS Pathways
+=================================================
+
 ```{r data setup, include=FALSE}
 wait_data <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output))
 
@@ -104,10 +107,6 @@ wait_data_3$termination_or_transition_reason <- as.factor(wait_data_3$terminatio
  
 ```
 
-
-
-PDS Pathways
-=================================================
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
@@ -268,6 +267,22 @@ bscols(widths = 12,
 
 Outcomes {.hidden}
 =================================================
+
+```{r add-percentage-function, include=FALSE}
+
+add_percent <- function(df, value, name) {
+  
+ data <- df %>%  mutate(perc =  if_else(`Total Number of individuals` == 0, "-",
+    paste0(round(100*{{value}}/`Total Number of individuals`,1), "%")))
+  
+colnames(data)[colnames(data) == 'perc'] <- name
+
+return(data)
+  
+}
+
+```
+
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
@@ -309,10 +324,15 @@ Row {.tabset data-height=760}
 
 ```{r dropdown-met}
 met_data <- pds_all %>% filter(ldp == "complete") %>% group_by(geog, fy, ldp_full) %>% 
-  summarise(referrals = sum(referrals)) %>% mutate(ldp_full = substring(ldp_full, 12)) %>% 
-  pivot_wider(names_from = ldp_full, values_from = referrals) %>%
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 12)) %>%   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
   rename(`Health Board/Integration Authority Area` = geog) %>% 
-   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy)
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy) %>% 
+mutate(`% PDS ended` = if_else(`Total Number of individuals` == 0, "-",
+  paste0(round(100*`PDS ended`/`Total Number of individuals`,1), "%")), .after = `PDS ended`) %>% 
+mutate(`% Still receiving PDS` = if_else(`Total Number of individuals` == 0, "-",
+  paste0(round(100*`Still receiving PDS`/`Total Number of individuals`,1), "%")), .after = `Still receiving PDS`) %>% 
+  select(-`PDS ended`, -`Still receiving PDS`)
+  
 
 met_table_data <- SharedData$new(met_data)
 
@@ -358,10 +378,15 @@ bscols(widths = 12,
 
 ```{r dropdown-not-met}
 not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_full) %>% 
-  summarise(referrals = sum(referrals)) %>% mutate(ldp_full = substring(ldp_full, 7)) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 8)) %>% 
   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
   rename(`Health Board/Integration Authority Area` = geog) %>% 
-   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy)
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy) %>% 
+   add_percent(`PDS terminated before first contact`, "% PDS terminated before first contact") %>% 
+ add_percent(`PDS not started and more than 12 months since diagnosis`, "% PDS not started and more than 12 months since diagnosis") %>% 
+  add_percent(`PDS started more than 12 months after diagnosis`, "% PDS started more than 12 months after diagnosis") %>% 
+  add_percent(`PDS terminated less than 11 months after first contact`, "% PDS terminated less than 11 months after first contact") %>% 
+  select(-starts_with("PDS"))
 
 not_met_table_data <- SharedData$new(not_met_data)
 
@@ -408,10 +433,12 @@ bscols(widths = 12,
 
 ```{r dropdown-ongoing}
 ongoing_data <- pds_all %>% filter(ldp == "ongoing") %>% group_by(geog, fy, ldp_full) %>% 
-  summarise(referrals = sum(referrals)) %>% mutate(ldp_full = substring(ldp_full, 11)) %>% 
-  pivot_wider(names_from = ldp_full, values_from = referrals) %>%
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 11)) %>%   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
   rename(`Health Board/Integration Authority Area` = geog) %>% 
-   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy)
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy) %>% 
+   add_percent(`PDS not started and less than 12 months since diagnosis`, "% PDS not started and less than 12 months since diagnosis") %>% 
+ add_percent(`Still receiving PDS and less than 12 months since first contact`, "% Still receiving PDS and less than 12 months since first contact") %>% 
+  select(-starts_with("PDS"), -starts_with("Still"))
 
 ongoing_table_data <- SharedData$new(ongoing_data)
 
@@ -458,10 +485,14 @@ bscols(widths = 12,
 
 ```{r dropdown-exempt}
 exempt_data <- pds_all %>% filter(ldp == "exempt") %>% group_by(geog, fy, ldp_full) %>% 
-  summarise(referrals = sum(referrals)) %>% mutate(ldp_full = substring(ldp_full, 10)) %>% 
-  pivot_wider(names_from = ldp_full, values_from = referrals) %>%
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 10)) %>%   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
   rename(`Health Board/Integration Authority Area` = geog) %>% 
-   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy)
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy) %>% 
+   add_percent(`03 Service user has died`, "% 03 Service user has died") %>% 
+ add_percent(`04 Service user has moved to a different Health Board area`, "% 04 Service user has moved to a different Health Board area") %>% 
+  add_percent(`05 Service user has terminated PDS early/refused`, "% 05 Service user has terminated PDS early/refused") %>% 
+  add_percent(`06 Service user no longer able to engage in PDS`, "% 06 Service user no longer able to engage in PDS") %>% 
+  select(-starts_with("0"))
 
 exempt_table_data <- SharedData$new(exempt_data)
 
