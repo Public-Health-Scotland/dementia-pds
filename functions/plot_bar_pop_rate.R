@@ -24,14 +24,14 @@ plot_bar_pop_rate <- function(data1, data2){
   
   ggplotly(plot, tooltip = "text") %>%
      
-    config(displayModeBar = TRUE,
+    config(displayModeBar = TRUE, doubleClick = F,
            modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
                                          'zoomOut2d', 'autoScale2d', 
                                          'toggleSpikelines', 
                                          'hoverCompareCartesian', 
-                                         'hoverClosestCartesian'), 
+                                         'hoverClosestCartesian', 'toImage'), 
            displaylogo = F, editable = F) %>%
-     layout(legend = list(orientation = "h", x = 0.5 , y = -0.6,
+     layout(legend = list(orientation = "h", x = 0.5 , y = -0.7,
                            xanchor = "center", yanchor = "bottom")) %>% 
      layout(margin = list(l = -10, b = 30, t = 30) # to avoid labels getting cut out
           ) 

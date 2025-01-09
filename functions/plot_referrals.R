@@ -102,7 +102,7 @@ plot_referrals <- function(data,
                                           'zoomOut2d', 'autoScale2d', 
                                           'toggleSpikelines', 
                                           'hoverCompareCartesian', 
-                                          'hoverClosestCartesian'), 
+                                          'hoverClosestCartesian', 'toImage'), 
             displaylogo = F, editable = F) %>%
      
      layout(legend = list(orientation = "h", x = 0.2 , y = -0.6,

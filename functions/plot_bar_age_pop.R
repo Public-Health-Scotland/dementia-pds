@@ -44,7 +44,7 @@ plot_bar_age_pop <- function(data){
                                          'zoomOut2d', 'autoScale2d', 
                                          'toggleSpikelines', 
                                          'hoverCompareCartesian', 
-                                         'hoverClosestCartesian'), 
+                                         'hoverClosestCartesian', 'toImage'), 
            displaylogo = F, editable = F) %>%
   #  layout(legend = list(orientation = "v", x = 0.5 , y = -0.4,
                #          xanchor = "center", yanchor = "bottom")) %>% 

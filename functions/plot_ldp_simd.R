@@ -42,12 +42,12 @@ plot_ldp_simd <- function(data){
   
   ggplotly(plot, tooltip = "text") %>%
     
-    config(displayModeBar = TRUE,
+    config(displayModeBar = TRUE, doubleClick = F,
            modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
                                          'zoomOut2d', 'autoScale2d', 
                                          'toggleSpikelines', 
                                          'hoverCompareCartesian', 
-                                         'hoverClosestCartesian'), 
+                                         'hoverClosestCartesian', 'toImage'), 
            displaylogo = F, editable = F) %>%
      # layout(legend = list(orientation = "h", x = 0.5 , y = 1,
             #  xanchor = "center", yanchor = "top")) %>% 
@@ -63,8 +63,10 @@ plot_ldp_simd_legend <- function(data) {
     geom_col(width = 0) +
       
       labs(fill = NULL) +
+    
+      scale_fill_manual(values = phs_colours_32) +
       
-      phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+     # phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
     
         theme(axis.title = element_blank(),
           axis.text = element_blank(),
