@@ -1,9 +1,9 @@
-plot_prop <- function(data, xlabel = NULL){
+plot_prop <- function(data, measure, measure_text, xlabel = NULL){
   
-  plot <- data %>%  ggplot(aes(x = geog, y = total_referrals, fill = age_grp, 
+  plot <- data %>%  ggplot(aes(x = geog, y = total_referrals, fill = {{measure}}, 
                                text = paste0(geog, "<br>",
                                              fy, "<br>", 
-                                             "Age Group: ", age_grp, "<br>",
+                                             measure_text, {{measure}}, "<br>",
                                              "Total Referrals: ", total_referrals
                                              ))) +    
     
@@ -49,11 +49,11 @@ plot_prop <- function(data, xlabel = NULL){
  
 }
 
-plot_prop_legend <- function(data) { 
- legend <- data %>% ggplot(aes(x = geog, y = total_referrals, fill = age_grp))+
+plot_prop_legend <- function(data, measure, measure_text) { 
+ legend <- data %>% ggplot(aes(x = geog, y = total_referrals, fill = {{measure}}))+
    geom_col(width = 0)+
    
-  labs(fill = "Age Group:") +
+  labs(fill = measure_text) +
    
    phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
    

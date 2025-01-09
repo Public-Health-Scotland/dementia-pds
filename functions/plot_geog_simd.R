@@ -3,7 +3,8 @@ plot_geog_simd <- function(data, measure, x = NULL, y = NULL){
   plot <-  data %>% ggplot() +
     
     geom_col(aes(x = geog, y = {{measure}}, fill = simd,
-                 text = paste0("SIMD Quintile: ", simd, "<br>",
+                 text = paste0(geog, "<br>",
+                               "SIMD Quintile: ", simd, "<br>",
                                fy, "<br>",
                                {{measure}}
                  )),

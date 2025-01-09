@@ -924,10 +924,16 @@ function filter_default() {
   document.getElementById("term_filter_geog_2").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
 
- document.getElementById("trend_filter_age_prop").getElementsByClassName("selectized") 
+  document.getElementById("trend_filter_age_prop_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("trend_filter_age_prop").getElementsByClassName("selectized")
+  document.getElementById("trend_filter_age_prop_hb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("trend_filter_age_prop_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("trend_filter_age_prop_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_pop_age_year").getElementsByClassName("selectized") 
@@ -970,6 +976,18 @@ function filter_default() {
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("trend_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   }

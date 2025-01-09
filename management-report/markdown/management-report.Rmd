@@ -32,6 +32,9 @@ detach("package:tidylog", unload = TRUE)
 # Load functions
 walk(dir(here::here("functions"), full.names = TRUE), source)
 
+current_fy <- paste0(substr(fy,1,4),
+                           "/", as.numeric(substr(fy,3,4)) + 1)
+
 # Load PDS data
 pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
   
