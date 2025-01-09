@@ -251,6 +251,7 @@ simd_pop_data %<>% mutate(age_grp =
              sex == "All" ~ "All"
            ))
 
+
 simd_pop_data %<>% group_by(geog, year, age_grp_2, age_grp, sex, simd) %>% summarise(pop = sum(pop), .groups = "drop")
 
 simd_pop_summary <- bind_rows(simd_pop_data,
@@ -298,7 +299,7 @@ simd_pop_summary %<>%
 
 
 cl_stirling <- simd_pop_summary %>% filter(geog == "Clackmannanshire" | geog == "Stirling") %>% mutate(ijb = "Clackmannanshire and Stirling", .before = everything()) 
-cls_pop<-cl_stirling %>% group_by(ijb, year, age_grp, sex, simd) %>% summarise(pop = sum(pop)) %>% rename("geog" = "ijb")
+cls_pop<-cl_stirling %>% group_by(ijb, year, age_grp_2, age_grp, sex, simd) %>% summarise(pop = sum(pop)) %>% rename("geog" = "ijb")
 
 simd_pop_summary %<>% filter(geog != "Clackmannanshire" & geog != "Stirling") 
 
