@@ -27,10 +27,10 @@ plot_prop <- function(data, measure, measure_text, xlabel = NULL){
          legend.position = "none",
          axis.title.x = element_text(size = 11,
                                     face = "bold",
-                                    margin = margin(t = -50))
+                                    margin = margin(t = -55))
          ) + 
     
-    theme(panel.spacing = unit(700, "pt")) #this is for 'stacking facets' so only the selected one is visible
+   theme(panel.spacing = unit(100000, "pt")) #this is for 'stacking facets' so only the selected one is visible
 
   ggplotly(plot, tooltip = "text") %>%
      

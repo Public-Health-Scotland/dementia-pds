@@ -58,7 +58,7 @@ plot_bar_age_pop_legend <- function(data) {
     geom_bar(width = 0) +
     
       scale_fill_manual(name=NULL,
-                        values=c("#0078D4","#3F3685")) +
+                        values=c("#3F3685", "#0078D4")) +
     
 
     
@@ -69,11 +69,12 @@ plot_bar_age_pop_legend <- function(data) {
           panel.grid = element_blank(),
           panel.border = element_rect(colour = "white", fill='white', size=1)
     )
-  
+
+
   legend_plotly<-ggplotly(legend, tooltip = NULL)
-  
+
   config(legend_plotly, staticPlot = TRUE) %>%
-    layout(legend = list(orientation = "v",
-                         x = -2, y = 0.5))  
+    layout(legend = list(orientation = "h",
+                         x = 0, y = 0.5))
 }
 

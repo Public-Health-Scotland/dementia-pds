@@ -48,7 +48,8 @@ plot_trend_simd_line <- function(data, measure, y = NULL){
     
     theme(strip.background = element_blank(),
           strip.text.x = element_blank(),
-          legend.position = "none"
+          legend.position = "none",
+          axis.title.y = element_text(margin = margin(r = 10))
           ) 
   
   ggplotly(plot, tooltip = "text") %>%
