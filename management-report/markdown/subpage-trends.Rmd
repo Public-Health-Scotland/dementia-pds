@@ -179,7 +179,7 @@ Row {.tabset data-height=565}
 
 <br>
 <br>
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
 <div>
 ```{r trend-plot}
 
@@ -208,7 +208,7 @@ data_filter_hb, NULL)
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
 ```{r trend-plot-hb}
 
 trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number")
@@ -237,7 +237,7 @@ data_filter_ijb, NULL)
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
 ```{r trend-plot-ijb}
 
 trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number")
@@ -345,7 +345,7 @@ data_filter_hb_ijb_pop,NULL)
 ```
 
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (18+)</h2>
 ```{r trend-plot-pop}
 
  trends_pop_plot <- plot_trend(pds_trends_pop_data, pop_rate_10000, x ="Financial Year of Diagnosis", y = "Rate Per 10,000 Popuation", colours = phs_colours_46)
@@ -374,7 +374,7 @@ data_filter_year_hb,NULL)
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population by Health Board </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (18+) by Health Board</h2>
 ```{r plot-hb-pop}
 pds_scot_pop_data <- SharedData$new(pds_scot_rates,
                                     key = ~fy, group = "grouphb")
@@ -405,7 +405,7 @@ data_filter_year_ijb,NULL)
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population by Integration Authority Area </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (18+) by Integration Authority Area</h2>
 ```{r plot-ijb-pop}
 pds_scot_pop_data_2 <- SharedData$new(pds_scot_rates,
                                     key = ~fy, group = "groupijb")
@@ -519,7 +519,7 @@ data_filter_exp_trend,NULL)
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support</h2>
 ```{r trend-plot-exp}
 
  trends_exp_plot <- plot_trend_perc(pds_exp_rates_data, exp_rate, x ="Financial Year of Diagnosis", colours = phs_colours_46)
@@ -569,7 +569,7 @@ data_filter_met_trend,NULL)
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Percentage of people referred for dementia PDS who received a minimum of one year’s support </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people referred for post-diagnostic support where PDS met LDP Standard</h2>
 ```{r plot-med-ldp}
  trends_met_plot <- plot_trend_perc(pds_met_rates_data, perc_met, x ="Financial Year of Diagnosis", colours = phs_colours_46)
 

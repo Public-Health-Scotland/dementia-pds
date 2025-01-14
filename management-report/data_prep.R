@@ -140,7 +140,13 @@ ldp_select_ytbd <- ldp_select %>%  mutate(across(all_of(cols), set_ytbd))
 totals_hb <- bind_rows(
   ldp_select_ytbd %>% group_by(fy, health_board) %>% summarise(number_of_records = n()),
   
-  ldp_select_ytbd %>% group_by(fy, health_board = "Scotland") %>% summarise(number_of_records = n()))
+  ldp_select_ytbd %>% group_by(fy, health_board = "Scotland") %>% summarise(number_of_records = n()),
+  
+  ldp_select_ytbd %>% group_by(fy = "All", health_board) %>% summarise(number_of_records = n()),
+  
+  ldp_select_ytbd %>% group_by(fy = "All", health_board = "Scotland") %>% summarise(number_of_records = n())
+  
+  )
 
 
 
@@ -148,16 +154,30 @@ ytbd_hb <- bind_rows(
   
   ldp_select_ytbd %>% group_by(fy, health_board) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
   
-  ldp_select_ytbd %>% group_by(fy, health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}")))
+  ldp_select_ytbd %>% group_by(fy, health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
+  
+  ldp_select_ytbd %>% group_by(fy = "All", health_board) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
+  
+  ldp_select_ytbd %>% group_by(fy = "All", health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}"))
+  )
 
 
 hb <- full_join(ytbd_hb, totals_hb) %>% rename(geog = health_board)
 
 
 
-totals_ijb <- ldp_select_ytbd %>% group_by(fy, ijb) %>% summarise(number_of_records = n())
+totals_ijb <- bind_rows(
+  ldp_select_ytbd %>% group_by(fy, ijb) %>% summarise(number_of_records = n()),
+  
+  ldp_select_ytbd %>% group_by(fy = "All", ijb) %>% summarise(number_of_records = n())
+)
+  
 
-ytbd_ijb <- ldp_select_ytbd %>% group_by(fy, ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}")) 
+ytbd_ijb <- bind_rows(
+  ldp_select_ytbd %>% group_by(fy, ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
+  
+  ldp_select_ytbd %>% group_by(fy = "All", ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}"))
+)
 
 
 ijb <- full_join(ytbd_ijb, totals_ijb) %>% rename(geog = ijb)
@@ -198,13 +218,22 @@ missing_hb <- bind_rows(
   
   ldp_select_na %>% group_by(fy, health_board) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
   
-  ldp_select_na %>% group_by(fy, health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}")))
+  ldp_select_na %>% group_by(fy, health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
+  
+  ldp_select_na %>% group_by(fy = "All", health_board) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
+  
+  ldp_select_na %>% group_by(fy = "All", health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}"))
+  )
 
 
 missing_hb %<>% rename(geog = health_board)
 
 
-missing_ijb <- ldp_select_na %>% group_by(fy, ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}")) 
+missing_ijb <-bind_rows(
+  ldp_select_na %>% group_by(fy, ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
+  
+  ldp_select_na %>% group_by(fy = "All", ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}"))
+)
 
 missing_ijb %<>% rename(geog = ijb)
 

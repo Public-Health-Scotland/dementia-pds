@@ -78,6 +78,7 @@ comp_data <- read_rds(get_mi_data_path("comp_data", ext = "rds", test_output = t
 comp_data$geog <- factor(comp_data$geog, levels = unique(pds_all$geog))
 
 comp_data %<>% arrange(fy, geog)
+
 ```
 
 Home
@@ -378,7 +379,7 @@ ethnic_comp_data<-comp_data %>%
 bscols(widths = 12,
        div(style = css(width="98%", height="650px", margin="15px"),
           DT::datatable(ethnic_comp_data, 
-                        rownames = FALSE, 
+                        rownames = TRUE, 
                         extensions = "FixedColumns",
               options = list(pageLength = 46,
                              scrollX = TRUE,
@@ -386,12 +387,12 @@ bscols(widths = 12,
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(className = 'dt-right', targets = 1:9)
+                             columnDefs = list(list(visible = F, targets = 0),
+                                              list(className = 'dt-right', targets = 1:10)
                              ))) %>%
-  DT::formatStyle(1, fontWeight = "bold"
-                  )
-
-            )
+        DT::formatStyle(0, target = "row",
+              fontWeight = DT::styleEqual(dim(subtype_comp_data)[1],"bold"))
+                        )
        )
 
 ```
@@ -408,11 +409,10 @@ accomm_comp_data <- comp_data %>%
   rename(`Health Board/Integration Authority` = geog) %>%
   slice(2:46,1)
 
-
 bscols(widths = 12,
        div(style = css(width="98%", height="650px", margin="15px"),
           DT::datatable(accomm_comp_data, 
-                        rownames = FALSE, 
+                        rownames = TRUE, 
                         extensions = "FixedColumns",
               options = list(pageLength = 46,
                              scrollX = TRUE,
@@ -420,13 +420,15 @@ bscols(widths = 12,
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(className = 'dt-right', targets = 1:9)
+                             columnDefs = list(list(visible = F, targets = 0),
+                                              list(className = 'dt-right', targets = 1:10)
                              ))) %>%
-  DT::formatStyle(1, fontWeight = "bold"
-                  )
-
-            )
+        DT::formatStyle(0, target = "row",
+              fontWeight = DT::styleEqual(dim(accomm_comp_data)[1],"bold"))
+                        )
        )
+
+
 ```
 
 ### **Subtype of Dementia**
@@ -446,6 +448,7 @@ headers <- htmltools::withTags(table(
   class = 'display',
   thead(
     tr(
+      th(colspan = 1, '    '),
       th(rowspan = 2, "Health Board/Integration Authority Area"),
       th(colspan = 2, '    2016/17'),
       th(colspan = 2, '    2017/18'),
@@ -455,24 +458,21 @@ headers <- htmltools::withTags(table(
       th(colspan = 2, '    2021/22'),
       th(colspan = 2, '    2022/23'),
       th(colspan = 2, '    2023/24'),
-      th(colspan = 2, '    2024/25')
+      th(colspan = 2, '    2024/25'),
+      th(colspan = 2, '    All')
     ),
     tr(
-      lapply(rep(c("NA/98/99", "YTBD"), 9), th)
+      lapply(c(" ",rep(c("NA/98/99", "YTBD"), 10)), th)
     )
   )
 ))
 
 
-
 bscols(widths = 12,
        div(style = css(width="98%", height="650px", margin="15px"),
-          DT::datatable(subtype_comp_data, 
-                        container = headers, 
-                        rownames = FALSE, 
-                        caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
-                       "Note that Subtype of Dementia as an optional field"),
+          DT::datatable(subtype_comp_data,
+                        container = headers,
+                        rownames = TRUE,
                         extensions = "FixedColumns",
               options = list(pageLength = 46,
                              scrollX = TRUE,
@@ -480,13 +480,14 @@ bscols(widths = 12,
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(className = 'dt-right', targets = 1:18)
-                             ))) %>%
-  DT::formatStyle(1, fontWeight = "bold"
-                  )
-
+                             columnDefs = list(list(visible = F, targets = 0),
+                                                list(className = 'dt-right', targets = 2:21))
+                             )) %>% 
+            DT::formatStyle(0, target = "row",
+              fontWeight = DT::styleEqual(dim(subtype_comp_data)[1],"bold"))
             )
        )
+
 
 ```
 
@@ -523,13 +524,11 @@ stage_comp_data <- comp_data %>%
 #       ))%>%
 #   scroll_box(height = "670px", width = "fit-content")
 
-
-
 bscols(widths = 12,
        div(style = css(width="98%", height="650px", margin="15px"),
           DT::datatable(stage_comp_data,
                         container = headers,
-                        rownames = FALSE,
+                        rownames = TRUE,
                         extensions = "FixedColumns",
               options = list(pageLength = 46,
                              scrollX = TRUE,
@@ -537,13 +536,14 @@ bscols(widths = 12,
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(className = 'dt-right', targets = 1:18)
-                             ))) %>%
-  DT::formatStyle(1, fontWeight = "bold"
-                  )
-
+                             columnDefs = list(list(visible = F, targets = 0),
+                                                list(className = 'dt-right', targets = 2:21))
+                             )) %>% 
+            DT::formatStyle(0, target = "row",
+              fontWeight = DT::styleEqual(dim(stage_comp_data)[1],"bold"))
             )
        )
+
 
 ```
 
@@ -587,7 +587,7 @@ bscols(widths = 12,
        div(style = css(width="98%", height="650px", margin="15px"),
           DT::datatable(model_comp_data,
                         container = headers,
-                        rownames = FALSE,
+                        rownames = TRUE,
                         extensions = "FixedColumns",
               options = list(pageLength = 46,
                              scrollX = TRUE,
@@ -595,11 +595,11 @@ bscols(widths = 12,
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(className = 'dt-right', targets = 1:18)
-                             ))) %>%
-  DT::formatStyle(1, fontWeight = "bold"
-                  )
-
+                             columnDefs = list(list(visible = F, targets = 0),
+                                               list(className = 'dt-right', targets = 2:21))
+                             )) %>% 
+            DT::formatStyle(0, target = "row",
+              fontWeight = DT::styleEqual(dim(model_comp_data)[1],"bold"))
             )
        )
 
