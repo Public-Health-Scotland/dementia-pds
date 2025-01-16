@@ -538,13 +538,13 @@ pds_met_rates %>% select(geog, fy, perc_met) %>%
             pivot_wider(names_from = fy, values_from = perc_met) %>%
             mutate(across(where(is.numeric), ~paste0(.,"%"))) %>% 
             rename(`Health Board/Integration Authority Area` = geog) %>%
-            kable(align = c("l", rep("r", length(unique(pds_exp_rates$fy))))) %>%
+            kable(align = c("l", rep("r", length(unique(pds_met_rates$fy))))) %>%
             kable_styling(full_width = TRUE) %>%
             column_spec(1, bold = TRUE) %>%
   # Add header above table
             add_header_above(
                     c(" " = 1,
-                     "Financial Year of Diagnosis" = length(unique(pds_exp_rates$fy)))) %>% 
+                     "Financial Year of Diagnosis" = length(unique(pds_met_rates$fy)))) %>% 
   scroll_box(height = "670px")
 
 ```

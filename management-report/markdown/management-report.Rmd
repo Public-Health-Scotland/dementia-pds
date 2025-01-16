@@ -388,10 +388,10 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = F, targets = 0),
-                                              list(className = 'dt-right', targets = 1:10)
+                                              list(className = 'dt-right', targets = 2:11)
                              ))) %>%
         DT::formatStyle(0, target = "row",
-              fontWeight = DT::styleEqual(dim(subtype_comp_data)[1],"bold"))
+              fontWeight = DT::styleEqual(dim(ethnic_comp_data)[1],"bold"))
                         )
        )
 
@@ -421,7 +421,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = F, targets = 0),
-                                              list(className = 'dt-right', targets = 1:10)
+                                              list(className = 'dt-right', targets = 2:11)
                              ))) %>%
         DT::formatStyle(0, target = "row",
               fontWeight = DT::styleEqual(dim(accomm_comp_data)[1],"bold"))
