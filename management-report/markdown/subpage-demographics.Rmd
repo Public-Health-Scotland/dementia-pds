@@ -73,6 +73,7 @@ pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
 ```
 <!-- delete all of above when finished testing -->
 
+
 ```{r data setup-demo, include=FALSE}
 # to be automated based on whether current year is complete or not??
 #included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
@@ -775,7 +776,7 @@ Row {.tabset data-height=860}
 pds_sex_data_hb <- SharedData$new(pds_all_sex %>% filter(geog == "Scotland" | grepl("NHS", geog)),
                                    key = ~fy, group = "sex_prop_hb")
 
-data_filter_sex_prop <- filter_select(id = "trend_filter_sex_prop_hb",
+data_filter_sex_prop <- filter_select(id = "filter_sex_prop_hb",
                                     label = "Select Financial Year of Diagnosis:",
                                     group = ~fy,
                                     sharedData = pds_sex_data_hb,
@@ -849,7 +850,7 @@ bscols(widths = 12,
 ```{r dropdown-prop-sex-ijb}
 pds_sex_data_ijb <- SharedData$new(pds_all_sex %>% filter(!grepl("NHS", geog)), key = ~fy, group = "sex_prop_ijb")
 
-data_filter_sex_prop <- filter_select(id = "trend_filter_sex_prop_ijb",
+data_filter_sex_prop_ijb <- filter_select(id = "filter_sex_prop_ijb",
                                     label = "Select Financial Year of Diagnosis:",
                                     group = ~fy,
                                     sharedData = pds_sex_data_ijb,
@@ -857,7 +858,7 @@ data_filter_sex_prop <- filter_select(id = "trend_filter_sex_prop_ijb",
                                    )
 bscols(widths = c(1,5,NA),
        NULL,
-       data_filter_sex_prop,
+       data_filter_sex_prop_ijb,
        NULL)
 
 ```
@@ -1621,7 +1622,7 @@ bscols(widths = c(1,5,NA),
 ```{r plot-hb-simd-legend-pop}
 
  bscols(widths = 12,
- div(id="popsimdlegendhb", plot_geog_simd_legend(pds_all_simd %>% filter(geog == "Scotland")), style="margin-bottom:-351px"))
+ div(id="popsimdlegendhb", plot_geog_bar_legend(pds_all_simd %>% filter(geog == "Scotland"), measure = simd), style="margin-bottom:-351px"))
 
 ```
 
@@ -1629,8 +1630,7 @@ bscols(widths = c(1,5,NA),
 ```{r plot-hb-simd-pop}
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_simd(pds_pop_simd_data_hb, measure = pop_rate_10000, 
-               x = "Health Board", y = "Rate per 10,000 Population"))
+plot_geog_bar(pds_pop_simd_data_hb, y_value = pop_rate_10000, measure = simd, measure_text = "SIMD Quintile: ", x = "Health Board", y = "Rate per 10,000 Population"))
 )
 
 ```
@@ -1694,7 +1694,7 @@ bscols(widths = c(1,5,NA),
 ```{r plot-ijb-simd-legend-pop}
 
  bscols(widths = 12,
- div(id="popsimdlegendijb", plot_geog_simd_legend(pds_all_simd %>% filter(geog == "Scotland")), style="margin-bottom:-351px"))
+ div(id="popsimdlegendijb", plot_geog_bar_legend(pds_all_simd %>% filter(geog == "Scotland"), measure = simd), style="margin-bottom:-351px"))
 
 ```
 
@@ -1702,8 +1702,7 @@ bscols(widths = c(1,5,NA),
 ```{r plot-ijb-simd-pop}
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_simd(pds_pop_simd_data_ijb, measure = pop_rate_10000, 
-               x = "Integration Authority Area", y = "Rate per 10,000 Population"))
+plot_geog_bar(pds_pop_simd_data_ijb, y_value = pop_rate_10000, measure = simd, measure_text = "SIMD Quintile: ", x = "Integration Authority Area", y = "Rate per 10,000 Population"))
 )
 
 ```
@@ -1901,16 +1900,16 @@ function filter_default() {
   document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("trend_filter_sex_prop_hb").getElementsByClassName("selectized") 
+  document.getElementById("filter_sex_prop_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("trend_filter_sex_prop_hb").getElementsByClassName("selectized")
+  document.getElementById("filter_sex_prop_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("trend_filter_sex_prop_ijb").getElementsByClassName("selectized") 
+   document.getElementById("filter_sex_prop_ijb").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("trend_filter_sex_prop_ijb").getElementsByClassName("selectized")
+  document.getElementById("filter_sex_prop_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized") 
