@@ -1,0 +1,537 @@
+---
+title: "DATA COMPLETION DRAFT"
+output: 
+  flexdashboard::flex_dashboard:
+    logo: phs-logo.png
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{r load-setup, include=FALSE}
+source(here::here("code", "00_setup-environment.R"))
+library(crosstalk) # for drop down menus
+library(phsstyles)
+library(htmltools)
+
+
+# Write numbers with thousands separator
+knit_hooks$set(inline = function(x){
+  if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
+})
+```
+
+---
+date: "`r paste('Data as at', format(end_date, '%d %B %Y'))`"
+---
+
+```{r setup, include=FALSE}
+
+# Remove tidylog
+detach("package:tidylog", unload = TRUE)
+
+# Load functions
+walk(dir(here::here("functions"), full.names = TRUE), source)
+
+# Load PDS data
+pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
+  
+  # Remove codes from board and IJB
+  mutate(health_board = str_sub(health_board, 3, -1),
+         ijb          = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
+
+# Load expected diagnoses reference file
+exp <- read_csv(get_exp_diagnoses_path())
+
+
+# Load error summary
+err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
+
+  mutate(ijb = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
+```
+<!-- delete all of above when finished testing -->
+
+
+```{r data setup, include=FALSE}
+comp_data <- read_rds(get_mi_data_path("comp_data", ext = "rds", test_output = test_output))
+
+pds_ijb <- pds %>% arrange(ijb)
+
+pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp, age_grp, simd) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop")
+
+pds_hb <- pds %>% group_by(health_board, fy, month, ldp, age_grp, simd) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
+
+pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
+
+pds_all %<>% rename(geog = ijb) 
+
+pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
+
+comp_data$geog <- factor(comp_data$geog, levels = unique(pds_all$geog))
+
+comp_data %<>% arrange(fy, geog)
+ 
+```
+
+
+Data Completion
+=================================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Ethnic Group
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[**Ethnic Group**](#data-completion)</li>
+  <li>[Accommodation Type](#accommodation)</li>
+  <li>[Subtype of Dementia](#subtype)</li>
+  <li>[Clinical Impression of Stage of Illness](#stage)</li>
+  <li>[Model of Care](#model)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {data-height=755}
+----------------------------------------------------------------------
+
+### **Ethnic Group**
+
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Percentage of records missing/unknown (NA/codes 98/99) </h2>
+
+```{r ethnic-group-table}
+ethnic_comp_data<-comp_data %>%
+  filter(field_name == "ethnic_group") %>% select(geog, fy, perc_of_records_missing_not_known) %>% 
+  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
+  pivot_wider(names_from = fy, values_from = perc_of_records_missing_not_known) %>% 
+  rename(`Health Board/Integration Authority` = geog) %>%
+  slice(2:46,1)# %>% 
+  # kable() %>%
+  # kable_styling(full_width = FALSE) %>%
+  # row_spec(46, bold = TRUE) %>%
+  # scroll_box(height = "700px")
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="650px", margin="15px"),
+          DT::datatable(ethnic_comp_data, 
+                        rownames = FALSE, 
+                        extensions = "FixedColumns",
+              options = list(pageLength = 46,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(className = 'dt-right', targets = 1:9)
+                             ))) %>%
+  DT::formatStyle(1, fontWeight = "bold"
+                  )
+
+            )
+       )
+
+```
+
+
+Accommodation {.hidden}
+=================================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Accommodation Type
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Ethnic Group](#data-completion)</li>
+  <li>[**Accommodation Type**](#accommodation)</li>
+  <li>[Subtype of Dementia](#subtype)</li>
+  <li>[Clinical Impression of Stage of Illness](#stage)</li>
+  <li>[Model of Care](#model)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {data-height=755}
+----------------------------------------------------------------------
+
+### **Accommodation Type**
+
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Percentage of records missing/unknown (NA/codes 98/99) </h2>
+
+```{r accommodation-table}
+accomm_comp_data <- comp_data %>%
+  filter(field_name == "accommodation_type") %>% select(geog, fy, perc_of_records_missing_not_known) %>% 
+  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
+  pivot_wider(names_from = fy, values_from = perc_of_records_missing_not_known) %>% 
+  rename(`Health Board/Integration Authority` = geog) %>%
+  slice(2:46,1)
+
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="650px", margin="15px"),
+          DT::datatable(accomm_comp_data, 
+                        rownames = FALSE, 
+                        extensions = "FixedColumns",
+              options = list(pageLength = 46,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(className = 'dt-right', targets = 1:9)
+                             ))) %>%
+  DT::formatStyle(1, fontWeight = "bold"
+                  )
+
+            )
+       )
+```
+Subtype {.hidden}
+=================================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Subtype of Dementia
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Ethnic Group](#data-completion)</li>
+  <li>[Accommodation Type](#accommodation)</li>
+  <li>[**Subtype of Dementia**](#subtype)</li>
+  <li>[Clinical Impression of Stage of Illness](#stage)</li>
+  <li>[Model of Care](#model)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {data-height=780}
+----------------------------------------------------------------------
+
+### **Subtype of Dementia**
+
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Percentage of records missing/unknown (NA/codes 98/99) and Percentage of records Yet to be determined (YTBD) </h2>
+
+```{r subtype-table}
+subtype_comp_data<-comp_data %>%
+  filter(field_name == "subtype_of_dementia") %>% select(geog, fy, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
+  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
+  mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
+  pivot_wider(names_from = fy, values_from = c(perc_of_records_missing_not_known, perc_of_records_ytbd),
+              names_vary = "slowest") %>%
+  slice(2:46,1)
+
+headers <- htmltools::withTags(table(
+  class = 'display',
+  thead(
+    tr(
+      th(rowspan = 2, "Health Board/Integration Authority"),
+      th(colspan = 2, '    2016/17'),
+      th(colspan = 2, '    2017/18'),
+      th(colspan = 2, '    2018/19'),
+      th(colspan = 2, '    2019/20'),
+      th(colspan = 2, '    2020/21'),
+      th(colspan = 2, '    2021/22'),
+      th(colspan = 2, '    2022/23'),
+      th(colspan = 2, '    2023/24'),
+      th(colspan = 2, '    2024/25')
+    ),
+    tr(
+      lapply(rep(c("NA/98/99", "YTBD"), 9), th)
+    )
+  )
+))
+
+
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="650px", margin="15px"),
+          DT::datatable(subtype_comp_data, 
+                        container = headers, 
+                        rownames = FALSE, 
+                        caption = htmltools::tags$caption(
+                       style = 'caption-side: bottom; text-align: left;',
+                       "Note that Subtype of Dementia as an optional field"),
+                        extensions = "FixedColumns",
+              options = list(pageLength = 46,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(className = 'dt-right', targets = 1:18)
+                             ))) %>%
+  DT::formatStyle(1, fontWeight = "bold"
+                  )
+
+            )
+       )
+
+```
+
+Stage {.hidden}
+=================================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Clinical Impression of Stage of Illness
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Ethnic Group](#data-completion)</li>
+  <li>[Accommodation Type](#accommodation)</li>
+  <li>[Subtype of Dementia](#subtype)</li>
+  <li>[**Clinical Impression of Stage of Illness**](#stage)</li>
+  <li>[Model of Care](#model)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {data-height=785}
+----------------------------------------------------------------------
+
+### **Clinical Impression of Stage of Illness**
+
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Percentage of records missing/unknown (NA/codes 98/99) and Percentage of records Yet to be determined (YTBD) </h2>
+
+```{r stage-table}
+stage_comp_data <- comp_data %>%
+  filter(field_name == "clinical_impression_of_stage_of_illness") %>% select(geog, fy, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
+  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
+  mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
+  pivot_wider(names_from = fy, values_from = c(perc_of_records_missing_not_known, perc_of_records_ytbd),
+              names_vary = "slowest") %>%
+  slice(2:46,1)
+
+ 
+
+# kable(stage_comp_data) %>%
+#   kable_styling(full_width = FALSE, position = "right") %>%
+#   row_spec(46, bold = TRUE) %>%
+#   # Add header above table 
+#   add_header_above(
+#         c(" " = 1,
+#            "2016/17" = 2,
+#           "2017/18" = 2,
+#           "2018/19" = 2,
+#           "2019/20" = 2,
+#           "2020/21" = 2,
+#           "2021/22" = 2,
+#           "2022/23" = 2,
+#           "2023/24" = 2,
+#           "2024/25" = 2
+#       ))%>%
+#   scroll_box(height = "670px", width = "fit-content")
+
+
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="660px", margin="15px"),
+          DT::datatable(stage_comp_data,
+                        container = headers,
+                        rownames = FALSE,
+                        extensions = "FixedColumns",
+              options = list(pageLength = 46,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(className = 'dt-right', targets = 1:18)
+                             ))) %>%
+  DT::formatStyle(1, fontWeight = "bold"
+                  )
+
+            )
+       )
+
+```
+
+Model {.hidden}
+=================================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Model of Care
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Ethnic Group](#data-completion)</li>
+  <li>[Accommodation Type](#accommodation)</li>
+  <li>[Subtype of Dementia](#subtype)</li>
+  <li>[Clinical Impression of Stage of Illness](#stage)</li>
+  <li>[**Model of Care**](#model)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {data-height=785}
+----------------------------------------------------------------------
+
+### **Model of Care**
+
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Percentage of records missing/unknown (NA/codes 98/99) and Percentage of records Yet to be determined (YTBD) </h2>
+
+```{r model-table}
+model_comp_data <- comp_data %>%
+  filter(field_name == "model_of_care") %>% select(geog, fy, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
+  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
+  mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
+  pivot_wider(names_from = fy, values_from = c(perc_of_records_missing_not_known, perc_of_records_ytbd),
+              names_vary = "slowest") %>%
+  slice(2:46,1) #%>% 
+#set_colnames(c("Health Board/Integration Authority", rep(c("NA/98/99", "YTBD"), 9)))
+ 
+ 
+
+# kable(stage_comp_data) %>%
+#   kable_styling(full_width = FALSE, position = "float_right") %>%
+#   row_spec(46, bold = TRUE) %>%
+#   # Add header above table 
+#   add_header_above(
+#         c(" " = 1,
+#            "2016/17" = 2,
+#           "2017/18" = 2,
+#           "2018/19" = 2,
+#           "2019/20" = 2,
+#           "2020/21" = 2,
+#           "2021/22" = 2,
+#           "2022/23" = 2,
+#           "2023/24" = 2,
+#           "2024/25" = 2
+#       ))%>%
+#   scroll_box(height = "670px", width = "auto")
+
+
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="660px", margin="15px"),
+          DT::datatable(model_comp_data,
+                        container = headers,
+                        rownames = FALSE,
+                        extensions = "FixedColumns",
+              options = list(pageLength = 46,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(className = 'dt-right', targets = 1:18)
+                             ))) %>%
+  DT::formatStyle(1, fontWeight = "bold"
+                  )
+
+            )
+       )
+
+```
+
