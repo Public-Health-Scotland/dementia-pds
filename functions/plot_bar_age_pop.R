@@ -6,13 +6,13 @@ plot_bar_age_pop <- function(data){
                  text = paste0("Scotland", "<br>",
                                fy, "<br>",
                                "rate per 10,000 population: ", scot_pop_rate_10000)),
-             position = position_identity(), just = 0, width = 0.42, fill = "#0078D4") +
+             position = position_identity(), just = 0, width = 0.42, fill = "#3F3685") +
     
     geom_col(aes(x = age_grp, y = pop_rate_10000,
                  text = paste0(geog, "<br>",
                                fy, "<br>",
                                "rate per 10,000 population: ", pop_rate_10000)),
-             position = position_identity(), just = 1, width = 0.42, fill = "#3F3685") +
+             position = position_identity(), just = 1, width = 0.42, fill = "#0078D4") +
     
     labs(title = "",
          x = "Age Group",
@@ -58,7 +58,7 @@ plot_bar_age_pop_legend <- function(data) {
     geom_bar(width = 0) +
     
       scale_fill_manual(name=NULL,
-                        values=c("#3F3685", "#0078D4")) +
+                        values=c("#0078D4", "#3F3685")) +
     
 
     
