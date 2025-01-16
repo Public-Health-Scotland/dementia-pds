@@ -32,9 +32,6 @@ detach("package:tidylog", unload = TRUE)
 # Load functions
 walk(dir(here::here("functions"), full.names = TRUE), source)
 
-current_fy <- paste0(substr(fy,1,4),
-                           "/", as.numeric(substr(fy,3,4)) + 1)
-
 # Load PDS data
 pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
   
@@ -70,14 +67,26 @@ pds_all %<>% rename(geog = ijb)
 
 pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
 
+#create year lists
+provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
+                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
+
+current_fy <- paste0(substr(fy,1,4),
+                           "/", as.numeric(substr(fy,3,4)) + 1)
+
+last_full_year <- if_else(qt == 4, current_fy, paste0(as.numeric(substr(fy,1,4)) - 1,
+                           "/", as.numeric(substr(fy,3,4))))
+
+all_years <- unique(pds_all$fy)
+
+if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
+
 
 ```
 <!-- delete all of above when finished testing -->
 
 
 ```{r data setup, include=FALSE}
-# to be automated based on whether current year is complete or not??
-#included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
 
 #get totals for scotland, hbs and ijbs
 pds_all_totals <- bind_rows(
@@ -263,13 +272,13 @@ pds_all_totals %>% filter(geog == "Scotland" | grepl("NHS", geog), age_grp_2 == 
             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>%
             pivot_wider(names_from = fy, values_from = total_referrals) %>%
             rename(`Health Board` = geog) %>%
-            kable(align = c("l", rep("r", length(unique(pds$fy))))) %>%
+            kable(align = c("l", rep("r", length(all_years)))) %>%
             kable_styling(full_width = FALSE) %>%
             column_spec(1, bold = TRUE) %>%
   # Add header above table
             add_header_above(
                     c(" " = 1,
-                     "Financial Year of Diagnosis" = length(unique(pds$fy))))
+                     "Financial Year of Diagnosis" = length(all_years)))
 
 ```
 
@@ -282,13 +291,13 @@ pds_all_totals %>% filter(geog == "Scotland" | !grepl("NHS", geog), age_grp_2 ==
             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>%
             pivot_wider(names_from = fy, values_from = total_referrals) %>%
             rename(`Integration Authority Area` = geog) %>%
-            kable(align = c("l", rep("r", length(unique(pds$fy))))) %>%
+            kable(align = c("l", rep("r", length(all_years)))) %>%
             kable_styling(full_width = FALSE) %>%
             column_spec(1, bold = TRUE) %>%
   # Add header above table
             add_header_above(
                        c(" " = 1,
-                         "Financial Year of Diagnosis" = length(unique(pds$fy)))) %>%
+                         "Financial Year of Diagnosis" = length(all_years))) %>%
             scroll_box(height = "740px")
 
 
@@ -637,7 +646,7 @@ Row {.tabset data-height=1240}
 
 ```{r dropdown-met-ldp}
 pds_met_rates <-
-  pds_all %>% filter(age_grp_2 != "Unknown", ldp != "ongoing", fy != current_fy) %>% 
+  pds_all %>% filter(age_grp_2 != "Unknown", ldp != "ongoing", fy %in% full_years) %>% 
   group_by(geog, fy, ldp) %>% 
   summarise(referrals = sum(referrals)) %>% pivot_wider(names_from = ldp, values_from = referrals, values_fill = 0) %>% 
   mutate(perc_met = round(100*(complete + exempt)/(complete + exempt + fail), 1))
@@ -674,13 +683,13 @@ pds_met_rates %>% select(geog, fy, perc_met) %>%
             pivot_wider(names_from = fy, values_from = perc_met) %>%
             mutate(across(where(is.numeric), ~paste0(.,"%"))) %>% 
             rename(`Health Board/Integration Authority Area` = geog) %>%
-            kable(align = c("l", rep("r", length(unique(pds_met_rates$fy))))) %>%
+            kable(align = c("l", rep("r", length(full_years)))) %>%
             kable_styling(full_width = TRUE) %>%
             column_spec(1, bold = TRUE) %>%
   # Add header above table
             add_header_above(
                     c(" " = 1,
-                     "Financial Year of Diagnosis" = length(unique(pds_met_rates$fy)))) %>% 
+                     "Financial Year of Diagnosis" = length(full_years))) %>% 
   scroll_box(height = "670px")
 
 ```
@@ -689,7 +698,7 @@ pds_met_rates %>% select(geog, fy, perc_met) %>%
 
 ```{r dropdown-exp}
 pds_exp_rates <- left_join(
-bind_rows(pds_scot_totals, pds_hb_totals) %>% filter(fy != current_fy, age_grp_2 == "All") %>% 
+bind_rows(pds_scot_totals, pds_hb_totals) %>% filter(fy %in% full_years, age_grp_2 == "All") %>% 
             select(-age_grp_2),
 exp %>% select(-health_board) %>% rename(geog = health_board_label)) %>% 
   mutate(exp_rate = round(100*total_referrals/diagnoses,1))
@@ -725,13 +734,13 @@ pds_exp_rates %>% select(geog, fy, exp_rate) %>%
             pivot_wider(names_from = fy, values_from = exp_rate) %>%
             mutate(across(where(is.numeric), ~paste0(.,"%"))) %>% 
             rename(`Health Board` = geog) %>%
-            kable(align = c("l", rep("r", length(unique(pds_exp_rates$fy))))) %>%
+            kable(align = c("l", rep("r", length(full_years)))) %>%
             kable_styling(full_width = TRUE) %>%
             column_spec(1, bold = TRUE) %>%
   # Add header above table
             add_header_above(
                     c(" " = 1,
-                     "Financial Year of Diagnosis" = length(unique(pds_exp_rates$fy))))
+                     "Financial Year of Diagnosis" = length(full_years)))
 
 ```
 

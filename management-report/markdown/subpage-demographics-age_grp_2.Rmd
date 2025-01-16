@@ -31,9 +31,6 @@ detach("package:tidylog", unload = TRUE)
 # Load functions
 walk(dir(here::here("functions"), full.names = TRUE), source)
 
-current_fy <- paste0(substr(fy,1,4),
-                           "/", as.numeric(substr(fy,3,4)) + 1)
-
 # Load PDS data
 pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
   
@@ -69,19 +66,30 @@ pds_all %<>% rename(geog = ijb)
 
 pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
 
+#create year lists
+provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
+                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
+
+current_fy <- paste0(substr(fy,1,4),
+                           "/", as.numeric(substr(fy,3,4)) + 1)
+
+last_full_year <- if_else(qt == 4, current_fy, paste0(as.numeric(substr(fy,1,4)) - 1,
+                           "/", as.numeric(substr(fy,3,4))))
+
+all_years <- unique(pds_all$fy)
+
+if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
+
 
 ```
 <!-- delete all of above when finished testing -->
 
 
 ```{r data setup-demo, include=FALSE}
-# to be automated based on whether current year is complete or not??
-#included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
-
 
 #prepare age data for LARGE AGE GROUPS
 ldp_all_age_2 <- pds_all %>%
-  filter(fy != "2024/25", age_grp_2 != "Unknown") %>%
+  filter(fy %in% full_years, age_grp_2 != "Unknown") %>%
   group_by(geog, fy, age_grp_2, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
@@ -146,7 +154,7 @@ pds_all_age_rates %>% filter(geog == "Scotland") %>% select(fy, age_grp, pop_rat
 #prepare gender data
 
 ldp_all_sex <- pds_all %>%
-  filter(fy != "2024/25", sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown") %>% #need note about how many unknowns have been removed
+  filter(fy %in% full_years, sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown") %>% #need note about how many unknowns have been removed
   group_by(geog, fy, sex, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
@@ -189,11 +197,11 @@ pds_all_sex_rates$sex<- factor(pds_all_sex_rates$sex, levels = c("Male", "Female
 # with large age groups
 ldp_all_sex_2 <- bind_rows(
   pds_all %>%
-  filter(fy != "2024/25", sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown", age_grp_2 != "Unknown") %>%
+  filter(fy %in% full_years, sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown", age_grp_2 != "Unknown") %>%
   group_by(geog, fy, sex, age_grp_2, ldp) %>% 
     summarise(total_referrals = sum(referrals), .groups = "drop"),
   pds_all %>%
-  filter(fy != "2024/25", sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown", age_grp_2 != "Unknown") %>% 
+  filter(fy %in% full_years, sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown", age_grp_2 != "Unknown") %>% 
   group_by(geog, fy, sex, age_grp_2 = "All", ldp) %>% 
     summarise(total_referrals = sum(referrals), .groups = "drop"))%>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
@@ -242,7 +250,7 @@ pds_all_sex_2_rates$sex<- factor(pds_all_sex_2_rates$sex, levels = c("Male", "Fe
 #prepare simd data
 
 ldp_all_simd <- pds_all %>%
-  filter(fy != "2024/25", simd != "Unknown") %>%
+  filter(fy %in% full_years, simd != "Unknown") %>%
   group_by(geog, fy, simd, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
@@ -570,9 +578,9 @@ DT::datatable(trend_pop_age_2_table, rownames = FALSE,
                              scrollY = FALSE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:9)
-                                               ))) %>%
+                             columnDefs = list(list(visible = FALSE, targets = 0))
+                             )
+              ) %>%
            DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                           )
         )
@@ -662,10 +670,8 @@ DT::datatable(pds_age_rates_table, rownames = FALSE,
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0:2),
-                                               list(className = 'dt-right', targets = 4:11)
-                                               )
-                             )
+                             columnDefs = list(list(visible = FALSE, targets = 0:2))
+                            )
               )%>% 
           DT::formatStyle(1, fontWeight = "bold")
             )
@@ -774,7 +780,8 @@ DT::datatable(ldp_age_2_table, rownames = FALSE,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:9)
+                                               list(className = 'dt-right',
+                                                    targets = 2:(length(full_years)+1))
                                                ))) %>%
            DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                           )
@@ -1718,7 +1725,8 @@ plot_geog_bar(pds_pop_simd_data_hb, y_value = pop_rate_10000, measure = simd, me
 
 hb_pop_simd_table_data <- pds_all_simd_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
   select(geog,fy,simd,pop_rate_10000) %>% mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>% 
-  pivot_wider(names_from = geog, values_from = pop_rate_10000, values_fill = "-") %>%
+  pivot_wider(names_from = geog, values_from = pop_rate_10000) %>%
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
              rename(`SIMD Quintile` = simd)
 
 
@@ -1791,7 +1799,8 @@ plot_geog_bar(pds_pop_simd_data_ijb, y_value = pop_rate_10000, measure = simd, m
 ijb_pop_simd_table_data <- pds_all_simd_rates %>%
   filter(!grepl("NHS", geog)) %>% 
   select(geog,fy,simd,pop_rate_10000) %>% mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>% 
-  pivot_wider(names_from = geog, values_from = pop_rate_10000, values_fill = "-") %>%
+  pivot_wider(names_from = geog, values_from = pop_rate_10000) %>%
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
              rename(`SIMD Quintile` = simd)
 
 
@@ -1928,7 +1937,9 @@ DT::datatable(ldp_simd_table, rownames = FALSE,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:9)
+                                               list(className = 'dt-right',
+                                                    targets = 2:(length(full_years)+1)
+                                                    )
                                                ))) %>%
            DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                           )

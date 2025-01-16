@@ -32,9 +32,6 @@ detach("package:tidylog", unload = TRUE)
 # Load functions
 walk(dir(here::here("functions"), full.names = TRUE), source)
 
-current_fy <- paste0(substr(fy,1,4),
-                           "/", as.numeric(substr(fy,3,4)) + 1)
-
 # Load PDS data
 pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
   
@@ -78,6 +75,21 @@ comp_data <- read_rds(get_mi_data_path("comp_data", ext = "rds", test_output = t
 comp_data$geog <- factor(comp_data$geog, levels = unique(pds_all$geog))
 
 comp_data %<>% arrange(fy, geog)
+
+#create year lists
+provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
+                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
+
+current_fy <- paste0(substr(fy,1,4),
+                           "/", as.numeric(substr(fy,3,4)) + 1)
+
+last_full_year <- if_else(qt == 4, current_fy, paste0(as.numeric(substr(fy,1,4)) - 1,
+                           "/", as.numeric(substr(fy,3,4))))
+
+all_years <- unique(pds_all$fy)
+
+if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
+
 
 ```
 
@@ -297,7 +309,7 @@ err %>%
   # Add header above table 
   add_header_above(
         c(" " = 1,
-          "Financial Year of Diagnosis" = 9,
+          "Financial Year of Diagnosis" = length(all_years),
           " " = 1)) %>%
   add_footnote(label = paste("A dash (\\-) indicates no records were submitted",
                              "for diagnoses in this year."),
@@ -388,7 +400,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = F, targets = 0),
-                                              list(className = 'dt-right', targets = 2:11)
+                                              list(className = 'dt-right', targets = 2:length(all_years)+2)
                              ))) %>%
         DT::formatStyle(0, target = "row",
               fontWeight = DT::styleEqual(dim(ethnic_comp_data)[1],"bold"))
@@ -421,7 +433,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = F, targets = 0),
-                                              list(className = 'dt-right', targets = 2:11)
+                                              list(className = 'dt-right', targets = 2:length(all_years)+2)
                              ))) %>%
         DT::formatStyle(0, target = "row",
               fontWeight = DT::styleEqual(dim(accomm_comp_data)[1],"bold"))
@@ -481,12 +493,14 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = F, targets = 0),
-                                                list(className = 'dt-right', targets = 2:21))
+                                                list(className = 'dt-right',
+                                                     targets = 2:(2*length(all_years)+3)))
                              )) %>% 
             DT::formatStyle(0, target = "row",
               fontWeight = DT::styleEqual(dim(subtype_comp_data)[1],"bold"))
             )
        )
+
 
 
 ```
@@ -537,7 +551,8 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = F, targets = 0),
-                                                list(className = 'dt-right', targets = 2:21))
+                                                list(className = 'dt-right',
+                                                     targets = 2:(2*length(all_years)+3)))
                              )) %>% 
             DT::formatStyle(0, target = "row",
               fontWeight = DT::styleEqual(dim(stage_comp_data)[1],"bold"))
@@ -558,7 +573,7 @@ model_comp_data <- comp_data %>%
   mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
   pivot_wider(names_from = fy, values_from = c(perc_of_records_missing_not_known, perc_of_records_ytbd),
               names_vary = "slowest") %>%
-  slice(2:46,1)# %>% 
+  slice(2:46,1) # %>% 
 #set_colnames(c("Health Board/Integration Authority", rep(c("NA/98/99", "YTBD"), 9)))
  
  
@@ -596,7 +611,8 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = F, targets = 0),
-                                               list(className = 'dt-right', targets = 2:21))
+                                               list(className = 'dt-right', 
+                                                    targets = 2:(2*length(all_years)+3)))
                              )) %>% 
             DT::formatStyle(0, target = "row",
               fontWeight = DT::styleEqual(dim(model_comp_data)[1],"bold"))

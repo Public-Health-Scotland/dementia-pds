@@ -67,6 +67,20 @@ pds_all %<>% rename(geog = ijb)
 
 pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
 
+#create year lists
+provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
+                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
+
+current_fy <- paste0(substr(fy,1,4),
+                           "/", as.numeric(substr(fy,3,4)) + 1)
+
+last_full_year <- if_else(qt == 4, current_fy, paste0(as.numeric(substr(fy,1,4)) - 1,
+                           "/", as.numeric(substr(fy,3,4))))
+
+all_years <- unique(pds_all$fy)
+
+if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
+
 
 ```
 <!-- delete all of above when finished testing -->
@@ -323,7 +337,7 @@ Row {.tabset data-height=760}
 ### **Standard Met**
 
 ```{r dropdown-met}
-met_data <- pds_all %>% filter(ldp == "complete") %>% group_by(geog, fy, ldp_full) %>% 
+met_data <- pds_all %>% filter(ldp == "complete", fy %in% full_years) %>% group_by(geog, fy, ldp_full) %>% 
   summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 12)) %>%   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
   rename(`Health Board/Integration Authority Area` = geog) %>% 
    mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy) %>% 
@@ -850,6 +864,8 @@ bscols(widths = 12,
 
 
 ```{js }
+
+
 function filter_default() {
 
   document.getElementById("met_filter_year").getElementsByClassName("selectized") 
@@ -954,22 +970,22 @@ function filter_default() {
   document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized") 
+   document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("trend_filter_sex_prop_hb").getElementsByClassName("selectized") 
+  document.getElementById("filter_sex_prop_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("trend_filter_sex_prop_hb").getElementsByClassName("selectized")
+  document.getElementById("filter_sex_prop_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("trend_filter_sex_prop_ijb").getElementsByClassName("selectized") 
+   document.getElementById("filter_sex_prop_ijb").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("trend_filter_sex_prop_ijb").getElementsByClassName("selectized")
+  document.getElementById("filter_sex_prop_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized") 
@@ -1020,7 +1036,7 @@ function filter_default() {
   document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized") 
+    document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized")
@@ -1031,7 +1047,6 @@ function filter_default() {
 
   document.getElementById("filter_ldp_simd").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-  
     document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("NHS Ayrshire & Arran", false);
 
@@ -1050,7 +1065,25 @@ function filter_default() {
   document.getElementById("trend_filter_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized") 
+  document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("NHS Ayrshire & Arran", false);
+
+  document.getElementById("trend_filter_hb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("trend_filter_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Aberdeen City", false);
+
+  document.getElementById("trend_filter_ijb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+ 
+   document.getElementById("trend_filter_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized")
@@ -1062,7 +1095,7 @@ function filter_default() {
   document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-    document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized") 
+  document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized")
@@ -1073,6 +1106,7 @@ function filter_default() {
 
   document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
+  
   
   }
   
