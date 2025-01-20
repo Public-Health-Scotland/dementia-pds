@@ -1,6 +1,6 @@
 everyother <- function(x) x[seq_along(x) %% 2 != 0]
 
-plot_ldp_line <- function(data, measure, measure_text){
+plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL){
   
   plot <-  ggplot(data) +
     
@@ -37,18 +37,18 @@ plot_ldp_line <- function(data, measure, measure_text){
     scale_y_continuous(limits = c(0, NA),  labels=function(x) paste0(x,"%")
     ) +
     
-    scale_x_discrete(breaks = everyother #c("2016/17",  current_fy, 2)
+    scale_x_discrete(breaks = everyother
     ) +
     
     scale_colour_manual(values = phs_colours_32) +
     
     
-    facet_wrap(vars({{measure}}), ncol = 5) + 
+    facet_wrap(vars({{measure}}), ncol = ncol, nrow = nrow) + 
     
     theme_dementia(xangle = 45) +
     
-    theme(strip.background = element_blank(),
-          strip.text.x = element_blank(),
+    theme(strip.background = element_rect(fill = "#CAC6D1"),
+          strip.text.x = element_text(size = 8),
           legend.position = "none"
     ) 
   

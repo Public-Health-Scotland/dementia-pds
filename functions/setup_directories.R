@@ -109,7 +109,11 @@ get_mi_data_path <- function(type = c("error_data",
       "wait_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data"),
       "wait_data_2" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data-2"),
       "wait_data_3" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data-3"),
-      "comp_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_comp-data")
+      "comp_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_comp-data"),
+      "subtype_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_subtype-data"),
+      "stage_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_stage-data"),
+      "model_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_model-data"),
+      "uptake_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_uptake-data")
       )
   } else {
     file_name <- dplyr::case_match(
@@ -122,7 +126,11 @@ get_mi_data_path <- function(type = c("error_data",
     "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data"),
     "wait_data_2" ~ stringr::str_glue("{fy}-{qt}_wait-data-2"),
     "wait_data_3" ~ stringr::str_glue("{fy}-{qt}_wait-data-3"),
-    "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data")
+    "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data"),
+    "subtype_data" ~ stringr::str_glue("{fy}-{qt}_subtype-data"),
+    "stage_data" ~ stringr::str_glue("{fy}-{qt}_stage-data"),
+    "model_data" ~ stringr::str_glue("{fy}-{qt}_model-data"),
+    "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data")
     )
   }
   

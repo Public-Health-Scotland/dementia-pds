@@ -1,29 +1,10 @@
-### PATHWAYS ----
+### 1 - Load environment file ----
 
-# Load PDS data
-pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
-  
-  # Remove codes from board and IJB
-  mutate(health_board = str_sub(health_board, 3, -1),
-         ijb          = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
+source(here::here("code", "00_setup-environment.R"))
+source(here::here("functions", "summarise_functions.R"))
 
-pds_ijb <- pds %>% arrange(ijb)
 
-pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp, age_grp, simd) %>% 
-  summarise(referrals = sum(referrals), .groups = "drop")
-
-pds_hb <- pds %>% group_by(health_board, fy, month, ldp, age_grp, simd) %>% 
-  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
-
-pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
-
-pds_all %<>% rename(geog = ijb) 
-
-pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
-
-#read in individual data
+#read in individual data ----
 ldp <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output)) %>% 
   
   mutate(ldp = word(ldp, 1)) %>% 
@@ -35,33 +16,33 @@ ldp <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_out
                                 "Unknown",
                                 str_sub(ijb, 11, -1)))
 
-# # remove codes
-# variables <- c("ethnic_group",  
-#                "additional_disability",
-#                "living_alone",
-#                "accommodation_type",
-#                "subtype_of_dementia",
-#                "clinical_impression_of_stage_of_illness",
-#                "model_of_care",
-#                "pds_referral_source",
-#                "pds_uptake_decision",
-#                "pds_status",
-#                "carers_support")
+# remove codes
+variables <- c("ethnic_group",
+               "additional_disability",
+               "living_alone",
+               "accommodation_type",
+               "subtype_of_dementia",
+               "clinical_impression_of_stage_of_illness",
+               "model_of_care",
+               "pds_referral_source",
+               "pds_uptake_decision",
+               "pds_status",
+               "carers_support")
 
-# ldp %<>% mutate(across(all_of(variables), ~substring(.x, 3))) %>% 
-#   mutate(across(all_of(variables), ~if_else(is.na(.x), "Not Known", .x))) %>% 
-#   mutate(across(all_of(variables), ~str_trim(.x, "left"))) 
-# 
+ldp %<>% mutate(across(all_of(variables), ~substring(.x, 3))) %>%
+  mutate(across(all_of(variables), ~if_else(is.na(.x), "Not Known", .x))) %>%
+  mutate(across(all_of(variables), ~str_trim(.x, "left")))
+
  ldp %<>% mutate(sex = substring(sex, 3)) %>% 
    mutate(sex = str_trim(sex, "left")) %>% 
   mutate(sex = if_else(is.na(sex) | sex == "Not Known", "Unknown", sex)) 
-# 
-# 
-# ldp %<>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Known", "Homeless", "No Fixed Address"),
-#                                              "Not Known/Other", accommodation_type),
-#                 pds_referral_source = if_else(pds_referral_source %in% c("Not Known", "Local Authority", "Other", "Private Professional/Service/Organisation", "Self Referral"),
-#                                               "Not Known/Other", pds_referral_source))
 
+
+ldp %<>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Known", "Homeless", "No Fixed Address"),
+                                             "Not Known/Other", accommodation_type),
+                pds_referral_source = if_else(pds_referral_source %in% c("Not Known", "Local Authority", "Other", "Private Professional/Service/Organisation", "Self Referral"),
+                                              "Not Known/Other", pds_referral_source))
+### PATHWAYS ----
 
 ldp_wait_times <- ldp %>% 
   mutate(n_referrals = 1,
@@ -264,6 +245,48 @@ summary %>%
    write_file(path = get_mi_data_path("comp_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
  
+
+#SUBTYPE OF DEMENTIA----
+data_subtype <- summarise_by_variable(subtype_of_dementia) %>% 
+  mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb)) %>% 
+  mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
+  rename(geog = ijb, subtype = type)
+
+data_subtype %>% 
+  write_file(path = get_mi_data_path("subtype_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+#STAGE OF ILLNESS----
+
+data_stage <- summarise_by_variable(clinical_impression_of_stage_of_illness) %>% 
+  mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb)) %>% 
+  mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
+  rename(geog = ijb, stage = type)
+
+data_stage %>% 
+  write_file(path = get_mi_data_path("stage_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+#MODEL OF CARE----
+
+data_model <- summarise_by_variable(model_of_care) %>% 
+  mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb)) %>% 
+  mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
+  rename(geog = ijb, model = type)
+
+data_model %>% 
+  write_file(path = get_mi_data_path("model_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+#DATA UPTAKE----
+
+data_uptake <- summarise_uptake(ldp)
+
+data_uptake %>% 
+  write_file(path = get_mi_data_path("uptake_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+
 
 ### END OF SCRIPT ###
 

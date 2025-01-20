@@ -69,7 +69,7 @@ plot_prop_legend <- function(data, measure, measure_text) {
    
  config(legend_plotly, staticPlot = TRUE) %>%
    layout(legend = list(orientation = "h",
-                        x = 0.5, y = 1, xanchor = "center", yanchor = "top" ) 
+                        x = 0.5, y = 1, xanchor = "center", yanchor = "top") 
    )  
 }
 
