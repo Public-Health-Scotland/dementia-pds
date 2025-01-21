@@ -73,7 +73,7 @@ pds %<>%
     date_of_initial_first_contact < diag_12 & 
       end_date >= pds_12 &
       is.na(termination_or_transition_date)
-    ~ "complete - Still receiving PDS",
+    ~ "complete - Without termination date",
     
     # Started PDS within 12m of diagnosis AND PDS ended after 11m
     date_of_initial_first_contact < diag_12 &
