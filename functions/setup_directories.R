@@ -113,7 +113,8 @@ get_mi_data_path <- function(type = c("error_data",
       "subtype_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_subtype-data"),
       "stage_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_stage-data"),
       "model_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_model-data"),
-      "uptake_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_uptake-data")
+      "uptake_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_uptake-data"),
+      "carer_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_carer-data")
       )
   } else {
     file_name <- dplyr::case_match(
@@ -130,7 +131,8 @@ get_mi_data_path <- function(type = c("error_data",
     "subtype_data" ~ stringr::str_glue("{fy}-{qt}_subtype-data"),
     "stage_data" ~ stringr::str_glue("{fy}-{qt}_stage-data"),
     "model_data" ~ stringr::str_glue("{fy}-{qt}_model-data"),
-    "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data")
+    "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data"),
+    "carer_data" ~ stringr::str_glue("{fy}-{qt}_carer-data")
     )
   }
   

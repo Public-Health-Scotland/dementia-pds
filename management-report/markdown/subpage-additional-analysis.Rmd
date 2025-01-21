@@ -165,8 +165,11 @@ ldp_all_model$geog<- factor(ldp_all_model$geog, levels = unique(pds_all$geog))
 ldp_all_model$model <- factor(ldp_all_model$model, 
     levels = c(unique(ldp_all_model$model)[-1],unique(ldp_all_model$model)[1]))
 
-#prepare uptake decision data
+#load uptake decision data
 uptake_data <- read_rds(get_mi_data_path("uptake_data", ext = "rds", test_output = test_output))
+
+#load carer's support data
+carer_data <- read_rds(get_mi_data_path("carer_data", ext = "rds", test_output = test_output))
 
  
 ```
@@ -407,7 +410,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Percentage of LDP standard achieved by Subtype of Dementia and Financial Year</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px">Percentage of referrals who received a minimum of one year’s PDS by Subtype of Dementia and Financial Year</h2>
 ```{r plot-ldp-subtype-legend}
 bscols(widths = c(1,1,9,NA),NULL,
        div(style = css(width="100px", height="20px"),
@@ -709,7 +712,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px"> Percentage of LDP standard achieved by Clinical Impression of Stage of Illness and Financial Year </h2>
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px">Percentage of referrals who received a minimum of one year’s PDS by Clinical Impression of Stage of Illness and Financial Year </h2>
 ```{r plot-ldp-stage-legend}
 bscols(widths = c(1,1,5,NA),NULL,
        div(style = css(width="100px", height="20px"),
@@ -1020,7 +1023,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px"> Percentage of LDP standard achieved by Model of Care and Financial Year </h2>
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px">Percentage of referrals who received a minimum of one year’s PDS by Model of Care and Financial Year </h2>
 ```{r plot-ldp-model-legend}
 bscols(widths = c(1,1,5,NA),NULL,
        div(style = css(width="100px", height="20px"),
@@ -1085,8 +1088,304 @@ DT::datatable(ldp_model_table, rownames = FALSE,
 ```
 
 
+Carer's Support {data-navmenu="Additional Information"}
+=====================================
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Carer's Support 
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {.tabset data-height=920}
+----------------------------------------------------------------------
+
+### **Health Boards**
+
+```{r dropdown-carer-hb}
+
+ table_hb_carer_data <- carer_data %>% 
+      filter(age_grp_2 == "All", simd == "All") %>% 
+      filter(ijb == "All" | ijb == "Scotland") %>% 
+      pivot_wider(names_from = carers_support, values_from = referrals) %>% 
+      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+      adorn_totals("col") %>% 
+      select(3,1,9,8,6,7) %>% 
+      mutate(perc_carer = paste0(round(100*Yes/Total,1), "%")) %>%
+  rename("Number of People Referred to PDS" = "Total", 
+             "Health Board" = "health_board",
+              "Number of people with Carer's Support" = "Yes",
+         "Number of people without Carer's Support" = "No",
+         "Number of people where Carer's Support is Not Known" = "Not Known",
+             "Percentage with Carer's Support" = "perc_carer")
+
+
+table_hb_carer <- SharedData$new(table_hb_carer_data)
+
+data_filter_carer_hb <- filter_select(id = "filter_carer_hb_year",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = table_hb_carer,
+                                    multiple = FALSE
+                                   )
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_carer_hb,
+       NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number and percentage of individuals where PDS work is carried out in conjunction with the family/carer; Health Boards</h2>
+```{r table-carer-hb}
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="710px", margin="15px"),
+          DT::datatable(table_hb_carer, rownames = FALSE,
+              options = list(pageLength = 15,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:6)
+                             ))) %>%
+  DT::formatStyle(2, fontWeight = "bold")
+            )
+       )
+
+
+```
+
+### **Integration Authority Areas**
+
+```{r dropdown-carer-ijb}
+
+ table_ijb_carer_data <- carer_data %>% 
+      filter(age_grp_2 == "All", simd == "All") %>% 
+      mutate(ijb = if_else(health_board == "Scotland", "AAA", ijb)) %>%
+      arrange(ijb) %>% 
+      filter(ijb != "All") %>% 
+      mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>%
+        pivot_wider(names_from = carers_support, values_from = referrals) %>% 
+      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+      adorn_totals("col") %>% 
+      select(3,2,9,8,6,7) %>% 
+      mutate(perc_carer = paste0(round(100*Yes/Total,1), "%")) %>%
+  rename("Number of People Referred to PDS" = "Total", 
+             "Integration Authority Area" = "ijb",
+              "Number of people with Carer's Support" = "Yes",
+         "Number of people without Carer's Support" = "No",
+         "Number of people where Carer's Support is Not Known" = "Not Known",
+             "Percentage with Carer's Support" = "perc_carer")
+
+
+table_ijb_carer <- SharedData$new(table_ijb_carer_data)
+
+data_filter_carer_ijb <- filter_select(id = "filter_carer_ijb_year",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = table_ijb_carer,
+                                    multiple = FALSE
+                                   )
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_carer_ijb,
+       NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number and percentage of individuals where PDS work is carried out in conjunction with the family/carer; Integration Authority Areas</h2>
+```{r table-carer-ijb}
+
+
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="710px", margin="15px"),
+          DT::datatable(table_ijb_carer, rownames = FALSE,
+              options = list(pageLength = 32,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:6)
+                             ))) %>%
+  DT::formatStyle(2, fontWeight = "bold")
+            )
+       )
+
+
+
+
+```
+
 Uptake Decision {data-navmenu="Additional Information"}
 =====================================
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Uptake Decision 
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {.tabset data-height=920}
+----------------------------------------------------------------------
+
+### **Health Boards**
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Referrals by PDS Uptake Decision, Health Boards</h2>
+```{r dropdown-uptake-hb}
+
+ table_hb_uptake_data <- uptake_data %>% 
+      filter(age_grp_2 == "All", simd == "All") %>% 
+      filter(ijb == "All" | ijb == "Scotland") %>% 
+      pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>% 
+      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+      adorn_totals("col") %>% 
+      select(3,1,10,6,7,8,9) %>% 
+      rowwise() %>% 
+  mutate(perc_accepted = paste0(round(sum(c_across(4:5))/sum(c_across(3))*100,1), "%")) %>%       rename("Number of People Referred to PDS" = "Total", 
+             "Health Board" = "health_board",
+             "Percentage Accepted" = "perc_accepted")
+
+
+table_hb_uptake <- SharedData$new(table_hb_uptake_data)
+
+data_filter_uptake_hb <- filter_select(id = "filter_uptake_hb_year",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = table_hb_uptake,
+                                    multiple = FALSE
+                                   )
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_uptake_hb,
+       NULL)
+
+```
+
+```{r table-uptake-hb}
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="710px", margin="15px"),
+          DT::datatable(table_hb_uptake, rownames = FALSE,
+              options = list(pageLength = 15,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:7)
+                             ))) %>%
+  DT::formatStyle(2, fontWeight = "bold")
+            )
+       )
+
+
+```
+
+### **Integration Authority Areas**
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Referrals by PDS Uptake Decision, Integration Authority Areas</h2>
+```{r dropdown-uptake-ijb}
+
+ table_ijb_uptake_data <- uptake_data %>% 
+      filter(age_grp_2 == "All", simd == "All") %>% 
+      mutate(ijb = if_else(health_board == "Scotland", "AAA", ijb)) %>%
+      arrange(ijb) %>% 
+      filter(ijb != "All") %>% 
+      mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>%
+      pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>% 
+      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+      adorn_totals("col") %>% 
+      select(3,2,10,6,7,8,9) %>% 
+      rowwise() %>% 
+  mutate(perc_accepted = paste0(round(sum(c_across(4:5))/sum(c_across(3))*100,1), "%")) %>%       rename("Number of People Referred to PDS" = "Total",
+             "Integration Authority Area" = "ijb",
+             "Percentage Accepted" = "perc_accepted")
+
+table_ijb_uptake <- SharedData$new(table_ijb_uptake_data)
+
+data_filter_uptake_ijb <- filter_select(id = "filter_uptake_ijb_year",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = table_ijb_uptake,
+                                    multiple = FALSE
+                                   )
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_uptake_ijb,
+       NULL)
+
+```
+
+```{r table-uptake-ijb}
+
+
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="710px", margin="15px"),
+          DT::datatable(table_ijb_uptake, rownames = FALSE,
+              options = list(pageLength = 32,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:7)
+                             ))) %>%
+  DT::formatStyle(2, fontWeight = "bold")
+            )
+       )
+
+
+
+
+```
 
 ```{js }
 function filter_default() {
@@ -1143,6 +1442,30 @@ function filter_default() {
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("filter_ldp_model").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("filter_carer_hb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_carer_hb_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("filter_carer_ijb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_carer_ijb_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
  

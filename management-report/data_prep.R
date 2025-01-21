@@ -95,15 +95,9 @@ data_wait_3 %>%
 
 ### DATA COMPLETION ----
 
-ldp <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output))
-
 ldp_select <- ldp %>% select(-contact_before_diag, -pds_calc_months, -date2, -ddcd_check,
                                                   -fake_id, -simd, -age, -age_grp, -ldp, -pds_11, -pds_12,
-                                                  -diag_12, -month, -x29, -x30, -error_flag) %>% 
-  mutate(health_board = str_sub(health_board, 3, -1),
-         ijb          = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
+                                                  -diag_12, -month, -x29, -x30, -error_flag)
 
 # calculate yet to be determined totals
 
@@ -284,6 +278,14 @@ data_uptake <- summarise_uptake(ldp)
 
 data_uptake %>% 
   write_file(path = get_mi_data_path("uptake_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+#DATA UPTAKE----
+
+data_carer <- summarise_uptake(ldp, field = carers_support)
+
+data_carer %>% 
+  write_file(path = get_mi_data_path("carer_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
