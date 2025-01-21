@@ -215,6 +215,72 @@ Row
 Row {.tabset data-height=1220}
 ----------------------------------------------------------------------
 
+### **Integration Authority Areas**
+```{r dropdown-prop-subtype-ijb}
+pds_subtype_data_ijb <- SharedData$new(pds_all_subtype %>% filter(!grepl("NHS", geog)), key = ~fy, group = "subtype_prop_ijb")
+
+data_filter_subtype_prop <- filter_select(id = "trend_filter_subtype_prop_ijb",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = pds_subtype_data_ijb,
+                                    multiple = FALSE
+                                   )
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_subtype_prop,
+       NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Proportion of Referrals by Subtype of Dementia and Integration Authority Area</h2>
+```{r plot-prop-subtype-legend-ijb}
+bscols(widths = c(1,6,NA),NULL,
+div(style=css(marginBottom="-20px", marginLeft="-80px",width="190%",height="95px"), plot_prop_legend(pds_all_subtype %>% filter(geog == "Scotland"), measure = subtype, measure_text = "Subtype of Dementia: ")),NULL)
+```
+
+```{r plot-prop-subtype-ijb}
+bscols(widths = 12,
+  div(style = css(width="98%", height="410px"),
+      plot_prop(pds_subtype_data_ijb, measure = subtype, measure_text = "Subtype of Dementia: ", xlabel = "Integration Authority Area")
+)
+)
+
+```
+
+```{r trend-table-prop-subtype-ijb}
+
+pds_prop_table_data_ijb <- pds_all_subtype %>%
+  arrange(subtype) %>% filter(!grepl("NHS", geog)) %>% group_by(geog, fy) %>% 
+  mutate(perc_referrals = paste0(round((total_referrals/sum(total_referrals))*100,0),"%")) %>% ungroup() %>%   select(-total_referrals) %>% 
+  pivot_wider(names_from = geog, values_from = perc_referrals) %>%
+             rename(`Subtype of Dementia` = subtype)
+
+pds_prop_table_data_ijb[is.na(pds_prop_table_data_ijb)] <- "0%"
+
+
+pds_prop_table_ijb <- SharedData$new(pds_prop_table_data_ijb, key = ~fy, group = "subtype_prop_ijb")
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="540px", margin="15px"),
+          DT::datatable(pds_prop_table_ijb, rownames = FALSE, extensions = "FixedColumns",
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:33)
+                             ))) %>%
+  DT::formatStyle(2, fontWeight = "bold")
+            )
+       )
+
+
+
+
+```
+
 ### **Health Boards**
 
 ```{r dropdown-prop-subtype-hb}
@@ -275,72 +341,6 @@ bscols(widths = 12,
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                list(className = 'dt-right', targets = 2:16)
-                             ))) %>%
-  DT::formatStyle(2, fontWeight = "bold")
-            )
-       )
-
-
-
-
-```
-
-### **Integration Authority Areas**
-```{r dropdown-prop-subtype-ijb}
-pds_subtype_data_ijb <- SharedData$new(pds_all_subtype %>% filter(!grepl("NHS", geog)), key = ~fy, group = "subtype_prop_ijb")
-
-data_filter_subtype_prop <- filter_select(id = "trend_filter_subtype_prop_ijb",
-                                    label = "Select Financial Year of Diagnosis:",
-                                    group = ~fy,
-                                    sharedData = pds_subtype_data_ijb,
-                                    multiple = FALSE
-                                   )
-bscols(widths = c(1,5,NA),
-       NULL,
-       data_filter_subtype_prop,
-       NULL)
-
-```
-
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Proportion of Referrals by Subtype of Dementia and Integration Authority Area</h2>
-```{r plot-prop-subtype-legend-ijb}
-bscols(widths = c(1,6,NA),NULL,
-div(style=css(marginBottom="-20px", marginLeft="-80px",width="190%",height="95px"), plot_prop_legend(pds_all_subtype %>% filter(geog == "Scotland"), measure = subtype, measure_text = "Subtype of Dementia: ")),NULL)
-```
-
-```{r plot-prop-subtype-ijb}
-bscols(widths = 12,
-  div(style = css(width="98%", height="410px"),
-      plot_prop(pds_subtype_data_ijb, measure = subtype, measure_text = "Subtype of Dementia: ", xlabel = "Integration Authority Area")
-)
-)
-
-```
-
-```{r trend-table-prop-subtype-ijb}
-
-pds_prop_table_data_ijb <- pds_all_subtype %>%
-  arrange(subtype) %>% filter(!grepl("NHS", geog)) %>% group_by(geog, fy) %>% 
-  mutate(perc_referrals = paste0(round((total_referrals/sum(total_referrals))*100,0),"%")) %>% ungroup() %>%   select(-total_referrals) %>% 
-  pivot_wider(names_from = geog, values_from = perc_referrals) %>%
-             rename(`Subtype of Dementia` = subtype)
-
-pds_prop_table_data_ijb[is.na(pds_prop_table_data_ijb)] <- "0%"
-
-
-pds_prop_table_ijb <- SharedData$new(pds_prop_table_data_ijb, key = ~fy, group = "subtype_prop_ijb")
-
-bscols(widths = 12,
-       div(style = css(width="98%", height="540px", margin="15px"),
-          DT::datatable(pds_prop_table_ijb, rownames = FALSE, extensions = "FixedColumns",
-              options = list(pageLength = 10,
-                             scrollX = TRUE,
-                             fixedColumns = list(leftColumns = 1),
-                             scrollY = FALSE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold")
             )
@@ -506,6 +506,76 @@ Row
 Row {.tabset data-height=1090}
 ----------------------------------------------------------------------
 
+### **Integration Authority Areas**
+```{r dropdown-prop-stage-ijb}
+pds_stage_data_ijb <- SharedData$new(pds_all_stage %>% filter(!grepl("NHS", geog)), key = ~fy, group = "stage_prop_ijb")
+
+data_filter_stage_prop <- filter_select(id = "trend_filter_stage_prop_ijb",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = pds_stage_data_ijb,
+                                    multiple = FALSE
+                                   )
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_stage_prop,
+       NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Proportion of Referrals by Clinical Impression of Stage of Illness and Integration Authority Area</h2>
+```{r plot-prop-stage-legend-ijb}
+
+bscols(widths = 12,
+div(id="stageproplegend", plot_prop_legend(pds_all_stage %>% filter(geog == "Scotland"), measure = stage, measure_text = "Stage of Illness: "), style="margin-bottom:-351px"))
+
+```
+
+
+```{r plot-prop-stage-ijb}
+bscols(widths = 12,
+  div(style = css(width="98%", height="410px"),
+      plot_prop(pds_stage_data_ijb, measure = stage, measure_text = "Stage of Illness: ", xlabel = "Integration Authority Area")
+)
+)
+
+```
+
+
+```{r trend-table-prop-stage-ijb}
+
+pds_prop_stage_table_data_ijb <- pds_all_stage %>% filter(!grepl("NHS", geog)) %>% 
+arrange(stage) %>% group_by(geog, fy) %>% 
+  mutate(perc_referrals = paste0(round((total_referrals/sum(total_referrals))*100,0),"%")) %>% ungroup() %>%   select(-total_referrals) %>% 
+  pivot_wider(names_from = geog, values_from = perc_referrals) %>%
+             rename(`Stage of Illness` = stage)
+
+pds_prop_stage_table_data_ijb[is.na(pds_prop_stage_table_data_ijb)] <- "0%"
+
+
+pds_prop_stage_table_ijb <- SharedData$new(pds_prop_stage_table_data_ijb, key = ~fy, group = "stage_prop_ijb")
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="400px", margin="15px"),
+          DT::datatable(pds_prop_stage_table_ijb, rownames = FALSE, extensions = "FixedColumns",
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:33)
+                             ))) %>%
+  DT::formatStyle(2, fontWeight = "bold")
+            )
+       )
+
+
+
+
+```
+
 ### **Health Boards**
 
 ```{r dropdown-prop-stage-hb}
@@ -581,77 +651,6 @@ bscols(widths = 12,
 
 
 ```
-
-### **Integration Authority Areas**
-```{r dropdown-prop-stage-ijb}
-pds_stage_data_ijb <- SharedData$new(pds_all_stage %>% filter(!grepl("NHS", geog)), key = ~fy, group = "stage_prop_ijb")
-
-data_filter_stage_prop <- filter_select(id = "trend_filter_stage_prop_ijb",
-                                    label = "Select Financial Year of Diagnosis:",
-                                    group = ~fy,
-                                    sharedData = pds_stage_data_ijb,
-                                    multiple = FALSE
-                                   )
-bscols(widths = c(1,5,NA),
-       NULL,
-       data_filter_stage_prop,
-       NULL)
-
-```
-
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Proportion of Referrals by Clinical Impression of Stage of Illness and Integration Authority Area</h2>
-```{r plot-prop-stage-legend-ijb}
-
-bscols(widths = 12,
-div(id="stageproplegend", plot_prop_legend(pds_all_stage %>% filter(geog == "Scotland"), measure = stage, measure_text = "Stage of Illness: "), style="margin-bottom:-351px"))
-
-```
-
-
-```{r plot-prop-stage-ijb}
-bscols(widths = 12,
-  div(style = css(width="98%", height="410px"),
-      plot_prop(pds_stage_data_ijb, measure = stage, measure_text = "Stage of Illness: ", xlabel = "Integration Authority Area")
-)
-)
-
-```
-
-
-```{r trend-table-prop-stage-ijb}
-
-pds_prop_stage_table_data_ijb <- pds_all_stage %>% filter(!grepl("NHS", geog)) %>% 
-arrange(stage) %>% group_by(geog, fy) %>% 
-  mutate(perc_referrals = paste0(round((total_referrals/sum(total_referrals))*100,0),"%")) %>% ungroup() %>%   select(-total_referrals) %>% 
-  pivot_wider(names_from = geog, values_from = perc_referrals) %>%
-             rename(`Stage of Illness` = stage)
-
-pds_prop_stage_table_data_ijb[is.na(pds_prop_stage_table_data_ijb)] <- "0%"
-
-
-pds_prop_stage_table_ijb <- SharedData$new(pds_prop_stage_table_data_ijb, key = ~fy, group = "stage_prop_ijb")
-
-bscols(widths = 12,
-       div(style = css(width="98%", height="400px", margin="15px"),
-          DT::datatable(pds_prop_stage_table_ijb, rownames = FALSE, extensions = "FixedColumns",
-              options = list(pageLength = 10,
-                             scrollX = TRUE,
-                             fixedColumns = list(leftColumns = 1),
-                             scrollY = FALSE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
-                             ))) %>%
-  DT::formatStyle(2, fontWeight = "bold")
-            )
-       )
-
-
-
-
-```
-
 
 Stage Outcomes {.hidden}
 =====================================
@@ -817,6 +816,76 @@ Row
 Row {.tabset data-height=1200}
 ----------------------------------------------------------------------
 
+### **Integration Authority Areas**
+```{r dropdown-prop-model-ijb}
+pds_model_data_ijb <- SharedData$new(pds_all_model %>% filter(!grepl("NHS", geog)), key = ~fy, group = "model_prop_ijb")
+
+data_filter_model_prop <- filter_select(id = "trend_filter_model_prop_ijb",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = pds_model_data_ijb,
+                                    multiple = FALSE
+                                   )
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_model_prop,
+       NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Proportion of Referrals by Model of Care and Integration Authority Area</h2>
+```{r plot-prop-model-legend-ijb}
+bscols(widths = c(1,6,NA),NULL,
+div(style=css(marginBottom="-20px", marginLeft="-80px",width="180%",height="95px"), plot_prop_legend(pds_all_model %>% filter(geog == "Scotland"), measure = model, measure_text = "Model of Care: ")),NULL)
+
+```
+
+
+```{r plot-prop-model-ijb}
+bscols(widths = 12,
+  div(style = css(width="98%", height="410px"),
+      plot_prop(pds_model_data_ijb, measure = model, measure_text = "Model of Care: ", xlabel = "Integration Authority Area")
+)
+)
+
+```
+
+
+```{r trend-table-prop-model-ijb}
+
+pds_prop_model_table_data_ijb <- pds_all_model %>%
+  arrange(model) %>% filter(!grepl("NHS", geog)) %>% group_by(geog, fy) %>% 
+  mutate(perc_referrals = paste0(round((total_referrals/sum(total_referrals))*100,0),"%")) %>% ungroup() %>%   select(-total_referrals) %>% 
+  pivot_wider(names_from = geog, values_from = perc_referrals) %>%
+             rename(`Model of Care` = model)
+
+pds_prop_model_table_data_ijb[is.na(pds_prop_model_table_data_ijb)] <- "0%"
+
+
+pds_prop_model_table_ijb <- SharedData$new(pds_prop_model_table_data_ijb, key = ~fy, group = "model_prop_ijb")
+
+bscols(widths = 12,
+       div(style = css(width="98%", height="500px", margin="15px"),
+          DT::datatable(pds_prop_model_table_ijb, rownames = FALSE, extensions = "FixedColumns",
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:33)
+                             ))) %>%
+  DT::formatStyle(2, fontWeight = "bold"#, padding = "4px")
+  )
+            )
+       )
+
+
+
+
+```
+
 ### **Health Boards**
 
 ```{r dropdown-prop-model-hb}
@@ -892,77 +961,6 @@ bscols(widths = 12,
 
 
 ```
-
-### **Integration Authority Areas**
-```{r dropdown-prop-model-ijb}
-pds_model_data_ijb <- SharedData$new(pds_all_model %>% filter(!grepl("NHS", geog)), key = ~fy, group = "model_prop_ijb")
-
-data_filter_model_prop <- filter_select(id = "trend_filter_model_prop_ijb",
-                                    label = "Select Financial Year of Diagnosis:",
-                                    group = ~fy,
-                                    sharedData = pds_model_data_ijb,
-                                    multiple = FALSE
-                                   )
-bscols(widths = c(1,5,NA),
-       NULL,
-       data_filter_model_prop,
-       NULL)
-
-```
-
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Proportion of Referrals by Model of Care and Integration Authority Area</h2>
-```{r plot-prop-model-legend-ijb}
-bscols(widths = c(1,6,NA),NULL,
-div(style=css(marginBottom="-20px", marginLeft="-80px",width="180%",height="95px"), plot_prop_legend(pds_all_model %>% filter(geog == "Scotland"), measure = model, measure_text = "Model of Care: ")),NULL)
-
-```
-
-
-```{r plot-prop-model-ijb}
-bscols(widths = 12,
-  div(style = css(width="98%", height="410px"),
-      plot_prop(pds_model_data_ijb, measure = model, measure_text = "Model of Care: ", xlabel = "Integration Authority Area")
-)
-)
-
-```
-
-
-```{r trend-table-prop-model-ijb}
-
-pds_prop_model_table_data_ijb <- pds_all_model %>%
-  arrange(model) %>% filter(!grepl("NHS", geog)) %>% group_by(geog, fy) %>% 
-  mutate(perc_referrals = paste0(round((total_referrals/sum(total_referrals))*100,0),"%")) %>% ungroup() %>%   select(-total_referrals) %>% 
-  pivot_wider(names_from = geog, values_from = perc_referrals) %>%
-             rename(`Model of Care` = model)
-
-pds_prop_model_table_data_ijb[is.na(pds_prop_model_table_data_ijb)] <- "0%"
-
-
-pds_prop_model_table_ijb <- SharedData$new(pds_prop_model_table_data_ijb, key = ~fy, group = "model_prop_ijb")
-
-bscols(widths = 12,
-       div(style = css(width="98%", height="500px", margin="15px"),
-          DT::datatable(pds_prop_model_table_ijb, rownames = FALSE, extensions = "FixedColumns",
-              options = list(pageLength = 10,
-                             scrollX = TRUE,
-                             fixedColumns = list(leftColumns = 1),
-                             scrollY = FALSE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
-                             ))) %>%
-  DT::formatStyle(2, fontWeight = "bold"#, padding = "4px")
-  )
-            )
-       )
-
-
-
-
-```
-
 
 Model Outcomes {.hidden}
 =====================================

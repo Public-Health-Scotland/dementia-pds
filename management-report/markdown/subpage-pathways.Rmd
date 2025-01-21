@@ -610,6 +610,88 @@ Row
 Row {.tabset data-height=670}
 ----------------------------------------------------------------------
 
+### **Integration Authority Areas**
+
+```{r dropdown-no-contact-ijb}
+
+ no_contact_term_ijb <- wait_data_3 %>%  
+    filter(sex == "All", termination_or_transition_reason == "All reasons") %>%
+    filter(!grepl("NHS", ijb)) %>% 
+    pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
+    select(fy, ijb,
+           referrals_All,
+           median_referral_to_termination_All,
+           referrals_exempt,
+           referrals_fail)
+    
+wait_data_totals_ijb <- wait_data %>% filter(sex == "All", simd == "All", ijb != "All" | ijb == "Scotland") %>% select(ijb, fy, total_referrals)
+
+no_contact_12_ijb <- pds_all %>% filter(!grepl("NHS", geog), ldp_full == "fail - PDS not started and more than 12 months since diagnosis" | ldp_full == "fail - PDS started more than 12 months after diagnosis") %>% 
+   group_by(fy, geog) %>% summarise(referrals_no_contact_12 = sum(referrals)) %>% rename(ijb = geog)
+ 
+ijb_totals_12 <- left_join(wait_data_totals_ijb, no_contact_12_ijb)
+
+no_contact_ijb <- left_join(ijb_totals_12, no_contact_term_ijb) %>% 
+  mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
+    mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
+     mutate(perc_term_early = paste0(round((referrals_All/total_referrals)*100,1),"%")) %>% 
+   mutate(perc_no_contact_12 = paste0(round((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
+      mutate(perc_term_early_exempt = if_else(referrals_exempt == 0, NA,
+        round((referrals_exempt/referrals_All)*100,1))) %>% 
+          mutate(perc_term_early_exempt = if_else(!is.na(perc_term_early_exempt), paste0(perc_term_early_exempt, "%"), "-")) %>% 
+  select(fy, ijb,
+         total_referrals, referrals_no_contact_12, perc_no_contact_12,
+           referrals_All,
+         perc_term_early,
+           referrals_exempt,
+         perc_term_early_exempt) %>% 
+    mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>% arrange(ijb) %>%
+    mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
+    set_colnames(c("fy", "Integration Authority Area", "Number of People Referred to PDS",
+                   "Number of referrals not contacted within 12 months of diagnosis",
+                   "Percentage of referrals not contacted within 12 months of diagnosis",
+                   "Number of referrals whose PDS ended with no contact",
+                   "Percentage of referrals whose PDS ended with no contact",
+                   "Number of referrals whose PDS ended with no contact Exempt from LDP standard",
+                   "Percentage of referrals whose PDS ended with no contact Exempt from LDP standard"))
+    
+
+no_contact_table_data_ijb <- SharedData$new(no_contact_ijb)
+
+data_filter_year_no_contact_ijb <- filter_select(id = "no_contact_filter_year_ijb",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = no_contact_table_data_ijb,
+                                    multiple = FALSE
+                                   )
+
+bscols(widths = c(1,4,NA), NULL,
+data_filter_year_no_contact_ijb, NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to post-dagnostic support with no contact by PDS practitioner</h2>
+```{r no-contact-table-ijb}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="500px", margin="20px"),
+     DT::datatable(no_contact_table_data_ijb, rownames = FALSE,
+              options = list(pageLength = 33,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                                list(className = 'dt-right', targets = 2:8)
+                                                #list(width = '30px', targets = 6)
+                                                ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+```
+
 ### **Health Boards**
 
 ```{r dropdown-no-contact-hb}
@@ -688,87 +770,6 @@ bscols(widths = 12,
      )
 
 ```
-
-### **Integration Authority Areas**
-
-```{r dropdown-no-contact-ijb}
-
- no_contact_term_ijb <- wait_data_3 %>% 
-    filter(sex == "All", termination_or_transition_reason == "All reasons") %>%
-    filter(!grepl("NHS", ijb)) %>% 
-    pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
-    select(fy, ijb,
-           referrals_All,
-           median_referral_to_termination_All,
-           referrals_exempt,
-           referrals_fail)
-    
-wait_data_totals_ijb <- wait_data %>% filter(sex == "All", simd == "All", ijb != "All" | ijb == "Scotland") %>% select(ijb, fy, total_referrals)
-
-no_contact_12_ijb <- pds_all %>% filter(!grepl("NHS", geog), ldp_full == "fail - PDS not started and more than 12 months since diagnosis" | ldp_full == "fail - PDS started more than 12 months after diagnosis") %>% 
-   group_by(fy, geog) %>% summarise(referrals_no_contact_12 = sum(referrals)) %>% rename(ijb = geog)
- 
-ijb_totals_12 <- left_join(wait_data_totals_ijb, no_contact_12_ijb)
-
-no_contact_ijb <- left_join(ijb_totals_12, no_contact_term_ijb) %>% 
-  mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
-    mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
-     mutate(perc_term_early = paste0(round((referrals_All/total_referrals)*100,1),"%")) %>% 
-   mutate(perc_no_contact_12 = paste0(round((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
-      mutate(perc_term_early_exempt = if_else(referrals_exempt == 0, NA,
-        round((referrals_exempt/referrals_All)*100,1))) %>% 
-          mutate(perc_term_early_exempt = if_else(!is.na(perc_term_early_exempt), paste0(perc_term_early_exempt, "%"), "-")) %>% 
-  select(fy, ijb,
-         total_referrals, referrals_no_contact_12, perc_no_contact_12,
-           referrals_All,
-         perc_term_early,
-           referrals_exempt,
-         perc_term_early_exempt) %>% 
-
-    set_colnames(c("fy", "Integration Authority Area", "Number of People Referred to PDS",
-                   "Number of referrals not contacted within 12 months of diagnosis",
-                   "Percentage of referrals not contacted within 12 months of diagnosis",
-                   "Number of referrals whose PDS ended with no contact",
-                   "Percentage of referrals whose PDS ended with no contact",
-                   "Number of referrals whose PDS ended with no contact Exempt from LDP standard",
-                   "Percentage of referrals whose PDS ended with no contact Exempt from LDP standard"))
-
-no_contact_table_data_ijb <- SharedData$new(no_contact_ijb)
-
-data_filter_year_no_contact_ijb <- filter_select(id = "no_contact_filter_year_ijb",
-                                    label = "Select Financial Year of Diagnosis:",
-                                    group = ~fy,
-                                    sharedData = no_contact_table_data_ijb,
-                                    multiple = FALSE
-                                   )
-
-bscols(widths = c(1,4,NA), NULL,
-data_filter_year_no_contact_ijb, NULL)
-
-```
-
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to post-dagnostic support with no contact by PDS practitioner</h2>
-```{r no-contact-table-ijb}
-
-bscols(widths = 12,
-       div(style = css(width="97%", height="500px", margin="20px"),
-     DT::datatable(no_contact_table_data_ijb, rownames = FALSE,
-              options = list(pageLength = 33,
-                             scrollX = FALSE,
-                             scrollY = TRUE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0),
-                                                list(className = 'dt-right', targets = 2:8)
-                                                #list(width = '30px', targets = 6)
-                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
-                          )
-        )
-     )
-
-```
-
 
 Termination Reasons {.hidden}
 =================================================
