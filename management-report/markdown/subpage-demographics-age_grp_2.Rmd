@@ -1,5 +1,5 @@
 ---
-title: "DEMOGRAPHICS DRAFT"
+title: "DEMOGRAPHICS AGE GROUPS DRAFT"
 output: 
   flexdashboard::flex_dashboard:
     logo: phs-logo.png
@@ -739,7 +739,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Percentage of LDP standard achieved by Age Group and Financial Year</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px">Percentage of referrals who received a minimum of one year’s PDS by Age Group and Financial Year</h2>
 ```{r plot-ldp-age_2-legend}
 bscols(widths = c(1,1,5,NA),NULL,
        div(style = css(width="100px", height="20px"),
@@ -1324,7 +1324,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px"> Percentage of LDP standard achieved by Gender and Financial Year </h2>
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px">Percentage of referrals who received a minimum of one year’s PDS by Gender and Financial Year </h2>
 ```{r plot-ldp-sex-legend}
 bscols(widths = c(1,1,5,NA),NULL,
        div(style = css(width="100px", height="20px"),
@@ -1888,7 +1888,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px"> Percentage of LDP standard achieved by SIMD Quintile and Financial Year </h2>
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px">Percentage of referrals who received a minimum of one year’s PDS by SIMD Quintile and Financial Year </h2>
 ```{r plot-ldp-simd-legend}
 bscols(widths = c(1,1,5,NA),NULL,
        div(style = css(width="100px", height="20px"),

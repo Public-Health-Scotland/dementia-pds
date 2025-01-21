@@ -686,7 +686,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Percentage of LDP standard achieved by Age Group and Financial Year</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px">Percentage of referrals who received a minimum of one year’s PDS by Age Group and Financial Year</h2>
 ```{r plot-ldp-age_2-legend}
 bscols(widths = c(1,1,5,NA),NULL,
        div(style = css(width="100px", height="20px"),
@@ -988,7 +988,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population by Gender and Financial Year</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population (18+) by Gender and Financial Year</h2>
 ```{r plot-trend-sex-legend-pop}
 
 bscols(widths = c(1,1,5,NA),NULL,
@@ -1064,7 +1064,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by Gender and Health Board</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (18+) by Gender and Health Board</h2>
 ```{r plot-hb-sex-legend-pop}
 
  bscols(widths = 12,
@@ -1136,7 +1136,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by Gender and Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (18+) by Gender and Integration Authority Area</h2>
 ```{r plot-ijb-sex-legend-pop}
 
  bscols(widths = 12,
@@ -1247,7 +1247,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px"> Percentage of LDP standard achieved by Gender and Financial Year </h2>
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px">Percentage of referrals who received a minimum of one year’s PDS by Gender and Financial Year </h2>
 ```{r plot-ldp-sex-legend}
 bscols(widths = c(1,1,5,NA),NULL,
        div(style = css(width="100px", height="20px"),
@@ -1548,7 +1548,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population by SIMD Quintile and Financial Year</h2> 
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population (18+) by SIMD Quintile and Financial Year</h2> 
 ```{r plot-trend-simd-legend-pop}
 
 bscols(widths = c(1,1,5,NA),NULL,
@@ -1627,7 +1627,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by SIMD Quintile and Health Board</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (18+) by SIMD Quintile and Health Board</h2>
 ```{r plot-hb-simd-legend-pop}
 
  bscols(widths = 12,
@@ -1700,7 +1700,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by SIMD Quintile and Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (18+) by SIMD Quintile and Integration Authority Area</h2>
 ```{r plot-ijb-simd-legend-pop}
 
  bscols(widths = 12,
@@ -1812,7 +1812,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px"> Percentage of LDP standard achieved by SIMD Quintile and Financial Year </h2>
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 20px">Percentage of referrals who received a minimum of one year’s PDS by SIMD Quintile and Financial Year </h2>
 ```{r plot-ldp-simd-legend}
 bscols(widths = c(1,1,5,NA),NULL,
        div(style = css(width="100px", height="20px"),

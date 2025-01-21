@@ -501,7 +501,7 @@ Row
 Row {.tabset data-height=1240}
 ----------------------------------------------------------------------
 
-### **Percentage of LDP Standard achieved**
+### **Percentage receiving one year's PDS support**
 
 ```{r dropdown-met-ldp}
 pds_met_rates <-
@@ -524,7 +524,7 @@ data_filter_met_trend,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people referred for post-diagnostic support where PDS met LDP Standard</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS</h2>
 ```{r plot-med-ldp}
  trends_met_plot <- plot_trend_perc(pds_met_rates_data, perc_met, x ="Financial Year of Diagnosis", colours = phs_colours_46)
 
