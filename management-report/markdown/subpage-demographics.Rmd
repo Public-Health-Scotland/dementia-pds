@@ -313,7 +313,7 @@ pds_all_simd <- pds_all %>% group_by(geog, fy, simd) %>% filter(simd != "Unknown
 complete(nesting(geog, fy), simd, fill = list(total_referrals = 0))
 
 
-#prepare population rate data fo simd
+#prepare population rate data for simd
 simd_pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/simd_pop_data.rds")
 
 pop_data_simd <- simd_pop_data %>% filter(sex == "All", age_grp == "All", age_grp_2 == "All") %>% select(-sex, -age_grp, -age_grp_2)
@@ -325,6 +325,7 @@ pds_all_simd_rates <- left_join(pds_all_simd_cal_year, pop_data_simd) %>% select
   mutate(pop_rate_10000 = round((total_referrals/pop)*10000, 1))
 
 pds_all_simd_rates$geog <- factor(pds_all_simd_rates$geog, levels = unique(pds_all_simd_rates$geog))
+
 pds_all_simd_rates$simd <- as.factor(pds_all_simd_rates$simd)
 
 pds_all_simd_rates %<>% complete(nesting(geog, fy), simd, fill = list(pop = NA, pop_rate_10000 = NA)) 
@@ -1963,7 +1964,8 @@ plot_geog_bar(ldp_simd_data_ijb, y_value = perc_met, measure = simd, measure_tex
 
 ijb_ldp_simd_table_data <- ldp_all_simd %>%
   filter(!grepl("NHS", geog)) %>% 
-  select(geog,fy,simd,perc_met) %>% mutate(perc_met = as.character(perc_met)) %>% 
+  select(geog,fy,simd,perc_met) %>%
+  mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
   pivot_wider(names_from = geog, values_from = perc_met) %>%
   mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
              rename(`SIMD Quintile` = simd)
@@ -2036,7 +2038,8 @@ plot_geog_bar(ldp_simd_data_hb, y_value = perc_met, measure = simd, measure_text
 ```{r table-hb-simd-ldp}
 
 hb_ldp_simd_table_data <- ldp_all_simd %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
-  select(geog,fy,simd,perc_met) %>% mutate(perc_met = as.character(perc_met)) %>% 
+  select(geog,fy,simd,perc_met) %>%
+  mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
   pivot_wider(names_from = geog, values_from = perc_met) %>%
   mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
              rename(`SIMD Quintile` = simd)
