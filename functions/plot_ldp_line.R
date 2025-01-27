@@ -47,8 +47,8 @@ plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL){
     
     theme_dementia(xangle = 45) +
     
-    theme(strip.background = element_rect(fill = "#CAC6D1"),
-          strip.text.x = element_text(size = 8),
+    theme(strip.background = element_rect(fill = "#DFDDE3"),
+          strip.text.x = element_text(size = 9),
           legend.position = "none"
     ) 
   
@@ -70,17 +70,16 @@ plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL){
 
 
 
-plot_ldp_line_legend_1 <- function(data, measure) {
+plot_ldp_line_legend_1 <- function(data) {
   
-  legend <- data %>% ggplot(aes(x = {{measure}}, y = 0, 
-                                fill = geog)
+  legend <- data %>% ggplot(aes(x = x, y = y, fill = geog)
   ) +
     
-    geom_line(linetype = 2) +
+    geom_line(aes(linetype = geog)) +
     
     labs(fill = NULL, linetype = NULL) +
     
-    scale_fill_manual(values = "black") +
+    scale_fill_manual(values = c("black","black")) +
     
     theme(axis.title = element_blank(),
           axis.text = element_blank(),

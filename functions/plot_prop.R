@@ -25,8 +25,8 @@ plot_prop <- function(data, measure, measure_text, xlabel = NULL){
      theme(strip.background = element_blank(),
          strip.text.x = element_blank(),
          legend.position = "none",
-         axis.title.x = element_text(size = 11,
-                                    face = "bold",
+         axis.title.x = element_text(size = 13,
+                                    #face = "bold",
                                     margin = margin(t = -55))
          ) + 
     

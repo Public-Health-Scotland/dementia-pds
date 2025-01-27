@@ -44,8 +44,8 @@ plot_trend_rate <- function(data, measure, measure_text, y = NULL, scales = NULL
     
     theme_dementia(xangle = 45) +
     
-    theme(strip.background = element_blank(),
-          strip.text.x = element_blank(),
+    theme(strip.background = element_rect(fill = "#DFDDE3"),
+          strip.text.x = element_text(size = 9),
           legend.position = "none",
           axis.title.y = element_text(margin = margin(r = 10))
     ) 
@@ -68,17 +68,16 @@ plot_trend_rate <- function(data, measure, measure_text, y = NULL, scales = NULL
 
 
 
-plot_trend_rate_legend_1 <- function(data, measure) {
+plot_trend_rate_legend_1 <- function(data) {
   
-  legend <- data %>% ggplot(aes(x = {{measure}}, y = 0, 
-                                fill = geog)
+  legend <- data %>% ggplot(aes(x = x, y = y, fill = geog)
   ) +
     
-    geom_line(linetype = 2) +
+    geom_line(aes(linetype = geog)) +
     
     labs(fill = NULL, linetype = NULL) +
     
-    scale_fill_manual(values = "black") +
+    scale_fill_manual(values = c("black","black")) +
     
     theme(axis.title = element_blank(),
           axis.text = element_blank(),
@@ -96,7 +95,6 @@ plot_trend_rate_legend_1 <- function(data, measure) {
            # margin = list(r = -500, l = -500, b = -500, t = 40)
     )  
 }
-
 
 plot_trend_rate_legend_2 <- function(data, measure, measure_text) {
   

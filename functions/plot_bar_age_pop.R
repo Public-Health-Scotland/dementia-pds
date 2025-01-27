@@ -65,7 +65,7 @@ plot_bar_age_pop_legend <- function(data) {
     theme(axis.title = element_blank(),
           axis.text = element_blank(),
           axis.ticks = element_blank(),
-          legend.position = c(0, 0.5), # move the legend to the center
+          legend.position = c(0.5, 1), # move the legend to the center
           panel.grid = element_blank(),
           panel.border = element_rect(colour = "white", fill='white', size=1)
     )
@@ -75,6 +75,6 @@ plot_bar_age_pop_legend <- function(data) {
 
   config(legend_plotly, staticPlot = TRUE) %>%
     layout(legend = list(orientation = "h",
-                         x = 0, y = 0.5))
+                         x = 0.5, y = 1, xanchor = "center", yanchor = "top" ))
 }
 

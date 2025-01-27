@@ -1,6 +1,6 @@
-plot_prop_2 <- function(data, measure, measure_text, xlabel = NULL){
+plot_prop_2 <- function(data, measure, measure_text, measure_2){
   
-  plot <- data %>%  ggplot(aes(x = geog, y = total_referrals, fill = {{measure}}, 
+  plot <- data %>% ggplot(aes(x = geog, y = total_referrals, fill = {{measure}}, 
                                text = paste0(geog, "<br>",
                                              fy, "<br>", 
                                              measure_text, {{measure}}, "<br>",
@@ -10,13 +10,14 @@ plot_prop_2 <- function(data, measure, measure_text, xlabel = NULL){
     
     geom_col(position = position_fill()) +
     
-    facet_wrap(vars(fy, age_grp_2), nrow = 1) +
+    facet_wrap(vars(geog_type, {{measure_2}}), nrow = 1, scales = "free_x") +
+                
     
     scale_y_continuous(expand = c(0, 0), labels = scales::percent_format()) +
     
     phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
     
-    labs(x = xlabel,
+    labs(x = "",
          y = "",
          fill = NULL) +
     
@@ -25,12 +26,12 @@ plot_prop_2 <- function(data, measure, measure_text, xlabel = NULL){
     theme(strip.background = element_blank(),
           strip.text.x = element_blank(),
           legend.position = "none",
-          axis.title.x = element_text(size = 11,
-                                      face = "bold",
+          axis.title.x = element_text(size = 13,
+                                   #   face = "bold",
                                       margin = margin(t = -55))
     ) + 
     
-    theme(panel.spacing = unit(100000, "pt")) #this is for 'stacking facets' so only the selected one is visible
+   theme(panel.spacing = unit(100000, "pt")) #this is for 'stacking facets' so only the selected one is visible
   
   ggplotly(plot, tooltip = "text") %>%
     
@@ -41,35 +42,38 @@ plot_prop_2 <- function(data, measure, measure_text, xlabel = NULL){
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian', 'toImage'), 
            displaylogo = F, editable = F) %>%
-    # layout(legend = list(orientation = "v")) %>% 
-    #, x = 0.5 , y = -0.4,
-    #xanchor = "right", yanchor = "right")) %>% 
     layout(margin = list(b = 150, t = 40) # to avoid labels getting cut out
     )
   
 }
 
-plot_prop_legend <- function(data, measure, measure_text) { 
-  legend <- data %>% ggplot(aes(x = geog, y = total_referrals, fill = {{measure}}))+
+
+plot_prop_2_label <- function(data) { 
+  legend <- data %>% ggplot(aes(x = x, y = y, fill = geog_type_2))+
     geom_col(width = 0)+
     
-    labs(fill = measure_text) +
+    labs(fill = NULL) +
     
-    phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+    scale_fill_manual(values = c("white", "white")) +
     
     theme(axis.title = element_blank(),
           axis.text = element_blank(),
           axis.ticks = element_blank(),
-          legend.position = c(0.4, 0.5), # move the legend to the center
+          legend.position = c(0, 1), 
           panel.grid = element_blank(),
-          panel.border = element_rect(colour = "white", fill='white', size=1)
+          panel.border = element_blank(),
+          legend.text = element_text(size = 13
+                                     #, face = "bold"
+                                     )
     )
   
   legend_plotly<-ggplotly(legend, tooltip = NULL)
   
   config(legend_plotly, staticPlot = TRUE) %>%
     layout(legend = list(orientation = "h",
-                         x = 0.5, y = 1, xanchor = "center", yanchor = "top" ) 
+                         x = 0, y = 1, xanchor = "center", yanchor = "top") 
     )  
 }
+
+
 
