@@ -1,14 +1,14 @@
 everyother <- function(x) x[seq_along(x) %% 2 != 0]
 
-plot_trend_rate <- function(data, measure, measure_text, y = NULL, scales = NULL){
+plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL){
   
   plot <-  ggplot(data) +
     
     geom_point(aes(x = fy, y = pop_rate_10000, group = {{measure}}, colour = {{measure}},
                    text = paste0(geog, "<br>",
-                                 measure_text, {{measure}}, "<br>",
                                  fy, "<br>",
-                                 pop_rate_10000)
+                                 measure_text, {{measure}}, "<br>",
+                                 "Rate per 10,000 population: ", pop_rate_10000)
     )
     ) +
     
@@ -16,9 +16,9 @@ plot_trend_rate <- function(data, measure, measure_text, y = NULL, scales = NULL
     
     geom_point(aes(x = fy, y = scot_pop_rate_10000, group = {{measure}}, colour = {{measure}},
                    text = paste0("Scotland", "<br>",
-                                 measure_text, {{measure}}, "<br>",
                                  fy, "<br>",
-                                 scot_pop_rate_10000)
+                                 measure_text, {{measure}}, "<br>",
+                                 "Rate per 10,000 population: ", scot_pop_rate_10000)
     )
     ) +
     
@@ -68,7 +68,7 @@ plot_trend_rate <- function(data, measure, measure_text, y = NULL, scales = NULL
 
 
 
-plot_trend_rate_legend_1 <- function(data) {
+plot_rate_line_legend_1 <- function(data) {
   
   legend <- data %>% ggplot(aes(x = x, y = y, fill = geog)
   ) +
@@ -96,7 +96,7 @@ plot_trend_rate_legend_1 <- function(data) {
     )  
 }
 
-plot_trend_rate_legend_2 <- function(data, measure, measure_text) {
+plot_rate_line_legend_2 <- function(data, measure, measure_text) {
   
   legend <- data %>% ggplot(aes(x = fy, y = 0, group = {{measure}}, colour = {{measure}})
   ) +

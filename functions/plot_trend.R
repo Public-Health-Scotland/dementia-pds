@@ -1,4 +1,4 @@
-plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_32){
+plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_32, measure_text){
   
   plot <- data %>%
     
@@ -8,7 +8,7 @@ plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_32)
                colour = geog,
                text = paste0(geog, "<br>",
                              fy, "<br>",
-                             {{measure}}))) +
+                             measure_text, format({{measure}}, big.mark = ",")))) +
     
     geom_point() +
     

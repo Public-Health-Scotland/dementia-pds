@@ -6,7 +6,6 @@ plot_ldp_bar <- function(data, measure, measure_text, ncol = 10, nrow = NULL){
                    text = paste0(geog, "<br>",
                                  measure_text, {{measure}}, "<br>",
                                  fy, "<br>",
-                                 "percentage of LDP standard acheived: ",
                                  paste0(perc_met, "%"))
     ),  position = position_identity()
     ) +

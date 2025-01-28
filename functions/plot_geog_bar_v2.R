@@ -1,4 +1,4 @@
-plot_geog_bar <- function(data, y_value, measure, measure_text, y_value_text = NULL, x = NULL, y = NULL, ylabel = waiver(), ylimits = c(0, NA), symbol = NULL){
+plot_geog_bar_v2 <- function(data, y_value, measure, measure_text, y_value_text = NULL, x = NULL, y = NULL, ylabel = waiver(), ylimits = c(0, NA), symbol = NULL){
   
   plot <-  data %>% ggplot() +
     
@@ -23,7 +23,7 @@ plot_geog_bar <- function(data, y_value, measure, measure_text, y_value_text = N
     
     scale_fill_manual(values = phs_colours_32) +
     
-    facet_wrap(vars(fy), ncol = 1) + 
+    facet_wrap(vars(fy, simd_group), ncol = 1, scales = "free_y") + 
     
     theme_dementia(xangle = 45) +
     
@@ -52,31 +52,31 @@ plot_geog_bar <- function(data, y_value, measure, measure_text, y_value_text = N
   
 }
 
-# plot_geog_bar_legend <- function(data, measure) {
-#   
-#   legend <- data %>% ggplot(aes(x = geog, y = 0, fill = {{measure}})) +
-#     
-#     geom_col(width = 0) +
-#     
-#     labs(fill = NULL) +
-#     
-#     scale_fill_manual(values = phs_colours_32) +
-#     
-#     theme(axis.title = element_blank(),
-#           axis.text = element_blank(),
-#           axis.ticks = element_blank(),
-#           legend.position = c(0.5, 1), # move the legend to the center
-#           panel.grid = element_blank(),
-#           panel.border = element_rect(colour = "white", fill='white', size=0)
-#     )
-#   
-#   legend_plotly<-ggplotly(legend, tooltip = NULL)
-#   
-#   config(legend_plotly, displayModeBar = FALSE, displaylogo = F, editable = F) %>%
-#     layout(legend = list(orientation = "h",
-#                          x = 0.5, y = 1, xanchor = "center", yanchor = "top" ) 
-#     )  
-# }
+plot_geog_bar_legend <- function(data, measure) {
+
+  legend <- data %>% ggplot(aes(x = geog, y = 0, fill = {{measure}})) +
+
+    geom_col(width = 0) +
+
+    labs(fill = NULL) +
+
+    scale_fill_manual(values = phs_colours_32) +
+
+    theme(axis.title = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          legend.position = c(0.5, 1), # move the legend to the center
+          panel.grid = element_blank(),
+          panel.border = element_rect(colour = "white", fill='white', size=0)
+    )
+
+  legend_plotly<-ggplotly(legend, tooltip = NULL)
+
+  config(legend_plotly, staticPlot = TRUE) %>%
+    layout(legend = list(orientation = "h",
+                         x = 0.5, y = 1, xanchor = "center", yanchor = "top" )
+    )
+}
 
 
 

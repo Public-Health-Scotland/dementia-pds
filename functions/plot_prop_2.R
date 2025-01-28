@@ -1,10 +1,10 @@
-plot_prop_2 <- function(data, measure, measure_text, measure_2){
+plot_prop_2 <- function(data, measure, measure_text, measure_2, colours = phs_colours_32){
   
   plot <- data %>% ggplot(aes(x = geog, y = total_referrals, fill = {{measure}}, 
                                text = paste0(geog, "<br>",
                                              fy, "<br>", 
                                              measure_text, {{measure}}, "<br>",
-                                             "Total Referrals: ", total_referrals
+                                             "Referrals: ", format(total_referrals, big.mark = ",")
                                ))) +    
     
     
@@ -15,7 +15,7 @@ plot_prop_2 <- function(data, measure, measure_text, measure_2){
     
     scale_y_continuous(expand = c(0, 0), labels = scales::percent_format()) +
     
-    phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+    scale_fill_manual(values = colours) +
     
     labs(x = "",
          y = "",

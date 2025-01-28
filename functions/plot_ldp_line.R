@@ -1,14 +1,13 @@
 everyother <- function(x) x[seq_along(x) %% 2 != 0]
 
-plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL){
+plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL, colours = phs_colours_32){
   
   plot <-  ggplot(data) +
     
     geom_point(aes(x = fy, y = perc_met, group = {{measure}}, colour = {{measure}},
                    text = paste0(geog, "<br>",
-                                 measure_text, {{measure}}, "<br>",
                                  fy, "<br>",
-                                 "percentage of LDP standard acheived: ",
+                                 measure_text, {{measure}}, "<br>",
                                  paste0(perc_met, "%"))
     )
     ) +
@@ -17,9 +16,8 @@ plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL){
     
     geom_point(aes(x = fy, y = scot_perc_met, group = {{measure}}, colour = {{measure}},
                    text = paste0("Scotland", "<br>",
-                                 measure_text, {{measure}}, "<br>",
                                  fy, "<br>",
-                                 "percentage of LDP standard acheived: ",
+                                 measure_text, {{measure}}, "<br>",
                                  paste0(perc_met, "%"))
     )
     ) +
@@ -40,7 +38,7 @@ plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL){
     scale_x_discrete(breaks = everyother
     ) +
     
-    scale_colour_manual(values = phs_colours_32) +
+    scale_colour_manual(values = colours) +
     
     
     facet_wrap(vars({{measure}}), ncol = ncol, nrow = nrow) + 

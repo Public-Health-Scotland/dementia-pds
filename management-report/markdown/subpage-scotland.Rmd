@@ -291,7 +291,7 @@ ldp_table(subpage_data,
 Row 
 ----------------------------------------------------------------------
 
-### **IJB - Number of Individuals relating to LDP Standard**: Financial Year `r paste0(sel_fy, table_title)`
+### **Integration Authority Area - Number of Individuals relating to LDP Standard**: Financial Year `r paste0(sel_fy, table_title)`
 
 ```{r ldp-table}
 

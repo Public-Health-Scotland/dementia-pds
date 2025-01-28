@@ -427,6 +427,7 @@ ethnic_comp_data<-comp_data %>%
   filter(field_name == "ethnic_group") %>% 
   select(geog, fy, number_of_records, perc_of_records_missing_not_known) %>% 
   mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
+    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known),
               names_vary = "slowest") 
 
@@ -487,6 +488,7 @@ accom_comp_data<-comp_data %>%
   filter(field_name == "accommodation_type") %>% 
   select(geog, fy, number_of_records, perc_of_records_missing_not_known) %>% 
   mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
+   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known),
               names_vary = "slowest") 
 
@@ -525,6 +527,7 @@ carer_comp_data<-comp_data %>%
   filter(field_name == "carers_support") %>% 
   select(geog, fy, number_of_records, perc_of_records_missing_not_known) %>% 
   mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
+   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known),
               names_vary = "slowest") 
 
@@ -566,6 +569,7 @@ subtype_comp_data <- comp_data %>%
   select(geog, fy, number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
   mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
   mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
+   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd),
               names_vary = "slowest")
   
@@ -632,6 +636,7 @@ stage_comp_data <- comp_data %>%
   select(geog, fy, number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
   mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
   mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
+   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd),
               names_vary = "slowest")
   
@@ -672,6 +677,7 @@ model_comp_data <- comp_data %>%
   select(geog, fy, number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
   mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
   mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
+   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd),
               names_vary = "slowest")
   
@@ -706,6 +712,8 @@ bscols(widths = 12,
 ```{js }
 
 function filter_default() {
+
+// pathways
 
   document.getElementById("met_filter_year").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
@@ -780,8 +788,9 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   
+// demographics
 
-  document.getElementById("trend_filter_age_prop_hb").getElementsByClassName("selectized") 
+    document.getElementById("trend_filter_age_prop_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("trend_filter_age_prop_hb").getElementsByClassName("selectized")
@@ -877,10 +886,16 @@ function filter_default() {
   document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-    document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized") 
+  document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("filter_ijb_simd_pop_quintile").getElementsByClassName("selectized") 
+  [0].selectize.setValue("All", false);
+
+  document.getElementById("filter_ijb_simd_pop_quintile").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ldp_simd").getElementsByClassName("selectized") 
@@ -889,10 +904,16 @@ function filter_default() {
   document.getElementById("filter_ldp_simd").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-     document.getElementById("filter_hb_simd_ldp").getElementsByClassName("selectized") 
+  document.getElementById("filter_hb_simd_ldp").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_hb_simd_ldp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("filter_hb_simd_ldp_quintile").getElementsByClassName("selectized") 
+  [0].selectize.setValue("All", false);
+
+  document.getElementById("filter_hb_simd_ldp_quintile").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
     document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized") 
@@ -908,6 +929,8 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   
+  
+// all referrals - trends and rates  
   
     document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("NHS Ayrshire & Arran", false);
@@ -970,8 +993,9 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   
-  
-  document.getElementById("trend_filter_subtype_prop_hb").getElementsByClassName("selectized") 
+// additional information  
+
+   document.getElementById("trend_filter_subtype_prop_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("trend_filter_subtype_prop_hb").getElementsByClassName("selectized")
@@ -1019,10 +1043,58 @@ function filter_default() {
   document.getElementById("trend_filter_model_prop_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
+  document.getElementById("filter_prop_model_age_geog").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Integration Authority Areas", false);
+
+  document.getElementById("filter_prop_model_age_geog").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("filter_prop_model_age").getElementsByClassName("selectized") 
+  [0].selectize.setValue("All", false);
+
+  document.getElementById("filter_prop_model_age").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_prop_model_sex_geog").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Integration Authority Areas", false);
+
+  document.getElementById("filter_prop_model_sex_geog").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("filter_prop_model_sex").getElementsByClassName("selectized") 
+  [0].selectize.setValue("All", false);
+
+  document.getElementById("filter_prop_model_sex").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_prop_model_simd_geog").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Integration Authority Areas", false);
+
+  document.getElementById("filter_prop_model_simd_geog").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("filter_prop_model_simd").getElementsByClassName("selectized") 
+  [0].selectize.setValue("All", false);
+
+  document.getElementById("filter_prop_model_simd").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
   document.getElementById("filter_ldp_model").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("filter_ldp_model").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("filter_carer_hb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_carer_hb_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("filter_carer_ijb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_carer_ijb_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized") 

@@ -5,13 +5,13 @@ plot_bar_age_pop <- function(data){
     geom_col(aes(x = age_grp, y = scot_pop_rate_10000,
                  text = paste0("Scotland", "<br>",
                                fy, "<br>",
-                               "rate per 10,000 population: ", scot_pop_rate_10000)),
+                               "Rate per 10,000 population: ", scot_pop_rate_10000)),
              position = position_identity(), just = 0, width = 0.42, fill = "#3F3685") +
     
     geom_col(aes(x = age_grp, y = pop_rate_10000,
                  text = paste0(geog, "<br>",
                                fy, "<br>",
-                               "rate per 10,000 population: ", pop_rate_10000)),
+                               "Rate per 10,000 population: ", pop_rate_10000)),
              position = position_identity(), just = 1, width = 0.42, fill = "#0078D4") +
     
     labs(title = "",

@@ -225,6 +225,7 @@ wait_data_ijb <- wait_data %>%
       mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
       arrange(ijb) %>% 
       mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
+        mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
       set_colnames(c("Integration Authority Area", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
                      "Percentage of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
                      "Percentage of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
@@ -285,6 +286,7 @@ wait_data_hb <- wait_data %>%
              median_diagnosis_to_contact) %>% 
   mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
   mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
+        mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
       set_colnames(c("Health Board", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
                      "Percentage of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
                      "Percentage of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
@@ -402,7 +404,7 @@ mutate(`% Met Standard without termination date` = if_else(total == 0, "-",
 met_data_totals <- left_join(pds_all_totals, met_data) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total number of individuals referred to PDS` = total_referrals,
-         `Standard Met` = total)
+         `Standard Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
   
 
 met_table_data <- SharedData$new(met_data_totals)
@@ -461,7 +463,7 @@ not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_ful
 not_met_data_totals <- left_join(pds_all_totals, not_met_data) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total number of individuals referred to PDS` = total_referrals,
-         `Standard Not Met` = total)
+         `Standard Not Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
 not_met_table_data <- SharedData$new(not_met_data_totals)
 
@@ -517,7 +519,7 @@ ongoing_data <- pds_all %>% filter(ldp == "ongoing") %>% group_by(geog, fy, ldp_
 ongoing_data_totals <- left_join(pds_all_totals, ongoing_data) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total number of individuals referred to PDS` = total_referrals,
-         `PDS Ongoing` = total)
+         `PDS Ongoing` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
 ongoing_table_data <- SharedData$new(ongoing_data_totals)
 
@@ -575,7 +577,7 @@ exempt_data <- pds_all %>% filter(ldp == "exempt") %>% group_by(geog, fy, ldp_fu
 exempt_data_totals <- left_join(pds_all_totals, exempt_data) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total number of individuals referred to PDS` = total_referrals,
-         `Exempt` = total)
+         `Exempt` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
 exempt_table_data <- SharedData$new(exempt_data_totals)
 
@@ -694,6 +696,7 @@ no_contact_ijb <- left_join(ijb_totals_12, no_contact_term_ijb) %>%
          perc_term_early_exempt) %>% 
     mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>% arrange(ijb) %>%
     mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
+    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
     set_colnames(c("fy", "Integration Authority Area", "Number of People Referred to PDS",
                    "Number of referrals not contacted within 12 months of diagnosis",
                    "Percentage of referrals not contacted within 12 months of diagnosis",
@@ -774,7 +777,7 @@ no_contact_hb <- left_join(hb_totals_12, no_contact_term_hb) %>%
          perc_term_early,
            referrals_exempt,
          perc_term_early_exempt) %>% 
-
+     mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
     set_colnames(c("fy", "Health Board", "Number of People Referred to PDS",
                    "Number of referrals not contacted within 12 months of diagnosis",
                    "Percentage of referrals not contacted within 12 months of diagnosis",
@@ -870,6 +873,7 @@ Row {.tabset data-height=770}
            median_referral_to_termination_All,
            referrals_exempt,
            referrals_fail) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
     set_colnames(c("fy", "geog", "Reason for termination of post-diagnostic support",
                    "Number of people", 
                    "Average (median) days from referral to termination of PDS",
@@ -935,6 +939,7 @@ bscols(widths = 12,
            referrals_complete,
            referrals_exempt,
            referrals_fail) %>% 
+    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%  
     set_colnames(c("fy", "geog", "Reason for end of post-diagnostic support",
                    "Number of people", 
                    "Average (median) days from first contact with PDS practitioner to end of PDS",

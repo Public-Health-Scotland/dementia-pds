@@ -143,7 +143,12 @@ pds_all_cal_year <- pds_all_totals %>%
   mutate(year = as.numeric(substr(fy, 1, 4)))
 
 pds_all_rates <- left_join(pds_all_cal_year, pop_data_trends) %>% select(geog, fy, total_referrals, pop_est) %>% 
-  mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 2)) %>% select(geog, fy, pop_rate_10000)
+  mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 1)) %>%
+  select(geog, fy, pop_rate_10000) %>% 
+  ungroup()
+
+pds_all_rates <- left_join(pds_all_rates,
+pds_all_rates %>% filter(geog == "Scotland") %>% select(fy, pop_rate_10000) %>% rename(scot_pop_rate_10000 = pop_rate_10000))
 
 pds_all_rates$geog<- factor(pds_all_rates$geog, levels = unique(pds_all_rates$geog))
 
@@ -204,7 +209,7 @@ Row {.tabset data-height=1300}
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
 ```{r trend-plot}
 
-trends_plot <- plot_trend(pds_scot_totals, total_referrals, x ="Financial Year of Diagnosis", y = "Number")
+trends_plot <- plot_trend(pds_scot_totals, total_referrals, x ="Financial Year of Diagnosis", y = "Number", measure_text = "Referrals: ")
 
 bscols(widths = 12,
         div(style = css(width="98%", height="435px"), 
@@ -250,7 +255,7 @@ data_filter_ijb, NULL)
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
 ```{r trend-plot-ijb}
 
-trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number")
+trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number", measure_text = "Referrals: ")
 
 bscols(widths = 12,
         div(style = css(width="98%", height="395px"),
@@ -296,7 +301,7 @@ data_filter_hb, NULL)
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
 ```{r trend-plot-hb}
 
-trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number")
+trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number", measure_text = "Referrals: ")
 
 bscols(widths = 12,
         div(style = css(width="98%", height="395px"),
@@ -381,10 +386,11 @@ data_filter_year_ijb,NULL)
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (18+) by Integration Authority Area</h2>
 ```{r plot-ijb-pop}
-pds_scot_pop_data_2 <- SharedData$new(pds_scot_rates,
-                                    key = ~fy, group = "groupijb")
+#pds_scot_pop_data_2 <- SharedData$new(pds_scot_rates,
+                                  #  key = ~fy, group = "groupijb")
 
-ijb_rates_plot <- plot_bar_pop_rate(pds_ijb_pop_data, pds_scot_pop_data_2)
+ijb_rates_plot <- plot_bar_pop_rate(pds_ijb_pop_data)
+#, pds_scot_pop_data_2)
 
 bscols(widths = 12,
         div(style = css(width="98%", height="425px"),
@@ -395,6 +401,7 @@ bscols(widths = 12,
 ```{r trend-table-ijb-pop}
 
 pds_all_rates %>% filter(geog == "Scotland" | !grepl("NHS", geog)) %>%
+            select(-scot_pop_rate_10000) %>% 
             pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
             rename(`Integration Authority Area` = geog) %>%
             kable(align = c("l", rep("r", length(all_years)))) %>%
@@ -429,10 +436,11 @@ data_filter_year_hb,NULL)
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (18+) by Health Board</h2>
 ```{r plot-hb-pop}
-pds_scot_pop_data <- SharedData$new(pds_scot_rates,
-                                    key = ~fy, group = "grouphb")
+#pds_scot_pop_data <- SharedData$new(pds_scot_rates,
+                                  #  key = ~fy, group = "grouphb")
  
- hb_rates_plot <- plot_bar_pop_rate(pds_hb_pop_data, pds_scot_pop_data)
+ hb_rates_plot <- plot_bar_pop_rate(pds_hb_pop_data)
+ #, pds_scot_pop_data)
  
  bscols(widths = 12,
          div(style = css(width="98%", height="425px"),
@@ -443,6 +451,7 @@ pds_scot_pop_data <- SharedData$new(pds_scot_rates,
 ```{r trend-table-hb-pop}
 
 pds_all_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%
+            select(-scot_pop_rate_10000) %>% 
             pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
             rename(`Health Board` = geog) %>%
             kable(align = c("l", rep("r", length(all_years)))) %>%
@@ -473,7 +482,7 @@ data_filter_hb_ijb_pop,NULL)
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (18+)</h2>
 ```{r trend-plot-pop}
 
- trends_pop_plot <- plot_trend(pds_trends_pop_data, pop_rate_10000, x ="Financial Year of Diagnosis", y = "Rate Per 10,000 Popuation", colours = phs_colours_46)
+ trends_pop_plot <- plot_trend(pds_trends_pop_data, pop_rate_10000, x ="Financial Year of Diagnosis", y = "Rate Per 10,000 Popuation", colours = phs_colours_46, measure_text = "Rate per 10,000 population: ")
 
 bscols(widths = 12,
         div(style = css(width="98%", height="385px"),
@@ -484,8 +493,9 @@ bscols(widths = 12,
 ```{r trend-table-pop}
 
 pds_all_rates %>% 
+       select(-scot_pop_rate_10000) %>%
             pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
-            rename(`Health Board` = geog) %>%
+            rename(`Health Board/Integration Authority Area` = geog) %>%
             kable(align = c("l", rep("r", length(all_years)))) %>%
             kable_styling(full_width = TRUE) %>%
             column_spec(1, bold = TRUE) %>%
