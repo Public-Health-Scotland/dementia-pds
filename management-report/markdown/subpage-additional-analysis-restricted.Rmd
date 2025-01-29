@@ -49,6 +49,7 @@ err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_o
                                 "Unknown",
                                 str_sub(ijb, 11, -1)))
 
+
 # calculate referrals for Scotland and health boards
 pds_ijb <- pds %>% arrange(ijb)
 
@@ -111,7 +112,8 @@ pds_scot_totals_2 <- bind_rows(pds_scot_totals,
 
 pds_scot_totals_2$age_grp_2<- factor(pds_scot_totals_2$age_grp_2, levels = c("All", "65+", "64 and Under"))
 
-
+#load population rates data
+pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
 
 #create year lists
 provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
@@ -127,6 +129,11 @@ all_years <- unique(pds_all$fy)
 
 if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
 
+# restricted geographies
+restricted_hb <- c("Scotland", "NHS Greater Glasgow & Clyde", "NHS Highland", "NHS Lothian", "NHS Lanarkshire")
+
+restricted_ijb <- c("Scotland", "Edinburgh City", "Glasgow City", "Highland", "North Lanarkshire", "South Lanarkshire")
+
 
 ```
 <!-- delete all of above when finished testing -->
@@ -136,14 +143,16 @@ if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years
 #prepare subtype of dementia data
 subtype_data <- read_rds(get_mi_data_path("subtype_data", ext = "rds", test_output = test_output))
 
-pds_all_subtype <- subtype_data %>% filter(age_grp_2 == "All") %>% 
+pds_all_subtype <- subtype_data %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
+  filter(age_grp_2 == "All") %>% 
   select(geog, fy, subtype, total_referrals)
 
 pds_all_subtype$geog <- factor(pds_all_subtype$geog, levels = unique(pds_all$geog))
 
 pds_all_subtype$subtype <- factor(pds_all_subtype$subtype, levels = c(unique(pds_all_subtype$subtype)[-6],unique(pds_all_subtype$subtype)[6]))
 
-ldp_all_subtype <- subtype_data %>% filter(age_grp_2 == "All") %>%
+ldp_all_subtype <- subtype_data %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
+  filter(age_grp_2 == "All") %>%
   select(-health_board, -age_grp_2, -total_referrals) %>% 
   complete(nesting(geog, fy), subtype, fill = list(perc_met = NA))
 
@@ -158,7 +167,7 @@ ldp_all_subtype$subtype <- factor(ldp_all_subtype$subtype, levels = c(unique(ldp
 # prepare stage of illness data
 stage_data <- read_rds(get_mi_data_path("stage_data", ext = "rds", test_output = test_output))
 
-pds_all_stage <- stage_data %>% filter(age_grp_2 == "All") %>% 
+pds_all_stage <- stage_data %>% filter(age_grp_2 == "All") %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
   select(geog, fy, stage, total_referrals)
 
 pds_all_stage$geog <- factor(pds_all_stage$geog, levels = unique(pds_all$geog))
@@ -166,7 +175,7 @@ pds_all_stage$geog <- factor(pds_all_stage$geog, levels = unique(pds_all$geog))
 pds_all_stage$stage <- factor(pds_all_stage$stage, 
     levels = c(unique(pds_all_stage$stage)[1],unique(pds_all_stage$stage)[3],unique(pds_all_stage$stage)[2],unique(pds_all_stage$stage)[5],unique(pds_all_stage$stage)[4]))
                               
-ldp_all_stage <- stage_data %>% filter(age_grp_2 == "All") %>%
+ldp_all_stage <- stage_data %>% filter(age_grp_2 == "All") %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
   select(-health_board, -age_grp_2, -total_referrals) %>% 
   complete(nesting(geog, fy), stage, fill = list(perc_met = NA))
 
@@ -183,7 +192,7 @@ ldp_all_stage$stage <- factor(ldp_all_stage$stage,
 #prepare model of care data
 model_data <- read_rds(get_mi_data_path("model_data", ext = "rds", test_output = test_output))
 
-pds_all_model <- model_data %>% filter(age_grp_2 == "All", sex == "All", simd == "All") %>% 
+pds_all_model <- model_data %>% filter(age_grp_2 == "All", sex == "All", simd == "All") %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
   select(geog, fy, model, total_referrals)
 
 pds_all_model$geog <- factor(pds_all_model$geog, levels = unique(pds_all$geog))
@@ -191,7 +200,7 @@ pds_all_model$geog <- factor(pds_all_model$geog, levels = unique(pds_all$geog))
 pds_all_model$model <- factor(pds_all_model$model, 
     levels = c(unique(pds_all_model$model)[-1],unique(pds_all_model$model)[1]))
                               
-ldp_all_model <- model_data %>% filter(age_grp_2 == "All", sex == "All", simd == "All") %>%
+ldp_all_model <- model_data %>% filter(age_grp_2 == "All", sex == "All", simd == "All") %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
   select(-health_board, -age_grp_2, -total_referrals) %>% 
   complete(nesting(geog, fy), model, fill = list(perc_met = NA))
 
@@ -205,10 +214,12 @@ ldp_all_model$model <- factor(ldp_all_model$model,
     levels = c(unique(ldp_all_model$model)[-1],unique(ldp_all_model$model)[1]))
 
 #load uptake decision data
-uptake_data <- read_rds(get_mi_data_path("uptake_data", ext = "rds", test_output = test_output))
+uptake_data <- read_rds(get_mi_data_path("uptake_data", ext = "rds", test_output = test_output)) %>% 
+  filter(ijb %in% c(restricted_ijb,"All"), health_board %in% restricted_hb)
 
 #load carer's support data
-carer_data <- read_rds(get_mi_data_path("carer_data", ext = "rds", test_output = test_output))
+carer_data <- read_rds(get_mi_data_path("carer_data", ext = "rds", test_output = test_output)) %>% 
+  filter(ijb %in% c(restricted_ijb,"All"), health_board %in% restricted_hb)
 
 #legend tibble
 legend_data <- tibble(
@@ -219,20 +230,20 @@ legend_data <- tibble(
 legend_data$geog <- factor(legend_data$geog, levels = unique(legend_data$geog))
 
 # total referrals for tables
-hb_totals_table <- bind_rows(pds_scot_totals, pds_hb_totals) %>%
+hb_totals_table <- bind_rows(pds_scot_totals, pds_hb_totals) %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
   mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% pivot_wider(names_from = geog, values_from = total_referrals)
 
-ijb_totals_table <- bind_rows(pds_scot_totals, pds_ijb_totals)  %>%
+ijb_totals_table <- bind_rows(pds_scot_totals, pds_ijb_totals) %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
   mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% pivot_wider(names_from = geog, values_from = total_referrals)
 
 all_totals_table_2 <- bind_rows(
 
-bind_rows(pds_scot_totals_2, pds_ijb_totals_2) %>% group_by(geog, fy = "All", age_grp_2) %>% 
+bind_rows(pds_scot_totals_2, pds_ijb_totals_2) %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% group_by(geog, fy = "All", age_grp_2) %>% 
   summarise(`All referrals` = sum(total_referrals), .groups = "drop") %>% 
   mutate(geog_type = "Integration Authority Areas",
          key = paste0(age_grp_2,geog_type), .before= geog) %>% select(-fy),
 
-bind_rows(pds_scot_totals_2, pds_hb_totals_2) %>% group_by(geog, fy = "All", age_grp_2) %>% 
+bind_rows(pds_scot_totals_2, pds_hb_totals_2) %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% group_by(geog, fy = "All", age_grp_2) %>% 
   summarise(`All referrals` = sum(total_referrals), .groups = "drop") %>% 
   mutate(geog_type = "Health Boards",
          key = paste0(age_grp_2,geog_type), .before= geog) %>% select(-fy)
@@ -344,7 +355,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
+                                               list(className = 'dt-right', targets = 2:7)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold")
             )
@@ -420,7 +431,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:16)
+                                               list(className = 'dt-right', targets = 2:6)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold")
             )
@@ -650,7 +661,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
+                                               list(className = 'dt-right', targets = 2:7)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold")
             )
@@ -731,7 +742,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:16)
+                                               list(className = 'dt-right', targets = 2:6)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                   )
@@ -967,7 +978,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
+                                               list(className = 'dt-right', targets = 2:7)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold")
   
@@ -1049,7 +1060,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:16)
+                                               list(className = 'dt-right', targets = 2:6)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                   )
@@ -1061,9 +1072,9 @@ bscols(widths = 12,
 
 ```
 
-### **Age Groups**
+<!-- ### **Age Groups** -->
 
-```{r dropdown-prop-model-age}
+```{r dropdown-prop-model-age, eval=FALSE, include=FALSE}
 pds_all_model_age <- bind_rows(
   
   model_data %>% filter(age_grp_2 != "Unknown", sex == "All", simd == "All", geog == "Scotland") %>% 
@@ -1111,7 +1122,7 @@ data_filter_prop_model_age,NULL)
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Proportion of Referrals by Model of Care for All Financial Years (2016/17 - `r current_fy`)</h2>
-```{r plot-prop-model-legend-age}
+```{r plot-prop-model-legend-age, eval=FALSE, include=FALSE}
 
 bscols(widths = 12, div(style=css(marginBottom="-23px",height="95px", width="90%", marginLeft="35px"), plot_prop_legend(pds_all_model %>% filter(geog == "Scotland"), measure = model, colours = c("#3F3685", "#9B4393", "#0078D4", "#948DA3", "#83BB26", "#C73918"))
                         ))
@@ -1119,7 +1130,7 @@ bscols(widths = 12, div(style=css(marginBottom="-23px",height="95px", width="90%
 ```
 
 
-```{r plot-prop-model-age}
+```{r plot-prop-model-age, eval=FALSE, include=FALSE}
 bscols(widths = 12,
   div(style = css(width="98%", height="400px"),
       plot_prop_2(pds_model_age_data, measure = model, measure_text = "Model of Care: ", measure_2 = age_grp_2, colours = c("#3F3685", "#9B4393", "#0078D4", "#948DA3", "#83BB26", "#C73918"))
@@ -1127,7 +1138,7 @@ bscols(widths = 12,
 )
 ```
 
-```{r plot-prop-model-age-label}
+```{r plot-prop-model-age-label, eval=FALSE, include=FALSE}
 
 xlabel_data_age <- tibble(
  geog_type = c(rep("Integration Authority Areas", 3), rep("Health Boards",3)),
@@ -1144,7 +1155,7 @@ bscols(widths = c(6,3,NA), NULL, div(style=css(marginBottom="20px", marginTop="-
 ```
 
 
-```{r table-prop-model-age}
+```{r table-prop-model-age, eval=FALSE, include=FALSE}
 
 prop_model_age_table_data <- left_join(
   
@@ -1230,9 +1241,9 @@ bscols(widths = 12,
 
 ```
 
-### **Gender**
+<!-- ### **Gender** -->
 
-```{r dropdown-prop-model-sex}
+```{r dropdown-prop-model-sex, eval=FALSE, include=FALSE}
 pds_all_model_sex <- bind_rows(
   
   model_data %>% filter(sex != "Unknown", sex != "Not Specified", age_grp_2 == "All", simd == "All", geog == "Scotland") %>% 
@@ -1280,7 +1291,7 @@ data_filter_prop_model_sex,NULL)
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Proportion of Referrals by Model of Care for All Financial Years (2016/17 - `r current_fy`)</h2>
-```{r plot-prop-model-legend-sex}
+```{r plot-prop-model-legend-sex, eval=FALSE, include=FALSE}
 
 bscols(widths = 12, div(style=css(marginBottom="-23px",height="95px", width="90%", marginLeft="35px"), plot_prop_legend(pds_all_model %>% filter(geog == "Scotland"), measure = model, colours = c("#3F3685", "#9B4393", "#0078D4", "#948DA3", "#83BB26", "#C73918"))
                         ))
@@ -1288,7 +1299,7 @@ bscols(widths = 12, div(style=css(marginBottom="-23px",height="95px", width="90%
 ```
 
 
-```{r plot-prop-model-sex}
+```{r plot-prop-model-sex, eval=FALSE, include=FALSE}
 bscols(widths = 12,
   div(style = css(width="98%", height="400px"),
       plot_prop_2(pds_model_sex_data, measure = model, measure_text = "Model of Care: ", measure_2 = sex, colours = c("#3F3685", "#9B4393", "#0078D4", "#948DA3", "#83BB26", "#C73918"))
@@ -1296,7 +1307,7 @@ bscols(widths = 12,
 )
 ```
 
-```{r plot-prop-model-sex-label}
+```{r plot-prop-model-sex-label, eval=FALSE, include=FALSE}
 
 xlabel_data_sex <- tibble(
    geog_type = c(rep("Integration Authority Areas", 3), rep("Health Boards",3)),
@@ -1313,7 +1324,7 @@ bscols(widths = c(6,3,NA), NULL, div(style=css(marginBottom="20px",marginTop="-3
 ```
 
 
-```{r table-prop-model-sex}
+```{r table-prop-model-sex, eval=FALSE, include=FALSE}
 
 prop_model_sex_table_data <- left_join(
   
@@ -1373,9 +1384,9 @@ bscols(widths = 12,
 
 ```
 
-### **Deprivation (SIMD)**
+<!-- ### **Deprivation (SIMD)** -->
 
-```{r dropdown-prop-model-simd}
+```{r dropdown-prop-model-simd, eval=FALSE, include=FALSE}
 pds_all_model_simd <- bind_rows(
   
   model_data %>% filter(simd != "Unknown", simd != "Not Specified", age_grp_2 == "All", sex == "All", geog == "Scotland") %>% 
@@ -1427,7 +1438,7 @@ data_filter_prop_model_simd,NULL)
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Proportion of Referrals by Model of Care for All Financial Years (2016/17 - `r current_fy`)</h2>
-```{r plot-prop-model-legend-simd}
+```{r plot-prop-model-legend-simd, eval=FALSE, include=FALSE}
 
 bscols(widths = 12, div(style=css(marginBottom="-23px",height="95px", width="90%", marginLeft="35px"), plot_prop_legend(pds_all_model %>% filter(geog == "Scotland"), measure = model, colours = c("#3F3685", "#9B4393", "#0078D4", "#948DA3", "#83BB26", "#C73918"))
              ))
@@ -1435,7 +1446,7 @@ bscols(widths = 12, div(style=css(marginBottom="-23px",height="95px", width="90%
 ```
 
 
-```{r plot-prop-model-simd}
+```{r plot-prop-model-simd, eval=FALSE, include=FALSE}
 bscols(widths = 12,
   div(style = css(width="98%", height="400px"),
       plot_prop_2(pds_model_simd_data, measure = model, measure_text = "Model of Care: ", measure_2 = simd, colours = c("#3F3685", "#9B4393", "#0078D4", "#948DA3", "#83BB26", "#C73918"))
@@ -1443,7 +1454,7 @@ bscols(widths = 12,
 )
 ```
 
-```{r plot-prop-model-simd-label}
+```{r plot-prop-model-simd-label, eval=FALSE, include=FALSE}
 
 xlabel_data_simd <- tibble(
   geog_type = c(rep("Integration Authority Areas", 6), rep("Health Boards",6)),
@@ -1460,7 +1471,7 @@ bscols(widths = c(6,3,NA), NULL, div(style=css(marginBottom="20px",marginTop="-3
 ```
 
 
-```{r table-prop-model-simd}
+```{r table-prop-model-simd, eval=FALSE, include=FALSE}
 
 prop_model_simd_table_data <- left_join(
   
@@ -1996,42 +2007,6 @@ function filter_default() {
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("trend_filter_model_prop_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_prop_model_age_geog").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Integration Authority Areas", false);
-
-  document.getElementById("filter_prop_model_age_geog").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-    document.getElementById("filter_prop_model_age").getElementsByClassName("selectized") 
-  [0].selectize.setValue("All", false);
-
-  document.getElementById("filter_prop_model_age").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_prop_model_sex_geog").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Integration Authority Areas", false);
-
-  document.getElementById("filter_prop_model_sex_geog").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-    document.getElementById("filter_prop_model_sex").getElementsByClassName("selectized") 
-  [0].selectize.setValue("All", false);
-
-  document.getElementById("filter_prop_model_sex").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_prop_model_simd_geog").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Integration Authority Areas", false);
-
-  document.getElementById("filter_prop_model_simd_geog").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-    document.getElementById("filter_prop_model_simd").getElementsByClassName("selectized") 
-  [0].selectize.setValue("All", false);
-
-  document.getElementById("filter_prop_model_simd").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ldp_model").getElementsByClassName("selectized") 

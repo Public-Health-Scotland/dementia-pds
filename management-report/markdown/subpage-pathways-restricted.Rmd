@@ -50,6 +50,7 @@ err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_o
                                 "Unknown",
                                 str_sub(ijb, 11, -1)))
 
+
 # calculate referrals for Scotland and health boards
 pds_ijb <- pds %>% arrange(ijb)
 
@@ -112,7 +113,8 @@ pds_scot_totals_2 <- bind_rows(pds_scot_totals,
 
 pds_scot_totals_2$age_grp_2<- factor(pds_scot_totals_2$age_grp_2, levels = c("All", "65+", "64 and Under"))
 
-
+#load population rates data
+pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
 
 #create year lists
 provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
@@ -127,6 +129,11 @@ last_full_year <- if_else(qt == 4, current_fy, paste0(as.numeric(substr(fy,1,4))
 all_years <- unique(pds_all$fy)
 
 if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
+
+# restricted geographies
+restricted_hb <- c("Scotland", "NHS Greater Glasgow & Clyde", "NHS Highland", "NHS Lothian", "NHS Lanarkshire")
+
+restricted_ijb <- c("Scotland", "Edinburgh City", "Glasgow City", "Highland", "North Lanarkshire", "South Lanarkshire")
 
 
 ```
@@ -663,7 +670,7 @@ Row {.tabset data-height=670}
 
 ```{r dropdown-no-contact-ijb}
 
- no_contact_term_ijb <- wait_data_3 %>%  
+ no_contact_term_ijb <- wait_data_3 %>% filter(ijb %in% restricted_ijb) %>%  
     filter(sex == "All", termination_or_transition_reason == "All reasons") %>%
     filter(!grepl("NHS", ijb)) %>% 
     pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
@@ -673,9 +680,9 @@ Row {.tabset data-height=670}
            referrals_exempt,
            referrals_fail)
     
-wait_data_totals_ijb <- wait_data %>% filter(sex == "All", simd == "All", ijb != "All" | ijb == "Scotland") %>% select(ijb, fy, total_referrals)
+wait_data_totals_ijb <- wait_data %>%filter(ijb %in% restricted_ijb) %>%  filter(sex == "All", simd == "All", ijb != "All" | ijb == "Scotland") %>% select(ijb, fy, total_referrals)
 
-no_contact_12_ijb <- pds_all %>% filter(!grepl("NHS", geog), ldp_full == "fail - PDS not started and more than 12 months since diagnosis" | ldp_full == "fail - PDS started more than 12 months after diagnosis") %>% 
+no_contact_12_ijb <- pds_all %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>%  filter(!grepl("NHS", geog), ldp_full == "fail - PDS not started and more than 12 months since diagnosis" | ldp_full == "fail - PDS started more than 12 months after diagnosis") %>% 
    group_by(fy, geog) %>% summarise(referrals_no_contact_12 = sum(referrals)) %>% rename(ijb = geog)
  
 ijb_totals_12 <- left_join(wait_data_totals_ijb, no_contact_12_ijb)
@@ -746,7 +753,7 @@ bscols(widths = 12,
 
 ```{r dropdown-no-contact-hb}
 
- no_contact_term_hb <- wait_data_3 %>% 
+ no_contact_term_hb <- wait_data_3 %>% filter(health_board %in% restricted_hb) %>% 
     filter(sex == "All", termination_or_transition_reason == "All reasons") %>%
     filter(ijb == "Scotland" | grepl("NHS", ijb)) %>% 
     pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
@@ -756,9 +763,9 @@ bscols(widths = 12,
            referrals_exempt,
            referrals_fail)
     
-wait_data_totals_hb <- wait_data %>% filter(sex == "All", simd == "All", ijb == "All" | ijb == "Scotland") %>% select(health_board, fy, total_referrals)
+wait_data_totals_hb <- wait_data %>% filter(health_board %in% restricted_hb) %>%  filter(sex == "All", simd == "All", ijb == "All" | ijb == "Scotland") %>% select(health_board, fy, total_referrals)
 
-no_contact_12_hb <- pds_all %>% filter(geog == "Scotland" | grepl("NHS", geog), ldp_full == "fail - PDS not started and more than 12 months since diagnosis" | ldp_full == "fail - PDS started more than 12 months after diagnosis") %>% 
+no_contact_12_hb <- pds_all %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% filter(geog == "Scotland" | grepl("NHS", geog), ldp_full == "fail - PDS not started and more than 12 months since diagnosis" | ldp_full == "fail - PDS started more than 12 months after diagnosis") %>% 
    group_by(fy, health_board) %>% summarise(referrals_no_contact_12 = sum(referrals))
  
 hb_totals_12 <- left_join(wait_data_totals_hb, no_contact_12_hb)
@@ -863,7 +870,7 @@ Row {.tabset data-height=770}
 ### **Termination Reasons - PDS Ending Without Contact**
 
 ```{r dropdown-term-1}
- term_data_2 <- wait_data_3 %>%
+ term_data_2 <- wait_data_3 %>% filter(ijb %in% c(restricted_hb, restricted_ijb)) %>% 
     filter(sex == "All") %>%
     pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
     mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
@@ -928,7 +935,7 @@ bscols(widths = 12,
 ### **Termination Reasons - PDS Ending On or After Contact**
 
 ```{r dropdown-term-2}
- term_data <- wait_data_2 %>% 
+ term_data <- wait_data_2 %>% filter(ijb %in% c(restricted_hb, restricted_ijb)) %>% 
     filter(sex == "All") %>% 
     pivot_wider(names_from = ldp, values_from = c(referrals, median_contact_to_termination)) %>% 
     mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>% 

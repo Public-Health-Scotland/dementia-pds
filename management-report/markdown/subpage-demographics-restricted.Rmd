@@ -50,6 +50,7 @@ err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_o
                                 "Unknown",
                                 str_sub(ijb, 11, -1)))
 
+
 # calculate referrals for Scotland and health boards
 pds_ijb <- pds %>% arrange(ijb)
 
@@ -129,6 +130,11 @@ all_years <- unique(pds_all$fy)
 
 if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
 
+# restricted geographies
+restricted_hb <- c("Scotland", "NHS Greater Glasgow & Clyde", "NHS Highland", "NHS Lothian", "NHS Lanarkshire")
+
+restricted_ijb <- c("Scotland", "Edinburgh City", "Glasgow City", "Highland", "North Lanarkshire", "South Lanarkshire")
+
 
 ```
 <!-- delete all of above when finished testing -->
@@ -137,7 +143,7 @@ if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years
 ```{r data setup-demo, include=FALSE}
 
 #prepare age data for LARGE AGE GROUPS
-ldp_all_age_2 <- pds_all %>%
+ldp_all_age_2 <- pds_all %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
   filter(fy %in% full_years, age_grp_2 != "Unknown") %>%
   group_by(geog, fy, age_grp_2, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
@@ -149,7 +155,8 @@ ldp_all_age_2 <- left_join(ldp_all_age_2,
 ldp_all_age_2 %>% filter(geog == "Scotland") %>% select(fy, age_grp_2, perc_met) %>% 
   rename(scot_perc_met = perc_met))
 
-pds_all_age_2 <- pds_all %>% filter(age_grp_2 != "Unknown") #remove 6 unknowns from 2016/17 (add note to charts and tables?)
+pds_all_age_2 <- pds_all %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
+  filter(age_grp_2 != "Unknown") #remove 6 unknowns from 2016/17 (add note to charts and tables?)
 
 pds_all_age_2 %<>% group_by(fy, geog, age_grp_2) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop")
@@ -172,7 +179,8 @@ pds_age_rates_2_data <- left_join(pds_all_age_2_rates,
 pds_all_age_2_rates %>% filter(geog == "Scotland") %>% select(fy, age_grp_2, pop_rate_10000) %>% rename(scot_pop_rate_10000 = pop_rate_10000))
 
 #prepare age data for SMALL AGE GROUPS
-pds_all_age <- pds_all %>% filter(age_grp != "Unknown") #remove 6 unknowns from 2016/17 (add note to charts and tables?)
+pds_all_age <- pds_all %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
+ filter(age_grp != "Unknown") #remove 6 unknowns from 2016/17 (add note to charts and tables?)
 
 pds_all_age %<>% group_by(fy, geog, age_grp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop")
@@ -200,7 +208,7 @@ pds_all_age_rates %>% filter(geog == "Scotland") %>% select(fy, age_grp, pop_rat
 
 #prepare gender data
 
-ldp_all_sex <- pds_all %>%
+ldp_all_sex <- pds_all %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
   filter(fy %in% full_years, sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown") %>% #need note about how many unknowns have been removed
   group_by(geog, fy, sex, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
@@ -214,7 +222,8 @@ ldp_all_sex %>% filter(geog == "Scotland") %>% select(fy, sex, perc_met) %>%
 
 ldp_all_sex$sex<- factor(ldp_all_sex$sex, levels = c("Male", "Female"))
 
-pds_all_sex <- pds_all %>% group_by(geog, fy, sex) %>% filter(sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown") %>% 
+pds_all_sex <- pds_all %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
+  group_by(geog, fy, sex) %>% filter(sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown") %>% 
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
 complete(nesting(geog, fy), sex, fill = list(total_referrals = 0)) %>% mutate(sex = substring(sex, 4))
 
@@ -296,7 +305,7 @@ pds_all_sex_rates$sex<- factor(pds_all_sex_rates$sex, levels = c("Male", "Female
 
 
 #prepare simd data
-ldp_all_simd <- pds_all %>%
+ldp_all_simd <- pds_all %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
   filter(fy %in% full_years, simd != "Unknown") %>%
   group_by(geog, fy, simd, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
@@ -308,7 +317,8 @@ ldp_all_simd <- left_join(ldp_all_simd,
 ldp_all_simd %>% filter(geog == "Scotland") %>% select(fy, simd, perc_met) %>% 
   rename(scot_perc_met = perc_met))
 
-pds_all_simd <- pds_all %>% group_by(geog, fy, simd) %>% filter(simd != "Unknown") %>% 
+pds_all_simd <- pds_all %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
+  group_by(geog, fy, simd) %>% filter(simd != "Unknown") %>% 
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
 complete(nesting(geog, fy), simd, fill = list(total_referrals = 0))
 
@@ -342,10 +352,10 @@ legend_data <- tibble(
 legend_data$geog <- factor(legend_data$geog, levels = unique(legend_data$geog))
 
 # total referrals for tables
-hb_totals_table <- bind_rows(pds_scot_totals, pds_hb_totals) %>%
+hb_totals_table <- bind_rows(pds_scot_totals, pds_hb_totals) %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
   mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% pivot_wider(names_from = geog, values_from = total_referrals)
 
-ijb_totals_table <- bind_rows(pds_scot_totals, pds_ijb_totals)  %>%
+ijb_totals_table <- bind_rows(pds_scot_totals, pds_ijb_totals)  %>% filter(geog %in% c(restricted_hb, restricted_ijb)) %>% 
   mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% pivot_wider(names_from = geog, values_from = total_referrals)
    
  
@@ -441,7 +451,7 @@ pds_prop_table_data_ijb <- bind_rows(
   select(-total_referrals) %>% 
   pivot_wider(names_from = geog, values_from = perc_referrals) %>%
              rename(`Age Group` = age_grp)
-)
+) 
 
 pds_prop_table_data_ijb[is.na(pds_prop_table_data_ijb)] <- "0%"
 
@@ -458,7 +468,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
+                                               list(className = 'dt-right', targets = 2:7)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold", padding = "4px"
                   )
@@ -535,7 +545,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:16)
+                                               list(className = 'dt-right', targets = 2:6)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold", padding = "4px"
                   )
@@ -934,7 +944,7 @@ bscols(widths = 12,
 ```
 
 
-```{r ttable-prop-sex-ijb}
+```{r table-prop-sex-ijb}
 
 pds_prop_sex_table_data_ijb <- bind_rows(
   
@@ -961,7 +971,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
+                                               list(className = 'dt-right', targets = 2:7)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold", padding = "4px"
                   )
@@ -1042,7 +1052,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:16)
+                                               list(className = 'dt-right', targets = 2:6)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                   )
@@ -1156,7 +1166,7 @@ DT::datatable(ijb_sex_table_pop, rownames = FALSE, extensions = "FixedColumns",
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
+                                               list(className = 'dt-right', targets = 2:7)
                                                ))) %>%
            DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                           )
@@ -1229,7 +1239,7 @@ DT::datatable(hb_sex_table_pop, rownames = FALSE, extensions = "FixedColumns",
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:16)
+                                               list(className = 'dt-right', targets = 2:6)
                                                ))) %>%
            DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                           )
@@ -1529,7 +1539,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
+                                               list(className = 'dt-right', targets = 2:7)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold", padding = "4px"
                   )
@@ -1609,7 +1619,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:16)
+                                               list(className = 'dt-right', targets = 2:6)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                   )
@@ -1800,7 +1810,7 @@ DT::datatable(ijb_simd_table_pop, rownames = FALSE, extensions = "FixedColumns",
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0:2),
-                                               list(className = 'dt-right', targets = 5:35)
+                                               list(className = 'dt-right', targets = 4:9)
                                                ))) %>%
            DT::formatStyle(4, fontWeight = "bold"#, padding = "4px"
                           )
@@ -1872,7 +1882,7 @@ DT::datatable(hb_simd_table_pop, rownames = FALSE, extensions = "FixedColumns",
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:16)
+                                               list(className = 'dt-right', targets = 2:6)
                                                ))) %>%
            DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                           )
@@ -2051,7 +2061,7 @@ ijb_simd_table_ldp <- SharedData$new(ijb_ldp_simd_table_data, key = ~fy, group =
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="340px", margin="20px"),
+       div(style = css(width="97%", height="300px", margin="20px"),
 DT::datatable(ijb_simd_table_ldp, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 5,
                              scrollX = TRUE,
@@ -2060,7 +2070,7 @@ DT::datatable(ijb_simd_table_ldp, rownames = FALSE, extensions = "FixedColumns",
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
+                                               list(className = 'dt-right', targets = 2:7)
                                                ))) %>%
            DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                           )
@@ -2087,7 +2097,7 @@ ijb_simd_totals <- SharedData$new(ijb_simd_totals_data, key = ~fy, group = "ijb_
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="340px", margin="20px"),
+       div(style = css(width="97%", height="300px", margin="20px"),
 DT::datatable(ijb_simd_totals, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 5,
                              scrollX = TRUE,
@@ -2096,7 +2106,7 @@ DT::datatable(ijb_simd_totals, rownames = FALSE, extensions = "FixedColumns",
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
+                                               list(className = 'dt-right', targets = 2:7)
                                                ))) %>%
            DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                           )
@@ -2226,7 +2236,7 @@ hb_simd_table_ldp <- SharedData$new(hb_ldp_simd_table_data, key = ~key, group = 
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="400px", margin="20px"),
+       div(style = css(width="97%", height="300px", margin="20px"),
 DT::datatable(hb_simd_table_ldp, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -2235,7 +2245,7 @@ DT::datatable(hb_simd_table_ldp, rownames = FALSE, extensions = "FixedColumns",
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0:2),
-                                               list(className = 'dt-right', targets = 5:19)
+                                               list(className = 'dt-right', targets = 5:9)
                                                ))) %>%
            DT::formatStyle(4:5, fontWeight = "bold"#, padding = "4px"
                           )
@@ -2452,7 +2462,7 @@ function filter_default() {
   [0].selectize.removeOption("");
   
    document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("NHS Ayrshire & Arran", false);
+  [0].selectize.setValue("NHS Greater Glasgow & Clyde", false);
 
   document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
