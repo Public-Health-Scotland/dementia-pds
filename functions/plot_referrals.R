@@ -76,7 +76,8 @@ plot_referrals <- function(data,
     
     geom_line() + 
     
-    scale_y_continuous(limits = c(0, NA)) +
+    scale_y_continuous(limits = c(0, NA), breaks = integer_breaks()
+    ) + 
     
     scale_colour_discrete(name = NULL) +
     #phsstyles::scale_colour_discrete_phs(name = NULL) +
