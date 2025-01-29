@@ -164,6 +164,8 @@ est_date3 <- dmy(01042023)
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
+<br>
+
 ### `r hb`
 #### Financial Year `r paste(sel_fy, qt_text)`
 
