@@ -7,7 +7,7 @@
 # Written/run on - R Posit
 # Version of R - 4.1.2
 #
-# Description - creates data sets for use in management reports.
+# Description - creates data frames for use in management reports.
 #########################################################################
 
 
