@@ -21,14 +21,14 @@ plot_prop_2 <- function(data, measure, measure_text, measure_2, colours = phs_co
          y = "",
          fill = NULL) +
     
-    theme_dementia(xangle = 40) +
+    theme_dementia(xangle = 45) +
     
     theme(strip.background = element_blank(),
           strip.text.x = element_blank(),
           legend.position = "none",
           axis.title.x = element_text(size = 13,
-                                   #   face = "bold",
-                                      margin = margin(t = -55))
+                                      #face = "bold",
+                                      margin = margin(t = 30))
     ) + 
     
    theme(panel.spacing = unit(100000, "pt")) #this is for 'stacking facets' so only the selected one is visible
@@ -42,7 +42,7 @@ plot_prop_2 <- function(data, measure, measure_text, measure_2, colours = phs_co
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian', 'toImage'), 
            displaylogo = F, editable = F) %>%
-    layout(margin = list(b = 150, t = 40) # to avoid labels getting cut out
+    layout(margin = list(b = 160, t = 40) # to avoid labels getting cut out
     )
   
 }

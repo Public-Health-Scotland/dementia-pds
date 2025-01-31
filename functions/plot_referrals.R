@@ -80,7 +80,6 @@ plot_referrals <- function(data,
                        ) +
     
     scale_colour_manual(values = phs_colours_32) +
-    #phsstyles::scale_colour_discrete_phs(name = NULL) +
     
     # Custom labels on x tick marks
     scale_x_discrete(labels = paste(levels(data$month_abbr),
@@ -92,8 +91,8 @@ plot_referrals <- function(data,
     
     theme_dementia(xangle = 45) +
     
-    theme(legend.title = element_blank(),
-          legend.position = ifelse(ijb_group == FALSE, "none", "top")
+   theme(legend.title = element_blank(),
+          legend.position = ifelse(ijb_group == FALSE, "none", "bottom")
           )
   
    ggplotly(plot, tooltip = "text") %>%
@@ -106,7 +105,9 @@ plot_referrals <- function(data,
                                           'hoverClosestCartesian', 'toImage'), 
             displaylogo = F, editable = F) %>%
      
-     layout(legend = list(orientation = "h", x = 0.2 , y = -0.6,
-                          xanchor = "center", yanchor = "bottom"))
+     layout(legend = list(orientation = "h", x = 0.5 , y = -0.6,
+                          xanchor = "center", yanchor = "bottom")) #%>% 
+     #layout(margin = list(l = -10, b = 30, t = 30) # to avoid labels getting cut out
+    # )
   
 }

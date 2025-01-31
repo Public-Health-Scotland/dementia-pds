@@ -1,4 +1,4 @@
-plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_32, measure_text){
+plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_32, measure_text, Scotland = FALSE){
   
   plot <- data %>%
     
@@ -24,7 +24,11 @@ plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_32,
     labs(title = NULL,
          x = x,
          y = y,
-         colour = NULL)
+         colour = NULL)   +
+    
+    theme(legend.title = element_blank(),
+          legend.position = ifelse(Scotland == TRUE, "none", "bottom")
+    )
   
   ggplotly(plot, tooltip = "text") %>%
     

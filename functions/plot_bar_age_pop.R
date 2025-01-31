@@ -28,8 +28,8 @@ plot_bar_age_pop <- function(data){
     theme(strip.background = element_blank(),
           strip.text.x = element_blank(),
           legend.position = "none",
-          axis.title.x = element_text(size = 11,
-                                      face = "bold",
+          axis.title.x = element_text(size = 13,
+                                     # face = "bold",
                                       margin = margin(t = 7))
           ) +
     
@@ -48,7 +48,7 @@ plot_bar_age_pop <- function(data){
            displaylogo = F, editable = F) %>%
   #  layout(legend = list(orientation = "v", x = 0.5 , y = -0.4,
                #          xanchor = "center", yanchor = "bottom")) %>% 
-    layout(margin = list(l = -15, b = 50, t = 40) # to avoid labels getting cut out
+    layout(margin = list(l = -15, b = 70, t = 40) # to avoid labels getting cut out
     ) 
 
 }

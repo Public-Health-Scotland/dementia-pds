@@ -176,6 +176,19 @@ wait_data_3$sex <- as.factor(wait_data_3$sex)
 wait_data_3$ijb <- factor(wait_data_3$ijb, levels = unique(pds_all$geog))
 wait_data_3 %<>% mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "14 All reasons", substring(termination_or_transition_reason, 4), termination_or_transition_reason))
 wait_data_3$termination_or_transition_reason <- as.factor(wait_data_3$termination_or_transition_reason)
+
+#function for addding percentage to outcomes tables
+add_percent <- function(df, value, name) {
+  
+ data <- df %>%  mutate(perc =  if_else(total == 0, "-",
+    paste0(round(100*{{value}}/total,1), "%")))
+  
+colnames(data)[colnames(data) == 'perc'] <- name
+
+return(data)
+  
+}
+
  
 ```
 
@@ -342,22 +355,6 @@ bscols(widths = 12,
 
 Outcomes {.hidden}
 =================================================
-
-```{r add-percentage-function, include=FALSE}
-
-add_percent <- function(df, value, name) {
-  
- data <- df %>%  mutate(perc =  if_else(total == 0, "-",
-    paste0(round(100*{{value}}/total,1), "%")))
-  
-colnames(data)[colnames(data) == 'perc'] <- name
-
-return(data)
-  
-}
-
-```
-
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
@@ -393,7 +390,7 @@ Row
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
 
-Row {.tabset data-height=760}
+Row {.tabset data-height=780}
 ----------------------------------------------------------------------
 
 ### **Standard Met**
@@ -408,7 +405,7 @@ mutate(`% Standard Met without termination date` = if_else(total == 0, "-",
   paste0(round(100*`Without termination date`/total,1), "%")), .after = `Without termination date`) %>% 
   select(-`PDS ended`, -`Without termination date`)
 
-met_data_totals <- left_join(pds_all_totals, met_data) %>% 
+met_data_totals <- left_join(pds_all_totals %>% filter(fy %in% full_years), met_data) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total number of individuals referred to PDS` = total_referrals,
          `Standard Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
@@ -572,7 +569,7 @@ bscols(widths = 12,
 ### **Exempt**
 
 ```{r dropdown-exempt}
-exempt_data <- pds_all %>% filter(ldp == "exempt") %>% group_by(geog, fy, ldp_full) %>% 
+exempt_data <- pds_all %>% filter(ldp == "exempt", geog %in% c(restricted_hb, restricted_ijb)) %>% group_by(geog, fy, ldp_full) %>% 
   summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 10)) %>%   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
    mutate(total = rowSums(across(where(is.numeric))), .after = fy) %>% 
    add_percent(`03 Service user has died`, "% 03 Service user has died") %>% 
@@ -581,7 +578,7 @@ exempt_data <- pds_all %>% filter(ldp == "exempt") %>% group_by(geog, fy, ldp_fu
   add_percent(`06 Service user no longer able to engage in PDS`, "% 06 Service user no longer able to engage in PDS") %>% 
   select(-starts_with("0"))
 
-exempt_data_totals <- left_join(pds_all_totals, exempt_data) %>% 
+exempt_data_totals <- left_join(pds_all_totals %>% filter(geog %in% c(restricted_hb, restricted_ijb)), exempt_data) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total number of individuals referred to PDS` = total_referrals,
          `Exempt` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 

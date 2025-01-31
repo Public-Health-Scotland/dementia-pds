@@ -206,17 +206,18 @@ Row {.tabset data-height=1300}
 
 <br>
 <br>
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS, Scotland</h2>
 ```{r trend-plot}
 
-trends_plot <- plot_trend(pds_scot_totals, total_referrals, x ="Financial Year of Diagnosis", y = "Number", measure_text = "Referrals: ")
+trends_plot <- plot_trend(pds_scot_totals, total_referrals, x ="Financial Year of Diagnosis", y = "Number", measure_text = "Referrals: ", Scotland = TRUE)
 
 bscols(widths = 12,
-        div(style = css(width="98%", height="435px"), 
+        div(style = css(width="98%", height="365px"), 
             trends_plot))
 
 ```
-
+<br>
+<br>
 ```{r trend-table}
 
 pds_all_totals %>%  
@@ -231,7 +232,7 @@ pds_all_totals %>%
             add_header_above(
                        c(" " = 1,
                          "Financial Year of Diagnosis" = length(all_years))) %>%
-            scroll_box(height = "740px")
+            scroll_box(height = "760px")
  
 
 ```
@@ -252,7 +253,7 @@ data_filter_ijb, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS, Integration Authority Areas </h2>
 ```{r trend-plot-ijb}
 
 trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number", measure_text = "Referrals: ")
@@ -277,7 +278,7 @@ pds_all_totals %>% filter(geog == "Scotland" | !grepl("NHS", geog)) %>%
             add_header_above(
                        c(" " = 1,
                          "Financial Year of Diagnosis" = length(all_years))) %>%
-            scroll_box(height = "740px")
+            scroll_box(height = "730px")
  
 
 ```
@@ -298,7 +299,7 @@ data_filter_hb, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS, Health Boards </h2>
 ```{r trend-plot-hb}
 
 trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number", measure_text = "Referrals: ")

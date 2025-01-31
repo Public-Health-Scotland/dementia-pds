@@ -819,7 +819,7 @@ function filter_default() {
   [0].selectize.removeOption("");
   
    document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("NHS Ayrshire & Arran", false);
+  [0].selectize.setValue("NHS Greater Glasgow & Clyde", false);
 
   document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");

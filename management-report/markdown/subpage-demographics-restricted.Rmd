@@ -431,7 +431,7 @@ div(style=css(marginBottom="-20px",height="70px"), plot_prop_legend(pds_all_age 
 
 ```{r plot-prop-age-ijb}
 bscols(widths = 12,
-  div(style = css(width="98%", height="400px"),
+  div(style = css(width="98%", height="410px", marginBottom="-10px"),
       plot_prop(pds_age_data_ijb, measure = age_grp, measure_text = "Age Group: ", xlabel = "Integration Authority Area")
 )
 )
@@ -508,7 +508,7 @@ div(style=css(marginBottom="-20px",height="70px"), plot_prop_legend(pds_all_age 
 
 ```{r plot-prop-age-hb}
 bscols(widths = 12,
-  div(style = css(width="98%", height="420px"),
+  div(style = css(width="98%", height="400px", marginBottom="0px"),
       plot_prop(pds_age_data_hb, measure = age_grp, measure_text = "Age Group: ", xlabel = "Health Board")
 )
 )
@@ -936,7 +936,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_prop_legend(pds_all_sex 
 
 ```{r plot-prop-sex-ijb}
 bscols(widths = 12,
-  div(style = css(width="98%", height="400px"),
+  div(style = css(width="98%", height="410px", marginBottom="-10px"),
       plot_prop(pds_sex_data_ijb, measure = sex, measure_text = "Gender: ", xlabel = "Integration Authority Area")
 )
 )
@@ -1014,7 +1014,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_prop_legend(pds_all_sex 
 
 ```{r plot-prop-sex-hb}
 bscols(widths = 12,
-  div(style = css(width="98%", height="400px"),
+  div(style = css(width="98%", height="400px", marginBottom="0px"),
       plot_prop(pds_sex_data_hb, measure = sex, measure_text = "Gender: ", xlabel = "Health Board")
 )
 )
@@ -1136,7 +1136,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_
 
 ```{r plot-ijb-sex-pop}
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+  div(style = css(width="98%", height="385px", marginBottom="-10px"),
 plot_geog_bar(pds_pop_sex_data_ijb, y_value = pop_rate_10000, measure = sex, measure_text = "Gender: ",
                x = "Integration Authority Area", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
 )
@@ -1210,7 +1210,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_
 
 ```{r plot-hb-sex-pop}
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+  div(style = css(width="98%", height="385px", marginBottom="-10px"),
 plot_geog_bar(pds_pop_sex_data_hb, y_value = pop_rate_10000, measure = sex, measure_text = "Gender: ",
                x = "Health Board", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
 )
@@ -1504,7 +1504,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_prop_legend(pds_all_simd
 
 ```{r plot-prop-simd-ijb}
 bscols(widths = 12,
-  div(style = css(width="98%", height="400px"),
+  div(style = css(width="98%", height="410px", marginBottom="-10px"),
       plot_prop(pds_simd_data_ijb, measure = simd, measure_text = "SIMD Quintile: ", xlabel = "Integration Authority Area")
 )
 )
@@ -1581,7 +1581,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_prop_legend(pds_all_simd
 
 ```{r plot-prop-simd-hb}
 bscols(widths = 12,
-  div(style = css(width="98%", height="400px"),
+  div(style = css(width="98%", height="400px", marginBottom="0px"),
       plot_prop(pds_simd_data_hb, measure = simd, measure_text = "SIMD Quintile: ", xlabel = "Health Board")
 )
 )
@@ -1741,7 +1741,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_
 # )
 
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+  div(style = css(width="98%", height="385px", marginBottom="-10px"),
 plot_geog_bar_v2(pds_pop_simd_data_ijb, y_value = pop_rate_10000, measure = simd, measure_text = "SIMD Quintile: ", x = "Integration Authority Area", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
 )
 
@@ -1853,7 +1853,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_
 
 ```{r plot-hb-simd-pop}
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+  div(style = css(width="98%", height="385px", marginBottom="-10px"),
 plot_geog_bar(pds_pop_simd_data_hb, y_value = pop_rate_10000, measure = simd, measure_text = "SIMD Quintile: ", x = "Health Board", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
 )
 
@@ -2039,7 +2039,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_
 
 ```{r plot-ijb-simd-ldp}
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+  div(style = css(width="98%", height="385px", marginBottom="-10px"),
 plot_geog_bar(ldp_simd_data_ijb, y_value = perc_met, measure = simd, measure_text = "SIMD Quintile: ", x = "Integration Authority Area", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
 )
 
@@ -2183,7 +2183,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_
 
 ```{r plot-hb-simd-ldp}
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+  div(style = css(width="98%", height="385px", marginBottom="-10px"),
 plot_geog_bar_v2(ldp_simd_data_hb, y_value = perc_met, measure = simd, measure_text = "SIMD Quintile: ", x = "Health Board", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
 )
 

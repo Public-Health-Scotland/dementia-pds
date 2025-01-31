@@ -47,7 +47,7 @@ plot_geog_bar <- function(data, y_value, measure, measure_text, y_value_text = N
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian', 'toImage'), 
            displaylogo = F, editable = F) %>%
-    layout(margin = list(l = -5, b = 10, t = 40) # to avoid labels getting cut out
+    layout(margin = list(l = -5, b = 50, t = 40) # to avoid labels getting cut out
     ) 
   
 }
