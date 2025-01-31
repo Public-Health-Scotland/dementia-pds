@@ -90,7 +90,7 @@ plot_referrals <- function(data,
          y = "Number") +
     
     theme(legend.title = element_blank(),
-          legend.position = ifelse(ijb_group == FALSE, "none", "top"),
+          legend.position = ifelse(ijb_group == FALSE, "none", "bottom"),
           axis.text.x = element_text(angle=45))
   
    ggplotly(plot, tooltip = "text") %>%
@@ -103,7 +103,7 @@ plot_referrals <- function(data,
                                           'hoverClosestCartesian'), 
             displaylogo = F, editable = F) %>%
      
-     layout(legend = list(orientation = "h", x = 0.2 , y = -0.6,
+     layout(legend = list(orientation = "h", x = 0.5 , y = -0.6,
                           xanchor = "center", yanchor = "bottom"))
   
 }
