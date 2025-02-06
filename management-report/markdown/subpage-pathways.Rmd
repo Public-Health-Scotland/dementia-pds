@@ -136,10 +136,7 @@ if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years
 PDS Pathways
 =================================================
 
-```{r data setup, include=FALSE}
-pds_all_totals <- bind_rows(
-  pds_all %>% filter(age_grp_2 != "Unknown") %>% group_by(geog, fy) %>% summarise(total_referrals = sum(referrals))
-)
+```{r data-setup-pathways, include=FALSE}
 
 wait_data <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output))
 
@@ -401,7 +398,8 @@ mutate(`% Standard Met without termination date` = if_else(total == 0, "-",
   paste0(round(100*`Without termination date`/total,1), "%")), .after = `Without termination date`) %>% 
   select(-`PDS ended`, -`Without termination date`)
 
-met_data_totals <- left_join(pds_all_totals %>% filter(fy %in% full_years), met_data) %>% 
+met_data_totals <- left_join(pds_all_totals %>% 
+                               select(-age_grp_2) %>% filter(fy %in% full_years), met_data) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total number of individuals referred to PDS` = total_referrals,
          `Standard Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 

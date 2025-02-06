@@ -5,6 +5,7 @@
 # Original Date - July 2019
 # Updated by - Jennifer Thom
 # Date - November 2023
+# Updated by Abram McCormick - January 2025
 #
 # Written/run on - R Posit
 # Version of R - 4.1.2
@@ -161,6 +162,7 @@ pds %<>%
              age >= 90      ~ "90+"
            )) %>%
   
+  # updated to include broad age groups
   mutate(age_grp_2 = 
            case_when(
              age < 0 | is.na(age) ~ "Unknown",
@@ -197,7 +199,7 @@ inc_months <-
 pds %<>%
   
   # Aggregate to create minimal tidy dataset
-  group_by(health_board, ijb, fy, month, age_grp_2, age_grp, simd, sex, ldp) %>%
+  group_by(health_board, ijb, fy, month, age_grp_2, age_grp, simd, sex, ldp) %>% #updated to include age groups, gender and simd
   summarise(referrals = n(), .groups = "drop") %>%
   
 

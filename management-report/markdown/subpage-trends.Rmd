@@ -159,7 +159,6 @@ pds_ijb_rates <- pds_all_rates %>% filter(geog != "Scotland", !grepl("NHS", geog
 pds_hb_rates <- pds_all_rates %>% filter(geog != "Scotland", grepl("NHS", geog))
  
 ```
-<!-- TO DO: consolidate above into data_prep file -->
 
 
 All Referrals - Trends & Rates

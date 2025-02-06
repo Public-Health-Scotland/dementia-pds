@@ -134,7 +134,7 @@ if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years
 <!-- delete all of above when finished testing -->
 
 
-```{r data setup-demo, include=FALSE}
+```{r data-setup-demo, include=FALSE}
 
 #prepare age data for LARGE AGE GROUPS
 ldp_all_age_2 <- pds_all %>%
@@ -810,7 +810,7 @@ bscols(widths = c(1,5,NA),
 ```{r plot-ldp-age_2-legend}
 bscols(widths = 12,
        div(style = css(height="30px"),
-plot_rate_line_legend_1(legend_data)),NULL
+plot_ldp_line_legend_1(legend_data)),NULL
 )
 ```
 
@@ -1377,7 +1377,7 @@ bscols(widths = c(1,5,NA),
 ```{r plot-ldp-sex-legend}
 bscols(widths = 12,
        div(style = css(height="30px"),
-plot_rate_line_legend_1(legend_data)),NULL
+plot_ldp_line_legend_1(legend_data)),NULL
 )
 
 ```
@@ -2301,7 +2301,7 @@ bscols(widths = c(1,5,NA),
 ```{r plot-ldp-simd-legend}
 bscols(widths = 12,
        div(style = css(height="30px"),
-plot_rate_line_legend_1(legend_data)),NULL
+plot_ldp_line_legend_1(legend_data)),NULL
 )
 
 ```
