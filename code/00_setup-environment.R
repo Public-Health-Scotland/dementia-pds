@@ -26,8 +26,8 @@
 test_output <- TRUE
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(30062024)
-previous_end_date <- lubridate::dmy(31032024)
+end_date <- lubridate::dmy(30092024)
+previous_end_date <- lubridate::dmy(30062024)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure
@@ -79,8 +79,7 @@ cl_out <- case_when(
 ### 3 - SIMD Lookup ----
 
 simd <- function(){
-  read_rds(glue("{cl_out}/lookups/Unicode/",
-                "Deprivation/postcode_2024_1_simd2020v2.rds")) %>%
+  simd <- read_rds(get_simd_path()) %>% 
     clean_names() %>%
     select(pc7, simd = simd2020v2_sc_quintile) %>%
     mutate(
@@ -90,6 +89,8 @@ simd <- function(){
         TRUE ~ as.character(simd)
       )
     )
+  
+  return(simd)
 }
 
 
