@@ -1,5 +1,6 @@
 ####################### Setup #######################
-
+# load setup environment
+source(here::here("code", "00_setup-environment.R"))
 
 # Shiny packages ----
 library(shiny)
