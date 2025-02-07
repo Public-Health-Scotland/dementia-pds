@@ -84,7 +84,7 @@ output$table_title_p2 <- renderUI({HTML(paste0("Number of Individuals relating t
   })
 
 hb_ijb_data_1 <- reactive({annual_table_data %>%
-  filter(health_board == input$select_hb_p2 & fy == input$select_year_p2) %>%
+  filter(ldp != "Aberdeen", health_board == input$select_hb_p2 & fy == input$select_year_p2) %>%
   select(ijb,ldp,referrals) %>%
   pivot_wider(names_from = ijb, values_from=referrals)%>%
   mutate(ldp = str_replace(ldp,"complete","Standard Met")) %>%
@@ -96,7 +96,7 @@ hb_ijb_data_1 <- reactive({annual_table_data %>%
   rename(" " = "ldp")})
 
 hb_ijb_data_2 <- reactive ({annual_table_data %>%
-  filter(health_board == input$select_hb_p2 & fy == input$select_year_p2 & ldp == "total") %>%
+  filter(ldp != "Aberdeen", health_board == input$select_hb_p2 & fy == input$select_year_p2 & ldp == "total") %>%
   select(ijb,ldp,rate) %>%
   mutate(rate = paste0(rate, "%")) %>%  
   mutate(ldp = str_replace(ldp,"total","Percentage of LDP standard acheived")) %>%

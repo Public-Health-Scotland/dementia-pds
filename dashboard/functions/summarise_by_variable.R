@@ -50,7 +50,7 @@ summarise_by_variable <- function(variable){
                 .groups = "drop")
     
   ) %>% 
-    mutate(percent_met = round(((complete + exempt)/(total_referrals - ongoing))*100, 1)) %>% 
+    mutate(percent_met = round(((complete + exempt)/(complete + exempt + not_met))*100, 1)) %>% 
     rename(type = {{variable}})
   
 }
@@ -109,7 +109,7 @@ summarise_by_variable_simd <- function(variable){
                 .groups = "drop")
     
   ) %>% 
-    mutate(percent_met = round(((complete + exempt)/(total_referrals - ongoing))*100, 1)) %>% 
+    mutate(percent_met = round(((complete + exempt)/(complete + exempt + not_met))*100, 1)) %>% 
     rename(type = {{variable}})
   
 }
@@ -169,7 +169,7 @@ summarise_by_variable_gender <- function(variable){
                 .groups = "drop")
     
   ) %>% 
-    mutate(percent_met = round(((complete + exempt)/(total_referrals - ongoing))*100, 1)) %>% 
+    mutate(percent_met = round(((complete + exempt)/(complete + exempt + not_met))*100, 1)) %>% 
     rename(type = {{variable}})
   
 }

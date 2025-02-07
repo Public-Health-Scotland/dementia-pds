@@ -31,25 +31,27 @@ pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_o
   mutate(health_board = str_sub(health_board, 3, -1),
          ijb          = if_else(is.na(ijb),
                                 "Unknown",
-                                str_sub(ijb, 11, -1)))
+                                str_sub(ijb, 11, -1))) %>% 
+  
+   mutate(ldp = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20","2020/21"), "Aberdeen", ldp))
 
 boards <- sort(unique(pds$health_board))
 
 # 3 prepare data for plot_referrals() ----
 
-pds_plot_data <- pds %>%  
+pds_plot_data_ijb <- pds %>%  
   group_by(fy, month, health_board, ijb) %>%
   summarise(referrals = sum(referrals), .groups = "drop") %>% 
   arrange(ijb)
 
-board <- 
+pls_plot_data_boards <- 
   pds %>%
   mutate(ijb = health_board) %>%
   group_by(fy, month, health_board, ijb) %>%
   summarise(referrals = sum(referrals), .groups = "drop")
 
 pds_plot_data <-
-  bind_rows(board, pds_plot_data) %>% 
+  bind_rows(pls_plot_data_boards, pds_plot_data_ijb) %>% 
   ungroup() 
 
 
@@ -169,6 +171,9 @@ mutate(n_referrals = 1,
        ijb          = if_else(is.na(ijb),
                               "Unknown",
                               str_sub(ijb, 11, -1)))
+
+# remove Aberdeen 19/20 and 20/21 from standard
+ldp %<>% mutate(ldp = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20","2020/21"), "Aberdeen", ldp))
   
 # remove codes
 variables <- c("ethnic_group",  
