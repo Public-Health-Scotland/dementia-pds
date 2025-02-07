@@ -526,7 +526,7 @@ pds_prop_table_data_hb[is.na(pds_prop_table_data_hb)] <- "0%"
 pds_prop_table_hb <- SharedData$new(pds_prop_table_data_hb, key = ~fy, group = "age_prop_hb")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="480px", margin="15px"),
+       div(style = css(width="98%", height="480px", margin="15px", marginTop="0px"),
           DT::datatable(pds_prop_table_hb, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -1033,7 +1033,7 @@ pds_prop_sex_table_data_hb[is.na(pds_prop_sex_table_data_hb)] <- "0%"
 pds_prop_sex_table_hb <- SharedData$new(pds_prop_sex_table_data_hb, key = ~fy, group = "sex_prop_hb")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="260px", margin="15px"),
+       div(style = css(width="98%", height="260px", margin="15px", marginTop="0px"),
           DT::datatable(pds_prop_sex_table_hb, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -1600,7 +1600,7 @@ pds_prop_simd_table_data_hb[is.na(pds_prop_simd_table_data_hb)] <- "0%"
 pds_prop_simd_table_hb <- SharedData$new(pds_prop_simd_table_data_hb, key = ~fy, group = "simd_prop_hb")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="390px", margin="15px"),
+       div(style = css(width="98%", height="390px", margin="15px", marginTop="0px"),
           DT::datatable(pds_prop_simd_table_hb, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 10,
                              scrollX = TRUE,

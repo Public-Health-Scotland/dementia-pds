@@ -44,7 +44,7 @@ plot_prop <- function(data, measure, measure_text, xlabel = NULL, colours = phs_
     # layout(legend = list(orientation = "v")) %>% 
                           #, x = 0.5 , y = -0.4,
                            #xanchor = "right", yanchor = "right")) %>% 
-     layout(margin = list(b = 160, t = 40) # to avoid labels getting cut out
+     layout(margin = list(b = 170, t = 40) # to avoid labels getting cut out
            )
  
 }

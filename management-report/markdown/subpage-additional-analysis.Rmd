@@ -411,7 +411,7 @@ pds_prop_table_data_hb[is.na(pds_prop_table_data_hb)] <- "0%"
 pds_prop_table_hb <- SharedData$new(pds_prop_table_data_hb, key = ~fy, group = "subtype_prop_hb")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="600px", margin="15px"),
+       div(style = css(width="98%", height="600px", margin="15px", marginTop="0px"),
           DT::datatable(pds_prop_table_hb, rownames = FALSE, extensions = "FixedColumns",
               options = list(psubtypeLength = 10,
                              scrollX = TRUE,
@@ -722,7 +722,7 @@ pds_prop_stage_table_data_hb[is.na(pds_prop_stage_table_data_hb)] <- "0%"
 pds_prop_stage_table_hb <- SharedData$new(pds_prop_stage_table_data_hb, key = ~fy, group = "stage_prop_hb")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="490px", margin="15px"),
+       div(style = css(width="98%", height="490px", margin="15px", marginTop="0px"),
           DT::datatable(pds_prop_stage_table_hb, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -1040,7 +1040,7 @@ pds_prop_model_table_data_hb[is.na(pds_prop_model_table_data_hb)] <- "0%"
 pds_prop_model_table_hb <- SharedData$new(pds_prop_model_table_data_hb, key = ~fy, group = "model_prop_hb")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="560px", margin="15px"),
+       div(style = css(width="98%", height="560px", margin="15px", marginTop="0px"),
           DT::datatable(pds_prop_model_table_hb, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -1209,7 +1209,7 @@ headers_model <- htmltools::withTags(table(
 ))
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="530px", margin="15px"),
+       div(style = css(width="98%", height="530px", margin="15px", marginTop="0px"),
           DT::datatable(prop_model_age_table, 
                         container = headers_model,
                         rownames = FALSE,
@@ -1352,7 +1352,7 @@ prop_model_sex_table_data %<>% arrange(geog)
 prop_model_sex_table <- SharedData$new(prop_model_sex_table_data, key = ~key, group = "model_prop_sex")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="530px", margin="15px"),
+       div(style = css(width="98%", height="530px", margin="15px", marginTop="0px"),
           DT::datatable(prop_model_sex_table, 
                         container = headers_model,
                         rownames = FALSE,
@@ -1499,7 +1499,7 @@ prop_model_simd_table_data %<>% arrange(geog)
 prop_model_simd_table <- SharedData$new(prop_model_simd_table_data, key = ~key, group = "model_prop_simd")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="530px", margin="15px"),
+       div(style = css(width="98%", height="530px", margin="15px", marginTop="0px"),
           DT::datatable(prop_model_simd_table, 
                         container = headers_model,
                         rownames = FALSE,
