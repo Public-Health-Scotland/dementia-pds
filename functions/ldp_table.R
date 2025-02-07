@@ -36,6 +36,7 @@ ldp_table <- function(data,
                 group_by(ijb = health_board, ldp = "total") %>%
                 summarise(referrals = sum(referrals), .groups = "drop"),
               data %>%
+                filter(ldp != "Aberdeen") %>% # excludes Aberdeen City 2019/20 and 2020/21 from columns/rows regarding ldp standard
                 group_by(ijb, ldp) %>%
                 summarise(referrals = sum(referrals), .groups = "drop"),
               data %>%
@@ -56,7 +57,8 @@ ldp_table <- function(data,
     pivot_wider(names_from = ijb, values_from = referrals) %>%
     bind_rows(if(include_pc == TRUE)pds_rate_ijb) %>%
     select(ldp, c(data$health_board, sort(unique(data$ijb)))) %>%
-    arrange(match(ldp, c("Total Referrals", "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt")))
+    arrange(match(ldp, c("Total Referrals", "Standard Met", "Standard Not Met", "PDS Ongoing", "Exempt"))) %>% 
+    filter(ldp != "Aberdeen") # excludes Aberdeen City 2019/20 and 2020/21 totals column from appearing
   
   if(scotland == TRUE){
     

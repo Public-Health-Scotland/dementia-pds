@@ -173,7 +173,29 @@ pds %<>%
   mutate(postcode = format_postcode(postcode)) %>%
   left_join(simd(), by = c("postcode" = "pc7")) %>%
   mutate(simd = replace_na(simd, "Unknown"))
-          
+
+# Add Aberdeen City data for 2019/20 and 2020/21
+### 3 read in Aberdeen data and append ----
+
+Ab_19_20 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2019-20_individuals-with-ldp_aberdeen-city.rds")
+
+Ab_20_21 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2020-21_individuals-with-ldp_aberdeen-city.rds")
+
+pds_Ab <- bind_rows(pds, Ab_19_20, Ab_20_21) 
+
+### 4 - Remove duplicate records ----
+
+pds_Ab_dupes <- pds_Ab %>%
+  
+  group_by(chi_number) %>%
+  
+  # Add duplicate flag
+  mutate(dupe = if_else(!is.na(chi_number) & n() > 1, 1, 0)) %>%
+  
+  ungroup()
+
+pds <- pds_Ab_dupes %>% filter(dupe == 1 & ldp != "Aberdeen City Exemption" | dupe != 1)
+
 
 ### 7 - Save individual level file for checking ----
 pds %>% 
