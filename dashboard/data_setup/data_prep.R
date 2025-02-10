@@ -205,15 +205,15 @@ ldp %<>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Know
 # 8 variable analysis tables ----
 source(here("dashboard/functions/summarise_by_variable.R"))
 
-data_sex <- summarise_by_variable_gender(sex)
-data_subtype <- summarise_by_variable(subtype_of_dementia)
-data_stage <- summarise_by_variable(clinical_impression_of_stage_of_illness)
-data_referral <- summarise_by_variable(pds_referral_source)
-data_model <- summarise_by_variable(model_of_care)
-data_age <- summarise_by_variable(age_grp)
-data_simd <- summarise_by_variable_simd(simd)
-data_accom <- summarise_by_variable(accommodation_type)
-data_uptake <- summarise_uptake(ldp)
+data_sex <- summarise_by_variable_gender_dashboard(sex)
+data_subtype <- summarise_by_variable_dashboard(subtype_of_dementia)
+data_stage <- summarise_by_variable_dashboard(clinical_impression_of_stage_of_illness)
+data_referral <- summarise_by_variable_dashboard(pds_referral_source)
+data_model <- summarise_by_variable_dashboard(model_of_care)
+data_age <- summarise_by_variable_dashboard(age_grp)
+data_simd <- summarise_by_variable_simd_dashboard(simd)
+data_accom <- summarise_by_variable_dashboard(accommodation_type)
+data_uptake <- summarise_uptake_dashboard(ldp)
 
 write_csv(data_sex, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_sex.csv")

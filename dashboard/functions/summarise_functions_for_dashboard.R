@@ -1,4 +1,4 @@
-summarise_by_variable <- function(variable){
+summarise_by_variable_dashboard <- function(variable){
   bind_rows(
     
     ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", {{variable}}) %>% 
@@ -57,7 +57,7 @@ summarise_by_variable <- function(variable){
 
 
 # simd
-summarise_by_variable_simd <- function(variable){
+summarise_by_variable_simd_dashboard <- function(variable){
   bind_rows(
     
     ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", {{variable}}) %>% 
@@ -116,7 +116,7 @@ summarise_by_variable_simd <- function(variable){
 
 # for gender page
 
-summarise_by_variable_gender <- function(variable){
+summarise_by_variable_gender_dashboard <- function(variable){
   bind_rows(
     
     ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, simd = "All", {{variable}}) %>% 
@@ -176,7 +176,7 @@ summarise_by_variable_gender <- function(variable){
 
 # pathways (waiting times)
 
-summarise_pathways <- function(data){
+summarise_pathways_dashboard <- function(data){
   
   bind_rows(
   
@@ -315,7 +315,7 @@ summarise_pathways <- function(data){
 }
 
 
-summarise_pathways_2 <- function(data){
+summarise_pathways_2_dashboard <- function(data){
   
   data %<>% filter(!is.na(termination_or_transition_date), !is.na(date_of_initial_first_contact)) 
   
@@ -456,7 +456,7 @@ summarise_pathways_2 <- function(data){
 }
 
 
-summarise_uptake <- function(data){
+summarise_uptake_dashboard <- function(data){
   
   bind_rows(
     
