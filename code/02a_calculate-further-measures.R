@@ -24,7 +24,7 @@ ldp <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_out
   
   mutate(ldp = word(ldp, 1)) %>% 
   
-    # Remove codes from board, IJB, and sex
+  # Remove codes from board, IJB, and sex
   mutate(n_referrals = 1,
          health_board = str_sub(health_board, 3, -1),
          ijb          = if_else(is.na(ijb),
@@ -48,8 +48,8 @@ ldp %<>% mutate(across(all_of(variables), ~substring(.x, 3))) %>%
   mutate(across(all_of(variables), ~if_else(is.na(.x), "Not Known", .x))) %>%
   mutate(across(all_of(variables), ~str_trim(.x, "left")))
 
- ldp %<>% mutate(sex = substring(sex, 3)) %>% 
-   mutate(sex = str_trim(sex, "left")) %>% 
+ldp %<>% mutate(sex = substring(sex, 3)) %>% 
+  mutate(sex = str_trim(sex, "left")) %>% 
   mutate(sex = if_else(is.na(sex) | sex == "Not Known", "Unknown", sex)) 
 
 
@@ -115,14 +115,14 @@ data_wait_3 %>%
 ### DATA COMPLETION ----
 
 ldp_select <- ldp %>% select(-contact_before_diag, -pds_calc_months, -date2, -ddcd_check,
-                                                  -fake_id, -simd, -age, -age_grp, -ldp, -pds_11, -pds_12,
-                                                  -diag_12, -month, -x29, -x30, -error_flag)
+                             -fake_id, -simd, -age, -age_grp, -ldp, -pds_11, -pds_12,
+                             -diag_12, -month, -x29, -x30, -error_flag)
 
 # calculate yet to be determined totals
 
 set_ytbd <- function(x){
   case_when(str_detect(x, "Yet to be determined") ~ 1,
-                TRUE ~ 0)
+            TRUE ~ 0)
 }
 
 cols <- names(ldp_select %>% select(-fy,-health_board,-ijb))
@@ -140,7 +140,7 @@ totals_hb <- bind_rows(
   
   ldp_select_ytbd %>% group_by(fy = "All", health_board = "Scotland") %>% summarise(number_of_records = n())
   
-  )
+)
 
 
 
@@ -153,7 +153,7 @@ ytbd_hb <- bind_rows(
   ldp_select_ytbd %>% group_by(fy = "All", health_board) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
   
   ldp_select_ytbd %>% group_by(fy = "All", health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}"))
-  )
+)
 
 
 hb <- full_join(ytbd_hb, totals_hb) %>% rename(geog = health_board)
@@ -165,7 +165,7 @@ totals_ijb <- bind_rows(
   
   ldp_select_ytbd %>% group_by(fy = "All", ijb) %>% summarise(number_of_records = n())
 )
-  
+
 
 ytbd_ijb <- bind_rows(
   ldp_select_ytbd %>% group_by(fy, ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
@@ -180,8 +180,8 @@ summary_ytbd <- bind_rows(ijb,hb)
 
 
 summary_ytbd %<>% pivot_longer(cols= cols,
-                          names_to='field_name',
-                          values_to='no_of_records_ytbd') %>% 
+                               names_to='field_name',
+                               values_to='no_of_records_ytbd') %>% 
   relocate(number_of_records, .after = field_name)
 
 
@@ -217,7 +217,7 @@ missing_hb <- bind_rows(
   ldp_select_na %>% group_by(fy = "All", health_board) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
   
   ldp_select_na %>% group_by(fy = "All", health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}"))
-  )
+)
 
 
 missing_hb %<>% rename(geog = health_board)
@@ -236,8 +236,8 @@ summary_na <- bind_rows(missing_ijb, missing_hb)
 
 
 summary_na %<>% pivot_longer(cols= cols,
-                          names_to='field_name',
-                          values_to='no_of_records_missing_not_known')
+                             names_to='field_name',
+                             values_to='no_of_records_missing_not_known')
 
 summary <- full_join(summary_ytbd, summary_na)
 
@@ -255,9 +255,9 @@ summary %<>% mutate(perc_of_records_missing_not_known = round(100*no_of_records_
 summary %<>% mutate(perc_of_records_ytbd = round(100*no_of_records_ytbd/number_of_records, 1))
 
 summary %>% 
-   write_file(path = get_mi_data_path("comp_data", ext = "rds", test_output = test_output))
+  write_file(path = get_mi_data_path("comp_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
- 
+
 
 #SUBTYPE OF DEMENTIA----
 data_subtype <- summarise_by_variable(subtype_of_dementia) %>% 
@@ -307,5 +307,6 @@ data_carer %>%
   write_file(path = get_mi_data_path("carer_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-### END OF SCRIPT ###
 
+
+### END OF SCRIPT ###

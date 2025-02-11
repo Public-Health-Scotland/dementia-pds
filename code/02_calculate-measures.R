@@ -23,7 +23,7 @@ source(here::here("code", "00_setup-environment.R"))
 ### 2 - Load data ----
 
 pds <- read_rds(get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
-  
+
 
 ### 3 - Add FY and months labels ----
 
@@ -174,36 +174,14 @@ pds %<>%
   left_join(simd(), by = c("postcode" = "pc7")) %>%
   mutate(simd = replace_na(simd, "Unknown"))
 
-# Add Aberdeen City data for 2019/20 and 2020/21
-### 3 read in Aberdeen data and append ----
-
-Ab_19_20 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2019-20_individuals-with-ldp_aberdeen-city.rds")
-
-Ab_20_21 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2020-21_individuals-with-ldp_aberdeen-city.rds")
-
-pds_Ab <- bind_rows(pds, Ab_19_20, Ab_20_21) 
-
-### 4 - Remove duplicate records ----
-
-pds_Ab_dupes <- pds_Ab %>%
-  
-  group_by(chi_number) %>%
-  
-  # Add duplicate flag
-  mutate(dupe = if_else(!is.na(chi_number) & n() > 1, 1, 0)) %>%
-  
-  ungroup()
-
-pds <- pds_Ab_dupes %>% filter(dupe == 1 & ldp != "Aberdeen City Exemption" | dupe != 1)
-
 
 ### 7 - Save individual level file for checking ----
 pds %>% 
-write_file(path = get_mi_data_path("ldp_data", ext = "rds", test_output = test_output))
+  write_file(path = get_mi_data_path("ldp_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-             
+
 pds %>% 
-write_file(path = get_mi_data_path("ldp_data", ext = "csv", test_output = test_output))
+  write_file(path = get_mi_data_path("ldp_data", ext = "csv", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
@@ -224,7 +202,7 @@ pds %<>%
   group_by(health_board, ijb, fy, month, age_grp_2, age_grp, simd, sex, ldp) %>% #updated to include age groups, gender and simd
   summarise(referrals = n(), .groups = "drop") %>%
   
-
+  
   # Add rows where no referrals were made
   # Doing this will make sure zeros are still shown in reports
   complete(nesting(health_board, ijb), fy, month, ldp,
@@ -237,16 +215,16 @@ pds %<>%
   # Remove LDP reason detail
   rename(ldp_full = ldp) %>% 
   mutate(ldp = word(ldp_full, 1), .after = ldp_full) %>% 
-
+  
   # Remove completed rows for months in incomplete financial year
   # e.g. for Q1 reports, remove completed rows for July - March
   filter(substr(fy, 1, 4) < year(end_date) |
            (substr(fy, 1, 4) == year(end_date) & 
               month %in% inc_months))
-  
+
 # write final data
 pds %>% 
-write_file(path = get_mi_data_path("final_data", ext = "rds", test_output = test_output))
+  write_file(path = get_mi_data_path("final_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
