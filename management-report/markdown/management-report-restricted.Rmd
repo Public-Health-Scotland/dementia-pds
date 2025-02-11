@@ -240,7 +240,7 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
 
 
 <!-- TOTAL REFERRALS - TRENDS & RATES -->
-`r knitr::knit_child("subpage-trends.Rmd")`
+`r knitr::knit_child("subpage-trends-restricted.Rmd")`
 
 <!-- DEMOGRAPHICS -->
 `r knitr::knit_child("subpage-demographics-restricted.Rmd")`
@@ -1080,7 +1080,7 @@ function filter_default() {
   
   }
   
-  window.onload = filter_default;
+  $(document).ready(filter_default);
 
 ```
 

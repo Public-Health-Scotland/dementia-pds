@@ -203,6 +203,7 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=760}
 ----------------------------------------------------------------------
@@ -223,7 +224,11 @@ wait_data_ijb <- wait_data %>%
       arrange(ijb) %>% 
       mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
         mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-      set_colnames(c("Integration Authority Area", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
+    mutate(across(starts_with("perc"),
+                  ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
+    mutate(across(starts_with("median"),
+                  ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
+    set_colnames(c("Integration Authority Area", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
                      "Percentage of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
                      "Percentage of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
                      "Average (median) days from diagnosis to first contact"
@@ -250,8 +255,7 @@ bscols(widths = 12,
     DT::datatable(wait_table_data_ijb, rownames = FALSE,  
                                         caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
-                       "A dash (-) indicates no dates of referral were submitted for diagnoses in this 
-                              year."),
+                       "A dash (-) indicates insufficient data for this measure to be calculated."),
                        options = list(pageLength = 32,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -284,6 +288,10 @@ wait_data_hb <- wait_data %>%
   mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
   mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
         mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  mutate(across(starts_with("perc"),
+                  ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
+  mutate(across(starts_with("median"),
+                  ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
       set_colnames(c("Health Board", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
                      "Percentage of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
                      "Percentage of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
@@ -312,8 +320,7 @@ bscols(widths = 12,
   DT::datatable(wait_table_data_hb, rownames = FALSE,
                  caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
-                       "A dash (-) indicates no dates of referral were submitted for diagnoses in this 
-                              year."),
+                       "A dash (-) indicates insufficient data for this measure to be calculated."),
               options = list(pageLength = 15,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -382,6 +389,7 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=780}
 ----------------------------------------------------------------------
@@ -458,7 +466,8 @@ not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_ful
   add_percent(`PDS terminated less than 11 months after first contact`, "% PDS terminated less than 11 months after first contact") %>% 
   select(-starts_with("PDS"))
 
-not_met_data_totals <- left_join(pds_all_totals, not_met_data) %>% 
+not_met_data_totals <- left_join(pds_all_totals %>% 
+                               select(-age_grp_2), not_met_data) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total number of individuals referred to PDS` = total_referrals,
          `Standard Not Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
@@ -514,7 +523,8 @@ ongoing_data <- pds_all %>% filter(ldp == "ongoing") %>% group_by(geog, fy, ldp_
  add_percent(`Still receiving PDS and less than 12 months since first contact`, "% Still receiving PDS and less than 12 months since first contact") %>% 
   select(-starts_with("PDS"), -starts_with("Still"))
 
-ongoing_data_totals <- left_join(pds_all_totals, ongoing_data) %>% 
+ongoing_data_totals <- left_join(pds_all_totals %>% 
+                               select(-age_grp_2), ongoing_data) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total number of individuals referred to PDS` = total_referrals,
          `PDS Ongoing` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
@@ -572,7 +582,8 @@ exempt_data <- pds_all %>% filter(ldp == "exempt") %>% group_by(geog, fy, ldp_fu
   add_percent(`06 Service user no longer able to engage in PDS`, "% 06 Service user no longer able to engage in PDS") %>% 
   select(-starts_with("0"))
 
-exempt_data_totals <- left_join(pds_all_totals, exempt_data) %>% 
+exempt_data_totals <- left_join(pds_all_totals %>% 
+                               select(-age_grp_2), exempt_data) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total number of individuals referred to PDS` = total_referrals,
          `Exempt` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
@@ -654,6 +665,8 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
+
 Row {.tabset data-height=670}
 ----------------------------------------------------------------------
 
@@ -695,6 +708,10 @@ no_contact_ijb <- left_join(ijb_totals_12, no_contact_term_ijb) %>%
     mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>% arrange(ijb) %>%
     mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
     mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+   mutate(across(starts_with("perc"),
+                  ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
+  mutate(across(starts_with("referrals"),
+                  ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
     set_colnames(c("fy", "Integration Authority Area", "Number of People Referred to PDS",
                    "Number of referrals not contacted within 12 months of diagnosis",
                    "Percentage of referrals not contacted within 12 months of diagnosis",
@@ -723,7 +740,9 @@ data_filter_year_no_contact_ijb, NULL)
 
 bscols(widths = 12,
        div(style = css(width="97%", height="500px", margin="20px"),
-     DT::datatable(no_contact_table_data_ijb, rownames = FALSE,
+     DT::datatable(no_contact_table_data_ijb, rownames = FALSE, caption = htmltools::tags$caption(
+                       style = 'caption-side: bottom; text-align: left;',
+                       "A dash (-) indicates insufficient data for this measure to be calculated."),
               options = list(pageLength = 33,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -776,6 +795,10 @@ no_contact_hb <- left_join(hb_totals_12, no_contact_term_hb) %>%
            referrals_exempt,
          perc_term_early_exempt) %>% 
      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+   mutate(across(starts_with("perc"),
+                  ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
+  mutate(across(starts_with("referrals"),
+                  ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
     set_colnames(c("fy", "Health Board", "Number of People Referred to PDS",
                    "Number of referrals not contacted within 12 months of diagnosis",
                    "Percentage of referrals not contacted within 12 months of diagnosis",
@@ -802,7 +825,9 @@ data_filter_year_no_contact_hb, NULL)
 ```{r no-contact-table-hb}
 bscols(widths = 12,
        div(style = css(width="97%", height="500px", margin="20px"),
-     DT::datatable(no_contact_table_data_hb, rownames = FALSE,
+     DT::datatable(no_contact_table_data_hb, rownames = FALSE, caption = htmltools::tags$caption(
+                       style = 'caption-side: bottom; text-align: left;',
+                       "A dash (-) indicates insufficient data for this measure to be calculated."),
               options = list(pageLength = 15,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -854,6 +879,8 @@ Row
 ### **Note**
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=770}
 ----------------------------------------------------------------------
@@ -1068,6 +1095,6 @@ function filter_default() {
  
   }
   
-  window.onload = filter_default;
+  $(document).ready(filter_default);
 
 ```

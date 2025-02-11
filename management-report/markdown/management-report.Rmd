@@ -1109,10 +1109,9 @@ function filter_default() {
   document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  
   }
   
-  window.onload = filter_default;
+  $(document).ready(filter_default);
 
 ```
 

@@ -2569,7 +2569,7 @@ function filter_default() {
  
   }
   
-  window.onload = filter_default;
+  $(document).ready(filter_default);
 
 ```
 
