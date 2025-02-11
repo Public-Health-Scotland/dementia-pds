@@ -149,7 +149,7 @@ Row
 
 ### **About This Report**
 
-This report has been produced by Public Health Scotland (PHS) and contains analysis of performance against the [Scottish Government's LDP Standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP){target="_blank"} on provision of Dementia Post Diagnostic Support (PDS){target="_blank"}.
+This report has been produced by Public Health Scotland (PHS) and contains analysis of performance against the [Scottish Government's LDP Standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP){target="_blank"} on provision of Dementia Post Diagnostic Support (PDS).
 
 <span style="color:red"> **The information contained in this report is for management information only and should not be distributed widely.** </span>
 
