@@ -253,7 +253,7 @@ tabPanel(title = "Methodology",
 ), # tabPanel
 
 ##############################################.
-# PAGE 7: Data Quality ----
+# PAGE 7: Data Quality
 ##############################################.
 # tabPanel(title = "Data Quality",
 #          # Look at https://fontawesome.com/search?m=free for icons
@@ -289,12 +289,12 @@ server <- function(input, output, session) {
   
     # Get content for individual pages
     source(file.path(here("dashboard/pages/intro_page.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_1.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_2.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_3.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_4.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_5.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_6.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_1_scotland.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_2_healthboards.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_3_trends.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_4_demographics.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_5_additional_analysis.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_6_methodology.R")), local = TRUE)$value
    # source(file.path(here("dashboard/pages/page_7.R")), local = TRUE)$value
 
 }
