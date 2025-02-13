@@ -1,4 +1,4 @@
-plot_geog_bar_v2 <- function(data, y_value, measure, measure_text, y_value_text = NULL, x = NULL, y = NULL, ylabel = waiver(), ylimits = c(0, NA), symbol = NULL){
+plot_geog_bar_v2 <- function(data, y_value, measure, measure_text, measure_2, y_value_text = NULL, x = NULL, y = NULL, ylabel = waiver(), ylimits = c(0, NA), symbol = NULL){
   
   plot <-  data %>% ggplot() +
     
@@ -23,7 +23,7 @@ plot_geog_bar_v2 <- function(data, y_value, measure, measure_text, y_value_text 
     
     scale_fill_manual(values = phs_colours_32) +
     
-    facet_wrap(vars(fy, simd_group), ncol = 1, scales = "free_y") + 
+    facet_wrap(vars(fy, {{measure_2}}), ncol = 1, scales = "free_y") + 
     
     theme_dementia(xangle = 45) +
     
