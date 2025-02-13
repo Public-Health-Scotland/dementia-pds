@@ -265,7 +265,10 @@ bscols(widths = 12,
                                                 list(className = 'dt-right', targets = 2:8)
                                                 #list(width = '10px', targets = 1:10)
                                                 ))) %>%
-           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+           DT::formatStyle(1, fontWeight = "bold",
+                           ) %>%
+           DT::formatStyle(9, fontWeight = "bold",
+                           backgroundColor = "#E9F2F3"
                           )
         )
      )
@@ -330,7 +333,10 @@ bscols(widths = 12,
                                                 list(className = 'dt-right', targets = 2:8)
                                                 #list(width = '10px', targets = 1:10)
                                                 ))) %>%
-           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+                          )%>%
+           DT::formatStyle(9, fontWeight = "bold",
+                           backgroundColor = "#E9F2F3"
                           )
         )
      )
@@ -408,8 +414,10 @@ mutate(`% Standard Met without termination date` = if_else(total == 0, "-",
 
 met_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2) %>% filter(fy %in% full_years), met_data) %>% 
+  mutate(`% of Total referrals Standard Met` = paste0(round(100*total/total_referrals,1), "%"),
+                                              .after = total_referrals) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
-         `Total number of individuals referred to PDS` = total_referrals,
+         `Total referrals` = total_referrals,
          `Standard Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
   
 
@@ -427,7 +435,7 @@ met_table_data <- SharedData$new(met_data_totals)
 
 ```
 
-<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px">Individuals who received a minimum of one year’s PDS (Standard Met)</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals who received a minimum of one year’s PDS (Standard Met)</h2>
 ```{r met-table}
 bscols(widths = 12,
        div(style = css(width="97%", height="585px", margin="20px"),
@@ -442,7 +450,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 1),
-                                                list(className = 'dt-right', targets = 2:5)
+                                                list(className = 'dt-right', targets = 2:6)
                                                 #list(width = '10px', targets = 1:10)
                                                 ))) %>%
            DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
@@ -460,7 +468,7 @@ not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_ful
   summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 8)) %>% 
   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
     mutate(total = rowSums(across(where(is.numeric))), .after = fy) %>% 
-   add_percent(`PDS terminated before first contact`, "% PDS terminated before first contact") %>% 
+   add_percent(`PDS terminated before first contact`, "% PDS terminated without contact") %>% 
  add_percent(`PDS not started and more than 12 months since diagnosis`, "% PDS not started and more than 12 months since diagnosis") %>% 
   add_percent(`PDS started more than 12 months after diagnosis`, "% PDS started more than 12 months after diagnosis") %>% 
   add_percent(`PDS terminated less than 11 months after first contact`, "% PDS terminated less than 11 months after first contact") %>% 
@@ -468,8 +476,10 @@ not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_ful
 
 not_met_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), not_met_data) %>% 
+    mutate(`% of Total referrals Standard Not Met` = paste0(round(100*total/total_referrals,1), "%"),
+                                              .after = total_referrals) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
-         `Total number of individuals referred to PDS` = total_referrals,
+         `Total referrals` = total_referrals,
          `Standard Not Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
 not_met_table_data <- SharedData$new(not_met_data_totals)
@@ -486,7 +496,7 @@ not_met_table_data <- SharedData$new(not_met_data_totals)
 
 ```
 
-<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px">Individuals who did not receive a minimum of one year’s PDS (Standard Not Met)</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals who did not receive a minimum of one year’s PDS (Standard Not Met)</h2>
 ```{r not-met-table}
 
 bscols(widths = 12,
@@ -502,7 +512,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 1),
-                                                list(className = 'dt-right', targets = 2:7)
+                                                list(className = 'dt-right', targets = 2:8)
                                                 #list(width = '10px', targets = 1:10)
                                                 ))) %>%
            DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
@@ -525,8 +535,11 @@ ongoing_data <- pds_all %>% filter(ldp == "ongoing") %>% group_by(geog, fy, ldp_
 
 ongoing_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), ongoing_data) %>% 
+   mutate(`% of Total referrals PDS Ongoing` = paste0(round(100*total/total_referrals,1), "%"),
+                                              .after = total_referrals) %>% 
+  filter(!fy %in% finalised_years) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
-         `Total number of individuals referred to PDS` = total_referrals,
+         `Total referrals` = total_referrals,
          `PDS Ongoing` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
 ongoing_table_data <- SharedData$new(ongoing_data_totals)
@@ -543,7 +556,7 @@ ongoing_table_data <- SharedData$new(ongoing_data_totals)
 
 ```
 
-<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px">Individuals where LDP Standard cannot yet be determined (PDS Ongoing)</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals where LDP Standard cannot yet be determined (PDS Ongoing)</h2>
 ```{r ongoing-table}
 
 bscols(widths = 12,
@@ -559,7 +572,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 1),
-                                                list(className = 'dt-right', targets = 2:5)
+                                                list(className = 'dt-right', targets = 2:6)
                                                 #list(width = '10px', targets = 1:10)
                                                 ))) %>%
            DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
@@ -584,8 +597,10 @@ exempt_data <- pds_all %>% filter(ldp == "exempt") %>% group_by(geog, fy, ldp_fu
 
 exempt_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), exempt_data) %>% 
+   mutate(`% of Total referrals Exempt` = paste0(round(100*total/total_referrals,1), "%"),
+                                              .after = total_referrals) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
-         `Total number of individuals referred to PDS` = total_referrals,
+         `Total referrals` = total_referrals,
          `Exempt` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
 exempt_table_data <- SharedData$new(exempt_data_totals)
@@ -602,7 +617,7 @@ exempt_table_data <- SharedData$new(exempt_data_totals)
 
 ```
 
-<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px">Individuals exempt from LDP Standard</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals exempt from LDP Standard</h2>
 ```{r exempt-table}
 
 bscols(widths = 12,
@@ -618,7 +633,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 1),
-                                                list(className = 'dt-right', targets = 2:7)
+                                                list(className = 'dt-right', targets = 2:8)
                                                 #list(width = '10px', targets = 1:10)
                                                 ))) %>%
            DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
@@ -735,7 +750,7 @@ data_filter_year_no_contact_ijb, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to post-dagnostic support with no contact by PDS practitioner</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to post-diagnostic support with no contact by PDS practitioner</h2>
 ```{r no-contact-table-ijb}
 
 bscols(widths = 12,
@@ -821,7 +836,7 @@ data_filter_year_no_contact_hb, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to post-dagnostic support with no contact by PDS practitioner</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to post-diagnostic support with no contact by PDS practitioner</h2>
 ```{r no-contact-table-hb}
 bscols(widths = 12,
        div(style = css(width="97%", height="500px", margin="20px"),
@@ -899,6 +914,14 @@ Row {.tabset data-height=770}
            referrals_exempt,
            referrals_fail) %>%
   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  mutate(referrals_exempt = case_when(
+    termination_or_transition_reason != "All reasons" & referrals_exempt != "  0" ~"\U2713",
+    termination_or_transition_reason != "All reasons" & referrals_exempt == "  0" ~" ",
+                   TRUE ~referrals_exempt)) %>% 
+   mutate(referrals_fail = case_when(
+    termination_or_transition_reason != "All reasons" & referrals_fail != "  0" ~"\U2713",
+    termination_or_transition_reason != "All reasons" & referrals_fail == "  0" ~" ",
+                   TRUE ~referrals_fail)) %>%
     set_colnames(c("fy", "geog", "Reason for termination of post-diagnostic support",
                    "Number of people", 
                    "Average (median) days from referral to termination of PDS",
