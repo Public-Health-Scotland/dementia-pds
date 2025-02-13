@@ -75,46 +75,6 @@ plot_referrals <- function(data,
   
 }
 
-# yearly trend plot function for percentages
-plot_trend <- function(data, measure, group = ijb){
-  
-  yaxis_plots[["title"]] <- ""
-  xaxis_plots[["title"]] <- ""
-  
-    plot <- data %>%
-    
-    ggplot(aes(x = fy,
-               y = {{measure}},
-               group = {{group}},
-               colour = {{group}},
-               text = paste0(ijb, "<br>",
-                             fy, "<br>",
-                             {{measure}}, "%"))) +
-    
-    geom_point() +
-    
-    geom_line() + 
-    
-    scale_y_continuous(limits = c(0, 100),
-                       labels=function(x) paste0(x,"%")) + 
-    
-    phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
-    
-    theme(legend.title = element_blank(),
-    )
-  
-  ggplotly(plot, tooltip = "text") %>%
-    
-    config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
-           displaylogo = F, editable = F) %>%
-    layout(legend = list(orientation = "h", x = 0.5 , y = -0.2,
-                         xanchor = "center", yanchor = "bottom")) %>% 
-    layout(margin = list(b = 30, t = 10), # to avoid labels getting cut out
-           yaxis = yaxis_plots, xaxis = xaxis_plots)
-  
-  
-}
-
 # yearly trend plot function for referrals
 plot_trend_referrals <- function(data, measure, group = ijb){
   
@@ -138,6 +98,46 @@ plot_trend_referrals <- function(data, measure, group = ijb){
     
     scale_y_continuous(limits = c(0, NA)
                     ) + 
+    
+    phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
+    
+    theme(legend.title = element_blank(),
+    )
+  
+  ggplotly(plot, tooltip = "text") %>%
+    
+    config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
+           displaylogo = F, editable = F) %>%
+    layout(legend = list(orientation = "h", x = 0.5 , y = -0.2,
+                         xanchor = "center", yanchor = "bottom")) %>% 
+    layout(margin = list(b = 30, t = 10), # to avoid labels getting cut out
+           yaxis = yaxis_plots, xaxis = xaxis_plots)
+  
+  
+}
+
+# yearly trend plot function for percentages
+plot_trend <- function(data, measure, group = ijb){
+  
+  yaxis_plots[["title"]] <- ""
+  xaxis_plots[["title"]] <- ""
+  
+  plot <- data %>%
+    
+    ggplot(aes(x = fy,
+               y = {{measure}},
+               group = {{group}},
+               colour = {{group}},
+               text = paste0(ijb, "<br>",
+                             fy, "<br>",
+                             {{measure}}, "%"))) +
+    
+    geom_point() +
+    
+    geom_line() + 
+    
+    scale_y_continuous(limits = c(0, 100),
+                       labels=function(x) paste0(x,"%")) + 
     
     phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
     
