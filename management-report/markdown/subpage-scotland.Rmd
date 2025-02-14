@@ -152,6 +152,23 @@ est_date3 <- dmy(01042023)
               "PDS service in Shetland has resumed.*"), 
             TRUE ~ paste0(""))
    
+    
+    # Data quality notes - West Dunbartonshire
+  wd_date <- dmy(01042024)
+
+  wd_text <-  
+    case_when(sel_fy == extract_fin_year(wd_date) ~
+      paste0(" ",
+             "**Please note:** ",
+             "*Due to local IT system issues West Dunbartonshire ",
+             "were not able to provide some records for 2024/25. ",
+             "PHS has been informed that this issue will ",
+             "be rectified in future submissions.*"), TRUE ~ paste0(""))
+    
+    
+    
+    
+     
  
 ```
 
@@ -228,6 +245,8 @@ Row
 `r scot_text2`
 
 `r scot_text3`
+
+`r wd_text`
 
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
