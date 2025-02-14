@@ -15,20 +15,20 @@
 
 
 # 1 read in data from script 1 ----
-#monthly_table_data <- read.csv(here("dashboard/data/monthly_table_data.csv"))
-annual_table_data <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/annual_table_data.csv")
-pds_plot_data <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/pds_plot_data.csv")
-data_wait <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_wait.csv")
-data_wait_2 <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_wait_2.csv")
-data_subtype <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_subtype.csv")
-data_model <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_model.csv")
-data_referral <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_referral.csv")
-data_stage <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_stage.csv")
-data_age <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_age.csv")
-data_simd <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_simd.csv")
-data_accom <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_accom.csv")
-data_sex <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_sex.csv")
-data_uptake <- read.csv("//conf/dementia/A&I/Outputs/dashboard/data/data_uptake.csv")
+#monthly_table_data <- read_rds(here("dashboard/data/monthly_table_data.rds"))
+annual_table_data <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/annual_table_data.rds")
+pds_plot_data <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/pds_plot_data.rds")
+data_wait <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_wait.rds")
+data_wait_2 <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_wait_2.rds")
+data_subtype <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_subtype.rds")
+data_model <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_model.rds")
+data_referral <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_referral.rds")
+data_stage <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_stage.rds")
+data_age <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_age.rds")
+data_simd <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_simd.rds")
+data_accom <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_accom.rds")
+data_sex <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_sex.rds")
+data_uptake <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_uptake.rds")
 
 
 # 2 read in error data ----

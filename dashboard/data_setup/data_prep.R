@@ -60,7 +60,7 @@ pds_plot_data <-
  # mutate(ijb = forcats::fct_relevel(ijb, max(.$health_board)))
 
 pds_plot_data %>% 
-  write_csv("//conf/dementia/A&I/Outputs/dashboard/data/pds_plot_data.csv")
+  write_rds("//conf/dementia/A&I/Outputs/dashboard/data/pds_plot_data.rds")
 
 
 # 4 Prepare data breakdowns for annual tables ----
@@ -155,7 +155,7 @@ annual_table_data %<>%  mutate(exp_perc = if_else(!is.na(diagnoses), round(refer
 
 # 6 Save annual output ----
 annual_table_data %>% 
-write_csv("//conf/dementia/A&I/Outputs/dashboard/data/annual_table_data.csv")
+write_rds("//conf/dementia/A&I/Outputs/dashboard/data/annual_table_data.rds")
 
 
 # 7 read in individual data ----
@@ -203,7 +203,7 @@ ldp %<>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Know
                                               "Not Known/Other", pds_referral_source))
 
 # 8 variable analysis tables ----
-source(here("dashboard/functions/summarise_by_variable.R"))
+source(here("dashboard/functions/summarise_functions_for_dashboard.R"))
 
 data_sex <- summarise_by_variable_gender_dashboard(sex)
 data_subtype <- summarise_by_variable_dashboard(subtype_of_dementia)
@@ -215,24 +215,24 @@ data_simd <- summarise_by_variable_simd_dashboard(simd)
 data_accom <- summarise_by_variable_dashboard(accommodation_type)
 data_uptake <- summarise_uptake_dashboard(ldp)
 
-write_csv(data_sex, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_sex.csv")
-write_csv(data_model, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_model.csv")
-write_csv(data_subtype, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_subtype.csv")
-write_csv(data_stage, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_stage.csv")
-write_csv(data_referral, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_referral.csv")
-write_csv(data_age, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_age.csv")
-write_csv(data_simd, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_simd.csv")
-write_csv(data_accom, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_accom.csv")
-write_csv(data_uptake, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_uptake.csv")
+write_rds(data_sex, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_sex.rds")
+write_rds(data_model, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_model.rds")
+write_rds(data_subtype, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_subtype.rds")
+write_rds(data_stage, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_stage.rds")
+write_rds(data_referral, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_referral.rds")
+write_rds(data_age, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_age.rds")
+write_rds(data_simd, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_simd.rds")
+write_rds(data_accom, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_accom.rds")
+write_rds(data_uptake, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_uptake.rds")
 
   
 
@@ -257,20 +257,20 @@ ldp_wait_times <- ldp %>%
 
 
 # create summary
-data_wait <- summarise_pathways(ldp_wait_times)
+data_wait <- summarise_pathways_dashboard(ldp_wait_times)
 
 data_wait %<>% mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb))
 
-data_wait_2 <- summarise_pathways_2(ldp_wait_times)
+data_wait_2 <- summarise_pathways_2_dashboard(ldp_wait_times)
 
 data_wait_2 %<>% mutate(ijb = if_else(ijb == "All", health_board, ijb))
 
 
-write_csv(data_wait, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_wait.csv")
+write_rds(data_wait, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_wait.rds")
 
-write_csv(data_wait_2, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_wait_2.csv")
+write_rds(data_wait_2, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_wait_2.rds")
 
 
 
