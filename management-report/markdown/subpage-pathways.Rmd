@@ -414,8 +414,8 @@ mutate(`% Standard Met without termination date` = if_else(total == 0, "-",
 
 met_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2) %>% filter(fy %in% full_years), met_data) %>% 
-  mutate(`% of Total referrals Standard Met` = paste0(round(100*total/total_referrals,1), "%"),
-                                              .after = total_referrals) %>% 
+  #mutate(`% of Total referrals Standard Met` = paste0(round(100*total/total_referrals,1), "%"),
+                                              #.after = total_referrals) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total referrals` = total_referrals,
          `Standard Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
@@ -450,7 +450,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 1),
-                                                list(className = 'dt-right', targets = 2:6)
+                                                list(className = 'dt-right', targets = 2:5)
                                                 #list(width = '10px', targets = 1:10)
                                                 ))) %>%
            DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
@@ -476,8 +476,8 @@ not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_ful
 
 not_met_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), not_met_data) %>% 
-    mutate(`% of Total referrals Standard Not Met` = paste0(round(100*total/total_referrals,1), "%"),
-                                              .after = total_referrals) %>% 
+    #mutate(`% of Total referrals Standard Not Met` = paste0(round(100*total/total_referrals,1), "%"),
+                                          #    .after = total_referrals) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total referrals` = total_referrals,
          `Standard Not Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
@@ -512,7 +512,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 1),
-                                                list(className = 'dt-right', targets = 2:8)
+                                                list(className = 'dt-right', targets = 2:7)
                                                 #list(width = '10px', targets = 1:10)
                                                 ))) %>%
            DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
@@ -757,7 +757,7 @@ bscols(widths = 12,
        div(style = css(width="97%", height="500px", margin="20px"),
      DT::datatable(no_contact_table_data_ijb, rownames = FALSE, caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
-                       "A dash (-) indicates insufficient data for this measure to be calculated."),
+                       "A dash (-) indicates insufficient data for this measure to be calculated. Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis."),
               options = list(pageLength = 33,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -842,7 +842,7 @@ bscols(widths = 12,
        div(style = css(width="97%", height="500px", margin="20px"),
      DT::datatable(no_contact_table_data_hb, rownames = FALSE, caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
-                       "A dash (-) indicates insufficient data for this measure to be calculated."),
+                       "A dash (-) indicates insufficient data for this measure to be calculated. Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis."),
               options = list(pageLength = 15,
                              scrollX = FALSE,
                              scrollY = TRUE,

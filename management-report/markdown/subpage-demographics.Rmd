@@ -2185,7 +2185,7 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
-Row {.tabset data-height=1000}
+Row {.tabset data-height=1020}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
@@ -2260,7 +2260,7 @@ ijb_simd_ldp_data <- bind_rows(
     mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
    pivot_wider(names_from = geog, values_from = perc_met) %>%
   mutate(across(everything(), ~replace_na(.x, "-"))) %>%
-  mutate(type = "% Standard Met", .before = Scotland) %>% 
+  mutate(type = "% Met Standard/Exempt", .before = Scotland) %>% 
              rename(`SIMD Quintile` = simd)
 
 
@@ -2284,7 +2284,7 @@ ijb_simd_totals_data <- bind_rows(
 
 ijb_ldp_simd_table_data <- bind_rows(ijb_simd_totals_data, ijb_simd_ldp_data) %>% 
   arrange(`SIMD Quintile`, key, simd_group) %>% 
-  mutate(`SIMD Quintile` = if_else(type == "% Standard Met", " ", `SIMD Quintile`)) %>% 
+  mutate(`SIMD Quintile` = if_else(type == "% Met Standard/Exempt", " ", `SIMD Quintile`)) %>% 
  rename(" " = "type")
 
 ijb_simd_table_ldp <- SharedData$new(ijb_ldp_simd_table_data, key = ~key, group = "ijb_simd_ldp")
@@ -2400,7 +2400,7 @@ hb_simd_ldp_data <- bind_rows(
     mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
    pivot_wider(names_from = geog, values_from = perc_met) %>%
   mutate(across(everything(), ~replace_na(.x, "-"))) %>%
-  mutate(type = "% Standard Met", .before = Scotland) %>% 
+  mutate(type = "% Met Standard/Exempt", .before = Scotland) %>% 
              rename(`SIMD Quintile` = simd)
 
 
@@ -2424,7 +2424,7 @@ hb_simd_totals_data <- bind_rows(
 
 hb_ldp_simd_table_data <- bind_rows(hb_simd_totals_data, hb_simd_ldp_data) %>% 
   arrange(`SIMD Quintile`, key, simd_group) %>% 
-  mutate(`SIMD Quintile` = if_else(type == "% Standard Met", " ", `SIMD Quintile`)) %>% 
+  mutate(`SIMD Quintile` = if_else(type == "% Met Standard/Exempt", " ", `SIMD Quintile`)) %>% 
  rename(" " = "type")
 
 hb_simd_table_ldp <- SharedData$new(hb_ldp_simd_table_data, key = ~key, group = "hb_simd_ldp")
@@ -2513,7 +2513,7 @@ plot_ldp_line_legend_1(legend_data)),NULL
 
 ```{r plot-ldp-simd}
 bscols(widths = 12,
-  div(style = css(width="98%", height="370px"),
+  div(style = css(width="98%", height="330px"),
 plot_ldp_line(ldp_all_simd_data, measure = simd, measure_text = "SIMD Quintile: "))
 )
 
@@ -2527,18 +2527,31 @@ plot_ldp_line(ldp_all_simd_data, measure = simd, measure_text = "SIMD Quintile: 
 
 ```{r table-ldp-simd}
 
-ldp_simd_table_data <- ldp_all_simd %>% filter(!is.na(perc_met)) %>%
+ldp_simd_trend <- ldp_all_simd %>% filter(!is.na(perc_met)) %>%
   select(geog,fy,simd,perc_met) %>%
    mutate(perc_met = paste0(perc_met,"%")) %>% 
-  pivot_wider(names_from = fy, values_from = perc_met) %>%
-             rename(`SIMD Quintile` = simd) 
+  pivot_wider(names_from = fy, values_from = perc_met) %>% 
+    mutate(type = "% Met Standard/Exempt", .before = `2016/17`) 
+
+trend_simd_totals <- pds_all_simd %>% filter(fy %in% full_years, total_referrals != 0) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  pivot_wider(names_from = fy, values_from = total_referrals, values_fill = "0") %>% 
+    mutate(type = "Number of Referrals", .before = `2016/17`)
+
+
+ldp_simd_table_data <- bind_rows(trend_simd_totals, ldp_simd_trend) %>% arrange(geog, simd) %>% 
+           rename(`SIMD Quintile` = simd) %>% mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+  mutate(`SIMD Quintile` = if_else(type == "% Met Standard/Exempt", " ", `SIMD Quintile`)) %>% 
+ rename(" " = "type")
+            
+          
 
 
 ldp_simd_table <- SharedData$new(ldp_simd_table_data, key = ~geog, group = "ldp_simd")
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="235px", margin="20px"),
+       div(style = css(width="97%", height="430px", margin="20px", marginTop="-10px"),
 DT::datatable(ldp_simd_table, rownames = FALSE,
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -2547,9 +2560,9 @@ DT::datatable(ldp_simd_table, rownames = FALSE,
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                list(className = 'dt-right',
-                                                    targets = 2:(length(full_years)+1))
+                                                    targets = 3:(length(full_years)+2))
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+           DT::formatStyle(2:3, fontWeight = "bold"#, padding = "4px"
                           )
         )
      )
@@ -2589,7 +2602,7 @@ plot_ldp_bar_legend(ldp_all_simd, measure = simd, measure_text = ""))
 
 ```{r plot-ldp-simd_bar}
 bscols(widths = 12,
-  div(style = css(width="98%", height="300px"),
+  div(style = css(width="98%", height="290px"),
 plot_ldp_bar(ldp_all_simd_data_2, measure = simd, measure_text = "SIMD Quintile: "))
 )
 
@@ -2609,7 +2622,7 @@ plot_ldp_bar_labels(ldp_all_simd %>% filter(geog == "Scotland"), measure = simd)
 ldp_simd_table_2 <- SharedData$new(ldp_simd_table_data, key = ~geog, group = "ldp_simd_2")
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="235px", margin="20px", marginTop="-25px"),
+       div(style = css(width="97%", height="430px", margin="20px", marginTop="-25px"),
 DT::datatable(ldp_simd_table_2, rownames = FALSE,
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -2618,9 +2631,9 @@ DT::datatable(ldp_simd_table_2, rownames = FALSE,
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                list(className = 'dt-right',
-                                                    targets = 2:(length(full_years)+1))
+                                                    targets = 3:(length(full_years)+2))
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+           DT::formatStyle(2:3, fontWeight = "bold"#, padding = "4px"
                           )
         )
      )
