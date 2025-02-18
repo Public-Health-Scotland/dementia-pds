@@ -944,7 +944,7 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
-Row {data-height=770}
+Row {data-height=840}
 ----------------------------------------------------------------------
 
 ### **Trend**
@@ -987,18 +987,30 @@ plot_ldp_line(ldp_all_age_2_data, measure = age_grp_2, measure_text = "Age Group
 
 ```{r table-ldp-age_2}
 
-ldp_age_2_table_data <- ldp_all_age_2 %>% filter(!is.na(perc_met)) %>%
+ldp_age_2_trend <- ldp_all_age_2 %>% filter(!is.na(perc_met)) %>%
   select(geog, fy, age_grp_2, perc_met) %>%
    mutate(perc_met = paste0(perc_met, "%")) %>% 
   pivot_wider(names_from = fy, values_from = perc_met) %>%
-             rename(`Age Group` = age_grp_2) 
+  mutate(type = "% Met Standard/Exempt", .before = `2016/17`)
+  
+trend_age_2_totals <- pds_all_age_2 %>% filter(fy %in% full_years, total_referrals != 0) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  pivot_wider(names_from = fy, values_from = total_referrals, values_fill = "0") %>% 
+    mutate(type = "Number of Referrals", .before = `2016/17`)
 
+
+ldp_age_2_table_data <- bind_rows(trend_age_2_totals, ldp_age_2_trend) %>% arrange(geog, age_grp_2) %>% 
+            mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+  mutate(age_grp_2 = if_else(type == "% Met Standard/Exempt", " ", age_grp_2)) %>% 
+   rename(`Age Group` = age_grp_2) %>% 
+  rename(" " = "type")
+            
 
 ldp_age_2_table <- SharedData$new(ldp_age_2_table_data, key = ~geog, group = "ldp_age_2")
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="125px", margin="20px"),
+       div(style = css(width="97%", height="200px", margin="20px"),
 DT::datatable(ldp_age_2_table, rownames = FALSE,
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -1007,9 +1019,9 @@ DT::datatable(ldp_age_2_table, rownames = FALSE,
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                list(className = 'dt-right',
-                                                    targets = 2:(length(full_years)+1))
+                                                    targets = 3:(length(full_years)+2))
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold")
+           DT::formatStyle(2:3, fontWeight = "bold")
         )
      )
 
@@ -1511,7 +1523,7 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
-Row {data-height=770}
+Row {data-height=840}
 ----------------------------------------------------------------------
 
 ### **Trend**
@@ -1555,18 +1567,30 @@ plot_ldp_line(ldp_all_sex_data, measure = sex, measure_text = "Gender: "))
 
 ```{r table-ldp-sex}
 
-ldp_sex_table_data <- ldp_all_sex %>% filter(!is.na(perc_met)) %>%
-  select(geog,fy,sex,perc_met) %>%
-   mutate(perc_met = paste0(perc_met,"%")) %>% 
+ldp_sex_trend <- ldp_all_sex %>% filter(!is.na(perc_met)) %>%
+  select(geog, fy, sex, perc_met) %>%
+   mutate(perc_met = paste0(perc_met, "%")) %>% 
   pivot_wider(names_from = fy, values_from = perc_met) %>%
-             rename(`Gender` = sex) 
+  mutate(type = "% Met Standard/Exempt", .before = `2016/17`)
+  
+trend_sex_totals <- pds_all_sex %>% filter(fy %in% full_years, total_referrals != 0) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  pivot_wider(names_from = fy, values_from = total_referrals, values_fill = "0") %>% 
+    mutate(type = "Number of Referrals", .before = `2016/17`)
 
+
+ldp_sex_table_data <- bind_rows(trend_sex_totals, ldp_sex_trend) %>% arrange(geog, sex) %>% 
+            mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+  mutate(sex = if_else(type == "% Met Standard/Exempt", " ", sex)) %>% 
+   rename(`Gender` = sex) %>% 
+  rename(" " = "type")
+            
 
 ldp_sex_table <- SharedData$new(ldp_sex_table_data, key = ~geog, group = "ldp_sex")
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="150px", margin="20px"),
+       div(style = css(width="97%", height="200px", margin="20px"),
 DT::datatable(ldp_sex_table, rownames = FALSE,
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -1575,10 +1599,9 @@ DT::datatable(ldp_sex_table, rownames = FALSE,
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                list(className = 'dt-right',
-                                                    targets = 2:(length(full_years)+1))
+                                                    targets = 3:(length(full_years)+2))
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
-                          )
+           DT::formatStyle(2:3, fontWeight = "bold")
         )
      )
 
