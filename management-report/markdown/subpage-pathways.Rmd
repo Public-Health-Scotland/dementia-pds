@@ -205,7 +205,7 @@ Row
 
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
-Row {.tabset data-height=760}
+Row {.tabset data-height=1000}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
@@ -251,7 +251,7 @@ data_filter_ijb_year, NULL)
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px"> Pathways from diagnosis to contact by PDS practitioner </h2>
 ```{r wait-table-ijb}
 bscols(widths = 12,
-       div(style = css(width="97%", height="585px", margin="20px"),
+       div(style = css(width="97%", height="785px", margin="20px"),
     DT::datatable(wait_table_data_ijb, rownames = FALSE,  
                                         caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
@@ -319,7 +319,7 @@ data_filter_hb_year, NULL)
 ```{r wait-table-hb}
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="585px", margin="20px"),
+       div(style = css(width="97%", height="785px", margin="20px"),
   DT::datatable(wait_table_data_hb, rownames = FALSE,
                  caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
@@ -340,6 +340,63 @@ bscols(widths = 12,
                           )
         )
      )
+
+```
+
+### **Trend**
+
+```{r dropdown-wait-trend}
+wait_data_trend_all <- wait_data %>% filter(sex == "All", simd == "All") %>% 
+                                     mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+                                     rename(geog = ijb) %>% select(geog, fy, median_diagnosis_to_contact) %>% 
+  #coding Aberdeen City and NHS Grampian medians as -999 so they do not appear on chart
+            mutate(median_diagnosis_to_contact = 
+              if_else(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), -999, median_diagnosis_to_contact)) %>% 
+            mutate(median_diagnosis_to_contact = 
+              if_else(geog == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), -999, median_diagnosis_to_contact)) 
+  
+wait_data_trend_all$geog<- factor(wait_data_trend_all$geog, levels = unique(pds_all$geog))
+
+wait_data_trend <- SharedData$new(wait_data_trend_all %>% arrange(geog))
+
+data_filter_wait_trend <- filter_select(id = "trend_filter_wait",
+                                    label = "Select Health Board(s) or Integration Authority Area(s):",
+                                    group = ~geog,
+                                    sharedData = wait_data_trend
+                                   )
+bscols(widths = c(1,10,NA),NULL,
+data_filter_wait_trend,NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to contact by PDS practitioner</h2>
+```{r plot-wait-trend}
+
+ wait_plot_trend <- plot_trend(wait_data_trend, median_diagnosis_to_contact, x ="Financial Year of Diagnosis", y = "Median", colours = phs_colours_46, measure_text = "Average (median) days from diagnosis to first contact: ")
+
+bscols(widths = 12,
+        div(style = css(width="98%", height="385px"),
+wait_plot_trend)
+)
+```
+
+```{r table-wait-trend}
+
+wait_data_trend_all %>% arrange(geog) %>% 
+            mutate(median_diagnosis_to_contact = as.character(median_diagnosis_to_contact)) %>% 
+            mutate(median_diagnosis_to_contact = 
+              if_else(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "--", median_diagnosis_to_contact)) %>% 
+            mutate(median_diagnosis_to_contact = 
+              if_else(geog == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "--", median_diagnosis_to_contact)) %>%             pivot_wider(names_from = fy, values_from = median_diagnosis_to_contact) %>%
+            rename(`Health Board/Integration Authority Area` = geog) %>%
+            kable(align = c("l", rep("r", length(all_years)))) %>%
+            kable_styling(full_width = TRUE) %>%
+            column_spec(1, bold = TRUE) %>%
+  # Add header above table
+            add_header_above(
+                    c(" " = 1,
+                     "Financial Year of Diagnosis" = length(all_years))) %>%
+            scroll_box(height = "470px")
 
 ```
 
@@ -1059,6 +1116,12 @@ function filter_default() {
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("wait_filter_hb_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("trend_filter_wait").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_wait").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized") 
