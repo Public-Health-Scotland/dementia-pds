@@ -892,7 +892,7 @@ pds_age_rates_table <- SharedData$new(pds_age_rates_table_data %>% rename(" " = 
 
 
 bscols(widths = 12,
-        div(style = css(width="98%", height="140px", margin="15px"),
+        div(style = css(width="98%", height="140px", margin="15px", marginTop="-10px"),
 DT::datatable(pds_age_rates_table, rownames = FALSE,
               options = list(pageLength = 2,
                              scrollX = FALSE,

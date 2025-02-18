@@ -464,7 +464,7 @@ pds_all_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%
 
 ```
 
-### **Trend by Financial Year**
+### **Trend**
 
 ```{r dropdown-pop}
 pds_trends_pop_data <- SharedData$new(pds_all_rates)

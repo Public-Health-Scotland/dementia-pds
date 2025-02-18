@@ -140,9 +140,9 @@ PDS Pathways
 
 wait_data <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output))
 
-wait_data_2 <- read_rds(get_mi_data_path("wait_data_2", ext = "rds", test_output = test_output))
+term_data_contact <- read_rds(get_mi_data_path("wait_data_2", ext = "rds", test_output = test_output))
 
-wait_data_3 <- read_rds(get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
+term_data_no_contact <- read_rds(get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
 
 wait_data$health_board <- as.factor(wait_data$health_board)
 wait_data$fy <- as.factor(wait_data$fy)
@@ -151,21 +151,21 @@ wait_data$sex <- as.factor(wait_data$sex)
 wait_data$ijb <- as.factor(wait_data$ijb)
 
 
-wait_data_2$health_board <- as.factor(wait_data_2$health_board)
-wait_data_2$fy <- as.factor(wait_data_2$fy)
-wait_data_2 %<>% arrange(termination_or_transition_reason)
-wait_data_2$sex <- as.factor(wait_data_2$sex)
-wait_data_2$ijb <- factor(wait_data_2$ijb, levels = unique(pds_all$geog))
-wait_data_2 %<>% mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "14 All reasons", substring(termination_or_transition_reason, 3), termination_or_transition_reason))
-wait_data_2$termination_or_transition_reason <- as.factor(wait_data_2$termination_or_transition_reason)
+term_data_contact$health_board <- as.factor(term_data_contact$health_board)
+term_data_contact$fy <- as.factor(term_data_contact$fy)
+term_data_contact %<>% arrange(termination_or_transition_reason)
+term_data_contact$sex <- as.factor(term_data_contact$sex)
+term_data_contact$ijb <- factor(term_data_contact$ijb, levels = unique(pds_all$geog))
+term_data_contact %<>% mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "14 All reasons", substring(termination_or_transition_reason, 3), termination_or_transition_reason))
+term_data_contact$termination_or_transition_reason <- as.factor(term_data_contact$termination_or_transition_reason)
 
-wait_data_3$health_board <- as.factor(wait_data_3$health_board)
-wait_data_3$fy <- as.factor(wait_data_3$fy)
-wait_data_3 %<>% arrange(termination_or_transition_reason)
-wait_data_3$sex <- as.factor(wait_data_3$sex)
-wait_data_3$ijb <- factor(wait_data_3$ijb, levels = unique(pds_all$geog))
-wait_data_3 %<>% mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "14 All reasons", substring(termination_or_transition_reason, 4), termination_or_transition_reason))
-wait_data_3$termination_or_transition_reason <- as.factor(wait_data_3$termination_or_transition_reason)
+term_data_no_contact$health_board <- as.factor(term_data_no_contact$health_board)
+term_data_no_contact$fy <- as.factor(term_data_no_contact$fy)
+term_data_no_contact %<>% arrange(termination_or_transition_reason)
+term_data_no_contact$sex <- as.factor(term_data_no_contact$sex)
+term_data_no_contact$ijb <- factor(term_data_no_contact$ijb, levels = unique(pds_all$geog))
+term_data_no_contact %<>% mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "14 All reasons", substring(termination_or_transition_reason, 4), termination_or_transition_reason))
+term_data_no_contact$termination_or_transition_reason <- as.factor(term_data_no_contact$termination_or_transition_reason)
  
 ```
 
@@ -188,7 +188,7 @@ Sidebar {.sidebar}
 <ul>
   <li>[**Pathways - Waiting Times**](#pds-pathways)</li>
   <li>[Pathways - PDS Outcomes](#outcomes)</li>
-  <li>[Pathways - Referrals with no contact](#no-contact)</li>
+  <li>[Pathways - No Contact within 12 Months](#no-contact)</li>
   <li>[Pathways - Termination Reasons](#termination-reasons)</li>
 </ul>
 
@@ -229,8 +229,8 @@ wait_data_ijb <- wait_data %>%
     mutate(across(starts_with("median"),
                   ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
     set_colnames(c("Integration Authority Area", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
-                     "Percentage of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
-                     "Percentage of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
+                     "% of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
+                     "% of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
                      "Average (median) days from diagnosis to first contact"
       )) 
 
@@ -268,7 +268,7 @@ bscols(widths = 12,
            DT::formatStyle(1, fontWeight = "bold",
                            ) %>%
            DT::formatStyle(9, fontWeight = "bold",
-                           backgroundColor = "#E9F2F3"
+                           backgroundColor = "#E1C7DF"
                           )
         )
      )
@@ -296,8 +296,8 @@ wait_data_hb <- wait_data %>%
   mutate(across(starts_with("median"),
                   ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
       set_colnames(c("Health Board", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
-                     "Percentage of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
-                     "Percentage of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
+                     "% of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
+                     "% of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
                      "Average (median) days from diagnosis to first contact"
       )) 
 
@@ -336,7 +336,7 @@ bscols(widths = 12,
            DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
                           )%>%
            DT::formatStyle(9, fontWeight = "bold",
-                           backgroundColor = "#E9F2F3"
+                           backgroundColor = "#DAEBBE"
                           )
         )
      )
@@ -380,7 +380,7 @@ Sidebar {.sidebar}
 <ul>
   <li>[Pathways - Waiting Times](#pds-pathways)</li>
   <li>[**Pathways - PDS Outcomes**](#outcomes)</li>
-  <li>[Pathways - Referrals with no contact](#no-contact)</li>
+  <li>[Pathways - No Contact within 12 Months](#no-contact)</li>
   <li>[Pathways - Termination Reasons](#termination-reasons)</li>
 </ul>
 
@@ -601,7 +601,7 @@ exempt_data_totals <- left_join(pds_all_totals %>%
                                               .after = total_referrals) %>% 
   rename(`Health Board/Integration Authority Area` = geog, 
          `Total referrals` = total_referrals,
-         `Exempt` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
+         `Number of referrals Exempt` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
 exempt_table_data <- SharedData$new(exempt_data_totals)
 
@@ -651,7 +651,7 @@ Sidebar {.sidebar}
 
 <br>
 
-### Pathways - Referrals with no contact
+### Pathways - No Contact within 12 Months
 ***
 
 <font size="2"> 
@@ -665,7 +665,7 @@ Sidebar {.sidebar}
 <ul>
   <li>[Pathways - Waiting Times](#pds-pathways)</li>
   <li>[Pathways - PDS Outcomes](#outcomes)</li>
-  <li>[**Pathways - Referrals with no contact**](#no-contact)</li>
+  <li>[**Pathways - No Contact within 12 Months**](#no-contact)</li>
   <li>[Pathways - Termination Reasons](#termination-reasons)</li>
 </ul>
 
@@ -689,51 +689,41 @@ Row {.tabset data-height=670}
 
 ```{r dropdown-no-contact-ijb}
 
- no_contact_term_ijb <- wait_data_3 %>%  
-    filter(sex == "All", termination_or_transition_reason == "All reasons") %>%
+no_contact_term_ijb <- term_data_no_contact %>%  
+    filter(sex == "All", termination_or_transition_reason == "All reasons", ldp == "All") %>%
     filter(!grepl("NHS", ijb)) %>% 
     pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
     select(fy, ijb,
-           referrals_All,
-           median_referral_to_termination_All,
-           referrals_exempt,
-           referrals_fail)
+           referrals_All) %>% rename(referrals_no_contact_term = referrals_All)
     
-wait_data_totals_ijb <- wait_data %>% filter(sex == "All", simd == "All", ijb != "All" | ijb == "Scotland") %>% select(ijb, fy, total_referrals)
+totals_ijb <- wait_data %>% filter(sex == "All", simd == "All", ijb != "All" | ijb == "Scotland") %>% select(ijb, fy, total_referrals)
 
 no_contact_12_ijb <- pds_all %>% filter(!grepl("NHS", geog), ldp_full == "fail - PDS not started and more than 12 months since diagnosis" | ldp_full == "fail - PDS started more than 12 months after diagnosis") %>% 
    group_by(fy, geog) %>% summarise(referrals_no_contact_12 = sum(referrals)) %>% rename(ijb = geog)
  
-ijb_totals_12 <- left_join(wait_data_totals_ijb, no_contact_12_ijb)
+ijb_totals_12 <- left_join(totals_ijb, no_contact_12_ijb)
 
 no_contact_ijb <- left_join(ijb_totals_12, no_contact_term_ijb) %>% 
   mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
     mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
-     mutate(perc_term_early = paste0(round((referrals_All/total_referrals)*100,1),"%")) %>% 
+     mutate(perc_no_contact_term = paste0(round((referrals_no_contact_term/total_referrals)*100,1),"%")) %>% 
    mutate(perc_no_contact_12 = paste0(round((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
-      mutate(perc_term_early_exempt = if_else(referrals_exempt == 0, NA,
-        round((referrals_exempt/referrals_All)*100,1))) %>% 
-          mutate(perc_term_early_exempt = if_else(!is.na(perc_term_early_exempt), paste0(perc_term_early_exempt, "%"), "-")) %>% 
   select(fy, ijb,
-         total_referrals, referrals_no_contact_12, perc_no_contact_12,
-           referrals_All,
-         perc_term_early,
-           referrals_exempt,
-         perc_term_early_exempt) %>% 
+         total_referrals,
+         perc_no_contact_12, referrals_no_contact_12,
+         perc_no_contact_term, referrals_no_contact_term) %>% 
     mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>% arrange(ijb) %>%
     mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
     mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-   mutate(across(starts_with("perc"),
+   mutate(across(starts_with("%"),
                   ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
-  mutate(across(starts_with("referrals"),
+   mutate(across(starts_with("referrals"),
                   ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
     set_colnames(c("fy", "Integration Authority Area", "Number of People Referred to PDS",
+                   "% of total referrals not contacted within 12 months of diagnosis",
                    "Number of referrals not contacted within 12 months of diagnosis",
-                   "Percentage of referrals not contacted within 12 months of diagnosis",
-                   "Number of referrals whose PDS ended with no contact",
-                   "Percentage of referrals whose PDS ended with no contact",
-                   "Number of referrals whose PDS ended with no contact Exempt from LDP standard",
-                   "Percentage of referrals whose PDS ended with no contact Exempt from LDP standard"))
+                   "% of total referrals whose PDS ended with no contact",
+                   "Number of referrals whose PDS ended with no contact"))
     
 
 no_contact_table_data_ijb <- SharedData$new(no_contact_ijb)
@@ -750,7 +740,7 @@ data_filter_year_no_contact_ijb, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to post-diagnostic support with no contact by PDS practitioner</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to PDS not contacted within 12 months of diagnosis</h2>
 ```{r no-contact-table-ijb}
 
 bscols(widths = 12,
@@ -763,12 +753,13 @@ bscols(widths = 12,
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = c(0,7,8)),
+                             columnDefs = list(list(visible = FALSE, targets = 0),
                                                 list(className = 'dt-right', targets = 2:6)
                                                 #list(width = '30px', targets = 6)
                                                 ))) %>%
            DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
-                          )
+                          ) %>% 
+       DT::formatStyle(5, `border-right` = "solid 1px")
         )
      )
 
@@ -778,50 +769,40 @@ bscols(widths = 12,
 
 ```{r dropdown-no-contact-hb}
 
- no_contact_term_hb <- wait_data_3 %>% 
-    filter(sex == "All", termination_or_transition_reason == "All reasons") %>%
-    filter(ijb == "Scotland" | grepl("NHS", ijb)) %>% 
+no_contact_term_hb <- term_data_no_contact %>%  
+    filter(sex == "All", termination_or_transition_reason == "All reasons", ldp == "All") %>%
+    filter(health_board == "Scotland" | grepl("NHS", health_board)) %>% 
     pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
-  select(fy, health_board,
-           referrals_All,
-           median_referral_to_termination_All,
-           referrals_exempt,
-           referrals_fail)
+    select(fy, health_board,
+           referrals_All) %>% rename(referrals_no_contact_term = referrals_All)
     
-wait_data_totals_hb <- wait_data %>% filter(sex == "All", simd == "All", ijb == "All" | ijb == "Scotland") %>% select(health_board, fy, total_referrals)
+totals_hb <- wait_data %>% filter(sex == "All", simd == "All", ijb == "All" | ijb == "Scotland") %>% select(health_board, fy, total_referrals)
 
 no_contact_12_hb <- pds_all %>% filter(geog == "Scotland" | grepl("NHS", geog), ldp_full == "fail - PDS not started and more than 12 months since diagnosis" | ldp_full == "fail - PDS started more than 12 months after diagnosis") %>% 
-   group_by(fy, health_board) %>% summarise(referrals_no_contact_12 = sum(referrals))
+   group_by(fy, geog) %>% summarise(referrals_no_contact_12 = sum(referrals)) %>% rename(health_board = geog)
  
-hb_totals_12 <- left_join(wait_data_totals_hb, no_contact_12_hb)
+hb_totals_12 <- left_join(totals_hb, no_contact_12_hb)
 
 no_contact_hb <- left_join(hb_totals_12, no_contact_term_hb) %>% 
   mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
     mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
-     mutate(perc_term_early = paste0(round((referrals_All/total_referrals)*100,1),"%")) %>% 
+     mutate(perc_no_contact_term = paste0(round((referrals_no_contact_term/total_referrals)*100,1),"%")) %>% 
    mutate(perc_no_contact_12 = paste0(round((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
-      mutate(perc_term_early_exempt = if_else(referrals_exempt == 0, NA,
-        round((referrals_exempt/referrals_All)*100,1))) %>% 
-          mutate(perc_term_early_exempt = if_else(!is.na(perc_term_early_exempt), paste0(perc_term_early_exempt, "%"), "-")) %>% 
   select(fy, health_board,
-         total_referrals, referrals_no_contact_12, perc_no_contact_12,
-           referrals_All,
-         perc_term_early,
-           referrals_exempt,
-         perc_term_early_exempt) %>% 
+         total_referrals,
+         perc_no_contact_12, referrals_no_contact_12,
+         perc_no_contact_term, referrals_no_contact_term) %>% 
      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-   mutate(across(starts_with("perc"),
+   mutate(across(starts_with("%"),
                   ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
-  mutate(across(starts_with("referrals"),
+   mutate(across(starts_with("referrals"),
                   ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
     set_colnames(c("fy", "Health Board", "Number of People Referred to PDS",
+                   "% of total referrals not contacted within 12 months of diagnosis",
                    "Number of referrals not contacted within 12 months of diagnosis",
-                   "Percentage of referrals not contacted within 12 months of diagnosis",
-                   "Number of referrals whose PDS ended with no contact",
-                   "Percentage of referrals whose PDS ended with no contact",
-                   "Number of referrals whose PDS ended with no contact Exempt from LDP standard",
-                   "Percentage of referrals whose PDS ended with no contact Exempt from LDP standard"))
-
+                   "% of total referrals whose PDS ended with no contact",
+                   "Number of referrals whose PDS ended with no contact"))
+    
 no_contact_table_data_hb <- SharedData$new(no_contact_hb)
 
 data_filter_year_no_contact_hb <- filter_select(id = "no_contact_filter_year_hb",
@@ -848,12 +829,13 @@ bscols(widths = 12,
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = c(0,7,8)),
-                                                list(className = 'dt-right', targets = 2:8)
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                                list(className = 'dt-right', targets = 2:6)
                                                 #list(width = '30px', targets = 6)
                                                 ))) %>%
            DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
-                          )
+                          ) %>% 
+       DT::formatStyle(5, `border-right` = "solid 1px")
         )
      )
 
@@ -880,7 +862,7 @@ Sidebar {.sidebar}
 <ul>
   <li>[Pathways - Waiting Times](#pds-pathways)</li>
   <li>[Pathways - PDS Outcomes](#outcomes)</li>
-  <li>[Pathways - Referrals with no contact](#no-contact)</li>
+  <li>[Pathways - No Contact within 12 Months](#no-contact)</li>
   <li>[**Pathways - Termination Reasons**](#termination-reasons)</li>
 </ul>
 
@@ -903,7 +885,7 @@ Row {.tabset data-height=770}
 ### **Termination Reasons - PDS Ending Without Contact**
 
 ```{r dropdown-term-1}
- term_data_2 <- wait_data_3 %>%
+ term_data_2 <- term_data_no_contact %>%
     filter(sex == "All") %>%
     pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
     mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
@@ -951,7 +933,7 @@ data_filter_year_term_2, data_filter_geog_term_2, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px"> Pathways from referral to termination of post-diagnostic support without contact </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Pathways from referral to termination of post-diagnostic support without contact</h2>
 ```{r term-table-1}
 
 bscols(widths = 12,
@@ -976,7 +958,7 @@ bscols(widths = 12,
 ### **Termination Reasons - PDS Ending On or After Contact**
 
 ```{r dropdown-term-2}
- term_data <- wait_data_2 %>% 
+ term_data <- term_data_contact %>% 
     filter(sex == "All") %>% 
     pivot_wider(names_from = ldp, values_from = c(referrals, median_contact_to_termination)) %>% 
     mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>% 
