@@ -385,9 +385,9 @@ wait_plot_trend)
 wait_data_trend_all %>% arrange(geog) %>% 
             mutate(median_diagnosis_to_contact = as.character(median_diagnosis_to_contact)) %>% 
             mutate(median_diagnosis_to_contact = 
-              if_else(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "--", median_diagnosis_to_contact)) %>% 
+              if_else(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "\\-", median_diagnosis_to_contact)) %>% 
             mutate(median_diagnosis_to_contact = 
-              if_else(geog == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "--", median_diagnosis_to_contact)) %>%             pivot_wider(names_from = fy, values_from = median_diagnosis_to_contact) %>%
+              if_else(geog == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "\\-", median_diagnosis_to_contact)) %>%             pivot_wider(names_from = fy, values_from = median_diagnosis_to_contact) %>%
             rename(`Health Board/Integration Authority Area` = geog) %>%
             kable(align = c("l", rep("r", length(all_years)))) %>%
             kable_styling(full_width = TRUE) %>%
