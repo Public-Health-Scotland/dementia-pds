@@ -1687,15 +1687,16 @@ Row {.tabset data-height=920}
         pivot_wider(names_from = carers_support, values_from = referrals) %>% 
       mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
       adorn_totals("col") %>% 
-      select(3,2,9,8,6,7) %>% 
       mutate(perc_carer = paste0(round(100*Yes/Total,1), "%")) %>%
+      mutate(perc_no_carer = paste0(round(100*No/Total,1), "%")) %>%
+      mutate(perc_unknown = paste0(round(100*`Not Known`/Total,1), "%")) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+      select(ijb, fy, Total, perc_carer, perc_no_carer, perc_unknown) %>% 
   rename("Number of People Referred to PDS" = "Total", 
              "Integration Authority Area" = "ijb",
-              "Number of people with Carer's Support" = "Yes",
-         "Number of people without Carer's Support" = "No",
-         "Number of people where Carer's Support is Not Known" = "Not Known",
-             "Percentage with Carer's Support" = "perc_carer")
+             "% with Carer's Support" = "perc_carer",
+             "% without Carer's Support" = "perc_no_carer",
+             "% where Carer's Support is Unknown" = "perc_unknown")
 
 
 table_ijb_carer <- SharedData$new(table_ijb_carer_data)
@@ -1726,10 +1727,10 @@ bscols(widths = 12,
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:6)
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                               list(className = 'dt-right', targets = 2:5)
                              ))) %>%
-  DT::formatStyle(2, fontWeight = "bold")
+  DT::formatStyle(1, fontWeight = "bold")
             )
        )
 
@@ -1748,15 +1749,17 @@ bscols(widths = 12,
       pivot_wider(names_from = carers_support, values_from = referrals) %>% 
       mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
       adorn_totals("col") %>% 
-      select(3,1,9,8,6,7) %>% 
-      mutate(perc_carer = paste0(round(100*Yes/Total,1), "%")) %>% 
+       mutate(perc_carer = paste0(round(100*Yes/Total,1), "%")) %>%
+      mutate(perc_no_carer = paste0(round(100*No/Total,1), "%")) %>%
+      mutate(perc_unknown = paste0(round(100*`Not Known`/Total,1), "%")) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+      select(health_board, fy, Total, perc_carer, perc_no_carer, perc_unknown) %>% 
   rename("Number of People Referred to PDS" = "Total", 
              "Health Board" = "health_board",
-              "Number of people with Carer's Support" = "Yes",
-         "Number of people without Carer's Support" = "No",
-         "Number of people where Carer's Support is Not Known" = "Not Known",
-             "Percentage with Carer's Support" = "perc_carer")
+             "% with Carer's Support" = "perc_carer",
+             "% without Carer's Support" = "perc_no_carer",
+             "% where Carer's Support is Unknown" = "perc_unknown")
+ 
 
 
 table_hb_carer <- SharedData$new(table_hb_carer_data)
@@ -1778,17 +1781,17 @@ bscols(widths = c(1,5,NA),
 ```{r table-carer-hb}
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="710px", margin="15px"),
+       div(style = css(width="98%", height="660px", margin="15px"),
           DT::datatable(table_hb_carer, rownames = FALSE,
               options = list(pageLength = 15,
                              scrollX = FALSE,
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:6)
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                               list(className = 'dt-right', targets = 2:5)
                              ))) %>%
-  DT::formatStyle(2, fontWeight = "bold")
+  DT::formatStyle(1, fontWeight = "bold")
             )
        )
 
@@ -1849,7 +1852,7 @@ Row {.tabset data-height=920}
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   rename("Number of People Referred to PDS" = "Total",
              "Integration Authority Area" = "ijb",
-             "Percentage Accepted (includes those initially declined)" = "perc_accepted")
+             "% Accepted (includes those initially declined)" = "perc_accepted")
 
 table_ijb_uptake <- SharedData$new(table_ijb_uptake_data)
 
@@ -1907,7 +1910,7 @@ bscols(widths = 12,
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   rename("Number of People Referred to PDS" = "Total", 
              "Health Board" = "health_board",
-             "Percentage Accepted (includes those initially declined)" = "perc_accepted")
+             "% Accepted (includes those initially declined)" = "perc_accepted")
 
 
 table_hb_uptake <- SharedData$new(table_hb_uptake_data)
