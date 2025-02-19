@@ -94,8 +94,8 @@ output$table_referrals_trend <- DT::renderDataTable({
       distinct(health_board, fy, .keep_all = T) %>% 
       pivot_wider(names_from = fy, values_from = referrals) %>% 
       rename(" " = "health_board") 
-    make_table(trend_referrals_hb_data, right_align = 1:8, selected = 1, table_elements = "t") %>% 
-      formatCurrency(c(2:9), currency = "", interval = 3, mark = ",", digits = 0)
+    make_table(trend_referrals_hb_data, right_align = 1:length(included_years), selected = 1, table_elements = "t") %>% 
+      formatCurrency(c(2:(length(included_years) + 1)), currency = "", interval = 3, mark = ",", digits = 0)
     
   }else{
     
@@ -106,8 +106,8 @@ output$table_referrals_trend <- DT::renderDataTable({
       distinct(ijb, fy, .keep_all = T) %>% 
       pivot_wider(names_from = fy, values_from = referrals) %>% 
       rename(" " = "ijb") 
-    make_table(trend_referrals_ijb_data, right_align = 1:8, selected = 1, rows_to_display = 32, table_elements = "t") %>% 
-      formatCurrency(c(2:9), currency = "", interval = 3, mark = ",", digits = 0)
+    make_table(trend_referrals_ijb_data, right_align = 1:length(included_years), selected = 1, rows_to_display = 32, table_elements = "t") %>% 
+      formatCurrency(c(2:(length(included_years) + 1)), currency = "", interval = 3, mark = ",", digits = 0)
   }
 })
 
@@ -147,7 +147,7 @@ output$table_hb_ijb_trend <- DT::renderDataTable({
     pivot_wider(names_from = fy, values_from = rate) %>% 
    # slice(15,1:14) %>% 
     rename(" " = "health_board") 
-  make_table(trend_hb_data, right_align = 1:8, selected = 1, table_elements = "t")
+  make_table(trend_hb_data, right_align = 1:length(included_years), selected = 1, table_elements = "t")
 
 }else{
 
@@ -159,7 +159,7 @@ output$table_hb_ijb_trend <- DT::renderDataTable({
     distinct(ijb, fy, .keep_all = T) %>% 
     pivot_wider(names_from = fy, values_from = rate) %>% 
     rename(" " = "ijb") 
-  make_table(trend_ijb_data, right_align = 1:8, selected = 1, rows_to_display = 32, table_elements = "t")
+  make_table(trend_ijb_data, right_align = 1:length(included_years), selected = 1, rows_to_display = 32, table_elements = "t")
 }
 })
 
@@ -192,7 +192,7 @@ output$table_hb_trend_2 <- DT::renderDataTable({
     pivot_wider(names_from = fy, values_from = exp_perc) %>% 
   #  slice(15,1:14) %>% 
     rename(" " = "health_board")  
-  make_table(trend_hb_data_2, right_align = 1:8, selected = 1, table_elements = "t")
+  make_table(trend_hb_data_2, right_align = 1:length(included_years), selected = 1, table_elements = "t")
 })
 
 
