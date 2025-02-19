@@ -143,7 +143,7 @@ pds_all_subtype$geog <- factor(pds_all_subtype$geog, levels = unique(pds_all$geo
 
 pds_all_subtype$subtype <- factor(pds_all_subtype$subtype, levels = c(unique(pds_all_subtype$subtype)[-6],unique(pds_all_subtype$subtype)[6]))
 
-ldp_all_subtype <- subtype_data %>% filter(age_grp_2 == "All") %>%
+ldp_all_subtype <- subtype_data %>% filter(fy %in% full_years, age_grp_2 == "All") %>%
   select(-health_board, -age_grp_2, -total_referrals) %>% 
   complete(nesting(geog, fy), subtype, fill = list(perc_met = NA))
 
@@ -166,7 +166,7 @@ pds_all_stage$geog <- factor(pds_all_stage$geog, levels = unique(pds_all$geog))
 pds_all_stage$stage <- factor(pds_all_stage$stage, 
     levels = c(unique(pds_all_stage$stage)[1],unique(pds_all_stage$stage)[3],unique(pds_all_stage$stage)[2],unique(pds_all_stage$stage)[5],unique(pds_all_stage$stage)[4]))
                               
-ldp_all_stage <- stage_data %>% filter(age_grp_2 == "All") %>%
+ldp_all_stage <- stage_data %>% filter(fy %in% full_years, age_grp_2 == "All") %>%
   select(-health_board, -age_grp_2, -total_referrals) %>% 
   complete(nesting(geog, fy), stage, fill = list(perc_met = NA))
 
@@ -191,7 +191,7 @@ pds_all_model$geog <- factor(pds_all_model$geog, levels = unique(pds_all$geog))
 pds_all_model$model <- factor(pds_all_model$model, 
     levels = c(unique(pds_all_model$model)[-1],unique(pds_all_model$model)[1]))
                               
-ldp_all_model <- model_data %>% filter(age_grp_2 == "All", sex == "All", simd == "All") %>%
+ldp_all_model <- model_data %>% filter(fy %in% full_years, age_grp_2 == "All", sex == "All", simd == "All") %>%
   select(-health_board, -age_grp_2, -total_referrals) %>% 
   complete(nesting(geog, fy), model, fill = list(perc_met = NA))
 
@@ -466,10 +466,10 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
-Row {data-height=1060}
+Row {data-height=1220}
 ----------------------------------------------------------------------
 
-### **Trend by Financial Year**
+### **Trend**
 
 ```{r dropdown-ldp-subtype}
 
@@ -511,21 +511,30 @@ plot_ldp_line(ldp_all_subtype_data, measure = subtype, measure_text = "Subtype o
 
 ```{r table-ldp-subtype}
 
-ldp_subtype_table_data <- ldp_all_subtype %>% 
-   filter(!is.na(perc_met), fy %in% full_years) %>%
+ldp_subtype_trend <- ldp_all_subtype %>% filter(!is.na(perc_met)) %>%
   select(geog, fy, subtype, perc_met) %>%
    mutate(perc_met = paste0(perc_met, "%")) %>% 
   pivot_wider(names_from = fy, values_from = perc_met) %>%
-  arrange(geog,subtype) %>% 
-   mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
-             rename(`Subtype of Dementia` = subtype)  
+  mutate(type = "% Met Standard/Exempt", .before = `2016/17`)
+  
+trend_subtype_totals <- pds_all_subtype %>% filter(fy %in% full_years, total_referrals != 0) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  pivot_wider(names_from = fy, values_from = total_referrals, values_fill = "0") %>% 
+    mutate(type = "Number of Referrals", .before = `2016/17`)
 
+
+ldp_subtype_table_data <- bind_rows(trend_subtype_totals, ldp_subtype_trend) %>% arrange(geog, subtype) %>% 
+            mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+  mutate(subtype = if_else(type == "% Met Standard/Exempt", " ", subtype)) %>% 
+   rename(`Subtype of Dementia` = subtype) %>% 
+  rename(" " = "type")
+            
 
 ldp_subtype_table <- SharedData$new(ldp_subtype_table_data, key = ~geog, group = "ldp_subtype")
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="380px", margin="20px"),
+       div(style = css(width="97%", height="510px", margin="20px"),
 DT::datatable(ldp_subtype_table, rownames = FALSE,
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -534,11 +543,12 @@ DT::datatable(ldp_subtype_table, rownames = FALSE,
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                list(className = 'dt-right',
-                                                    targets = 2:(length(full_years)+1))
+                                                    targets = 3:(length(full_years)+2))
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold")
+           DT::formatStyle(2:3, fontWeight = "bold") 
         )
      )
+
 
 
 
@@ -582,7 +592,7 @@ Row
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
 
-Row {.tabset data-height=1130}
+Row {.tabset data-height=1100}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
@@ -641,7 +651,7 @@ pds_prop_stage_table_data_ijb[is.na(pds_prop_stage_table_data_ijb)] <- "0%"
 pds_prop_stage_table_ijb <- SharedData$new(pds_prop_stage_table_data_ijb, key = ~fy, group = "stage_prop_ijb")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="470px", margin="15px"),
+       div(style = css(width="98%", height="440px", margin="15px"),
           DT::datatable(pds_prop_stage_table_ijb, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -722,7 +732,7 @@ pds_prop_stage_table_data_hb[is.na(pds_prop_stage_table_data_hb)] <- "0%"
 pds_prop_stage_table_hb <- SharedData$new(pds_prop_stage_table_data_hb, key = ~fy, group = "stage_prop_hb")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="490px", margin="15px", marginTop="0px"),
+       div(style = css(width="98%", height="460px", margin="15px", marginTop="0px"),
           DT::datatable(pds_prop_stage_table_hb, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -778,10 +788,10 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
-Row {data-height=850}
+Row {data-height=1030}
 ----------------------------------------------------------------------
 
-### **Trend by Financial Year**
+### **Trend**
 
 ```{r dropdown-ldp-stage}
 
@@ -828,21 +838,30 @@ plot_ldp_line(ldp_all_stage_data, measure = stage, measure_text = "Stage of Illn
 
 ```{r table-ldp-stage}
 
-ldp_stage_table_data <- ldp_all_stage %>% 
- filter(!is.na(perc_met), fy %in% full_years) %>%
+ldp_stage_trend <- ldp_all_stage %>% filter(!is.na(perc_met)) %>%
   select(geog, fy, stage, perc_met) %>%
    mutate(perc_met = paste0(perc_met, "%")) %>% 
   pivot_wider(names_from = fy, values_from = perc_met) %>%
-  arrange(geog, stage) %>% 
-   mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
-             rename(`Stage of Illness` = stage) 
+  mutate(type = "% Met Standard/Exempt", .before = `2016/17`)
+  
+trend_stage_totals <- pds_all_stage %>% filter(fy %in% full_years, total_referrals != 0) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  pivot_wider(names_from = fy, values_from = total_referrals, values_fill = "0") %>% 
+    mutate(type = "Number of Referrals", .before = `2016/17`)
 
+
+ldp_stage_table_data <- bind_rows(trend_stage_totals, ldp_stage_trend) %>% arrange(geog, stage) %>% 
+            mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+  mutate(stage = if_else(type == "% Met Standard/Exempt", " ", stage)) %>% 
+   rename(`Stage of Illness` = stage) %>% 
+  rename(" " = "type")
+            
 
 ldp_stage_table <- SharedData$new(ldp_stage_table_data, key = ~geog, group = "ldp_stage")
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="255px", margin="20px"),
+       div(style = css(width="97%", height="430px", margin="20px"),
 DT::datatable(ldp_stage_table, rownames = FALSE,
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -851,10 +870,9 @@ DT::datatable(ldp_stage_table, rownames = FALSE,
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                list(className = 'dt-right',
-                                                    targets = 2:(length(full_years)+1))
+                                                    targets = 3:(length(full_years)+2))
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
-                          )
+           DT::formatStyle(2:3, fontWeight = "bold")
         )
      )
 
@@ -900,7 +918,7 @@ Row
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
 
-Row {.tabset data-height=1210}
+Row {.tabset data-height=1200}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
@@ -958,7 +976,7 @@ pds_prop_model_table_data_ijb[is.na(pds_prop_model_table_data_ijb)] <- "0%"
 pds_prop_model_table_ijb <- SharedData$new(pds_prop_model_table_data_ijb, key = ~fy, group = "model_prop_ijb")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="540px", margin="15px"),
+       div(style = css(width="98%", height="520px", margin="15px"),
           DT::datatable(pds_prop_model_table_ijb, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -1040,7 +1058,7 @@ pds_prop_model_table_data_hb[is.na(pds_prop_model_table_data_hb)] <- "0%"
 pds_prop_model_table_hb <- SharedData$new(pds_prop_model_table_data_hb, key = ~fy, group = "model_prop_hb")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="560px", margin="15px", marginTop="0px"),
+       div(style = css(width="98%", height="520px", margin="15px", marginTop="0px"),
           DT::datatable(pds_prop_model_table_hb, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -1209,7 +1227,7 @@ headers_model <- htmltools::withTags(table(
 ))
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="530px", margin="15px", marginTop="0px"),
+       div(style = css(width="98%", height="510px", margin="15px", marginTop="0px"),
           DT::datatable(prop_model_age_table, 
                         container = headers_model,
                         rownames = FALSE,
@@ -1352,7 +1370,7 @@ prop_model_sex_table_data %<>% arrange(geog)
 prop_model_sex_table <- SharedData$new(prop_model_sex_table_data, key = ~key, group = "model_prop_sex")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="530px", margin="15px", marginTop="0px"),
+       div(style = css(width="98%", height="500px", margin="15px", marginTop="0px"),
           DT::datatable(prop_model_sex_table, 
                         container = headers_model,
                         rownames = FALSE,
@@ -1499,7 +1517,7 @@ prop_model_simd_table_data %<>% arrange(geog)
 prop_model_simd_table <- SharedData$new(prop_model_simd_table_data, key = ~key, group = "model_prop_simd")
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="530px", margin="15px", marginTop="0px"),
+       div(style = css(width="98%", height="490px", margin="15px", marginTop="0px"),
           DT::datatable(prop_model_simd_table, 
                         container = headers_model,
                         rownames = FALSE,
@@ -1555,10 +1573,10 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
-Row {data-height=950}
+Row {data-height=1200}
 ----------------------------------------------------------------------
 
-### **Trend by Financial Year**
+### **Trend**
 
 ```{r dropdown-ldp-model}
 
@@ -1605,21 +1623,30 @@ plot_ldp_line(ldp_all_model_data, measure = model, measure_text = "Model of Care
 
 ```{r table-ldp-model}
 
-ldp_model_table_data <- ldp_all_model %>% 
- filter(!is.na(perc_met), fy %in% full_years) %>%
+ldp_model_trend <- ldp_all_model %>% filter(!is.na(perc_met)) %>%
   select(geog, fy, model, perc_met) %>%
    mutate(perc_met = paste0(perc_met, "%")) %>% 
   pivot_wider(names_from = fy, values_from = perc_met) %>%
-  arrange(geog, model) %>% 
-   mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
-             rename(`Model of Care` = model) 
+  mutate(type = "% Met Standard/Exempt", .before = `2016/17`)
+  
+trend_model_totals <- pds_all_model %>% filter(fy %in% full_years, total_referrals != 0) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  pivot_wider(names_from = fy, values_from = total_referrals, values_fill = "0") %>% 
+    mutate(type = "Number of Referrals", .before = `2016/17`)
 
+
+ldp_model_table_data <- bind_rows(trend_model_totals, ldp_model_trend) %>% arrange(geog, model) %>% 
+            mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+  mutate(model = if_else(type == "% Met Standard/Exempt", " ", model)) %>% 
+   rename(`Model of Care` = model) %>% 
+  rename(" " = "type")
+            
 
 ldp_model_table <- SharedData$new(ldp_model_table_data, key = ~geog, group = "ldp_model")
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="300px", margin="20px"),
+       div(style = css(width="97%", height="530px", margin="20px"),
 DT::datatable(ldp_model_table, rownames = FALSE,
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -1628,10 +1655,10 @@ DT::datatable(ldp_model_table, rownames = FALSE,
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                list(className = 'dt-right',
-                                                    targets = 2:(length(full_years)+1))
+                                                    targets = 3:(length(full_years)+2))
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
-                          )
+           DT::formatStyle(2:3, fontWeight = "bold")# %>% 
+  #DT::formatStyle(2, padding = "3px") 
         )
      )
 
