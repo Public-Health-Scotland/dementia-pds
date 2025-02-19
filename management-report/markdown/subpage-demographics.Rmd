@@ -410,7 +410,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Proportion of Referrals by Age Group and Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Proportion of Referrals by Gender and Integration Authority Area</h2>
 ```{r plot-prop-age-legend-ijb}
 
 bscols(widths = 12,
@@ -422,7 +422,7 @@ div(style=css(marginBottom="-20px",height="70px"), plot_prop_legend(pds_all_age 
 ```{r plot-prop-age-ijb}
 bscols(widths = 12,
   div(style = css(width="98%", height="400px"),
-      plot_prop(pds_age_data_ijb, measure = age_grp, measure_text = "Age Group: ", xlabel = "Integration Authority Area")
+      plot_prop(pds_age_data_ijb, measure = age_grp, measure_text = "Gender: ", xlabel = "Integration Authority Area")
 )
 )
 
@@ -434,13 +434,13 @@ bscols(widths = 12,
 pds_prop_table_data_ijb <- bind_rows(
   
   ijb_totals_table %>% mutate(age_grp_2 = "All referrals",
-                              across(everything(), as.character)) %>% rename(`Age Group` = age_grp_2),
+                              across(everything(), as.character)) %>% rename(`Gender` = age_grp_2),
   
   pds_all_age %>% filter(!grepl("NHS", geog)) %>% group_by(geog, fy) %>% 
   mutate(perc_referrals = paste0(round((total_referrals/sum(total_referrals))*100,0),"%")) %>% ungroup() %>% 
   select(-total_referrals) %>% 
   pivot_wider(names_from = geog, values_from = perc_referrals) %>%
-             rename(`Age Group` = age_grp)
+             rename(`Gender` = age_grp)
 )
 
 pds_prop_table_data_ijb[is.na(pds_prop_table_data_ijb)] <- "0%"
@@ -730,7 +730,7 @@ hb_age_table_pop <- SharedData$new(hb_pop_age_table_data, key = ~key, group = "h
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="160px", margin="20px"),
+       div(style = css(width="97%", height="200px", margin="20px"),
 DT::datatable(hb_age_table_pop, rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 5,
                              scrollX = TRUE,
@@ -944,8 +944,183 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
-Row {data-height=840}
+Row {.tabset data-height=940}
 ----------------------------------------------------------------------
+
+### **Integration Authority Areas**
+
+```{r dropdown-ijb-age-ldp}
+ldp_ijb_age_2 <- ldp_all_age_2 %>% filter(!grepl("NHS", geog))
+
+ldp_age_data_ijb <- SharedData$new(ldp_ijb_age_2, key = ~fy,  group = "ijb_age_ldp")
+
+data_filter_ijb_age_ldp <- filter_select(id = "filter_ijb_age_ldp",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = ldp_age_data_ijb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_ijb_age_ldp,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Age Group and Integration Authority Area</h2>
+```{r plot-ijb-age-legend-ldp}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_age_2 %>% filter(geog == "Scotland"), measure = age_grp_2)))
+
+```
+
+
+```{r plot-ijb-age-ldp}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar(ldp_age_data_ijb, y_value = perc_met, measure = age_grp_2, measure_text = "Age Group: ", x = "Integration Authority Area", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+)
+
+```
+
+
+```{r table-ijb-age-ldp}
+ijb_age_ldp_data <- ldp_all_age_2 %>% filter(!grepl("NHS", geog)) %>% 
+  select(geog,fy,age_grp_2,perc_met) %>% 
+   mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
+   pivot_wider(names_from = geog, values_from = perc_met) %>%
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>%
+  mutate(type = "% Met Standard/Exempt", .before = Scotland) %>% 
+             rename(`Age Group` = age_grp_2)
+
+
+ijb_age_totals_data <- pds_all_age_2 %>% filter(!grepl("NHS", geog)) %>% 
+  pivot_wider(names_from = geog, values_from = total_referrals) %>%
+  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+  mutate(type = "Number of Referrals", .before = Scotland) %>%
+             rename(`Age Group` = age_grp_2)
+
+
+ijb_ldp_age_table_data <- bind_rows(ijb_age_totals_data, ijb_age_ldp_data) %>% 
+  arrange(fy, `Age Group`) %>% 
+  mutate(`Age Group` = if_else(type == "% Met Standard/Exempt", " ", `Age Group`)) %>% 
+ rename(" " = "type")
+
+ijb_age_table_ldp <- SharedData$new(ijb_ldp_age_table_data, key = ~fy, group = "ijb_age_ldp")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="310px", margin="20px"),
+DT::datatable(ijb_age_table_ldp, rownames = FALSE, extensions = "FixedColumns",
+               options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 2),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 3:34)
+                             ))) %>%
+  DT::formatStyle(2:3, fontWeight = "bold", padding = "4px"
+  )
+        )
+     )
+
+
+
+
+```
+
+### **Health Boards**
+
+```{r dropdown-hb-age-ldp}
+ldp_hb_age_2 <- ldp_all_age_2 %>% filter(geog == "Scotland" | grepl("NHS", geog))
+
+ldp_age_data_hb <- SharedData$new(ldp_hb_age_2, key = ~fy, group = "hb_age_ldp")
+
+data_filter_hb_age_ldp <- filter_select(id = "filter_hb_age_ldp",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = ldp_age_data_hb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_hb_age_ldp,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Age Group and Health Board</h2>
+```{r plot-hb-age-legend-ldp}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_age_2 %>% filter(geog == "Scotland"), measure = age_grp_2)))
+
+```
+
+
+```{r plot-hb-age-ldp}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar(ldp_age_data_hb, y_value = perc_met, measure = age_grp_2, measure_text = "Age Group: ", x = "Health Board", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+)
+
+```
+
+
+```{r table-hb-age-ldp}
+hb_age_ldp_data <- ldp_all_age_2 %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  select(geog,fy,age_grp_2,perc_met) %>% 
+   mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
+   pivot_wider(names_from = geog, values_from = perc_met) %>%
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>%
+  mutate(type = "% Met Standard/Exempt", .before = Scotland) %>% 
+             rename(`Age Group` = age_grp_2)
+
+
+hb_age_totals_data <- pds_all_age_2 %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  pivot_wider(names_from = geog, values_from = total_referrals) %>%
+  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+  mutate(type = "Number of Referrals", .before = Scotland) %>%
+             rename(`Age Group` = age_grp_2)
+
+
+hb_ldp_age_table_data <- bind_rows(hb_age_totals_data, hb_age_ldp_data) %>% 
+  arrange(fy, `Age Group`) %>% 
+  mutate(`Age Group` = if_else(type == "% Met Standard/Exempt", " ", `Age Group`)) %>% 
+ rename(" " = "type")
+
+hb_age_table_ldp <- SharedData$new(hb_ldp_age_table_data, key = ~fy,  group = "hb_age_ldp")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="310px", margin="20px"),
+DT::datatable(hb_age_table_ldp, rownames = FALSE, extensions = "FixedColumns",
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 2),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 3:17)
+                                               ))) %>%
+           DT::formatStyle(2:3, fontWeight = "bold", padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
 
 ### **Trend**
 
@@ -1523,8 +1698,183 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
-Row {data-height=840}
+Row {.tabset data-height=940}
 ----------------------------------------------------------------------
+
+### **Integration Authority Areas**
+
+```{r dropdown-ijb-sex-ldp}
+ldp_ijb_sex <- ldp_all_sex %>% filter(!grepl("NHS", geog))
+
+ldp_sex_data_ijb <- SharedData$new(ldp_ijb_sex, key = ~fy,  group = "ijb_sex_ldp")
+
+data_filter_ijb_sex_ldp <- filter_select(id = "filter_ijb_sex_ldp",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = ldp_sex_data_ijb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_ijb_sex_ldp,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Gender and Integration Authority Area</h2>
+```{r plot-ijb-sex-legend-ldp}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_sex %>% filter(geog == "Scotland"), measure = sex)))
+
+```
+
+
+```{r plot-ijb-sex-ldp}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar(ldp_sex_data_ijb, y_value = perc_met, measure = sex, measure_text = "Gender: ", x = "Integration Authority Area", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+)
+
+```
+
+
+```{r table-ijb-sex-ldp}
+ijb_sex_ldp_data <- ldp_all_sex %>% filter(!grepl("NHS", geog)) %>% 
+  select(geog,fy,sex,perc_met) %>% 
+   mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
+   pivot_wider(names_from = geog, values_from = perc_met) %>%
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>%
+  mutate(type = "% Met Standard/Exempt", .before = Scotland) %>% 
+             rename(`Gender` = sex)
+
+
+ijb_sex_totals_data <- pds_all_sex %>% filter(!grepl("NHS", geog)) %>% 
+  pivot_wider(names_from = geog, values_from = total_referrals) %>%
+  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+  mutate(type = "Number of Referrals", .before = Scotland) %>%
+             rename(`Gender` = sex)
+
+
+ijb_ldp_sex_table_data <- bind_rows(ijb_sex_totals_data, ijb_sex_ldp_data) %>% 
+  arrange(fy, `Gender`) %>% 
+  mutate(`Gender` = if_else(type == "% Met Standard/Exempt", " ", `Gender`)) %>% 
+ rename(" " = "type")
+
+ijb_sex_table_ldp <- SharedData$new(ijb_ldp_sex_table_data, key = ~fy, group = "ijb_sex_ldp")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="310px", margin="20px"),
+DT::datatable(ijb_sex_table_ldp, rownames = FALSE, extensions = "FixedColumns",
+               options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 2),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 3:34)
+                             ))) %>%
+  DT::formatStyle(2:3, fontWeight = "bold", padding = "4px"
+  )
+        )
+     )
+
+
+
+
+```
+
+### **Health Boards**
+
+```{r dropdown-hb-sex-ldp}
+ldp_hb_sex <- ldp_all_sex %>% filter(geog == "Scotland" | grepl("NHS", geog))
+
+ldp_sex_data_hb <- SharedData$new(ldp_hb_sex, key = ~fy, group = "hb_sex_ldp")
+
+data_filter_hb_sex_ldp <- filter_select(id = "filter_hb_sex_ldp",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = ldp_sex_data_hb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_hb_sex_ldp,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Gender and Health Board</h2>
+```{r plot-hb-sex-legend-ldp}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_sex %>% filter(geog == "Scotland"), measure = sex)))
+
+```
+
+
+```{r plot-hb-sex-ldp}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar(ldp_sex_data_hb, y_value = perc_met, measure = sex, measure_text = "Gender: ", x = "Health Board", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+)
+
+```
+
+
+```{r table-hb-sex-ldp}
+hb_sex_ldp_data <- ldp_all_sex %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  select(geog,fy,sex,perc_met) %>% 
+   mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
+   pivot_wider(names_from = geog, values_from = perc_met) %>%
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>%
+  mutate(type = "% Met Standard/Exempt", .before = Scotland) %>% 
+             rename(`Gender` = sex)
+
+
+hb_sex_totals_data <- pds_all_sex %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  pivot_wider(names_from = geog, values_from = total_referrals) %>%
+  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+  mutate(type = "Number of Referrals", .before = Scotland) %>%
+             rename(`Gender` = sex)
+
+
+hb_ldp_sex_table_data <- bind_rows(hb_sex_totals_data, hb_sex_ldp_data) %>% 
+  arrange(fy, `Gender`) %>% 
+  mutate(`Gender` = if_else(type == "% Met Standard/Exempt", " ", `Gender`)) %>% 
+ rename(" " = "type")
+
+hb_sex_table_ldp <- SharedData$new(hb_ldp_sex_table_data, key = ~fy,  group = "hb_sex_ldp")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="310px", margin="20px"),
+DT::datatable(hb_sex_table_ldp, rownames = FALSE, extensions = "FixedColumns",
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 2),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 3:17)
+                                               ))) %>%
+           DT::formatStyle(2:3, fontWeight = "bold", padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
 
 ### **Trend**
 
@@ -2262,7 +2612,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_
 ```{r plot-ijb-simd-ldp}
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar_v2(ldp_simd_data_ijb, y_value = perc_met, measure = simd, measure_text = "SIMD Quintile: ", x = "Health Board", measure_2 = simd_group, ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+plot_geog_bar_v2(ldp_simd_data_ijb, y_value = perc_met, measure = simd, measure_text = "SIMD Quintile: ", x = "Integration Authority Area", measure_2 = simd_group, ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
 )
 
 ```
@@ -2323,7 +2673,7 @@ DT::datatable(ijb_simd_table_ldp, rownames = FALSE, extensions = "FixedColumns",
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0:2),
-                                               list(className = 'dt-right', targets = 5:19)
+                                               list(className = 'dt-right', targets = 5:36)
                                                ))) %>%
            DT::formatStyle(4:5, fontWeight = "bold"#, padding = "4px"
                           )
@@ -2716,13 +3066,25 @@ function filter_default() {
   document.getElementById("filter_pop_age_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized") 
+  document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized") 
   [0].selectize.setValue("NHS Ayrshire & Arran", false);
 
   document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized") 
+  document.getElementById("filter_ijb_age_ldp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_ijb_age_ldp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+    
+  document.getElementById("filter_hb_age_ldp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_hb_age_ldp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized")
@@ -2752,10 +3114,22 @@ function filter_default() {
   document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-    document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized") 
+  document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+    
+  document.getElementById("filter_hb_sex_ldp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_hb_sex_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ldp_sex").getElementsByClassName("selectized") 
