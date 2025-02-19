@@ -110,7 +110,10 @@ tabPanel(title = "Trends",
          icon = icon_no_warning_fn("chart-line"),
          value = "trends",
          
-         h1("Dementia Post-Diagnostic Support - Trends"),
+         box(h1("Dementia Post-Diagnostic Support - Trends"),
+             width = 12,
+             collapsible = TRUE, collapsed = FALSE),
+         
         # linebreaks(1),
       fluidRow(column(
                 radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
@@ -134,7 +137,10 @@ tabPanel(title = "Demographics",
          icon = icon_no_warning_fn("id-card"),
          value = "demo",
          
-         h1("Dementia Post-Diagnostic Support - Demographics"),
+         box(h1("Dementia Post-Diagnostic Support - Demographics"),
+             width = 12,
+             collapsible = TRUE, collapsed = FALSE),
+      
          linebreaks(1),
 
          sidebarLayout(
@@ -189,7 +195,10 @@ tabPanel(title = "Additional Analysis",
          icon = icon_no_warning_fn("magnifying-glass-chart"),
          value = "data",
          
-         h1("Dementia Post-Diagnostic Support - Additional Analysis"),
+         box(h1("Dementia Post-Diagnostic Support - Additional Analysis"),
+             width = 12,
+             collapsible = TRUE, collapsed = FALSE),
+    
          linebreaks(1),
          
          sidebarLayout(
@@ -234,7 +243,10 @@ tabPanel(title = "Methodology",
          icon = icon_no_warning_fn("diagram-successor"),
          value = "method",
          
-         h1("Dementia Post-Diagnostic Support - Methodology"),
+         box(h1("Dementia Post-Diagnostic Support - Methodology"),
+             width = 12,
+             collapsible = TRUE, collapsed = FALSE),
+         
          fluidRow(
            box("This page includes more detail regarding the methodology used to arrive at the figures in this report. It is hoped that by sharing this, the reports will be easier to understand and local reporting will be more consistent.",
                background = "blue",
