@@ -387,19 +387,26 @@ output$table_hb_ijb_wait <- DT::renderDataTable({
   if(input$select_wait_table == "Health Boards"){  
     
     table_hb_data_wait <- data_wait %>% 
+      mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
+      # mutate(across(starts_with("median"), ~ replace(., .<0, "-"))) %>%
+      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+      mutate(across(starts_with("referrals"),
+                    ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
+      mutate(across(starts_with("median"),
+                    ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
       filter(fy == input$select_year_add, sex == input$select_sex_add) %>% 
       filter(ijb == "All" | ijb == "Scotland", simd == "All") %>% 
       select(health_board, total_referrals, median_diagnosis_to_referral,
-             allocated_referrals, median_referral_to_allocation,
-             contacted_referrals, median_allocation_to_contact,
+             referrals_allocated, median_referral_to_allocation,
+             referrals_contacted, median_allocation_to_contact,
              median_diagnosis_to_contact) %>% 
       set_colnames(c("Health Board","Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
                      "Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
                      "Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
                      "Average (median) days from diagnosis to first contact"
       )) 
-    make_table(table_hb_data_wait, right_align = 1:7, selected = 1, table_elements = "t") %>%
-      formatCurrency(c(2,4,6), currency = "", interval = 3, mark = ",", digits = 0)
+    make_table(table_hb_data_wait, right_align = 1:7, selected = 1, table_elements = "t") #%>%
+      #formatCurrency(c(2,4,6), currency = "", interval = 3, mark = ",", digits = 0)
     
     
   }else{    
@@ -409,11 +416,18 @@ output$table_hb_ijb_wait <- DT::renderDataTable({
     
     
     table_hb_data_wait <- data_wait %>% 
+      mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
+      # mutate(across(starts_with("median"), ~ replace(., .<0, "-"))) %>%
+      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+      mutate(across(starts_with("referrals"),
+                    ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
+      mutate(across(starts_with("median"),
+                    ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
       filter(fy == input$select_year_add, sex == input$select_sex_add) %>% 
       filter(ijb != "All", simd == "All") %>% 
       select(ijb, total_referrals, median_diagnosis_to_referral,
-             allocated_referrals, median_referral_to_allocation,
-             contacted_referrals, median_allocation_to_contact,
+             referrals_allocated, median_referral_to_allocation,
+             referrals_contacted, median_allocation_to_contact,
              median_diagnosis_to_contact) %>% 
       mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
       arrange(ijb) %>% 
@@ -423,8 +437,9 @@ output$table_hb_ijb_wait <- DT::renderDataTable({
                      "Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
                      "Average (median) days from diagnosis to first contact"
       )) 
-    make_table(table_hb_data_wait, right_align = 1:7, selected = 1, table_elements = "t", rows_to_display = 32) %>% 
-      formatCurrency(c(2,4,6), currency = "", interval = 3, mark = ",", digits = 0)
+    
+    make_table(table_hb_data_wait, right_align = 1:7, selected = 1, table_elements = "t", rows_to_display = 32) #%>% 
+    #  formatCurrency(c(2,4,6), currency = "", interval = 3, mark = ",", digits = 0)
   }
 })
 
@@ -436,10 +451,11 @@ output$table_wait_2_title<- renderUI({HTML(paste0("Pathways from contact by PDS 
 
 output$table_wait_2 <- DT::renderDataTable({
   wait_table_2_data <- data_wait_2 %>% 
+    pivot_wider(names_from = ldp, values_from = c(referrals, median_contact_to_termination)) %>%
+    filter(!(ijb == "Aberdeen City" & fy == "2019/20")) %>% 
     filter(ijb == input$select_hb_ijb_wait_2,
            fy == input$select_year_add,
            sex == input$select_sex_add) %>% 
-    pivot_wider(names_from = ldp, values_from = c(referrals, median_contact_to_termination)) %>% 
     mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>% 
    # mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
     select(termination_or_transition_reason,
@@ -452,6 +468,7 @@ output$table_wait_2 <- DT::renderDataTable({
                    "Standard Met",
                    "Exempt from Standard",
                    "Standard Not Met", "Average (median) days from first contact with PDS practitioner to end of PDS"))
+  
   make_table(wait_table_2_data, right_align = 1:4, table_elements = "t") %>% 
     formatCurrency(c(2:5), currency = "", interval = 3, mark = ",", digits = 0)
 })
