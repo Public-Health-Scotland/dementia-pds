@@ -187,8 +187,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop"),
   
   data %>% group_by(health_board, ijb = "All", fy, sex = "All", simd = "All") %>% 
@@ -198,8 +198,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop"),
   
   data %>% group_by(health_board, ijb, fy, sex = "All", simd = "All") %>% 
@@ -209,8 +209,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop"),
   
   data %>% group_by(health_board, ijb, fy, sex, simd = "All") %>% 
@@ -220,8 +220,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop"),
   
   data %>% group_by(health_board, ijb, fy, sex, simd) %>% 
@@ -231,8 +231,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop"),
   
   data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, simd = "All") %>% 
@@ -242,8 +242,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop"),
   
   data %>% group_by(health_board, ijb = "All", fy, sex, simd = "All") %>% 
@@ -253,8 +253,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop"),
   
   data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, simd) %>% 
@@ -264,8 +264,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop"),
   
   data %>% group_by(health_board, ijb = "All", fy, sex, simd) %>% 
@@ -275,8 +275,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop"),
   
   data %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", simd) %>% 
@@ -286,8 +286,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop"),
   
   data %>% group_by(health_board, ijb = "All", fy, sex = "All", simd) %>% 
@@ -297,8 +297,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop"),
   
   data %>% group_by(health_board, ijb, fy, sex = "All", simd) %>% 
@@ -308,8 +308,8 @@ summarise_pathways_dashboard <- function(data){
               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
               total_referrals = sum(n_referrals),
-              allocated_referrals = sum(!is.na(initial_pds_practitioner_allocation_date)),
-              contacted_referrals = sum(!is.na(date_of_initial_first_contact)),
+              referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
+              referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
               .groups = "drop")
   )
 }
@@ -317,7 +317,7 @@ summarise_pathways_dashboard <- function(data){
 
 summarise_pathways_2_dashboard <- function(data){
   
-  data %<>% filter(!is.na(termination_or_transition_date), !is.na(date_of_initial_first_contact)) 
+  data %<>% filter(!is.na(termination_or_transition_date), !is.na(date_of_initial_first_contact), ldp != "Aberdeen") 
   
   bind_rows(
     
@@ -411,7 +411,7 @@ summarise_pathways_2_dashboard <- function(data){
                referrals = sum(n_referrals),
                .groups = "drop"),
    
-   data %>% group_by(health_board, ijb, fy, sex, termination_or_transition_reason, ldp = "14 All") %>% 
+   data %>% group_by(health_board, ijb, fy, sex, termination_or_transition_reason, ldp = "All") %>% 
      summarise(median_contact_to_termination = median(contact_to_termination_days, na.rm = T),
                referrals = sum(n_referrals),
                .groups = "drop"),
