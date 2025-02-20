@@ -166,10 +166,35 @@ est_date3 <- dmy(01042023)
       paste0(" ",
              "**Please note:** ",
              "*Due to local IT system issues West Dunbartonshire ",
-             "were not able to provide some records for 2024/25. ",
+             "have not been able to provide all records for 2024/25. ",
              "PHS has been informed that this issue will ",
              "be rectified in future submissions.*"), TRUE ~ paste0(""))
   
+  
+   # Data quality notes - highland
+  hlnd_date <- dmy(01042024)
+
+  hlnd_text <-  
+    case_when(hb == "NHS Highland" & sel_fy == extract_fin_year(hlnd_date) ~
+      paste0(" ",
+             "**Please note:** ",
+              "*PHS have identified issues with the data submitted by NHS Highland for 2024/25 Q3 ",
+              "which has resulted in one record showing as incorrectly having ", 
+              "met the standard. PHS are working with the Health Board to try and rectify ", 
+              "this data issue in future submissions.*"), TRUE ~ paste0(""))
+  
+     # Data quality notes - highland
+  lan_date <- dmy(01042024)
+
+  lan_text <-  
+    case_when(hb == "NHS Lanarkshire" & sel_fy == extract_fin_year(lan_date) ~
+      paste0(" ",
+             "**Please note:** ",
+              "*PHS have identified issues with the data submitted by NHS Lanarkshire for 2024/25 Q3 ",
+              "which has resulted in one record showing as incorrectly having ", 
+              "met the standard. PHS are working with the Health Board to try and rectify ", 
+              "this data issue in future submissions.*"), TRUE ~ paste0(""))
+
 
 ```
 
@@ -245,6 +270,12 @@ Row
 `r orkney_text`
 
 `r wd_text`
+
+`r hlnd_text`
+
+`r lan_text`
+
+
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
 ----------------------------------------------------------------------
