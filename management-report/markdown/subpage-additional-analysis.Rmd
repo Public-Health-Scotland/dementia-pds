@@ -1697,6 +1697,7 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=920}
 ----------------------------------------------------------------------
@@ -1705,25 +1706,47 @@ Row {.tabset data-height=920}
 
 ```{r dropdown-carer-ijb}
 
- table_ijb_carer_data <- carer_data %>% 
-      filter(age_grp_2 == "All", simd == "All") %>% 
-      mutate(ijb = if_else(health_board == "Scotland", "AAA", ijb)) %>%
-      arrange(ijb) %>% 
-      filter(ijb != "All") %>% 
-      mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>%
-        pivot_wider(names_from = carers_support, values_from = referrals) %>% 
-      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
-      adorn_totals("col") %>% 
-      mutate(perc_carer = paste0(round(100*Yes/Total,1), "%")) %>%
-      mutate(perc_no_carer = paste0(round(100*No/Total,1), "%")) %>%
-      mutate(perc_unknown = paste0(round(100*`Not Known`/Total,1), "%")) %>%
-      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-      select(ijb, fy, Total, perc_carer, perc_no_carer, perc_unknown) %>% 
+ # table_ijb_carer_data <- carer_data %>% 
+ #      filter(age_grp_2 == "All", simd == "All") %>% 
+ #      mutate(ijb = if_else(health_board == "Scotland", "AAA", ijb)) %>%
+ #      arrange(ijb) %>% 
+ #      filter(ijb != "All") %>% 
+ #      mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>%
+ #        pivot_wider(names_from = carers_support, values_from = referrals) %>% 
+ #      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+ #      adorn_totals("col") %>% 
+ #      mutate(perc_carer = paste0(round(100*Yes/Total,1), "%")) %>%
+ #      mutate(perc_no_carer = paste0(round(100*No/Total,1), "%")) %>%
+ #      mutate(perc_unknown = paste0(round(100*`Not Known`/Total,1), "%")) %>%
+ #      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+ #      select(ijb, fy, Total, perc_carer, perc_no_carer, perc_unknown) %>% 
+ #  rename("Number of People Referred to PDS" = "Total", 
+ #             "Integration Authority Area" = "ijb",
+ #             "% with Carer's Support" = "perc_carer",
+ #             "% without Carer's Support" = "perc_no_carer",
+ #             "% where Carer's Support is Unknown" = "perc_unknown")
+
+table_ijb_carer_data <- carer_data %>% 
+  filter(age_grp_2 == "All", simd == "All") %>% 
+  mutate(ijb = if_else(health_board == "Scotland", "AAA", ijb)) %>%
+  arrange(ijb) %>% 
+  filter(ijb != "All") %>% 
+  mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>%
+  pivot_wider(names_from = carers_support, values_from = referrals) %>% 
+  mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+  adorn_totals("col") %>% 
+  mutate(Known = Total - `Not Known`) %>% 
+  mutate(perc_known = paste0(round(100*Known/Total,1), "%")) %>%
+  mutate(perc_carer = if_else(Known == 0, "-", paste0(round(100*Yes/Known,1), "%"))) %>%
+  mutate(perc_no_carer = if_else(Known == 0, "-", paste0(round(100*No/Known,1), "%"))) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  select(ijb, fy, Total, perc_known, perc_carer, perc_no_carer) %>% 
   rename("Number of People Referred to PDS" = "Total", 
-             "Integration Authority Area" = "ijb",
-             "% with Carer's Support" = "perc_carer",
-             "% without Carer's Support" = "perc_no_carer",
-             "% where Carer's Support is Unknown" = "perc_unknown")
+         "Integration Authority Area" = "ijb",
+         "% of referrals where Carer's Support is Recorded" = "perc_known",
+         "% with Carer's Support" = "perc_carer",
+         "% without Carer's Support" = "perc_no_carer",
+         )
 
 
 table_ijb_carer <- SharedData$new(table_ijb_carer_data)
@@ -1741,7 +1764,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number and percentage of individuals where PDS work is carried out in conjunction with the family/carer; Integration Authority Areas</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of individuals where PDS work is carried out in conjunction with the family/carer; Integration Authority Areas</h2>
 ```{r table-carer-ijb}
 
 
@@ -1769,23 +1792,43 @@ bscols(widths = 12,
 ### **Health Boards**
 
 ```{r dropdown-carer-hb}
+# 
+#  table_hb_carer_data <- carer_data %>% 
+#       filter(age_grp_2 == "All", simd == "All") %>% 
+#       filter(ijb == "All" | ijb == "Scotland") %>% 
+#       pivot_wider(names_from = carers_support, values_from = referrals) %>% 
+#       mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+#       adorn_totals("col") %>% 
+#        mutate(perc_carer = paste0(round(100*Yes/Total,1), "%")) %>%
+#       mutate(perc_no_carer = paste0(round(100*No/Total,1), "%")) %>%
+#       mutate(perc_unknown = paste0(round(100*`Not Known`/Total,1), "%")) %>%
+#       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+#       select(health_board, fy, Total, perc_carer, perc_no_carer, perc_unknown) %>% 
+#   rename("Number of People Referred to PDS" = "Total", 
+#              "Health Board" = "health_board",
+#              "% with Carer's Support" = "perc_carer",
+#              "% without Carer's Support" = "perc_no_carer",
+#              "% where Carer's Support is Unknown" = "perc_unknown")
 
- table_hb_carer_data <- carer_data %>% 
+
+table_hb_carer_data <- carer_data %>% 
       filter(age_grp_2 == "All", simd == "All") %>% 
       filter(ijb == "All" | ijb == "Scotland") %>% 
       pivot_wider(names_from = carers_support, values_from = referrals) %>% 
       mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
       adorn_totals("col") %>% 
-       mutate(perc_carer = paste0(round(100*Yes/Total,1), "%")) %>%
-      mutate(perc_no_carer = paste0(round(100*No/Total,1), "%")) %>%
-      mutate(perc_unknown = paste0(round(100*`Not Known`/Total,1), "%")) %>%
-      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-      select(health_board, fy, Total, perc_carer, perc_no_carer, perc_unknown) %>% 
+  mutate(Known = Total - `Not Known`) %>% 
+  mutate(perc_known = paste0(round(100*Known/Total,1), "%")) %>%
+  mutate(perc_carer = if_else(Known == 0, "-", paste0(round(100*Yes/Known,1), "%"))) %>%
+  mutate(perc_no_carer = if_else(Known == 0, "-", paste0(round(100*No/Known,1), "%"))) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  select(health_board, fy, Total, perc_known, perc_carer, perc_no_carer) %>% 
   rename("Number of People Referred to PDS" = "Total", 
-             "Health Board" = "health_board",
-             "% with Carer's Support" = "perc_carer",
-             "% without Carer's Support" = "perc_no_carer",
-             "% where Carer's Support is Unknown" = "perc_unknown")
+          "Health Board" = "health_board",
+         "% of referrals where Carer's Support is Recorded" = "perc_known",
+         "% with Carer's Support" = "perc_carer",
+         "% without Carer's Support" = "perc_no_carer",
+         )
  
 
 
@@ -1804,7 +1847,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number and percentage of individuals where PDS work is carried out in conjunction with the family/carer; Health Boards</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of individuals where PDS work is carried out in conjunction with the family/carer; Health Boards</h2>
 ```{r table-carer-hb}
 
 bscols(widths = 12,
@@ -1856,6 +1899,7 @@ Row
 
 **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
 
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=920}
 ----------------------------------------------------------------------
@@ -1864,22 +1908,32 @@ Row {.tabset data-height=920}
 
 ```{r dropdown-uptake-ijb}
 
- table_ijb_uptake_data <- uptake_data %>% 
+ table_ijb_uptake_data <- left_join(bind_rows(pds_scot_totals, pds_ijb_totals),
+  
+  uptake_data %>% 
       filter(age_grp_2 == "All", simd == "All") %>% 
       mutate(ijb = if_else(health_board == "Scotland", "AAA", ijb)) %>%
       arrange(ijb) %>% 
       filter(ijb != "All") %>% 
       mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>%
       pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>% 
-      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
-      adorn_totals("col") %>% 
-      select(3,2,10,6,7,8,9) %>% 
-      rowwise() %>% 
-  mutate(perc_accepted = paste0(round(sum(c_across(4:5))/sum(c_across(3))*100,1), "%")) %>%   
-      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-  rename("Number of People Referred to PDS" = "Total",
-             "Integration Authority Area" = "ijb",
-             "% Accepted (includes those initially declined)" = "perc_accepted")
+      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% rename("geog" = "ijb")
+  ) %>% 
+       mutate(Known = total_referrals - `Not Known`) %>% 
+       mutate(perc_known = paste0(round(100*Known/total_referrals,1), "%")) %>%
+      select(2,1,4,7,8,9,10,11,12) %>% 
+  mutate(perc_declined = if_else(Known == 0, "-", paste0(round(100*Declined/Known,1), "%"))) %>%
+  mutate(perc_accepted = if_else(Known == 0, "-", paste0(round((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
+          mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  select(fy, geog, total_referrals, perc_known, perc_accepted, perc_declined) %>% 
+  rename("Number of People Referred to PDS" = "total_referrals",
+         "% of referrals where Uptake Decision is Recorded" = "perc_known",
+             "% Accepted (includes those initially declined)" = "perc_accepted",
+         "% Declined" = "perc_declined") %>% 
+  #remove Aberdeen City 2019/20 and 2020/21 data
+  mutate(across(starts_with("%"), ~if_else(geog == "Aberdeen City" & fy %in% c("2019/20","2020/21"), "-", .))) %>% 
+    rename("Integration Authority Area" = "geog")
+
 
 table_ijb_uptake <- SharedData$new(table_ijb_uptake_data)
 
@@ -1910,7 +1964,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:7)
+                                               list(className = 'dt-right', targets = 2:5)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold")
             )
@@ -1925,19 +1979,43 @@ bscols(widths = 12,
 
 ```{r dropdown-uptake-hb}
 
- table_hb_uptake_data <- uptake_data %>% 
+ table_hb_uptake_data <- left_join(bind_rows(pds_scot_totals, pds_hb_totals),
+  
+  test<-uptake_data %>% 
       filter(age_grp_2 == "All", simd == "All") %>% 
-      filter(ijb == "All" | ijb == "Scotland") %>% 
+     filter(ijb == "All" | ijb == "Scotland") %>% 
       pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>% 
-      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
-      adorn_totals("col") %>% 
-      select(3,1,10,6,7,8,9) %>% 
-      rowwise() %>% 
-  mutate(perc_accepted = paste0(round(sum(c_across(4:5))/sum(c_across(3))*100,1), "%")) %>%   
-      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-  rename("Number of People Referred to PDS" = "Total", 
-             "Health Board" = "health_board",
-             "% Accepted (includes those initially declined)" = "perc_accepted")
+      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% rename("geog" = "health_board")
+  ) %>% 
+       mutate(Known = total_referrals - `Not Known`) %>% 
+       mutate(perc_known = paste0(round(100*Known/total_referrals,1), "%")) %>%
+      select(2,1,4,7,8,9,10,11,12) %>% 
+  mutate(perc_declined = if_else(Known == 0, "-", paste0(round(100*Declined/Known,1), "%"))) %>%
+  mutate(perc_accepted = if_else(Known == 0, "-", paste0(round((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
+          mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  select(fy, geog, total_referrals, perc_known, perc_accepted, perc_declined) %>% 
+  rename("Number of People Referred to PDS" = "total_referrals",
+         "% of referrals where Uptake Decision is Recorded" = "perc_known",
+             "% Accepted (includes those initially declined)" = "perc_accepted",
+         "% Declined" = "perc_declined") %>% 
+   rename("Health Board" = "geog")
+
+
+
+
+ # table_hb_uptake_data <- uptake_data %>% 
+ #      filter(age_grp_2 == "All", simd == "All") %>% 
+ #      filter(ijb == "All" | ijb == "Scotland") %>% 
+ #      pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>% 
+ #      mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+ #      adorn_totals("col") %>% 
+ #      select(3,1,10,6,7,8,9) %>% 
+ #      rowwise() %>% 
+ #  mutate(perc_accepted = paste0(round(sum(c_across(4:5))/sum(c_across(3))*100,1), "%")) %>%   
+ #      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+ #  rename("Number of People Referred to PDS" = "Total", 
+ #             "Health Board" = "health_board",
+ #             "% Accepted (includes those initially declined)" = "perc_accepted")
 
 
 table_hb_uptake <- SharedData$new(table_hb_uptake_data)
@@ -1967,7 +2045,7 @@ bscols(widths = 12,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:7)
+                                               list(className = 'dt-right', targets = 2:5)
                              ))) %>%
   DT::formatStyle(2, fontWeight = "bold")
             )

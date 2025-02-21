@@ -301,7 +301,7 @@ data_uptake %>%
 
 #DATA UPTAKE----
 
-data_carer <- summarise_uptake(ldp, field = carers_support)
+data_carer <- summarise_carer(ldp, field = carers_support)
 
 data_carer %>% 
   write_file(path = get_mi_data_path("carer_data", ext = "rds", test_output = test_output))

@@ -798,6 +798,73 @@ summarise_pathways_3 <- function(data){
 
 summarise_uptake <- function(data, field = pds_uptake_decision){
   
+  data %<>% mutate(pds_uptake_decision = 
+                     if_else(ijb == "Aberdeen City" & fy %in% c("2019/20","2020/21"), "Not Known", 
+                             pds_uptake_decision))
+  
+  bind_rows(
+    
+     data %>% group_by(health_board = "Scotland", ijb = "All", fy, age_grp_2 = "All", simd = "All", {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    data %>% group_by(health_board, ijb = "All", fy, age_grp_2 = "All", simd = "All", {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb, fy, age_grp_2 = "All", simd = "All", {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb, fy, age_grp_2, simd = "All", {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb, fy, age_grp_2, simd, {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board = "Scotland", ijb = "All", fy, age_grp_2, simd = "All", {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb = "All", fy, age_grp_2, simd = "All", {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    data %>% group_by(health_board = "Scotland", ijb = "All", fy, age_grp_2, simd, {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb = "All", fy, age_grp_2, simd, {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board = "Scotland", ijb = "All", fy, age_grp_2 = "All", simd, {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    data %>% group_by(health_board, ijb = "All", fy, age_grp_2 = "All", simd, {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop"),
+    
+    
+    data %>% group_by(health_board, ijb, fy, age_grp_2 = "All", simd, {{field}}) %>% 
+      summarise(referrals = sum(n_referrals),
+                .groups = "drop")
+    
+  )
+}
+
+summarise_carer <- function(data, field = pds_uptake_decision){
+  
   bind_rows(
     
     data %>% group_by(health_board = "Scotland", ijb = "All", fy, age_grp_2 = "All", simd = "All", {{field}}) %>% 
@@ -858,4 +925,5 @@ summarise_uptake <- function(data, field = pds_uptake_decision){
     
   )
 }
+
 
