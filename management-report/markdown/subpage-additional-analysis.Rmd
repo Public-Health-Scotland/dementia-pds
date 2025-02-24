@@ -70,7 +70,7 @@ pds_hb %<>% rename(geog = ijb)
 pds_hb$geog<- factor(pds_hb$geog, levels = unique(pds_hb$geog))
 
 # combine data for ijb, hb and Scotland
-pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
+pds_all <- bind_rows(pds_scot, pds_ijb, pds_hb)
 
 pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
 
@@ -476,7 +476,7 @@ Row {data-height=1220}
 ldp_all_subtype_data <- SharedData$new(ldp_all_subtype, key = ~geog, group = "ldp_subtype")
 
 data_filter_ldp_subtype <- filter_select(id = "filter_ldp_subtype",
-                                    label = "Select Health Board or Integration Authority Area:",
+                                    label = "Select Integration Authority Area or Health Board:",
                                     group = ~geog,
                                     sharedData = ldp_all_subtype_data,
                                     multiple = FALSE
@@ -798,7 +798,7 @@ Row {data-height=1030}
 ldp_all_stage_data <- SharedData$new(ldp_all_stage %>% filter(fy %in% full_years), key = ~geog, group = "ldp_stage")
 
 data_filter_ldp_stage <- filter_select(id = "filter_ldp_stage",
-                                    label = "Select Health Board or Integration Authority Area:",
+                                    label = "Select Integration Authority Area or Health Board:",
                                     group = ~geog,
                                     sharedData = ldp_all_stage_data,
                                     multiple = FALSE
@@ -1583,7 +1583,7 @@ Row {data-height=1200}
 ldp_all_model_data <- SharedData$new(ldp_all_model %>% filter(fy %in% full_years), key = ~geog, group = "ldp_model")
 
 data_filter_ldp_model <- filter_select(id = "filter_ldp_model",
-                                    label = "Select Health Board or Integration Authority Area:",
+                                    label = "Select Integration Authority Area or Health Board:",
                                     group = ~geog,
                                     sharedData = ldp_all_model_data,
                                     multiple = FALSE

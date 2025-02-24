@@ -71,7 +71,7 @@ pds_hb %<>% rename(geog = ijb)
 pds_hb$geog<- factor(pds_hb$geog, levels = unique(pds_hb$geog))
 
 # combine data for ijb, hb and Scotland
-pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
+pds_all <- bind_rows(pds_scot, pds_ijb, pds_hb)
 
 pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
 
@@ -222,7 +222,7 @@ bscols(widths = 12,
 pds_all_totals %>%  
             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
             pivot_wider(names_from = fy, values_from = total_referrals) %>% 
-            rename(`Health Board/Integration Authority Area` = geog) %>%
+            rename(`Integration Authority Area/Health Board` = geog) %>%
             select(-age_grp_2) %>% 
             kable(align = c("l", rep("r", length(all_years)))) %>% 
             kable_styling(full_width = TRUE) %>%
@@ -470,7 +470,7 @@ pds_all_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%
 pds_trends_pop_data <- SharedData$new(pds_all_rates)
 
 data_filter_hb_ijb_pop <- filter_select(id = "trend_filter_pop",
-                                    label = "Select Health Board(s) or Integration Authority Area(s):",
+                                    label = "Select Integration Authority Area(s) or Health Board(s):",
                                     group = ~geog,
                                     sharedData = pds_trends_pop_data
                                    )
@@ -495,7 +495,7 @@ bscols(widths = 12,
 pds_all_rates %>% 
        select(-scot_pop_rate_10000) %>%
             pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
-            rename(`Health Board/Integration Authority Area` = geog) %>%
+            rename(`Integration Authority Area/Health Board` = geog) %>%
             kable(align = c("l", rep("r", length(all_years)))) %>%
             kable_styling(full_width = TRUE) %>%
             column_spec(1, bold = TRUE) %>%
@@ -561,7 +561,7 @@ pds_met_rates$geog<- factor(pds_met_rates$geog, levels = unique(pds_met_rates$ge
 pds_met_rates_data <- SharedData$new(pds_met_rates)
 
 data_filter_met_trend <- filter_select(id = "trend_filter_outcomes_met",
-                                    label = "Select Health Board(s) or Integration Authority Area(s):",
+                                    label = "Select Integration Authority Area(s) or Health Board(s):",
                                     group = ~geog,
                                     sharedData = pds_met_rates_data
                                    )
@@ -587,7 +587,7 @@ bscols(widths = 12,
 pds_met_rates %>% select(geog, fy, perc_met) %>% 
             pivot_wider(names_from = fy, values_from = perc_met) %>%
             mutate(across(where(is.numeric), ~paste0(.,"%"))) %>% 
-            rename(`Health Board/Integration Authority Area` = geog) %>%
+            rename(`Integration Authority Area/Health Board` = geog) %>%
             kable(align = c("l", rep("r", length(full_years)))) %>%
             kable_styling(full_width = TRUE) %>%
             column_spec(1, bold = TRUE) %>%
