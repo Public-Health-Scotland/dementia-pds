@@ -208,6 +208,178 @@ Row
 Row {.tabset data-height=1070}
 ----------------------------------------------------------------------
 
+### **Integration Authority Areas**
+
+```{r dropdown-median-ijb}
+median_data_ijb <- wait_data %>% 
+      filter(sex == "All") %>% 
+     filter(ijb != "All", simd == "All") %>% 
+      select(ijb, fy, median_diagnosis_to_contact) %>% 
+  mutate(median_diagnosis_to_contact = if_else(is.na(median_diagnosis_to_contact)| median_diagnosis_to_contact < 0, 0, median_diagnosis_to_contact)) %>% 
+      mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
+      arrange(ijb) %>% 
+      mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
+    mutate(median_diagnosis_to_contact = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), 0, median_diagnosis_to_contact))
+
+median_data_ijb <- left_join(median_data_ijb,
+median_data_ijb %>% filter(ijb == "Scotland") %>% select(fy, median_diagnosis_to_contact) %>%  rename(scot_median_diagnosis_to_contact = median_diagnosis_to_contact)) %>% filter(ijb != "Scotland") %>% 
+  rename(geog = ijb)
+
+median_data_ijb$geog<- factor(median_data_ijb$geog, levels = c(unique(median_data_ijb$geog)))
+
+
+median_data_ijb_table <- SharedData$new(median_data_ijb, key = ~fy, group = "median_ijb")
+
+data_filter_median <- filter_select(id = "filter_median",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = median_data_ijb_table,
+                                    multiple = FALSE
+                                   )
+
+bscols(widths = c(1,5,NA),NULL,
+data_filter_median,
+NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to contact by PDS practitioner by Integration Authority Area</h2>
+```{r plot-median-ijb}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_bar_median(median_data_ijb_table))
+)
+
+```
+
+
+```{r table-median-ijb}
+median_ijb_table_data <- wait_data %>% 
+      filter(sex == "All") %>% 
+     filter(ijb != "All", simd == "All") %>% 
+      select(ijb, fy, total_referrals, perc_contacted, median_diagnosis_to_contact) %>% 
+  mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
+    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+      mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
+      arrange(ijb) %>% 
+      mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
+    mutate(median_diagnosis_to_contact = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", median_diagnosis_to_contact)) %>% 
+    mutate(perc_contacted = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", perc_contacted)) %>%
+  rename(`Number of People Referred to PDS` = total_referrals, 
+         `% of Referrals contacted by PDS practitioner` = perc_contacted,
+        `Average (median) days from diagnosis to first contact` = median_diagnosis_to_contact) %>% 
+  pivot_longer(!c(ijb,fy), names_to = "measure", values_to = "n") %>% 
+  pivot_wider(names_from = ijb, values_from = n) %>% 
+  rename(" " = "measure")
+
+median_ijb_table <- SharedData$new(median_ijb_table_data, key = ~fy, group = "median_ijb")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="460px", margin="20px"),
+DT::datatable(median_ijb_table, rownames = FALSE, extensions = "FixedColumns",
+              options = list(pageLength = 5,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:33)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold", padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+### **Health Boards**
+
+```{r dropdown-median-hb}
+median_data_hb <- wait_data %>% 
+      filter(sex == "All") %>% 
+     filter(ijb == "All" | ijb == "Scotland", simd == "All") %>% 
+      select(health_board, fy, median_diagnosis_to_contact) %>% 
+  mutate(median_diagnosis_to_contact = if_else(is.na(median_diagnosis_to_contact)| median_diagnosis_to_contact < 0, 0, median_diagnosis_to_contact))
+
+median_data_hb <- left_join(median_data_hb,
+median_data_hb %>% filter(health_board == "Scotland") %>% select(fy, median_diagnosis_to_contact) %>%  rename(scot_median_diagnosis_to_contact = median_diagnosis_to_contact)) %>% filter(health_board != "Scotland") %>% 
+    mutate(median_diagnosis_to_contact = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), 0, median_diagnosis_to_contact)) %>% 
+  rename(geog = health_board)
+
+median_data_hb$geog<- factor(median_data_hb$geog, levels = c(unique(median_data_hb$geog)))
+
+
+median_data_hb_table <- SharedData$new(median_data_hb, key = ~fy, group = "median_hb")
+
+data_filter_median_hb <- filter_select(id = "filter_median_hb",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = median_data_hb_table,
+                                    multiple = FALSE
+                                   )
+
+bscols(widths = c(1,5,NA),NULL,
+data_filter_median_hb,
+NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to contact by PDS practitioner by Health Board</h2>
+```{r plot-median-hb}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_bar_median(median_data_hb_table))
+)
+
+```
+
+
+```{r table-median-hb}
+median_hb_table_data <- wait_data %>% 
+      filter(sex == "All") %>% 
+     filter(ijb == "All" | ijb == "Scotland", simd == "All") %>% 
+      select(health_board, fy, total_referrals, perc_contacted, median_diagnosis_to_contact) %>% 
+  mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
+    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+        mutate(median_diagnosis_to_contact = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", median_diagnosis_to_contact)) %>% 
+    mutate(perc_contacted = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", perc_contacted)) %>%
+  rename(`Number of People Referred to PDS` = total_referrals, 
+         `% of Referrals contacted by PDS practitioner` = perc_contacted,
+        `Average (median) days from diagnosis to first contact` = median_diagnosis_to_contact) %>% 
+  pivot_longer(!c(health_board,fy), names_to = "measure", values_to = "n") %>% 
+  pivot_wider(names_from = health_board, values_from = n) %>% 
+  rename(" " = "measure")
+
+median_hb_table <- SharedData$new(median_hb_table_data, key = ~fy, group = "median_hb")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="470px", margin="20px"),
+DT::datatable(median_hb_table, rownames = FALSE, extensions = "FixedColumns",
+              options = list(pageLength = 5,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:16)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold", padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
 ### **Trend**
 
 ```{r dropdown-wait-trend}
@@ -225,7 +397,7 @@ wait_data_trend_all$geog<- factor(wait_data_trend_all$geog, levels = unique(pds_
 wait_data_trend <- SharedData$new(wait_data_trend_all %>% arrange(geog))
 
 data_filter_wait_trend <- filter_select(id = "trend_filter_wait",
-                                    label = "Select Health Board(s) or Integration Authority Area(s):",
+                                    label = "Select Integration Authority Area(s) or Health Board(s):",
                                     group = ~geog,
                                     sharedData = wait_data_trend
                                    )
@@ -265,55 +437,62 @@ wait_data_trend_all %>% arrange(geog) %>%
 
 ```
 
-### **Integration Authority Areas**
+### **Waiting Times Breakdown**
 
-```{r dropdown-wait-ijb}
-wait_data_ijb <- wait_data %>% 
-      filter(sex == "All") %>% 
-     filter(ijb != "All", simd == "All") %>% 
-      select(ijb, fy, total_referrals, median_diagnosis_to_referral,
+```{r dropdown-wait}
+wait_data_all <- wait_data %>% 
+      filter(sex == "All", simd == "All") %>% 
+  mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
+  rename(geog = ijb) %>% 
+      select(geog, fy, total_referrals, median_diagnosis_to_referral,
              perc_allocated, median_referral_to_allocation,
              perc_contacted, median_allocation_to_contact,
              median_diagnosis_to_contact) %>% 
   mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
   mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
-      mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
-      arrange(ijb) %>% 
-      mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
         mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
     mutate(across(starts_with("perc"),
-                  ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
+                  ~if_else(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
     mutate(across(starts_with("median"),
-                  ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
-    set_colnames(c("Integration Authority Area", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
+                  ~if_else(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
+  mutate(across(starts_with("perc"),
+                  ~if_else(geog == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
+  mutate(across(starts_with("median"),
+                  ~if_else(geog == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) 
+
+wait_data_all$geog<- factor(wait_data_all$geog, levels = unique(pds_all$geog))
+
+   wait_data_all %<>% arrange(geog) %>% set_colnames(c("Integration Authority Area/Health Board", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
                      "% of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
                      "% of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
                      "Average (median) days from diagnosis to first contact"
       )) 
 
-wait_table_data_ijb <- SharedData$new(wait_data_ijb)
 
-data_filter_ijb_year <- filter_select(id = "wait_filter_ijb_year",
+
+wait_table_data_all <- SharedData$new(wait_data_all)
+
+data_filter_all_year <- filter_select(id = "wait_filter_all_year",
                                     label = "Select Financial Year of Diagnosis:",
                                     group = ~fy,
-                                    sharedData = wait_table_data_ijb,
+                                    sharedData = wait_table_data_all,
                                     multiple = FALSE
                                    )
 
 bscols(widths = c(1,4,NA), NULL,
-data_filter_ijb_year, NULL)
+data_filter_all_year, NULL)
 
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px"> Pathways from diagnosis to contact by PDS practitioner </h2>
-```{r wait-table-ijb}
+```{r wait-table-all}
 bscols(widths = 12,
        div(style = css(width="97%", height="785px", margin="20px"),
-    DT::datatable(wait_table_data_ijb, rownames = FALSE,  
+    DT::datatable(wait_table_data_all, rownames = FALSE,  
                                         caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
                        "A dash (-) indicates insufficient data for this measure to be calculated."),
-                       options = list(pageLength = 32,
+                       options = list(pageLength = 46,
                              scrollX = FALSE,
                              scrollY = TRUE,
                              dom = "t",
@@ -331,72 +510,6 @@ bscols(widths = 12,
      )
 
   
-
-```
-
-### **Health Boards**
-
-```{r wait-dropdown-hb}
-
-wait_data_hb <- wait_data %>% 
-      filter(sex == "All") %>% 
-      filter(ijb == "All" | ijb == "Scotland", simd == "All") %>% 
-     select(health_board, fy, total_referrals, median_diagnosis_to_referral,
-             perc_allocated, median_referral_to_allocation,
-             perc_contacted, median_allocation_to_contact,
-             median_diagnosis_to_contact) %>% 
-  mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
-  mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
-        mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-  mutate(across(starts_with("perc"),
-                  ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
-  mutate(across(starts_with("median"),
-                  ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
-      set_colnames(c("Health Board", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
-                     "% of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
-                     "% of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
-                     "Average (median) days from diagnosis to first contact"
-      )) 
-
-wait_table_data_hb <- SharedData$new(wait_data_hb)
-
-data_filter_hb_year <- filter_select(id = "wait_filter_hb_year",
-                                    label = "Select Financial Year of Diagnosis:",
-                                    group = ~fy,
-                                    sharedData = wait_table_data_hb,
-                                    multiple = FALSE
-                                   )
-
-bscols(widths = c(1,4,NA), NULL,
-data_filter_hb_year, NULL)
-
-```
-
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px"> Pathways from diagnosis to contact by PDS practitioner </h2>
-```{r wait-table-hb}
-
-bscols(widths = 12,
-       div(style = css(width="97%", height="785px", margin="20px"),
-  DT::datatable(wait_table_data_hb, rownames = FALSE,
-                 caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
-                       "A dash (-) indicates insufficient data for this measure to be calculated."),
-              options = list(pageLength = 15,
-                             scrollX = FALSE,
-                             scrollY = TRUE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 1),
-                                                list(className = 'dt-right', targets = 2:8)
-                                                #list(width = '10px', targets = 1:10)
-                                                ))) %>%
-           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
-                          )%>%
-           DT::formatStyle(9, fontWeight = "bold",
-                           backgroundColor = "#DAEBBE"
-                          )
-        )
-     )
 
 ```
 
@@ -473,7 +586,7 @@ met_data_totals <- left_join(pds_all_totals %>%
                                select(-age_grp_2) %>% filter(fy %in% full_years), met_data) %>% 
   #mutate(`% of Total referrals Standard Met` = paste0(round(100*total/total_referrals,1), "%"),
                                               #.after = total_referrals) %>% 
-  rename(`Health Board/Integration Authority Area` = geog, 
+  rename(`Integration Authority Area/Health Board` = geog, 
          `Total referrals` = total_referrals,
          `Standard Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
   
@@ -535,7 +648,7 @@ not_met_data_totals <- left_join(pds_all_totals %>%
                                select(-age_grp_2), not_met_data) %>% 
     #mutate(`% of Total referrals Standard Not Met` = paste0(round(100*total/total_referrals,1), "%"),
                                           #    .after = total_referrals) %>% 
-  rename(`Health Board/Integration Authority Area` = geog, 
+  rename(`Integration Authority Area/Health Board` = geog, 
          `Total referrals` = total_referrals,
          `Standard Not Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
@@ -586,7 +699,7 @@ bscols(widths = 12,
 ongoing_data <- pds_all %>% filter(ldp == "ongoing") %>% group_by(geog, fy, ldp_full) %>% 
   summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 11)) %>%   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
    mutate(total = rowSums(across(where(is.numeric))), .after = fy) %>% 
-   add_percent(`PDS not started and less than 12 months since diagnosis`, "% PDS not started and less than 12 months since diagnosis") %>% 
+   add_percent(`PDS not started and less than 12 months since diagnosis`, "% PDS not yet started and less than 12 months since diagnosis") %>% 
  add_percent(`Still receiving PDS and less than 12 months since first contact`, "% Still receiving PDS and less than 12 months since first contact") %>% 
   select(-starts_with("PDS"), -starts_with("Still"))
 
@@ -595,7 +708,7 @@ ongoing_data_totals <- left_join(pds_all_totals %>%
    mutate(`% of Total referrals PDS Ongoing` = paste0(round(100*total/total_referrals,1), "%"),
                                               .after = total_referrals) %>% 
   filter(!fy %in% finalised_years) %>% 
-  rename(`Health Board/Integration Authority Area` = geog, 
+  rename(`Integration Authority Area/Health Board` = geog, 
          `Total referrals` = total_referrals,
          `PDS Ongoing` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
@@ -656,7 +769,7 @@ exempt_data_totals <- left_join(pds_all_totals %>%
                                select(-age_grp_2), exempt_data) %>% 
    mutate(`% of Total referrals Exempt` = paste0(round(100*total/total_referrals,1), "%"),
                                               .after = total_referrals) %>% 
-  rename(`Health Board/Integration Authority Area` = geog, 
+  rename(`Integration Authority Area/Health Board` = geog, 
          `Total referrals` = total_referrals,
          `Number of referrals Exempt` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
@@ -1105,17 +1218,23 @@ function filter_default() {
 
   document.getElementById("exempt_filter_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-
-  document.getElementById("wait_filter_ijb_year").getElementsByClassName("selectized") 
+  
+  document.getElementById("wait_filter_all_year").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("wait_filter_ijb_year").getElementsByClassName("selectized")
+  document.getElementById("wait_filter_all_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("wait_filter_hb_year").getElementsByClassName("selectized") 
+  document.getElementById("filter_median").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("wait_filter_hb_year").getElementsByClassName("selectized")
+  document.getElementById("filter_median").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_median_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_median_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("trend_filter_wait").getElementsByClassName("selectized") 

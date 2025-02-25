@@ -715,7 +715,7 @@ function filter_default() {
 
 // pathways
 
- document.getElementById("met_filter_year").getElementsByClassName("selectized") 
+  document.getElementById("met_filter_year").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("met_filter_year").getElementsByClassName("selectized")
@@ -749,6 +749,18 @@ function filter_default() {
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("wait_filter_hb_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_median").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_median").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_median_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_median_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("trend_filter_wait").getElementsByClassName("selectized") 
@@ -796,19 +808,7 @@ function filter_default() {
   
 // demographics
 
-   document.getElementById("filter_age_prop_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_age_prop_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_age_prop_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_age_prop_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
+   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized")
@@ -868,25 +868,13 @@ function filter_default() {
   document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_sex_prop_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_sex_prop_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_sex_prop_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_sex_prop_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
   document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized") 
+  document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized")
@@ -898,7 +886,7 @@ function filter_default() {
   document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized") 
+  document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized")
@@ -916,25 +904,13 @@ function filter_default() {
   document.getElementById("filter_ldp_sex").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("trend_filter_simd_prop_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("trend_filter_simd_prop_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-   document.getElementById("trend_filter_simd_prop_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("trend_filter_simd_prop_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
   document.getElementById("filter_trend_simd_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("filter_trend_simd_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized") 
+  document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized")
@@ -976,7 +952,7 @@ function filter_default() {
   document.getElementById("filter_hb_simd_ldp_quintile").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-    document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized") 
+  document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized")
@@ -988,12 +964,11 @@ function filter_default() {
   document.getElementById("filter_ijb_simd_ldp_quintile").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized") 
+  document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-  
   
   
   
@@ -1062,88 +1037,28 @@ function filter_default() {
   
 // additional information  
 
-   document.getElementById("trend_filter_subtype_prop_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("trend_filter_subtype_prop_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-   document.getElementById("trend_filter_subtype_prop_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("trend_filter_subtype_prop_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-   document.getElementById("filter_ldp_subtype").getElementsByClassName("selectized") 
+  document.getElementById("filter_ldp_subtype").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("filter_ldp_subtype").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-  
-  document.getElementById("trend_filter_stage_prop_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("trend_filter_stage_prop_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-   document.getElementById("trend_filter_stage_prop_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("trend_filter_stage_prop_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
   document.getElementById("filter_ldp_stage").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("filter_ldp_stage").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("trend_filter_model_prop_hb").getElementsByClassName("selectized") 
+  document.getElementById("filter_model_prop_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("trend_filter_model_prop_hb").getElementsByClassName("selectized")
+  document.getElementById("filter_model_prop_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("trend_filter_model_prop_ijb").getElementsByClassName("selectized") 
+  document.getElementById("filter_model_prop_ijb").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("trend_filter_model_prop_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_prop_model_age_geog").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Integration Authority Areas", false);
-
-  document.getElementById("filter_prop_model_age_geog").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-    document.getElementById("filter_prop_model_age").getElementsByClassName("selectized") 
-  [0].selectize.setValue("All", false);
-
-  document.getElementById("filter_prop_model_age").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_prop_model_sex_geog").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Integration Authority Areas", false);
-
-  document.getElementById("filter_prop_model_sex_geog").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-    document.getElementById("filter_prop_model_sex").getElementsByClassName("selectized") 
-  [0].selectize.setValue("All", false);
-
-  document.getElementById("filter_prop_model_sex").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_prop_model_simd_geog").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Integration Authority Areas", false);
-
-  document.getElementById("filter_prop_model_simd_geog").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-    document.getElementById("filter_prop_model_simd").getElementsByClassName("selectized") 
-  [0].selectize.setValue("All", false);
-
-  document.getElementById("filter_prop_model_simd").getElementsByClassName("selectized")
+  document.getElementById("filter_model_prop_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ldp_model").getElementsByClassName("selectized") 
@@ -1152,13 +1067,13 @@ function filter_default() {
   document.getElementById("filter_ldp_model").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-    document.getElementById("filter_carer_hb_year").getElementsByClassName("selectized") 
+  document.getElementById("filter_carer_hb_year").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_carer_hb_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("filter_carer_ijb_year").getElementsByClassName("selectized") 
+  document.getElementById("filter_carer_ijb_year").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_carer_ijb_year").getElementsByClassName("selectized")
@@ -1170,7 +1085,7 @@ function filter_default() {
   document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized") 
+  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized")
