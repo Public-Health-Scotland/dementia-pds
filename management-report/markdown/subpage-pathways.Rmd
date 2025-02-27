@@ -910,7 +910,7 @@ data_filter_year_no_contact_ijb, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to PDS not contacted within 12 months of diagnosis</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to PDS not contacted within 12 months of diagnosis; Integration Authority Areas</h2>
 ```{r no-contact-table-ijb}
 
 bscols(widths = 12,
@@ -987,7 +987,7 @@ data_filter_year_no_contact_hb, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to post-diagnostic support with no contact by PDS practitioner</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals referred to PDS not contacted within 12 months of diagnosis; Health Boards</h2>
 ```{r no-contact-table-hb}
 bscols(widths = 12,
        div(style = css(width="97%", height="500px", margin="20px"),
@@ -1049,7 +1049,7 @@ Row
 
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
-Row {.tabset data-height=770}
+Row {.tabset data-height=800}
 ----------------------------------------------------------------------
 
 ### **Termination Reasons - All**
@@ -1161,20 +1161,20 @@ data_filter_year_term_all,NULL)
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="590px", margin="20px"),
+       div(style = css(width="97%", height="600px", margin="20px"),
      DT::datatable(term_table_data_all, #container = headers_term, 
                    rownames = FALSE, extensions = "FixedColumns",
               options = list(pageLength = 13,
                              scrollX = TRUE,
                              fixedColumns = list(leftColumns = 1),
-                             scrollY = TRUE,
+                             scrollY = FALSE,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = 0),
                                                 list(className = 'dt-right', targets = 2:47)
                                                 #list(width = '30px', targets = 6)
                                                 ))) %>%
-           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+           DT::formatStyle(2, fontWeight = "bold", padding = "4px"
                           )
         )
      )

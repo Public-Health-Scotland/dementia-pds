@@ -1092,7 +1092,7 @@ plot_geog_bar(pds_pop_sex_data_ijb, y_value = pop_rate_10000, measure = sex, mea
 ijb_pop_sex_table_data <- pds_all_sex_rates %>%
   filter(!grepl("NHS", geog)) %>% 
   select(geog,fy,sex,pop_rate_10000) %>% mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>% 
-  pivot_wider(names_from = geog, values_from = pop_rate_10000, values_fill = "-") %>%
+  pivot_wider(names_from = geog, values_from = pop_rate_10000, values_fill = "-") %>% arrange(sex) %>% 
              rename(`Gender` = sex)
 
 
@@ -1165,7 +1165,7 @@ plot_geog_bar(pds_pop_sex_data_hb, y_value = pop_rate_10000, measure = sex, meas
 
 hb_pop_sex_table_data <- pds_all_sex_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
   select(geog,fy,sex,pop_rate_10000) %>% mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>% 
-  pivot_wider(names_from = geog, values_from = pop_rate_10000, values_fill = "-") %>%
+  pivot_wider(names_from = geog, values_from = pop_rate_10000, values_fill = "-") %>% arrange(sex) %>% 
              rename(`Gender` = sex)
 
 
@@ -1240,7 +1240,7 @@ plot_rate_line(pds_pop_sex_data, measure = sex, measure_text = "Gender: ", y = "
 
 trend_pop_sex_table_data <- pds_all_sex_rates %>% filter(!is.na(pop_rate_10000)) %>% 
   select(geog,fy,sex,pop_rate_10000) %>%
-  pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
+  pivot_wider(names_from = fy, values_from = pop_rate_10000) %>% arrange(sex) %>% 
              rename(`Gender` = sex)
 
 
