@@ -715,7 +715,7 @@ function filter_default() {
 
 // pathways
 
-  document.getElementById("met_filter_year").getElementsByClassName("selectized") 
+ document.getElementById("met_filter_year").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("met_filter_year").getElementsByClassName("selectized")
@@ -738,17 +738,11 @@ function filter_default() {
 
   document.getElementById("exempt_filter_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-
-  document.getElementById("wait_filter_ijb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("wait_filter_ijb_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
   
-  document.getElementById("wait_filter_hb_year").getElementsByClassName("selectized") 
+  document.getElementById("wait_filter_all_year").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("wait_filter_hb_year").getElementsByClassName("selectized")
+  document.getElementById("wait_filter_all_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_median").getElementsByClassName("selectized") 
@@ -787,10 +781,16 @@ function filter_default() {
   document.getElementById("term_filter_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("term_filter_geog").getElementsByClassName("selectized") 
+  document.getElementById("term_filter_year_3").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("term_filter_year_3").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("term_filter_geog_3").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
-  document.getElementById("term_filter_geog").getElementsByClassName("selectized")
+  document.getElementById("term_filter_geog_3").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("term_filter_year_2").getElementsByClassName("selectized") 
@@ -804,6 +804,8 @@ function filter_default() {
 
   document.getElementById("term_filter_geog_2").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
+
+ 
   
   
 // demographics

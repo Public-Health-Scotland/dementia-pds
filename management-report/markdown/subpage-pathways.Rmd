@@ -156,7 +156,7 @@ term_data_contact$fy <- as.factor(term_data_contact$fy)
 term_data_contact %<>% arrange(termination_or_transition_reason)
 term_data_contact$sex <- as.factor(term_data_contact$sex)
 term_data_contact$ijb <- factor(term_data_contact$ijb, levels = unique(pds_all$geog))
-term_data_contact %<>% mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "14 All reasons", substring(termination_or_transition_reason, 3), termination_or_transition_reason))
+term_data_contact %<>% mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "14 All reasons", substring(termination_or_transition_reason, 4), termination_or_transition_reason))
 term_data_contact$termination_or_transition_reason <- as.factor(term_data_contact$termination_or_transition_reason)
 
 term_data_no_contact$health_board <- as.factor(term_data_no_contact$health_board)
@@ -1052,10 +1052,140 @@ Row
 Row {.tabset data-height=770}
 ----------------------------------------------------------------------
 
+### **Termination Reasons - All**
+
+```{r dropdown-term-all}
+ term_data_all <- full_join(
+   
+  term_data_contact %>% filter(sex == "All", ldp == "All") %>% select(-sex,-ldp,-median_contact_to_termination) %>% rename(contact_referrals = referrals),
+  
+  term_data_no_contact %>% filter(sex == "All", ldp == "All") %>% select(-sex,-ldp,-median_referral_to_termination) %>% rename(no_contact_referrals = referrals)
+ ) %>% 
+   mutate(across(where(is.numeric),  ~replace(., is.na(.), 0))) %>% 
+  mutate(referrals = contact_referrals + no_contact_referrals) %>% select(-contact_referrals, -no_contact_referrals, -health_board)
+
+# term_totals <- left_join(pds_all_totals %>% rename(ijb = geog) %>% select(-age_grp_2), term_data_all %>% filter(termination_or_transition_reason == "All reasons") %>% select(ijb, fy, referrals) %>% rename(all_terminated_referrals = referrals)) %>%
+#   mutate(total_referrals = format(total_referrals, big.mark = ","))
+
+term_table_totals <- bind_rows(term_data_all %>%
+                              mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "All reasons", "00 All reasons", termination_or_transition_reason)),
+                            pds_all_totals %>% rename(ijb = geog, termination_or_transition_reason = age_grp_2, referrals = total_referrals) %>% mutate(termination_or_transition_reason = "00 AAA")) %>% 
+  arrange(termination_or_transition_reason, fy, ijb) %>% 
+  complete(nesting(ijb, fy), termination_or_transition_reason, fill = list(referrals = 0))
+
+term_table_all <- left_join(term_table_totals,
+                term_table_totals %>% filter(termination_or_transition_reason == "00 All reasons") %>%  select(ijb, fy, referrals) %>% rename(term_referrals = referrals)) %>% 
+  mutate(perc = case_when(termination_or_transition_reason == "00 AAA" ~format(referrals, big.mark = ","),
+                 termination_or_transition_reason == "00 All reasons" ~format(referrals, big.mark = ","),
+                 term_referrals == 0 ~paste0("-"),
+                      TRUE ~paste0(round((referrals/term_referrals)*100,1),"%"))) %>% 
+  select(-referrals, -term_referrals) %>% 
+  pivot_wider(names_from = ijb, values_from = perc) %>% 
+  mutate(termination_or_transition_reason = case_when(termination_or_transition_reason == "00 AAA" ~"Number of people referred to PDS",
+                 termination_or_transition_reason == "00 All reasons" ~"Number of referrals with termination date recorded",
+                 TRUE ~ termination_or_transition_reason)) %>% 
+           rename(" " = termination_or_transition_reason)
+
+                    
+# term_table_all <- full_join(term_totals, term_data_all) %>% 
+#    mutate(all_terminated_referrals = if_else(is.na(all_terminated_referrals), 0, 
+#                                              all_terminated_referrals)) %>% 
+#      mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_reason), "All reasons",
+#                                                        termination_or_transition_reason)) %>% 
+#      mutate(referrals = if_else(is.na(referrals), 0, referrals)) %>% 
+#    mutate(perc = if_else(termination_or_transition_reason == "All reasons", format(referrals, big.mark = ","),
+#                          paste0(round((referrals/all_terminated_referrals)*100,1),"%"))) %>% 
+#  
+#   select(-referrals, -all_terminated_referrals) %>% 
+#   pivot_wider(names_from = termination_or_transition_reason, values_from = perc, values_fill = "0%") %>% 
+#   relocate(`All reasons`, .after = total_referrals) %>% arrange(ijb) %>% 
+#   mutate(across(starts_with("0"), ~if_else(`All reasons` == "0", "-", .))) %>% 
+#    mutate(across(starts_with("11"), ~if_else(`All reasons` == "0", "-", .))) %>% 
+#    mutate(across(starts_with("13"), ~if_else(`All reasons` == "0", "-", .))) %>% 
+#   rename("Number of referrals with termination date recorded" = "All reasons",
+#          "Number of people referred to PDS" = "total_referrals",
+#          "Integration Authority Area/Health Board" = "ijb")
+
+
+
+term_table_data_all <- SharedData$new(term_table_all)
+
+data_filter_year_term_all <- filter_select(id = "term_filter_year",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = term_table_data_all,
+                                    multiple = FALSE
+                                   )
+
+
+bscols(widths = c(1,5,NA), NULL,
+data_filter_year_term_all,NULL)
+
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Reasons for termination of post-diagnostic support as percentage of referrals with termination date recorded</h2>
+```{r term-table-all}
+
+# headers_term <- htmltools::withTags(table(
+#   class = 'display',
+#   thead(
+#     tr( 
+#       th(rowspan = 2, "Integration Authority Area/Health Board"),
+#       th(rowspan = 2, ""),
+#       th(rowspan = 2, "Number of people referred to PDS"),
+#       th(rowspan = 2, "Number of referrals with termination date recorded"),
+#       th(colspan = 3, " "),
+#       th(colspan = 8, "Termination reason as % of referrals with termination date recorded")
+#     ),
+#     tr(
+#       
+#       th(colspan = 1, '01 PDS Complete and have moved to self management'),
+#       th(colspan = 1, '02 PDS Complete and have progressed onto more advanced model of care'),
+#       th(colspan = 1, '03 Service user has died'),
+#       th(colspan = 1, '04 Service user has moved to a different Health Board area'),
+#       th(colspan = 1, '05 Service user has terminated PDS early/refused'),
+#       th(colspan = 1, '06 Service user no longer able to engage in PDS'),
+#       th(colspan = 1, '07 Service user has moved into care'),
+#       th(colspan = 1, '08 Other models of care deemed more appropriate'),
+#       th(colspan = 1, '09 Transition to community support'),
+#       th(colspan = 1, '11 Other Service Reasons'),
+#       th(colspan = 1, '13 Unknown Reason')
+#     )
+#   )
+# ))
+
+
+
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="590px", margin="20px"),
+     DT::datatable(term_table_data_all, #container = headers_term, 
+                   rownames = FALSE, extensions = "FixedColumns",
+              options = list(pageLength = 13,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                                list(className = 'dt-right', targets = 2:47)
+                                                #list(width = '30px', targets = 6)
+                                                ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+```
+
+
 ### **Termination Reasons - PDS Ending Without Contact**
 
 ```{r dropdown-term-1}
- term_data_2 <- term_data_no_contact %>%
+ term_data_1 <- term_data_no_contact %>%
     filter(sex == "All") %>%
     pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
     mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
@@ -1080,24 +1210,26 @@ Row {.tabset data-height=770}
                    "Exempt from Standard",
                    "Standard Not Met"))
 
-term_table_data_2 <- SharedData$new(term_data_2)
 
-data_filter_year_term_2 <- filter_select(id = "term_filter_year",
+term_table_data_1 <- SharedData$new(term_data_1)
+
+data_filter_year_term_1 <- filter_select(id = "term_filter_year_2",
                                     label = "Select Financial Year of Diagnosis:",
                                     group = ~fy,
-                                    sharedData = term_table_data_2,
+                                    sharedData = term_table_data_1,
                                     multiple = FALSE
                                    )
 
-data_filter_geog_term_2 <- filter_select(id = "term_filter_geog_2",
+data_filter_geog_term_1 <- filter_select(id = "term_filter_geog_2",
                                     label = "Select Integration Authority Area or Health Board:",
                                     group = ~geog,
-                                    sharedData = term_table_data_2,
+                                    allLevels = TRUE,
+                                    sharedData = term_table_data_1,
                                     multiple = FALSE
                                    )
 
 bscols(widths = c(1,5,5,NA), NULL,
-data_filter_year_term_2, data_filter_geog_term_2, NULL)
+data_filter_year_term_1, data_filter_geog_term_1, NULL)
 
 
 
@@ -1108,7 +1240,7 @@ data_filter_year_term_2, data_filter_geog_term_2, NULL)
 
 bscols(widths = 12,
        div(style = css(width="97%", height="590px", margin="20px"),
-     DT::datatable(term_table_data_2, rownames = FALSE,
+     DT::datatable(term_table_data_1, rownames = FALSE,
               options = list(pageLength = 14,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -1142,21 +1274,21 @@ bscols(widths = 12,
     mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%  
     set_colnames(c("fy", "geog", "Reason for end of post-diagnostic support",
                    "Number of people", 
-                   "Average (median) days from first contact with PDS practitioner to end of PDS",
+                   "Average (median) days from first contact to end of PDS",
                    "Standard Met",
                    "Exempt from Standard",
                    "Standard Not Met"))
  
 term_table_data <- SharedData$new(term_data)
 
-data_filter_year_term <- filter_select(id = "term_filter_year_2",
+data_filter_year_term <- filter_select(id = "term_filter_year_3",
                                     label = "Select Financial Year of Diagnosis:",
                                     group = ~fy,
                                     sharedData = term_table_data,
                                     multiple = FALSE
                                    )
 
-data_filter_geog_term <- filter_select(id = "term_filter_geog",
+data_filter_geog_term <- filter_select(id = "term_filter_geog_3",
                                     label = "Select Integration Authority Area or Health Board:",
                                     group = ~geog,
                                     sharedData = term_table_data,
@@ -1261,10 +1393,16 @@ function filter_default() {
   document.getElementById("term_filter_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("term_filter_geog").getElementsByClassName("selectized") 
+  document.getElementById("term_filter_year_3").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("term_filter_year_3").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("term_filter_geog_3").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
-  document.getElementById("term_filter_geog").getElementsByClassName("selectized")
+  document.getElementById("term_filter_geog_3").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("term_filter_year_2").getElementsByClassName("selectized") 
