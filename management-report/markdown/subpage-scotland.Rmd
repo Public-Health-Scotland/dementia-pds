@@ -134,9 +134,10 @@ est_date3 <- dmy(01042023)
               sel_fy == extract_fin_year(scot_date5) ~
               paste0(" ", 
               "**Please note:** ",
-              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24 ", 
-              "and 2024/25, which has resulted in some records showing as incorrectly having ", 
-              "met the standard. PHS are working with the Health Board to try and rectify ", 
+              "*PHS have identified issues with the data submitted by NHS Tayside (2023/24 ", 
+              "and 2024/25), NHS Highland (2024/25 Q3) and NHS Lanarkshire (2024/25 Q3), which ",
+              "has resulted in some records showing as incorrectly having ", 
+              "met the standard. PHS are working with the Health Boards to try and rectify ", 
               "this data issue in future submissions.*"), 
             TRUE ~ paste0(""))
   
@@ -152,6 +153,23 @@ est_date3 <- dmy(01042023)
               "PDS service in Shetland has resumed.*"), 
             TRUE ~ paste0(""))
    
+    
+    # Data quality notes - West Dunbartonshire
+  wd_date <- dmy(01042024)
+
+  wd_text <-  
+    case_when(sel_fy == extract_fin_year(wd_date) ~
+      paste0(" ",
+             "**Please note:** ",
+             "*Due to local IT system issues West Dunbartonshire ",
+             "have not been able to provide all records for 2024/25. ",
+             "PHS has been informed that this issue will ",
+             "be rectified in future submissions.*"), TRUE ~ paste0(""))
+    
+    
+    
+    
+     
  
 ```
 
@@ -159,7 +177,7 @@ est_date3 <- dmy(01042023)
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
-
+<br>
 
 ### `r hb`
 #### Financial Year `r paste(sel_fy, qt_text)`
@@ -228,6 +246,8 @@ Row
 `r scot_text2`
 
 `r scot_text3`
+
+`r wd_text`
 
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
