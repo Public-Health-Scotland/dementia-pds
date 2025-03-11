@@ -244,9 +244,6 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
 <!-- PATHWAYS -->
 `r knitr::knit_child("subpage-pathways.Rmd")`
 
-<!-- ADDITIONAL ANALYSIS -->
-`r knitr::knit_child("subpage-additional-analysis.Rmd")`
-
 
 Methodology 
 =================================================
@@ -418,67 +415,6 @@ This page includes information about data quality. Any queries/errors outstandin
 
 Row {.tabset data-height=765}
 -------------------------------------------------
-
-### **Ethnic Group**
-
-<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Number and Percentage of referrals with NA or code 98/99 entry (Unknown) for Ethnic Group</h2>
-```{r ethnic-group-table}
-ethnic_comp_data<-comp_data %>%
-  filter(field_name == "ethnic_group") %>% 
-  select(geog, fy, number_of_records, perc_of_records_missing_not_known) %>% 
-  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
-    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-  pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known),
-              names_vary = "slowest") 
-
-headers <- htmltools::withTags(table(
-  class = 'display',
-  thead(
-    tr(
-      th(colspan = 1, '    '),
-      th(rowspan = 2, "Integration Authority Area/Health Board"),
-      th(colspan = 2, '    2016/17'),
-      th(colspan = 2, '    2017/18'),
-      th(colspan = 2, '    2018/19'),
-      th(colspan = 2, '    2019/20'),
-      th(colspan = 2, '    2020/21'),
-      th(colspan = 2, '    2021/22'),
-      th(colspan = 2, '    2022/23'),
-      th(colspan = 2, '    2023/24'),
-      th(colspan = 2, '    2024/25'),
-      th(colspan = 2, '    All')
-    ),
-    tr(
-      lapply(c(" ",rep(c("Number of referrals", "% Unknown"), 10)), th)
-    )
-  )
-))
-
-
-bscols(widths = 12,
-       div(style = css(width="98%", height="650px", margin="15px"),
-          DT::datatable(ethnic_comp_data,
-                        container = headers,
-                        rownames = TRUE,
-                        extensions = "FixedColumns",
-              options = list(pageLength = 46,
-                             scrollX = TRUE,
-                             fixedColumns = list(leftColumns = 1),
-                             scrollY = TRUE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = F, targets = 0),
-                                                list(className = 'dt-right',
-                                                     targets = 2:(2*length(all_years)+3)))
-                             )) %>% 
-            DT::formatStyle(0, target = "row",
-              fontWeight = DT::styleEqual(dim(ethnic_comp_data)[1],"bold")) %>% 
-               DT::formatStyle(c(1,3,5,7,9,11,13,15,17,19), `border-right` = "solid 1px")
-            )
-       )
-
-
-```
 
 ### **Accommodation Type**
 
@@ -715,12 +651,7 @@ function filter_default() {
 
 // pathways
 
- document.getElementById("met_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("met_filter_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
+ 
   document.getElementById("not_met_filter_year").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
@@ -763,6 +694,18 @@ function filter_default() {
   document.getElementById("trend_filter_wait").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
+  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
   document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
@@ -774,43 +717,13 @@ function filter_default() {
 
   document.getElementById("no_contact_filter_year_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-  
-  document.getElementById("term_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("term_filter_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("term_filter_year_3").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("term_filter_year_3").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("term_filter_geog_3").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("term_filter_geog_3").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("term_filter_year_2").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("term_filter_year_2").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("term_filter_geog_2").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("term_filter_geog_2").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
 
  
   
   
 // demographics
 
-   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
+    document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized")
@@ -839,19 +752,7 @@ function filter_default() {
 
   document.getElementById("filter_trend_age_2_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-  
-  document.getElementById("filter_pop_age_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
 
-  document.getElementById("filter_pop_age_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Aberdeen City", false);
-
-  document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
   document.getElementById("filter_ijb_age_ldp").getElementsByClassName("selectized") 
   [0].selectize.setValue("2023/24", false);
 
@@ -919,7 +820,7 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_simd_pop_quintile").getElementsByClassName("selectized") 
-  [0].selectize.setValue("All", false);
+  [0].selectize.setValue("1 - Most Deprived", false);
 
   document.getElementById("filter_hb_simd_pop_quintile").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -931,7 +832,7 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_simd_pop_quintile").getElementsByClassName("selectized") 
-  [0].selectize.setValue("All", false);
+  [0].selectize.setValue("1 - Most Deprived", false);
 
   document.getElementById("filter_ijb_simd_pop_quintile").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -949,7 +850,7 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_simd_ldp_quintile").getElementsByClassName("selectized") 
-  [0].selectize.setValue("All", false);
+  [0].selectize.setValue("1 - Most Deprived", false);
 
   document.getElementById("filter_hb_simd_ldp_quintile").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -961,7 +862,7 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_simd_ldp_quintile").getElementsByClassName("selectized") 
-  [0].selectize.setValue("All", false);
+  [0].selectize.setValue("1 - Most Deprived", false);
 
   document.getElementById("filter_ijb_simd_ldp_quintile").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -1036,62 +937,6 @@ function filter_default() {
   document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  
-// additional information  
-
-  document.getElementById("filter_ldp_subtype").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("filter_ldp_subtype").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-
-  document.getElementById("filter_ldp_stage").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("filter_ldp_stage").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_model_prop_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_model_prop_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_model_prop_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_model_prop_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ldp_model").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("filter_ldp_model").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_carer_hb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_carer_hb_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_carer_ijb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_carer_ijb_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
   
   }
   
