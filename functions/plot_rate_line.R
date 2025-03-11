@@ -1,6 +1,6 @@
 everyother <- function(x) x[seq_along(x) %% 2 != 0]
 
-plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL){
+plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL, colours = phs_colours_32){
   
   plot <-  ggplot(data) +
     
@@ -37,7 +37,7 @@ plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL)
     
     scale_x_discrete(breaks = everyother) +
     
-    scale_colour_manual(values = phs_colours_32) +
+    scale_colour_manual(values = colours) +
     
     
     facet_wrap(vars({{measure}}), ncol = 5, scales = scales) + 

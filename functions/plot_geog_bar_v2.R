@@ -1,4 +1,7 @@
-plot_geog_bar_v2 <- function(data, y_value, measure, measure_text, measure_2, y_value_text = NULL, x = NULL, y = NULL, ylabel = waiver(), ylimits = c(0, NA), symbol = NULL){
+plot_geog_bar_v2 <- function(data, y_value, measure, measure_text, measure_2,
+                             y_value_text = NULL, x = NULL, y = NULL,
+                             ylabel = waiver(), ylimits = c(0, NA), symbol = NULL,
+                             colours = phs_colours_32){
   
   plot <-  data %>% ggplot() +
     
@@ -21,7 +24,7 @@ plot_geog_bar_v2 <- function(data, y_value, measure, measure_text, measure_2, y_
                        labels = ylabel
     ) +
     
-    scale_fill_manual(values = phs_colours_32) +
+    scale_fill_manual(values = colours) +
     
     facet_wrap(vars(fy, {{measure_2}}), ncol = 1, scales = "free_y") + 
     
@@ -52,7 +55,7 @@ plot_geog_bar_v2 <- function(data, y_value, measure, measure_text, measure_2, y_
   
 }
 
-plot_geog_bar_legend <- function(data, measure) {
+plot_geog_bar_legend <- function(data, measure, colours = phs_colours_32) {
 
   legend <- data %>% ggplot(aes(x = geog, y = 0, fill = {{measure}})) +
 
@@ -60,14 +63,13 @@ plot_geog_bar_legend <- function(data, measure) {
 
     labs(fill = NULL) +
 
-    scale_fill_manual(values = phs_colours_32) +
+    scale_fill_manual(values = colours) +
 
     theme(axis.title = element_blank(),
           axis.text = element_blank(),
           axis.ticks = element_blank(),
-          legend.position = c(0.5, 1), # move the legend to the center
           panel.grid = element_blank(),
-          panel.border = element_rect(colour = "white", fill='white', size=0)
+          panel.border = element_rect(colour = "white", fill='white', linewidth=0)
     )
 
   legend_plotly<-ggplotly(legend, tooltip = NULL)

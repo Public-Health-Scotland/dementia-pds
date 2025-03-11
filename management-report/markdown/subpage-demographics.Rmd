@@ -270,6 +270,8 @@ hb_totals_table <- bind_rows(pds_scot_totals, pds_hb_totals) %>%
 ijb_totals_table <- bind_rows(pds_scot_totals, pds_ijb_totals)  %>%
   mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% pivot_wider(names_from = geog, values_from = total_referrals)
    
+# colours for simd plots
+simd_colours <- c("#005FAD", "#0078D4", "#3393DD", "#80BCEA", "#B3D7F2", "#E6F2FB")
  
 ```
 
@@ -1439,22 +1441,6 @@ Row {.tabset data-height=965}
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb-simd-pop}
-# pds_ijb_simd_rates <- pds_all_simd_rates %>% filter(!grepl("NHS", geog))
-# 
-# pds_pop_simd_data_ijb <- SharedData$new(pds_ijb_simd_rates, key = ~fy, group = "ijb_simd_pop")
-# 
-# data_filter_ijb_simd_pop <- filter_select(id = "filter_ijb_simd_pop",
-#                                     label = "Select Financial Year:",
-#                                     group = ~fy,
-#                                     sharedData = pds_pop_simd_data_ijb,
-#                                     multiple = FALSE
-#                                       )
-# 
-# bscols(widths = c(1,5,NA),
-#        NULL,
-#        data_filter_ijb_simd_pop,
-#        NULL)
-
 pds_ijb_simd_rates <- bind_rows(
   
   pds_all_simd_rates %>% filter(!grepl("NHS", geog)) %>% 
@@ -1495,20 +1481,16 @@ bscols(widths = c(1,5,5,NA),
 ```{r plot-ijb-simd-legend-pop}
 
 bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_simd %>% filter(geog == "Scotland"), measure = simd)))
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
 
 ```
 
 
 ```{r plot-ijb-simd-pop}
-# bscols(widths = 12,
-#   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-# plot_geog_bar(pds_pop_simd_data_ijb, y_value = pop_rate_10000, measure = simd, measure_text = "SIMD Quintile: ", x = "Integration Authority Area", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
-# )
 
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar_v2(pds_pop_simd_data_ijb, y_value = pop_rate_10000, measure = simd, measure_text = "SIMD Quintile: ", measure_2 = simd_group, x = "Integration Authority Area", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
+plot_geog_bar_v2(pds_pop_simd_data_ijb, y_value = pop_rate_10000, measure = simd, measure_text = "SIMD Quintile: ", measure_2 = simd_group, x = "Integration Authority Area", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: ", colours = simd_colours))
 )
 
 ```
@@ -1630,7 +1612,7 @@ bscols(widths = c(1,5,5,NA),
 ```{r plot-hb-simd-legend-pop}
 
 bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_simd %>% filter(geog == "Scotland"), measure = simd)))
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
 
 ```
 
@@ -1639,7 +1621,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_
 
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar_v2(pds_pop_simd_data_hb, y_value = pop_rate_10000, measure = simd, measure_text = "SIMD Quintile: ", measure_2 = simd_group, x = "Health Board", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
+plot_geog_bar_v2(pds_pop_simd_data_hb, y_value = pop_rate_10000, measure = simd, measure_text = "SIMD Quintile: ", measure_2 = simd_group, x = "Health Board", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: ", colours = simd_colours))
 )
 
 ```
@@ -1726,7 +1708,7 @@ plot_rate_line_legend_1(legend_data)),NULL
 
 bscols(widths = 12,
   div(style = css(width="98%", height="370px"),
-plot_rate_line(pds_pop_simd_data, measure = simd, measure_text = "SIMD Quintile: ", y = "Rate per 10,000 Population"))
+plot_rate_line(pds_pop_simd_data, measure = simd, measure_text = "SIMD Quintile: ", y = "Rate per 10,000 Population", colours = simd_colours))
 )
 
 ```
@@ -1844,7 +1826,7 @@ bscols(widths = c(1,5,5,NA),
 ```{r plot-ijb-simd-legend-ldp}
 
  bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_simd %>% filter(geog == "Scotland"), measure = simd)))
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
 
 ```
 
@@ -1852,7 +1834,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_
 ```{r plot-ijb-simd-ldp}
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar_v2(ldp_simd_data_ijb, y_value = perc_met, measure = simd, measure_text = "SIMD Quintile: ", x = "Integration Authority Area", measure_2 = simd_group, ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+plot_geog_bar_v2(ldp_simd_data_ijb, y_value = perc_met, measure = simd, measure_text = "SIMD Quintile: ", x = "Integration Authority Area", measure_2 = simd_group, ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%", colours = simd_colours))
 )
 
 ```
@@ -1961,22 +1943,6 @@ bscols(widths = c(1,5,5,NA),
        data_filter_hb_simd_ldp_quintile,
        NULL)
 
-# ldp_hb_simd <- ldp_all_simd %>% filter(geog == "Scotland" | grepl("NHS", geog)) 
-# 
-# ldp_simd_data_hb <- SharedData$new(ldp_hb_simd, key = ~fy, group = "hb_simd_ldp")
-# 
-# data_filter_hb_simd_ldp <- filter_select(id = "filter_hb_simd_ldp",
-#                                     label = "Select Financial Year:",
-#                                     group = ~fy,
-#                                     sharedData = ldp_simd_data_hb,
-#                                     multiple = FALSE
-#                                       )
-# 
-# bscols(widths = c(1,5,NA),
-#        NULL,
-#        data_filter_hb_simd_ldp,
-#        NULL)
-
 
 ```
 
@@ -1984,7 +1950,7 @@ bscols(widths = c(1,5,5,NA),
 ```{r plot-hb-simd-legend-ldp}
 
  bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_simd %>% filter(geog == "Scotland"), measure = simd)))
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
 
 ```
 
@@ -1992,7 +1958,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_
 ```{r plot-hb-simd-ldp}
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar_v2(ldp_simd_data_hb, y_value = perc_met, measure = simd, measure_text = "SIMD Quintile: ", x = "Health Board", measure_2 = simd_group, ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+plot_geog_bar_v2(ldp_simd_data_hb, y_value = perc_met, measure = simd, measure_text = "SIMD Quintile: ", x = "Health Board", measure_2 = simd_group, ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%", colours = simd_colours))
 )
 
 ```
@@ -2061,35 +2027,6 @@ DT::datatable(hb_simd_table_ldp, rownames = FALSE, extensions = "FixedColumns",
      )
 
 
-# 
-# hb_ldp_simd_table_data <- ldp_all_simd %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
-#   select(geog,fy,simd,perc_met) %>%
-#   mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
-#   pivot_wider(names_from = geog, values_from = perc_met) %>%
-#   mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
-#              rename(`SIMD Quintile` = simd)
-# 
-# 
-# hb_simd_table_ldp <- SharedData$new(hb_ldp_simd_table_data, key = ~fy, group = "hb_simd_ldp")
-# 
-# 
-# bscols(widths = 12,
-#        div(style = css(width="97%", height="360px", margin="20px"),
-# DT::datatable(hb_simd_table_ldp, rownames = FALSE, extensions = "FixedColumns",
-#               options = list(pageLength = 5,
-#                              scrollX = TRUE,
-#                              fixedColumns = list(leftColumns = 1),
-#                              scrollY = FALSE,
-#                              dom = "t",
-#                              ordering = FALSE,
-#                              columnDefs = list(list(visible = FALSE, targets = 0),
-#                                                list(className = 'dt-right', targets = 2:16)
-#                                                ))) %>%
-#            DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
-#                           )
-#         )
-#      )
-
 
 
 ```
@@ -2127,13 +2064,9 @@ plot_ldp_line_legend_1(legend_data)),NULL
 ```{r plot-ldp-simd}
 bscols(widths = 12,
   div(style = css(width="98%", height="330px"),
-plot_ldp_line(ldp_all_simd_data, measure = simd, measure_text = "SIMD Quintile: "))
+plot_ldp_line(ldp_all_simd_data, measure = simd, measure_text = "SIMD Quintile: ", colours = simd_colours))
 )
 
-# bscols(widths = 12,
-#   div(style = css(width="98%", height="385px"),
-# plot_ldp_simd(ldp_all_simd_data))
-# )
 
 ```
 
@@ -2208,7 +2141,7 @@ bscols(widths = c(1,5,NA),
 ```{r plot-ldp-simd-legend_bar}
 
 bscols(widths = 12, div(style = css(height="30px", marginBottom="-7px"),
-plot_ldp_bar_legend(ldp_all_simd, measure = simd, measure_text = ""))
+plot_ldp_bar_legend(ldp_all_simd, measure = simd, measure_text = "", colours = simd_colours))
 )
 
 ```
@@ -2216,7 +2149,7 @@ plot_ldp_bar_legend(ldp_all_simd, measure = simd, measure_text = ""))
 ```{r plot-ldp-simd_bar}
 bscols(widths = 12,
   div(style = css(width="98%", height="290px"),
-plot_ldp_bar(ldp_all_simd_data_2, measure = simd, measure_text = "SIMD Quintile: "))
+plot_ldp_bar(ldp_all_simd_data_2, measure = simd, measure_text = "SIMD Quintile: ", colours = simd_colours))
 )
 
 

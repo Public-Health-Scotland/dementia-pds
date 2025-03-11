@@ -1,4 +1,4 @@
-plot_ldp_bar <- function(data, measure, measure_text, ncol = 10, nrow = NULL){
+plot_ldp_bar <- function(data, measure, measure_text, ncol = 10, nrow = NULL, colours = phs_colours_32){
   
   plot <-  ggplot(data) +
     
@@ -23,7 +23,7 @@ plot_ldp_bar <- function(data, measure, measure_text, ncol = 10, nrow = NULL){
                        labels=function(x) paste0(x,"%")
     ) +
     
-    scale_fill_manual(values = phs_colours_32) +
+    scale_fill_manual(values = colours) +
   
    facet_wrap(vars(fy), ncol = ncol, nrow = nrow) + 
     
@@ -53,7 +53,7 @@ plot_ldp_bar <- function(data, measure, measure_text, ncol = 10, nrow = NULL){
 }
 
 
-plot_ldp_bar_legend <- function(data, measure, measure_text) {
+plot_ldp_bar_legend <- function(data, measure, measure_text, colours = phs_colours_32) {
   
   legend <- data %>% ggplot(aes(x = {{measure}}, y = 0, group = {{measure}}, fill = {{measure}})
   ) +
@@ -61,7 +61,7 @@ plot_ldp_bar_legend <- function(data, measure, measure_text) {
     
     labs(fill = measure_text) +
     
-    scale_fill_manual(values = phs_colours_32) +
+    scale_fill_manual(values = colours) +
     
     theme(axis.title = element_blank(),
           axis.text = element_blank(),
