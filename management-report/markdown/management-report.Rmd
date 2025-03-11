@@ -428,6 +428,28 @@ accom_comp_data<-comp_data %>%
   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known),
               names_vary = "slowest") 
 
+headers <- htmltools::withTags(table(
+  class = 'display',
+  thead(
+    tr(
+      th(colspan = 1, '    '),
+      th(rowspan = 2, "Integration Authority Area/Health Board"),
+      th(colspan = 2, '    2016/17'),
+      th(colspan = 2, '    2017/18'),
+      th(colspan = 2, '    2018/19'),
+      th(colspan = 2, '    2019/20'),
+      th(colspan = 2, '    2020/21'),
+      th(colspan = 2, '    2021/22'),
+      th(colspan = 2, '    2022/23'),
+      th(colspan = 2, '    2023/24'),
+      th(colspan = 2, '    2024/25'),
+      th(colspan = 2, '    All')
+    ),
+    tr(
+      lapply(c(" ",rep(c("Number of referrals", "% Unknown"), 10)), th)
+    )
+  )
+))
 
 bscols(widths = 12,
        div(style = css(width="98%", height="650px", margin="15px"),
