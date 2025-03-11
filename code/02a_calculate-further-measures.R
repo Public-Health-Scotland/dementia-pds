@@ -193,16 +193,16 @@ variables <- c("ethnic_group",
                "pds_status",
                "carers_support")
 
-ldp_wait_times <- ldp %>% mutate(across(all_of(variables), ~substring(.x, 3))) %>%
+ldp %<>% mutate(across(all_of(variables), ~substring(.x, 3))) %>%
   mutate(across(all_of(variables), ~if_else(is.na(.x), "Not Known", .x))) %>%
   mutate(across(all_of(variables), ~str_trim(.x, "left")))
 
-ldp_wait_times %<>% mutate(sex = substring(sex, 3)) %>% 
+ldp %<>% mutate(sex = substring(sex, 3)) %>% 
    mutate(sex = str_trim(sex, "left")) %>% 
   mutate(sex = if_else(is.na(sex) | sex == "Not Known", "Unknown", sex)) 
 
 
-ldp_wait_times %<>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Known", "Homeless", "No Fixed Address"),
+ldp_wait_times <- ldp %>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Known", "Homeless", "No Fixed Address"),
                                              "Not Known/Other", accommodation_type),
                 pds_referral_source = if_else(pds_referral_source %in% c("Not Known", "Local Authority", "Other", "Private Professional/Service/Organisation", "Self Referral"),
                                               "Not Known/Other", pds_referral_source))
