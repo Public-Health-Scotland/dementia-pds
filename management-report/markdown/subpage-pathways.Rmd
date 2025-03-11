@@ -274,9 +274,9 @@ median_ijb_table_data <- wait_data %>%
   rename(`Number of People Referred to PDS` = total_referrals, 
          `% of Referrals contacted by PDS practitioner` = perc_contacted,
         `Average (median) days from diagnosis to first contact` = median_diagnosis_to_contact) %>% 
-  pivot_longer(!c(ijb,fy), names_to = "measure", values_to = "n") %>% 
-  pivot_wider(names_from = ijb, values_from = n) %>% 
-  rename(" " = "measure")
+  #pivot_longer(!c(ijb,fy), names_to = "measure", values_to = "n") %>% 
+ # pivot_wider(names_from = ijb, values_from = n) %>% 
+  rename("Integration Authority Area" = "ijb")
 
 median_ijb_table <- SharedData$new(median_ijb_table_data, key = ~fy, group = "median_ijb")
 
@@ -284,16 +284,16 @@ median_ijb_table <- SharedData$new(median_ijb_table_data, key = ~fy, group = "me
 bscols(widths = 12,
        div(style = css(width="97%", height="460px", margin="20px"),
 DT::datatable(median_ijb_table, rownames = FALSE, extensions = "FixedColumns",
-              options = list(pageLength = 5,
+              options = list(pageLength = 33,
                              scrollX = TRUE,
                              fixedColumns = list(leftColumns = 1),
                              scrollY = FALSE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:33)
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                               list(className = 'dt-right', targets = 2:4)
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold", padding = "4px"
+           DT::formatStyle(1, fontWeight = "bold", #padding = "4px"
                           )
         )
      )
@@ -357,9 +357,9 @@ median_hb_table_data <- wait_data %>%
   rename(`Number of People Referred to PDS` = total_referrals, 
          `% of Referrals contacted by PDS practitioner` = perc_contacted,
         `Average (median) days from diagnosis to first contact` = median_diagnosis_to_contact) %>% 
-  pivot_longer(!c(health_board,fy), names_to = "measure", values_to = "n") %>% 
-  pivot_wider(names_from = health_board, values_from = n) %>% 
-  rename(" " = "measure")
+ # pivot_longer(!c(health_board,fy), names_to = "measure", values_to = "n") %>% 
+ # pivot_wider(names_from = health_board, values_from = n) %>% 
+  rename("Health Board" = "health_board")
 
 median_hb_table <- SharedData$new(median_hb_table_data, key = ~fy, group = "median_hb")
 
@@ -367,16 +367,16 @@ median_hb_table <- SharedData$new(median_hb_table_data, key = ~fy, group = "medi
 bscols(widths = 12,
        div(style = css(width="97%", height="470px", margin="20px"),
 DT::datatable(median_hb_table, rownames = FALSE, extensions = "FixedColumns",
-              options = list(pageLength = 5,
+              options = list(pageLength = 15,
                              scrollX = TRUE,
                              fixedColumns = list(leftColumns = 1),
                              scrollY = FALSE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 2:16)
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                               list(className = 'dt-right', targets = 2:4)
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold", padding = "4px"
+           DT::formatStyle(1, fontWeight = "bold", #padding = "4px"
                           )
         )
      )
@@ -766,7 +766,7 @@ Sidebar {.sidebar}
 
 <br>
 
-### Pathways - No Contact within 12 Months
+### Pathways - Uptake Decision
 ***
 
 <font size="2"> 
