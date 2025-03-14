@@ -547,6 +547,55 @@ Row
 Row {.tabset data-height=1240}
 ----------------------------------------------------------------------
 
+### **Percentage of estimated diagnoses referred to PDS**
+
+```{r dropdown-exp}
+pds_exp_rates <- left_join(
+bind_rows(pds_scot_totals, pds_hb_totals) %>% filter(fy %in% full_years),
+exp %>% select(-health_board) %>% rename(geog = health_board_label)) %>% 
+  mutate(exp_rate = round(100*total_referrals/diagnoses,1))
+
+pds_exp_rates$geog<- factor(pds_exp_rates$geog, levels = unique(pds_exp_rates$geog))
+
+pds_exp_rates_data <- SharedData$new(pds_exp_rates)
+
+data_filter_exp_trend <- filter_select(id = "trend_filter_outcomes_exp",
+                                    label = "Select Health Board(s):",
+                                    group = ~geog,
+                                    sharedData = pds_exp_rates_data
+                                   )
+bscols(widths = c(1,10,NA),NULL,
+data_filter_exp_trend,NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support</h2>
+```{r trend-plot-exp}
+
+ trends_exp_plot <- plot_trend_perc(pds_exp_rates_data, exp_rate, x ="Financial Year of Diagnosis", colours = phs_colours_46)
+
+bscols(widths = 12,
+        div(style = css(width="98%", height="385px"),
+ trends_exp_plot)
+)
+```
+
+```{r trend-table-exp}
+
+pds_exp_rates %>% select(geog, fy, exp_rate) %>% 
+            pivot_wider(names_from = fy, values_from = exp_rate) %>%
+            mutate(across(where(is.numeric), ~paste0(.,"%"))) %>% 
+            rename(`Health Board` = geog) %>%
+            kable(align = c("l", rep("r", length(full_years)))) %>%
+            kable_styling(full_width = TRUE) %>%
+            column_spec(1, bold = TRUE) %>%
+  # Add header above table
+            add_header_above(
+                    c(" " = 1,
+                     "Financial Year of Diagnosis" = length(full_years)))
+
+```
+
 ### **Percentage receiving one year's PDS support**
 
 ```{r dropdown-met-ldp}
@@ -599,54 +648,6 @@ pds_met_rates %>% select(geog, fy, perc_met) %>%
 
 ```
 
-### **Percentage of estimated diagnoses referred to PDS**
-
-```{r dropdown-exp}
-pds_exp_rates <- left_join(
-bind_rows(pds_scot_totals, pds_hb_totals) %>% filter(fy %in% full_years),
-exp %>% select(-health_board) %>% rename(geog = health_board_label)) %>% 
-  mutate(exp_rate = round(100*total_referrals/diagnoses,1))
-
-pds_exp_rates$geog<- factor(pds_exp_rates$geog, levels = unique(pds_exp_rates$geog))
-
-pds_exp_rates_data <- SharedData$new(pds_exp_rates)
-
-data_filter_exp_trend <- filter_select(id = "trend_filter_outcomes_exp",
-                                    label = "Select Health Board(s):",
-                                    group = ~geog,
-                                    sharedData = pds_exp_rates_data
-                                   )
-bscols(widths = c(1,10,NA),NULL,
-data_filter_exp_trend,NULL)
-
-```
-
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support</h2>
-```{r trend-plot-exp}
-
- trends_exp_plot <- plot_trend_perc(pds_exp_rates_data, exp_rate, x ="Financial Year of Diagnosis", colours = phs_colours_46)
-
-bscols(widths = 12,
-        div(style = css(width="98%", height="385px"),
- trends_exp_plot)
-)
-```
-
-```{r trend-table-exp}
-
-pds_exp_rates %>% select(geog, fy, exp_rate) %>% 
-            pivot_wider(names_from = fy, values_from = exp_rate) %>%
-            mutate(across(where(is.numeric), ~paste0(.,"%"))) %>% 
-            rename(`Health Board` = geog) %>%
-            kable(align = c("l", rep("r", length(full_years)))) %>%
-            kable_styling(full_width = TRUE) %>%
-            column_spec(1, bold = TRUE) %>%
-  # Add header above table
-            add_header_above(
-                    c(" " = 1,
-                     "Financial Year of Diagnosis" = length(full_years)))
-
-```
 
 ```{js }
 function filter_default() {
