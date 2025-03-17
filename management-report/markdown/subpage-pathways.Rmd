@@ -778,7 +778,7 @@ bscols(widths = 12,
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 1),
+                             columnDefs = list(list(visible = FALSE, targets = c(1,5,6,7,8)), #removes exemption reasons for data governance purposes
                                                 list(className = 'dt-right', targets = 2:8)
                                                 #list(width = '10px', targets = 1:10)
                                                 ))) %>%
