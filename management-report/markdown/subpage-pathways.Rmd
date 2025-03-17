@@ -1020,7 +1020,7 @@ Row
 
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
-Row {.tabset data-height=670}
+Row {.tabset data-height=680}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
