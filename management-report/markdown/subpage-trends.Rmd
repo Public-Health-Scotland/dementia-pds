@@ -195,7 +195,9 @@ Row
 
 ### **Note**
 
-**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+**-**
+
+<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
 
 Row {.tabset data-height=1300}
@@ -360,7 +362,8 @@ Row
 
 ### **Note**
 
-**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+**-**
+<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
 
 Row {.tabset data-height=1300}
@@ -541,7 +544,9 @@ Row
 
 ### **Note**
 
-**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+**-**
+
+<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
 
 Row {.tabset data-height=1240}
