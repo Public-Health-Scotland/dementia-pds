@@ -33,7 +33,7 @@ plot_bar_median<- function(data){
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian', 'toImage'), 
            displaylogo = F, editable = F) %>%
-    layout(legend = list(orientation = "h", x = 0.5 , y = -0.8,
+    layout(clickmode = 'none', legend = list(orientation = "h", x = 0.5 , y = -0.8,
                          xanchor = "center", yanchor = "bottom")) %>% 
     layout(margin = list(l = -10, b = 30, t = 30)  # to avoid labels getting cut out
     ) 

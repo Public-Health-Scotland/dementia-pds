@@ -33,7 +33,7 @@ plot_bar_pop_rate <- function(data){
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian', 'toImage'), 
            displaylogo = F, editable = F) %>%
-    layout(legend = list(orientation = "h", x = 0.5 , y = -0.7,
+    layout(clickmode = "none", legend = list(orientation = "h", x = 0.5 , y = -0.7,
                          xanchor = "center", yanchor = "bottom")) %>% 
     layout(margin = list(l = -10, b = 30, t = 30)  # to avoid labels getting cut out
     ) 

@@ -45,9 +45,7 @@ plot_ldp_bar <- function(data, measure, measure_text, ncol = 10, nrow = NULL, co
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian', 'toImage'), 
            displaylogo = F, editable = F) %>%
-    #layout(legend = list(orientation = "h", x = 0.6 , y = 1.1,
-                       #  xanchor = "center", yanchor = "top")) %>% 
-    layout(margin = list(l = -5, b = 50, t = 40) # to avoid labels getting cut out
+    layout(clickmode = "none", margin = list(l = -5, b = 50, t = 40) # to avoid labels getting cut out
     ) 
   
 }

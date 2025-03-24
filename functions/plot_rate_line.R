@@ -59,7 +59,7 @@ plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL,
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian', 'toImage'), 
            displaylogo = F, editable = F) %>%
-    layout(legend = list(orientation = "h", x = 0.6 , y = 1.1,
+    layout(clickmode = "none", legend = list(orientation = "h", x = 0.6 , y = 1.1,
                          xanchor = "center", yanchor = "top")) %>% 
     layout(margin = list(l = -5, b = 50, t = 40) # to avoid labels getting cut out
     ) 
