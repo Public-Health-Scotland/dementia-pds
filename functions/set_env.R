@@ -60,4 +60,13 @@ set_env <- function(data = pds,
     }
   )
   
+  # for testing downloadable tables
+  # return(
+  #   if(hb == "Scotland"){
+  #     knitr::knit_child("subpage-scotland-download.Rmd", envir = subpage_env)
+  #   }else{
+  #     knitr::knit_child("subpage-hb.Rmd", envir = subpage_env)
+  #   }
+  # )
+  
 }
