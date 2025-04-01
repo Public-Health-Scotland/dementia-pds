@@ -189,7 +189,7 @@ Row
 
 *Please note the following:*
 
-**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic in 2020/21. Local factors have also impacted other years.**
 
 **NHS Orkney** – NHS Orkney had no referrals in *2022/23* (*Q3* and *Q4*) and *2023/24* (*Q1* and *Q2*) as they were unable to access a consultant psychiatrist.
 
@@ -200,7 +200,6 @@ Row
 **NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24* and *2024/25*, which has resulted in some records showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
 
 **Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23* and *2023/24*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates.
-
 
 <!-- Scotland -->
 
@@ -266,6 +265,10 @@ The following steps are taken to ensure the data is of sufficient quality for an
 * Remove records with diagnosis date outwith the reporting period.
 * Remove records with missing diagnosis date.
 
+***
+
+The following method is used to determine whether a service user has met the standard to receive at least 12 months of post-diagnostic support:
+
 #### LDP Standard Met
 
 * Started PDS within 12 months of diagnosis and support ongoing after 12 months.
@@ -273,10 +276,10 @@ The following steps are taken to ensure the data is of sufficient quality for an
 
 #### LDP Standard Not Met
 
-* PDS started more than 12 months after diagnosis.
-* PDS not started and more than 12 months has passed since diagnosis.
-* PDS terminated (for non-exempt reason) less than 11 months after first contact date.
-* PDS terminated (for non-exempt reason) before first contact made.
+* First contact occurred more than 12 months after diagnosis.
+* No first contact and more than 12 months since diagnosis.
+* PDS terminated (for non-exempt reason) less than 11 months after first contact.
+* PDS terminated (for non-exempt reason) without contact.
 
 #### Exempt from LDP Standard
 
@@ -289,7 +292,15 @@ The following steps are taken to ensure the data is of sufficient quality for an
 #### PDS Ongoing
 
 * Less than 12 months since diagnosis and PDS not yet started.
-* PDS started within 12 months and not yet ended.
+* Still receiving PDS and less than 12 months since first contact.
+
+***
+
+This part of the LDP standard is calculated as: 
+
+![](ldpequation.png)
+
+Service users for whom it is not yet known if they have met the standard as their PDS is ongoing are excluded from the percentage figures.
 
 
 ### **Number of Expected Diagnoses**
@@ -432,18 +443,10 @@ headers <- htmltools::withTags(table(
   class = 'display',
   thead(
     tr(
-      th(colspan = 1, '    '),
+     th(colspan = 1, ' '),
       th(rowspan = 2, "Integration Authority Area/Health Board"),
-      th(colspan = 2, '    2016/17'),
-      th(colspan = 2, '    2017/18'),
-      th(colspan = 2, '    2018/19'),
-      th(colspan = 2, '    2019/20'),
-      th(colspan = 2, '    2020/21'),
-      th(colspan = 2, '    2021/22'),
-      th(colspan = 2, '    2022/23'),
-      th(colspan = 2, '    2023/24'),
-      th(colspan = 2, '    2024/25'),
-      th(colspan = 2, '    All')
+      lapply(all_years, th, colspan = 2, style = css(textAlign="center")),
+      th(colspan = 2, 'All', style = css(textAlign="center"))
     ),
     tr(
       lapply(c(" ",rep(c("Number of referrals", "% Unknown"), 10)), th)
@@ -535,18 +538,10 @@ headers_ytbd <- htmltools::withTags(table(
   class = 'display',
   thead(
     tr(
-      th(colspan = 1, '    '),
+      th(colspan = 1, ' '),
       th(rowspan = 2, "Integration Authority Area/Health Board"),
-      th(colspan = 3, '    2016/17'),
-      th(colspan = 3, '    2017/18'),
-      th(colspan = 3, '    2018/19'),
-      th(colspan = 3, '    2019/20'),
-      th(colspan = 3, '    2020/21'),
-      th(colspan = 3, '    2021/22'),
-      th(colspan = 3, '    2022/23'),
-      th(colspan = 3, '    2023/24'),
-      th(colspan = 3, '    2024/25'),
-      th(colspan = 3, '    All')
+      lapply(all_years, th, colspan = 3, style = css(textAlign="center")),
+      th(colspan = 3, 'All', style = css(textAlign="center"))
     ),
     tr(
       lapply(c(" ",rep(c("Number of referrals", "% Unknown", "% YTBD"), 10)), th)
@@ -935,7 +930,7 @@ function filter_default() {
   document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-    document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized") 
+  document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized")
