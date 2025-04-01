@@ -198,7 +198,7 @@ pds_all_sex$sex<- factor(pds_all_sex$sex, levels = c("Male", "Female"))
 
 #prepare population rate data for gender
 
-pop_data_sex <- pop_data %>% filter(age_grp == "All", age_grp_2 == "All", sex != "All") %>% select(-age_grp, -age_grp_2) %>% mutate(sex = substring(sex, 4))
+pop_data_sex <- pop_data %>% filter(age_grp == "All", age_grp_2 == "65+", sex != "All") %>% select(-age_grp, -age_grp_2) %>% mutate(sex = substring(sex, 4))
 
 pds_all_sex_cal_year <- pds_all_sex %>% 
   mutate(year = as.numeric(substr(fy, 1, 4)))
@@ -238,7 +238,7 @@ complete(nesting(geog, fy), simd, fill = list(total_referrals = 0))
 #prepare population rate data for simd
 simd_pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/simd_pop_data.rds")
 
-pop_data_simd <- simd_pop_data %>% filter(sex == "All", age_grp == "All", age_grp_2 == "All") %>% select(-sex, -age_grp, -age_grp_2)
+pop_data_simd <- simd_pop_data %>% filter(sex == "All", age_grp == "All", age_grp_2 == "65+") %>% select(-sex, -age_grp, -age_grp_2)
 
 pds_all_simd_cal_year <- pds_all_simd %>% 
   mutate(year = as.numeric(substr(fy, 1, 4)))
@@ -593,6 +593,10 @@ Sidebar {.sidebar}
 
 ***
 
+For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
+
+***
+
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
 Row
@@ -903,7 +907,7 @@ Row
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
 
-Row {.tabset data-height=1000}
+Row {.tabset data-height=1020}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
@@ -928,7 +932,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (18+) by Gender and Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by Gender and Integration Authority Area</h2>
 ```{r plot-ijb-sex-legend-pop}
 
  bscols(widths = 12,
@@ -1003,7 +1007,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (18+) by Gender and Health Board</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by Gender and Health Board</h2>
 ```{r plot-hb-sex-legend-pop}
 
  bscols(widths = 12,
@@ -1078,7 +1082,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population (18+) by Gender and Financial Year</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population (65+) by Gender and Financial Year</h2>
 ```{r plot-trend-sex-legend-pop}
 
 bscols(widths = 12,
@@ -1152,6 +1156,10 @@ Sidebar {.sidebar}
   <li>[Rates per 10,000 population](#gender)</li>
   <li>[**Outcomes**](#gender-outcomes)</li>
 </ul>
+
+***
+
+For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
 
 ***
 
@@ -1505,7 +1513,7 @@ bscols(widths = c(1,5,NA),
 bscols(widths = c(1,10,NA), NULL, data_filter_ijb_simd_pop_geog, NULL)
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (18+) by SIMD Quintile and Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by SIMD Quintile and Integration Authority Area</h2>
 ```{r plot-ijb-simd-legend-pop2}
 
 bscols(widths = 12,
@@ -1632,7 +1640,7 @@ bscols(widths = c(1,5,NA),
 # bscols(widths = c(1,10,NA), NULL, data_filter_hb_simd_pop_geog, NULL)
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (18+) by SIMD Quintile and Health Board</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by SIMD Quintile and Health Board</h2>
 ```{r plot-hb-simd-legend-pop}
 
 bscols(widths = 12,
@@ -1735,7 +1743,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population (18+) by SIMD Quintile and Financial Year</h2> 
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population (65+) by SIMD Quintile and Financial Year</h2> 
 ```{r plot-trend-simd-legend-pop}
 
 bscols(widths = 12,
@@ -1813,6 +1821,10 @@ Sidebar {.sidebar}
 
 ***
 
+For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
+
+***
+
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
 Row
@@ -1823,7 +1835,7 @@ Row
 **-**
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
-Row {.tabset data-height=1100}
+Row {.tabset data-height=1110}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
@@ -1974,7 +1986,7 @@ DT::datatable(ijb_simd_table_ldp, rownames = FALSE, selection = "none", #extensi
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
-                                               list(className = 'dt-right', targets = 5:8)
+                                               list(className = 'dt-right', targets = 5:9)
                                                ))) %>%
            DT::formatStyle(c(2,5), fontWeight = "bold"#, padding = "4px"
                           )
@@ -2122,7 +2134,7 @@ hb_simd_table_ldp <- SharedData$new(hb_ldp_simd_table_data, key = ~key, group = 
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="430px", margin="20px"),
+       div(style = css(width="97%", height="460px", margin="20px"),
 DT::datatable(hb_simd_table_ldp, rownames = FALSE, selection = "none", #extensions = "FixedColumns",
               options = list(pageLength = 30,
                              scrollX = TRUE,
@@ -2131,7 +2143,7 @@ DT::datatable(hb_simd_table_ldp, rownames = FALSE, selection = "none", #extensio
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
-                                               list(className = 'dt-right', targets = 5:8)
+                                               list(className = 'dt-right', targets = 5:9)
                                                ))) %>%
            DT::formatStyle(c(2,5), fontWeight = "bold"#, padding = "4px"
                           )

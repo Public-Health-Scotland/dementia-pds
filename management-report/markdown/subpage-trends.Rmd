@@ -137,7 +137,9 @@ if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years
 ```{r data-setup, include=FALSE}
 
 #prepare population rate data
-pop_data_trends <- pop_data %>%  filter(age_grp == "All", sex == "All", age_grp_2 == "All") %>% select(geog, year, pop_est)
+pop_data_trends <- pop_data %>%  filter(age_grp == "All", sex == "All" , age_grp_2 == "65+"
+                                        ) %>% 
+  select(geog, year, pop_est)
 
 pds_all_cal_year <- pds_all_totals %>% 
   mutate(year = as.numeric(substr(fy, 1, 4)))
@@ -387,7 +389,7 @@ data_filter_year_ijb,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (18+) by Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+) by Integration Authority Area</h2>
 ```{r plot-ijb-pop}
 #pds_scot_pop_data_2 <- SharedData$new(pds_scot_rates,
                                   #  key = ~fy, group = "groupijb")
@@ -437,7 +439,7 @@ data_filter_year_hb,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (18+) by Health Board</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+) by Health Board</h2>
 ```{r plot-hb-pop}
 #pds_scot_pop_data <- SharedData$new(pds_scot_rates,
                                   #  key = ~fy, group = "grouphb")
@@ -482,7 +484,7 @@ data_filter_hb_ijb_pop,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (18+)</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+)</h2>
 ```{r trend-plot-pop}
 
  trends_pop_plot <- plot_trend(pds_trends_pop_data, pop_rate_10000, x ="Financial Year of Diagnosis", y = "Rate Per 10,000 Popuation", colours = phs_colours_46, measure_text = "Rate per 10,000 population: ")
@@ -533,6 +535,10 @@ Sidebar {.sidebar}
   <li>[All Referrals - Rates per 10,000 population](#pop-rates)</li>
   <li>[**All Referrals - Outcomes by Financial Year**](#trend-outcomes)</li>
 </ul>
+
+***
+
+For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
 
 ***
 
