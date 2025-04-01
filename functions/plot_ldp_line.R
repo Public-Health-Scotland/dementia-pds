@@ -29,7 +29,7 @@ plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL, co
          x = "",
          y = "",
          colour = NULL,
-         group = NULL,
+         group = NULL
     ) +
     
     scale_y_continuous(limits = c(0, NA),  labels=function(x) paste0(x,"%")

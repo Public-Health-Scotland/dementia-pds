@@ -1,6 +1,6 @@
 everyother <- function(x) x[seq_along(x) %% 2 != 0]
 
-plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL, colours = phs_colours_32){
+plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL, colours = phs_colours_32, facet_space = 6){
   
   plot <-  ggplot(data) +
     
@@ -47,7 +47,8 @@ plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL,
     theme(strip.background = element_rect(fill = "#DFDDE3"),
           strip.text.x = element_text(size = 9),
           legend.position = "none",
-          axis.title.y = element_text(margin = margin(r = 10))
+          axis.title.y = element_text(margin = margin(r = 10)),
+          panel.spacing = unit(facet_space, "pt")
     ) 
   
   ggplotly(plot, tooltip = "text") %>%
