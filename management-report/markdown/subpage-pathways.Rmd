@@ -595,6 +595,10 @@ Sidebar {.sidebar}
 
 ***
 
+For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
+
+***
+
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
 Row
@@ -608,29 +612,27 @@ Row
 
 <!-- **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.* -->
 
-Row {.tabset data-height=780}
+Row {.tabset data-height=790}
 ----------------------------------------------------------------------
 
-### **Standard Not Met**
+### **LDP Standard Not Met**
 
 ```{r dropdown-not-met}
 not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_full) %>% 
   summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 8)) %>% 
   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
     mutate(total = rowSums(across(where(is.numeric))), .after = fy) %>% 
-   add_percent(`PDS terminated before first contact`, "% PDS terminated without contact") %>% 
- add_percent(`PDS not started and more than 12 months since diagnosis`, "% PDS not started and more than 12 months since diagnosis") %>% 
-  add_percent(`PDS started more than 12 months after diagnosis`, "% PDS started more than 12 months after diagnosis") %>% 
-  add_percent(`PDS terminated less than 11 months after first contact`, "% PDS terminated less than 11 months after first contact") %>% 
-  select(-starts_with("PDS"))
+   add_percent(`PDS started more than 12 months after diagnosis`, "started_more_than_12") %>% 
+  add_percent(`PDS not started and more than 12 months since diagnosis`, "no_contact_more_than_12") %>% 
+   add_percent(`PDS terminated less than 11 months after first contact`, "ended_after_contact") %>% 
+   add_percent(`PDS terminated before first contact`, "ended_without_contact") %>% 
+   select(-starts_with("PDS"))
 
 not_met_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), not_met_data) %>% 
-    mutate(`% of Total referrals Standard Not Met` = paste0(round(100*total/total_referrals,1), "%"),
+    mutate(perc_of_total = paste0(round(100*total/total_referrals,1), "%"),
                                               .after = total_referrals) %>% 
-  rename(`Integration Authority Area/Health Board` = geog, 
-         `Total referrals` = total_referrals,
-         `Standard Not Met` = total) %>% mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
 not_met_table_data <- SharedData$new(not_met_data_totals)
 
@@ -646,27 +648,52 @@ not_met_table_data <- SharedData$new(not_met_data_totals)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals who did not receive a minimum of one year’s PDS (Standard Not Met)</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -10px">Individuals who did not receive a minimum of one year’s PDS (Standard Not Met)</h2>
 ```{r not-met-table}
 
+
+headers_notmet <- htmltools::withTags(table(
+  class = 'display',
+  thead(
+    tr( 
+      th(rowspan = 2, "Integration Authority Area/Health Board"),
+      th(rowspan = 2, " "),
+      th(rowspan = 2, "Total referrals"),
+      th(rowspan = 2, "% of Total referrals Standard Not Met"),
+      th(rowspan = 2, "Standard Not Met"),
+      th(colspan = 4, "% of Standard Not Met", style = css(textAlign="center"))
+
+    ),
+    tr(
+      th(colspan = 1, "First contact occurred more than 12 months after diagnosis"),
+      th(colspan = 1, "No first contact and more than 12 months since diagnosis"),
+      th(colspan = 1, "PDS terminated less than 11 months after first contact"),
+      th(colspan = 1, "PDS terminated without contact")
+    )
+  )
+))
+
 bscols(widths = 12,
-       div(style = css(width="97%", height="585px", margin="20px"),
-    DT::datatable(not_met_table_data, rownames = FALSE,
-                                       # caption = htmltools::tags$caption(
-                      # style = 'caption-side: bottom; text-align: left;',
-                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
-                        #      year."),
-                       options = list(pageLength = 46,
-                             scrollX = FALSE,
-                             scrollY = TRUE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 1),
-                                                list(className = 'dt-right', targets = 2:8)
-                                                #list(width = '10px', targets = 1:10)
-                                                ))) %>%
-           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
-                          )
+       div(style = css(width="97%", height="575px", margin="20px"),
+    DT::datatable(not_met_table_data, container = headers_notmet,
+                         rownames = FALSE,
+                         # caption = htmltools::tags$caption(
+                         # style = 'caption-side: bottom; text-align: left;',
+                         # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
+                         #      year."),
+                         options = list(pageLength = 46,
+                                        scrollX = FALSE,
+                                        scrollY = TRUE,
+                                        dom = "t",
+                                        ordering = FALSE,
+                                        columnDefs = list(list(visible = FALSE, targets = 1),
+                                                          list(className = 'dt-right', targets = 2:8)
+                                                          #list(width = '10px', targets = 1:10)
+                                        ))) %>%
+             DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+             ) %>% 
+             DT::formatStyle(5, `border-right` = "solid 1px")
+
         )
      )
 
@@ -679,9 +706,9 @@ bscols(widths = 12,
 ongoing_data <- pds_all %>% filter(ldp == "ongoing") %>% group_by(geog, fy, ldp_full) %>% 
   summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 11)) %>%   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
    mutate(total = rowSums(across(where(is.numeric))), .after = fy) %>% 
-   add_percent(`PDS not started and less than 12 months since diagnosis`, "% PDS not yet started and less than 12 months since diagnosis") %>% 
- add_percent(`Still receiving PDS and less than 12 months since first contact`, "% Still receiving PDS and less than 12 months since first contact") %>% 
-  select(-starts_with("PDS"), -starts_with("Still"))
+   add_percent(`PDS not started and less than 12 months since diagnosis`, "not_started") %>% 
+ add_percent(`Still receiving PDS and less than 12 months since first contact`, "started") %>% 
+  select(-`PDS not started and less than 12 months since diagnosis`, -`Still receiving PDS and less than 12 months since first contact`)
 
 ongoing_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), ongoing_data) %>% 
@@ -706,12 +733,30 @@ ongoing_table_data <- SharedData$new(ongoing_data_totals)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px">Individuals where LDP Standard cannot yet be determined (PDS Ongoing)</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -10px">Individuals where LDP Standard cannot yet be determined (PDS Ongoing)</h2>
 ```{r ongoing-table}
 
+headers_ongoing <- htmltools::withTags(table(
+  class = 'display',
+  thead(
+    tr( 
+      th(rowspan = 2, "Integration Authority Area/Health Board"),
+      th(rowspan = 2, " "),
+      th(rowspan = 2, "Total referrals"),
+      th(rowspan = 2, "% of Total referrals PDS Ongoing"),
+      th(rowspan = 2, "PDS Ongoing"),
+      th(colspan = 2, "% of PDS Ongoing", style = css(textAlign="center"))
+    ),
+    tr(
+      th(colspan = 1, "Less than 12 months since diagnosis and PDS not yet started"),
+      th(colspan = 1, " Still receiving PDS and less than 12 months since first contact")
+    )
+  )
+))
+
 bscols(widths = 12,
-       div(style = css(width="97%", height="585px", margin="20px"),
-    DT::datatable(ongoing_table_data, rownames = FALSE,
+       div(style = css(width="97%", height="580px", margin="20px"),
+    DT::datatable(ongoing_table_data, container = headers_ongoing, rownames = FALSE,
                                        # caption = htmltools::tags$caption(
                       # style = 'caption-side: bottom; text-align: left;',
                       # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
@@ -726,7 +771,8 @@ bscols(widths = 12,
                                                 #list(width = '10px', targets = 1:10)
                                                 ))) %>%
            DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
-                          )
+                          ) %>% 
+      DT::formatStyle(5, `border-right` = "solid 1px")
         )
      )
 

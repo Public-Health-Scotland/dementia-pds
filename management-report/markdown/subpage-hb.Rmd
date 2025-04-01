@@ -206,6 +206,10 @@ md_link(
 
 ***
 
+For more information regarding referrals not meeting the LDP Standard and/or where PDS is ongoing please see the [Pathways - PDS Outcomes](#outcomes) page.
+
+***
+
 For more information regarding how the LDP Standard is calculated and how individuals with multiple records are presented, please see the [methodology](#methodology) page.
 
 ***
