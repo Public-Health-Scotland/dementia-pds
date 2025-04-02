@@ -134,16 +134,16 @@ output$table_pds <- DT::renderDataTable({
  table_ijb_data <- annual_table_data %>%
     filter(!grepl("NHS", ijb)) %>% 
     filter(fy == input$select_year_p1) %>%
-    group_by(ijb)%>%
-    select(ijb,ldp,referrals,rate)%>%
-    pivot_wider(names_from=ldp,values_from=referrals) %>% 
-    select(ijb, total, complete, exempt, ongoing, fail, rate) %>% 
-     mutate(ijb = if_else(ijb == "Scotland","AAA Scotland", ijb)) %>% 
-     arrange(ijb) %>% 
-     mutate(ijb = if_else(ijb == "AAA Scotland","Scotland", ijb)) %>% 
-    mutate(rate = paste0(rate, "%")) %>% 
-    set_colnames(c("Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
-  make_table(table_ijb_data, right_align = 1:6, selected = 1, rows_to_display = 32, table_elements = "t") %>% formatCurrency(c(2:6), currency = "", interval = 3, mark = ",", digits = 0)
+   mutate(rate = if_else(is.na(rate), "-", paste0(rate, "%"))) %>% 
+   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+   group_by(ijb) %>%
+   mutate(referrals = if_else(fy %in% c("2019/20", "2020/21") & ijb == "Aberdeen City" & ldp != "total", "-", as.character(referrals))) %>% 
+   select(ijb,ldp,referrals,rate) %>%
+   pivot_wider(names_from=ldp,values_from=referrals) %>% 
+   select(ijb, total, complete, exempt, ongoing, fail, rate) %>% 
+   arrange(ijb) %>% 
+   set_colnames(c("Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
+ make_table(table_ijb_data, right_align = 1:6, selected = 1, rows_to_display = 32, table_elements = "t")
   
 }
 })

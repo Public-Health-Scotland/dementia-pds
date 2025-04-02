@@ -155,7 +155,7 @@ output$table_hb_ijb_trend <- DT::renderDataTable({
     filter(fy %in% included_years) %>% 
     filter(!grepl("NHS", ijb)) %>% 
     select(ijb, fy, rate) %>%
-    mutate(rate = paste0(rate, "%")) %>% 
+    mutate(rate = if_else(is.na(rate), "-", paste0(rate, "%"))) %>%
     distinct(ijb, fy, .keep_all = T) %>% 
     pivot_wider(names_from = fy, values_from = rate) %>% 
     rename(" " = "ijb") 

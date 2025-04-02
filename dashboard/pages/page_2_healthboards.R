@@ -85,23 +85,26 @@ output$table_title_p2 <- renderUI({HTML(paste0("Number of Individuals relating t
 
 hb_ijb_data_1 <- reactive({annual_table_data %>%
   filter(ldp != "Aberdeen", health_board == input$select_hb_p2 & fy == input$select_year_p2) %>%
-  select(ijb,ldp,referrals) %>%
-  pivot_wider(names_from = ijb, values_from=referrals)%>%
-  mutate(ldp = str_replace(ldp,"complete","Standard Met")) %>%
-  mutate(ldp = str_replace(ldp,"exempt","Exempt from Standard")) %>%
-  mutate(ldp = str_replace(ldp,"ongoing","PDS Ongoing")) %>%
-  mutate(ldp = str_replace(ldp,"fail","Standard Not Met")) %>%
-  mutate(ldp = str_replace(ldp,"total","Number of People Referred to PDS")) %>% 
-  slice(5,1,2,4,3) %>% 
-  rename(" " = "ldp")})
+    select(fy,ijb,ldp,referrals) %>%
+    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+    mutate(referrals = if_else(fy %in% c("2019/20", "2020/21") & ijb == "Aberdeen City" & ldp != "total", "-", referrals)) %>% 
+    select(-fy) %>% 
+    pivot_wider(names_from = ijb, values_from=referrals) %>%
+    mutate(ldp = str_replace(ldp,"complete","Standard Met")) %>%
+    mutate(ldp = str_replace(ldp,"exempt","Exempt from Standard")) %>%
+    mutate(ldp = str_replace(ldp,"ongoing","PDS Ongoing")) %>%
+    mutate(ldp = str_replace(ldp,"fail","Standard Not Met")) %>%
+    mutate(ldp = str_replace(ldp,"total","Number of People Referred to PDS")) %>% 
+    slice(5,1,2,4,3) %>% 
+    rename(" " = "ldp")})
 
 hb_ijb_data_2 <- reactive ({annual_table_data %>%
   filter(ldp != "Aberdeen", health_board == input$select_hb_p2 & fy == input$select_year_p2 & ldp == "total") %>%
-  select(ijb,ldp,rate) %>%
-  mutate(rate = paste0(rate, "%")) %>%  
-  mutate(ldp = str_replace(ldp,"total","Percentage of LDP standard acheived")) %>%
-  pivot_wider(names_from = ijb ,values_from = rate) %>% 
-  rename(" " = "ldp")})
+    select(ijb,ldp,rate) %>%
+    mutate(rate = if_else(is.na(rate), "-", paste0(rate, "%"))) %>%  
+    mutate(ldp = str_replace(ldp,"total","Percentage of LDP standard acheived")) %>%
+    pivot_wider(names_from = ijb ,values_from = rate) %>% 
+    rename(" " = "ldp")})
 
 
 output$table_hb_ijb <- DT::renderDataTable({
