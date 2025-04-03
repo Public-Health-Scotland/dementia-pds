@@ -260,7 +260,13 @@ data_wait_3 %>%
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
+#DATA UPTAKE----
 
+data_uptake <- summarise_uptake(ldp)
+
+data_uptake %>% 
+  write_file(path = get_mi_data_path("uptake_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 #SUBTYPE OF DEMENTIA----
 data_subtype <- summarise_by_variable(subtype_of_dementia) %>% 
@@ -294,15 +300,7 @@ data_model %>%
   write_file(path = get_mi_data_path("model_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-#DATA UPTAKE----
-
-data_uptake <- summarise_uptake(ldp)
-
-data_uptake %>% 
-  write_file(path = get_mi_data_path("uptake_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-
-#DATA UPTAKE----
+#CARER'S SUPPORT----
 
 data_carer <- summarise_carer(ldp, field = carers_support)
 

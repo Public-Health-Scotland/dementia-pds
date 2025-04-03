@@ -166,8 +166,9 @@ pds %<>%
   mutate(age_grp_2 = 
            case_when(
              age < 0 | is.na(age) ~ "Unknown",
-             age %in% 1:64 ~ "64 and Under",
-             age >= 65      ~ "65+"
+             age %in% 1:79 ~ "79 and Under",
+             age %in% 80:84 ~ "80 to 84",
+             age >= 85     ~ "85+"
            )) %>%
   
   mutate(postcode = format_postcode(postcode)) %>%
@@ -251,3 +252,4 @@ write_file(path = get_mi_data_path("final_data", ext = "rds", test_output = test
 
 
 ### END OF SCRIPT ###
+

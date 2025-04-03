@@ -137,9 +137,8 @@ if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years
 ```{r data-setup, include=FALSE}
 
 #prepare population rate data
-pop_data_trends <- pop_data %>%  filter(age_grp == "All", sex == "All" , age_grp_2 == "65+"
-                                        ) %>% 
-  select(geog, year, pop_est)
+pop_data_trends <- pop_data %>%  filter(age_grp != "All", age_grp != "59 and Under", age_grp != "60 to 64", age_grp_2 == "All", sex == "All") %>% select(geog, year, age_grp, pop_est) %>% 
+  group_by(geog, year) %>% summarise(pop_est = sum(pop_est)) %>% ungroup()
 
 pds_all_cal_year <- pds_all_totals %>% 
   mutate(year = as.numeric(substr(fy, 1, 4)))

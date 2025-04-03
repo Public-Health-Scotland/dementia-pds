@@ -36,12 +36,13 @@ la_pop %<>%
              age %in% 85:89 ~ "85 to 89",
              age >= 90      ~ "90+"
            )) %>% 
-  mutate(age_grp_2 = 
+   mutate(age_grp_2 = 
            case_when(
-             age %in% 18:64 ~ "64 and Under",
-             age >= 65     ~ "65+"
+             age %in% 18:79 ~ "79 and Under",
+             age %in% 80:84 ~ "80 to 84",
+             age >= 85     ~ "85+"
            )) %>%
-  mutate(sex = 
+   mutate(sex = 
            case_when(
              sex == 1 ~ "01 Male",
              sex == 2 ~ "02 Female"
@@ -132,8 +133,9 @@ hb_pop %<>%
            )) %>% 
   mutate(age_grp_2 = 
            case_when(
-             age %in% 18:64 ~ "64 and Under",
-             age >= 65     ~ "65+"
+             age %in% 18:79 ~ "79 and Under",
+             age %in% 80:84 ~ "80 to 84",
+             age >= 85     ~ "85+"
            )) %>%
   mutate(sex = 
            case_when(
@@ -241,8 +243,9 @@ simd_pop_data %<>% mutate(age_grp =
                             )) %>% 
   mutate(age_grp_2 = 
            case_when(
-             age %in% 18:64 ~ "64 and Under",
-             age >= 65     ~ "65+"
+             age %in% 18:74 ~ "74 and Under",
+             age %in% 75:84 ~ "75 to 84",
+             age >= 85     ~ "85+"
            )) %>%
   mutate(sex = 
            case_when(

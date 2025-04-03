@@ -736,8 +736,7 @@ function filter_default() {
   [0].selectize.removeOption("");
 
  
-  
-  
+
 // demographics
 
   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
@@ -747,7 +746,7 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_age_pop_group").getElementsByClassName("selectized") 
-  [0].selectize.setValue("65+", false);
+  [0].selectize.setValue("85+", false);
 
   document.getElementById("filter_ijb_age_pop_group").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -759,7 +758,7 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_age_pop_group").getElementsByClassName("selectized") 
-  [0].selectize.setValue("65+", false);
+  [0].selectize.setValue("85+", false);
 
   document.getElementById("filter_hb_age_pop_group").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -871,7 +870,6 @@ function filter_default() {
 
   document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-  
   
   
 // all referrals - trends and rates  
