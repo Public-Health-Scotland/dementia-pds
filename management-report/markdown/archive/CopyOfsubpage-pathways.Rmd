@@ -1,0 +1,1081 @@
+---
+title: "PATHWAYS DRAFT"
+output: 
+  flexdashboard::flex_dashboard:
+    logo: phs-logo.png
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{r load-setup, include=FALSE}
+source(here::here("code", "00_setup-environment.R"))
+library(crosstalk) # for drop down menus
+library(phsstyles)
+library(htmltools)
+
+
+# Write numbers with thousands separator
+knit_hooks$set(inline = function(x){
+  if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
+})
+```
+
+---
+date: "`r paste('Data as at', format(end_date, '%d %B %Y'))`"
+---
+
+```{r setup, include=FALSE}
+
+# Remove tidylog
+detach("package:tidylog", unload = TRUE)
+
+# Load functions
+walk(dir(here::here("functions"), full.names = TRUE), source)
+
+# Load PDS data
+pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
+  
+  # Remove codes from board and IJB
+  mutate(health_board = str_sub(health_board, 3, -1),
+         ijb          = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
+
+# Load expected diagnoses reference file
+exp <- read_csv(get_exp_diagnoses_path())
+
+
+# Load error summary
+err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
+
+  mutate(ijb = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
+
+# calculate final data referrals for Scotland and health boards
+pds_ijb <- pds %>% arrange(ijb)
+
+pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>%   summarise(referrals = sum(referrals), .groups = "drop")
+
+pds_hb <- pds %>% group_by(health_board, fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
+
+# combine data for ijb, hb and Scotland
+pds_all <- bind_rows(pds_scot, pds_hb, pds_ijb)
+
+pds_all %<>% rename(geog = ijb) 
+
+pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
+
+
+```
+<!-- delete all of above when finished testing -->
+
+
+PDS Pathways
+=================================================
+
+```{r data setup, include=FALSE}
+wait_data <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output))
+
+wait_data_2 <- read_rds(get_mi_data_path("wait_data_2", ext = "rds", test_output = test_output))
+
+wait_data_3 <- read_rds(get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
+
+wait_data$health_board <- as.factor(wait_data$health_board)
+wait_data$fy <- as.factor(wait_data$fy)
+wait_data$simd <- as.factor(wait_data$simd)
+wait_data$sex <- as.factor(wait_data$sex)
+wait_data$ijb <- as.factor(wait_data$ijb)
+
+
+wait_data_2$health_board <- as.factor(wait_data_2$health_board)
+wait_data_2$fy <- as.factor(wait_data_2$fy)
+wait_data_2 %<>% arrange(termination_or_transition_reason)
+wait_data_2$sex <- as.factor(wait_data_2$sex)
+wait_data_2$ijb <- factor(wait_data_2$ijb, levels = unique(pds_all$geog))
+wait_data_2 %<>% mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "14 All reasons", substring(termination_or_transition_reason, 3), termination_or_transition_reason))
+wait_data_2$termination_or_transition_reason <- as.factor(wait_data_2$termination_or_transition_reason)
+
+wait_data_3$health_board <- as.factor(wait_data_3$health_board)
+wait_data_3$fy <- as.factor(wait_data_3$fy)
+wait_data_3 %<>% arrange(termination_or_transition_reason)
+wait_data_3$sex <- as.factor(wait_data_3$sex)
+wait_data_3$ijb <- factor(wait_data_3$ijb, levels = unique(pds_all$geog))
+wait_data_3 %<>% mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "14 All reasons", substring(termination_or_transition_reason, 4), termination_or_transition_reason))
+wait_data_3$termination_or_transition_reason <- as.factor(wait_data_3$termination_or_transition_reason)
+ 
+```
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Pathways - Waiting Times
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[**Pathways - Waiting Times**](#pds-pathways)</li>
+  <li>[Pathways - PDS Outcomes](#outcomes)</li>
+  <li>[Pathways - Termination of PDS](#termination-reasons)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {.tabset data-height=760}
+----------------------------------------------------------------------
+
+### **Integration Authority Areas**
+
+```{r dropdown-wait-ijb}
+wait_data_ijb <- wait_data %>% 
+      filter(sex == "All") %>% 
+     filter(ijb != "All", simd == "All") %>% 
+      select(ijb, fy, total_referrals, median_diagnosis_to_referral,
+             perc_allocated, median_referral_to_allocation,
+             perc_contacted, median_allocation_to_contact,
+             median_diagnosis_to_contact) %>% 
+  mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
+  mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
+      mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
+      arrange(ijb) %>% 
+      mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
+      set_colnames(c("Integration Authority Area", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
+                     "Percentage of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
+                     "Percentage of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
+                     "Average (median) days from diagnosis to first contact"
+      )) 
+
+wait_table_data_ijb <- SharedData$new(wait_data_ijb)
+
+data_filter_ijb_year <- filter_select(id = "wait_filter_ijb_year",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = wait_table_data_ijb,
+                                    multiple = FALSE
+                                   )
+
+bscols(widths = c(1,4,NA), NULL,
+data_filter_ijb_year, NULL)
+
+```
+
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from diagnosis to contact by PDS practitioner </h2>
+```{r wait-table-ijb}
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
+    DT::datatable(wait_table_data_ijb, rownames = FALSE,  
+                                        caption = htmltools::tags$caption(
+                       style = 'caption-side: bottom; text-align: left;',
+                       "A dash (-) indicates no dates of referral were submitted for diagnoses in this 
+                              year."),
+                       options = list(pageLength = 32,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                                list(className = 'dt-right', targets = 2:8)
+                                                #list(width = '10px', targets = 1:10)
+                                                ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+  
+
+```
+
+### **Health Boards**
+
+```{r wait-dropdown-hb}
+
+wait_data_hb <- wait_data %>% 
+      filter(sex == "All") %>% 
+      filter(ijb == "All" | ijb == "Scotland", simd == "All") %>% 
+     select(health_board, fy, total_referrals, median_diagnosis_to_referral,
+             perc_allocated, median_referral_to_allocation,
+             perc_contacted, median_allocation_to_contact,
+             median_diagnosis_to_contact) %>% 
+  mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
+  mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
+      set_colnames(c("Health Board", "fy", "Number of People Referred to PDS",  "Average (median) days from diagnosis to PDS referral",
+                     "Percentage of Referrals allocated to PDS practitioner", "Average (median) days from referral to allocation of PDS practitioner", 
+                     "Percentage of Referrals contacted by PDS practitioner",  "Average (median) days from allocation to first contact with PDS practitioner",
+                     "Average (median) days from diagnosis to first contact"
+      )) 
+
+wait_table_data_hb <- SharedData$new(wait_data_hb)
+
+data_filter_hb_year <- filter_select(id = "wait_filter_hb_year",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = wait_table_data_hb,
+                                    multiple = FALSE
+                                   )
+
+bscols(widths = c(1,4,NA), NULL,
+data_filter_hb_year, NULL)
+
+```
+
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from diagnosis to contact by PDS practitioner </h2>
+```{r wait-table-hb}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
+  DT::datatable(wait_table_data_hb, rownames = FALSE,
+                 caption = htmltools::tags$caption(
+                       style = 'caption-side: bottom; text-align: left;',
+                       "A dash (-) indicates no dates of referral were submitted for diagnoses in this 
+                              year."),
+              options = list(pageLength = 15,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                                list(className = 'dt-right', targets = 2:8)
+                                                #list(width = '10px', targets = 1:10)
+                                                ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+```
+
+Outcomes {.hidden}
+=================================================
+
+```{r add-percentage-function, include=FALSE}
+
+add_percent <- function(df, value, name) {
+  
+ data <- df %>%  mutate(perc =  if_else(`Total Number of individuals` == 0, "-",
+    paste0(round(100*{{value}}/`Total Number of individuals`,1), "%")))
+  
+colnames(data)[colnames(data) == 'perc'] <- name
+
+return(data)
+  
+}
+
+```
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Pathways - PDS Outcomes
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Pathways - Waiting Times](#pds-pathways)</li>
+  <li>[**Pathways - PDS Outcomes**](#outcomes)</li>
+  <li>[Pathways - Termination of PDS](#termination-reasons)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {.tabset data-height=760}
+----------------------------------------------------------------------
+
+### **Standard Met**
+
+```{r dropdown-met}
+met_data <- pds_all %>% filter(ldp == "complete") %>% group_by(geog, fy, ldp_full) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 12)) %>%   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
+  rename(`Health Board/Integration Authority Area` = geog) %>% 
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy) %>% 
+mutate(`% PDS ended` = if_else(`Total Number of individuals` == 0, "-",
+  paste0(round(100*`PDS ended`/`Total Number of individuals`,1), "%")), .after = `PDS ended`) %>% 
+mutate(`% Still receiving PDS` = if_else(`Total Number of individuals` == 0, "-",
+  paste0(round(100*`Still receiving PDS`/`Total Number of individuals`,1), "%")), .after = `Still receiving PDS`) %>% 
+  select(-`PDS ended`, -`Still receiving PDS`)
+  
+
+met_table_data <- SharedData$new(met_data)
+
+ data_filter_met_year <- filter_select(id = "met_filter_year",
+                                     label = "Select Financial Year of Diagnosis:",
+                                     group = ~fy,
+                                     sharedData = met_table_data,
+                                    multiple = FALSE
+                                    )
+
+ bscols(widths = c(1,4,NA), NULL,
+ data_filter_met_year, NULL)
+
+```
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px"> Individuals where PDS met LDP Standard</h2>
+```{r met-table}
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
+    DT::datatable(met_table_data, rownames = FALSE,
+                                       # caption = htmltools::tags$caption(
+                      # style = 'caption-side: bottom; text-align: left;',
+                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
+                        #      year."),
+                       options = list(pageLength = 46,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                                list(className = 'dt-right', targets = 2:4)
+                                                #list(width = '10px', targets = 1:10)
+                                                ))) %>%
+           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+```
+
+### **Standard Not Met**
+
+```{r dropdown-not-met}
+not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_full) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 8)) %>% 
+  pivot_wider(names_from = ldp_full, values_from = referrals) %>%
+  rename(`Health Board/Integration Authority Area` = geog) %>% 
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy) %>% 
+   add_percent(`PDS terminated before first contact`, "% PDS terminated before first contact") %>% 
+ add_percent(`PDS not started and more than 12 months since diagnosis`, "% PDS not started and more than 12 months since diagnosis") %>% 
+  add_percent(`PDS started more than 12 months after diagnosis`, "% PDS started more than 12 months after diagnosis") %>% 
+  add_percent(`PDS terminated less than 11 months after first contact`, "% PDS terminated less than 11 months after first contact") %>% 
+  select(-starts_with("PDS"))
+
+not_met_table_data <- SharedData$new(not_met_data)
+
+ data_filter_not_met_year <- filter_select(id = "not_met_filter_year",
+                                     label = "Select Financial Year of Diagnosis:",
+                                     group = ~fy,
+                                     sharedData = not_met_table_data,
+                                    multiple = FALSE
+                                    )
+
+ bscols(widths = c(1,4,NA), NULL,
+ data_filter_not_met_year, NULL)
+
+```
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px"> Individuals where PDS did not meet LDP Standard</h2>
+```{r not-met-table}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
+    DT::datatable(not_met_table_data, rownames = FALSE,
+                                       # caption = htmltools::tags$caption(
+                      # style = 'caption-side: bottom; text-align: left;',
+                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
+                        #      year."),
+                       options = list(pageLength = 46,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                                list(className = 'dt-right', targets = 2:6)
+                                                #list(width = '10px', targets = 1:10)
+                                                ))) %>%
+           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+```
+
+### **PDS Ongoing**
+
+```{r dropdown-ongoing}
+ongoing_data <- pds_all %>% filter(ldp == "ongoing") %>% group_by(geog, fy, ldp_full) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 11)) %>%   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
+  rename(`Health Board/Integration Authority Area` = geog) %>% 
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy) %>% 
+   add_percent(`PDS not started and less than 12 months since diagnosis`, "% PDS not started and less than 12 months since diagnosis") %>% 
+ add_percent(`Still receiving PDS and less than 12 months since first contact`, "% Still receiving PDS and less than 12 months since first contact") %>% 
+  select(-starts_with("PDS"), -starts_with("Still"))
+
+ongoing_table_data <- SharedData$new(ongoing_data)
+
+ data_filter_ongoing_year <- filter_select(id = "ongoing_filter_year",
+                                     label = "Select Financial Year of Diagnosis:",
+                                     group = ~fy,
+                                     sharedData = ongoing_table_data,
+                                    multiple = FALSE
+                                    )
+
+ bscols(widths = c(1,4,NA), NULL,
+ data_filter_ongoing_year, NULL)
+
+```
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px"> Individuals where LDP Standard cannot yet be determined (PDS Ongoing)</h2>
+```{r ongoing-table}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
+    DT::datatable(ongoing_table_data, rownames = FALSE,
+                                       # caption = htmltools::tags$caption(
+                      # style = 'caption-side: bottom; text-align: left;',
+                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
+                        #      year."),
+                       options = list(pageLength = 46,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                                list(className = 'dt-right', targets = 2:4)
+                                                #list(width = '10px', targets = 1:10)
+                                                ))) %>%
+           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+```
+
+### **Exempt**
+
+```{r dropdown-exempt}
+exempt_data <- pds_all %>% filter(ldp == "exempt") %>% group_by(geog, fy, ldp_full) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ldp_full = substring(ldp_full, 10)) %>%   pivot_wider(names_from = ldp_full, values_from = referrals) %>%
+  rename(`Health Board/Integration Authority Area` = geog) %>% 
+   mutate(`Total Number of individuals` = rowSums(across(where(is.numeric))), .after = fy) %>% 
+   add_percent(`03 Service user has died`, "% 03 Service user has died") %>% 
+ add_percent(`04 Service user has moved to a different Health Board area`, "% 04 Service user has moved to a different Health Board area") %>% 
+  add_percent(`05 Service user has terminated PDS early/refused`, "% 05 Service user has terminated PDS early/refused") %>% 
+  add_percent(`06 Service user no longer able to engage in PDS`, "% 06 Service user no longer able to engage in PDS") %>% 
+  select(-starts_with("0"))
+
+exempt_table_data <- SharedData$new(exempt_data)
+
+ data_filter_exempt_year <- filter_select(id = "exempt_filter_year",
+                                     label = "Select Financial Year of Diagnosis:",
+                                     group = ~fy,
+                                     sharedData = exempt_table_data,
+                                    multiple = FALSE
+                                    )
+
+ bscols(widths = c(1,4,NA), NULL,
+ data_filter_exempt_year, NULL)
+
+```
+
+<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: -20px">Individuals exempt from LDP Standard</h2>
+```{r exempt-table}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="585px", margin="20px"),
+    DT::datatable(exempt_table_data, rownames = FALSE,
+                                       # caption = htmltools::tags$caption(
+                      # style = 'caption-side: bottom; text-align: left;',
+                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
+                        #      year."),
+                       options = list(pageLength = 46,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                                list(className = 'dt-right', targets = 2:6)
+                                                #list(width = '10px', targets = 1:10)
+                                                ))) %>%
+           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+```
+
+Termination Reasons {.hidden}
+=================================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Pathways - Termination of PDS
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Pathways - Waiting Times](#pds-pathways)</li>
+  <li>[Pathways - PDS Outcomes](#outcomes)</li>
+  <li>[**Pathways - Termination of PDS**](#termination-reasons)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+Row {.tabset data-height=670}
+----------------------------------------------------------------------
+
+### **Integration Authority Areas**
+
+```{r dropdown-term-ijb}
+term_data_ijb_1 <- wait_data_3 %>% 
+    filter(sex == "All", termination_or_transition_reason == "All reasons") %>%
+    filter(ijb == "Scotland" | !grepl("NHS", ijb)) %>% 
+    pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
+   select(fy, ijb,
+           referrals_All,
+           median_referral_to_termination_All,
+           referrals_exempt,
+           referrals_fail)
+    
+wait_data_totals_ijb <- wait_data %>% filter(sex == "All", simd == "All", ijb != "All" | ijb == "Scotland") %>% select(ijb, fy, total_referrals)
+
+term_data_ijb <- left_join(wait_data_totals_ijb, term_data_ijb_1) %>% 
+  mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
+    mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
+     mutate(perc_term_early = paste0(round((referrals_All/total_referrals)*100,1),"%")) %>% 
+      mutate(perc_term_early_exempt = if_else(referrals_exempt == 0, NA,
+        round((referrals_exempt/referrals_All)*100,1))) %>% 
+          mutate(perc_term_early_exempt = if_else(!is.na(perc_term_early_exempt), paste0(perc_term_early_exempt, "%"), "-")) %>% 
+  select(fy, ijb,
+         total_referrals,
+           referrals_All,
+         perc_term_early,
+           referrals_exempt,
+         perc_term_early_exempt) %>% 
+
+    set_colnames(c("fy", "Integration Authority Area", "Number of People Referred to PDS",
+                   "Number of referrals whose PDS ended with no contact",
+                   "Percentage of referrals whose PDS ended with no contact",
+                   "Number of referrals whose PDS ended with no contact Exempt from LDP standard",
+                   "Percentage of referrals whose PDS ended with no contact Exempt from LDP standard"))
+
+term_table_data_ijb <- SharedData$new(term_data_ijb)
+
+data_filter_year_term_ijb <- filter_select(id = "term_filter_year_ijb",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = term_table_data_ijb,
+                                    multiple = FALSE
+                                   )
+
+
+bscols(widths = c(1,4,NA), NULL,
+data_filter_year_term_ijb, NULL)
+
+```
+
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from referral to termination of PDS </h2>
+```{r term-table-ijb}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="500px", margin="20px"),
+     DT::datatable(term_table_data_ijb, rownames = FALSE,
+              options = list(pageLength = 33,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                                list(className = 'dt-right', targets = 2:6)
+                                                #list(width = '30px', targets = 6)
+                                                ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+```
+
+### **Health Boards**
+
+```{r dropdown-term-hb}
+
+ term_data_hb_1 <- wait_data_3 %>% 
+    filter(sex == "All", termination_or_transition_reason == "All reasons") %>%
+    filter(ijb == "Scotland" | grepl("NHS", ijb)) %>% 
+    pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
+  select(-health_board) %>% rename(health_board = ijb) %>% 
+  select(fy, health_board,
+           referrals_All,
+           median_referral_to_termination_All,
+           referrals_exempt,
+           referrals_fail)
+    
+wait_data_totals_hb <- wait_data %>% filter(sex == "All", simd == "All", ijb == "All" | ijb == "Scotland") %>% select(health_board, fy, total_referrals)
+
+term_data_hb <- left_join(wait_data_totals_hb, term_data_hb_1) %>% 
+  mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
+    mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
+     mutate(perc_term_early = paste0(round((referrals_All/total_referrals)*100,1),"%")) %>% 
+      mutate(perc_term_early_exempt = if_else(referrals_exempt == 0, NA,
+        round((referrals_exempt/referrals_All)*100,1))) %>% 
+          mutate(perc_term_early_exempt = if_else(!is.na(perc_term_early_exempt), paste0(perc_term_early_exempt, "%"), "-")) %>% 
+  select(fy, health_board,
+         total_referrals,
+           referrals_All,
+         perc_term_early,
+           referrals_exempt,
+         perc_term_early_exempt) %>% 
+
+    set_colnames(c("fy", "Health Board", "Number of People Referred to PDS",
+                   "Number of referrals whose PDS ended with no contact",
+                   "Percentage of referrals whose PDS ended with no contact",
+                   "Number of referrals whose PDS ended with no contact Exempt from LDP standard",
+                   "Percentage of referrals whose PDS ended with no contact Exempt from LDP standard"))
+
+term_table_data_hb <- SharedData$new(term_data_hb)
+
+data_filter_year_term_hb <- filter_select(id = "term_filter_year_hb",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = term_table_data_hb,
+                                    multiple = FALSE
+                                   )
+
+bscols(widths = c(1,4,NA), NULL,
+data_filter_year_term_hb, NULL)
+
+```
+
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from referral to termination of PDS </h2>
+```{r term-table-hb}
+bscols(widths = 12,
+       div(style = css(width="97%", height="500px", margin="20px"),
+     DT::datatable(term_table_data_hb, rownames = FALSE,
+              options = list(pageLength = 15,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                                list(className = 'dt-right', targets = 2:6)
+                                                #list(width = '30px', targets = 6)
+                                                ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+```
+
+Row {.tabset data-height=770}
+----------------------------------------------------------------------
+
+### **Termination Reasons - PDS Ending Without Contact**
+
+```{r dropdown-term-1}
+ term_data_2 <- wait_data_3 %>%
+    filter(sex == "All") %>%
+    pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
+    mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
+    mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>%
+    select(fy, ijb, termination_or_transition_reason,
+           referrals_All, 
+           median_referral_to_termination_All,
+           referrals_exempt,
+           referrals_fail) %>%
+    set_colnames(c("fy", "geog", "Reason for termination of post-diagnostic support",
+                   "Number of people", 
+                   "Average (median) days from referral to termination of PDS",
+                   "Exempt from Standard",
+                   "Standard Not Met"))
+
+term_table_data_2 <- SharedData$new(term_data_2)
+
+data_filter_year_term_2 <- filter_select(id = "term_filter_year_2",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = term_table_data_2,
+                                    multiple = FALSE
+                                   )
+
+data_filter_geog_term_2 <- filter_select(id = "term_filter_geog_2",
+                                    label = "Select Health Board or Integration Authority Area:",
+                                    group = ~geog,
+                                    sharedData = term_table_data_2,
+                                    multiple = FALSE
+                                   )
+
+bscols(widths = c(1,5,5,NA), NULL,
+data_filter_year_term_2, data_filter_geog_term_2, NULL)
+
+
+
+```
+
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from referral to termination of post-diagnostic support without contact </h2>
+```{r term-table-1}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="590px", margin="20px"),
+     DT::datatable(term_table_data_2, rownames = FALSE,
+              options = list(pageLength = 14,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0:1),
+                                                list(className = 'dt-right', targets = 3:6)
+                                                #list(width = '30px', targets = 6)
+                                                ))) %>%
+           DT::formatStyle(3, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+```
+
+### **Termination Reasons - PDS Ending On or After Contact**
+
+```{r dropdown-term-2}
+ term_data <- wait_data_2 %>% 
+    filter(sex == "All") %>% 
+    pivot_wider(names_from = ldp, values_from = c(referrals, median_contact_to_termination)) %>% 
+    mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>% 
+    mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
+    select(fy, ijb, termination_or_transition_reason,
+           referrals_All,
+           median_contact_to_termination_All,
+           referrals_complete,
+           referrals_exempt,
+           referrals_fail) %>% 
+    set_colnames(c("fy", "geog", "Reason for end of post-diagnostic support",
+                   "Number of people", 
+                   "Average (median) days from first contact with PDS practitioner to end of PDS",
+                   "Standard Met",
+                   "Exempt from Standard",
+                   "Standard Not Met"))
+ 
+term_table_data <- SharedData$new(term_data)
+
+data_filter_year_term <- filter_select(id = "term_filter_year",
+                                    label = "Select Financial Year of Diagnosis:",
+                                    group = ~fy,
+                                    sharedData = term_table_data,
+                                    multiple = FALSE
+                                   )
+
+data_filter_geog_term <- filter_select(id = "term_filter_geog",
+                                    label = "Select Health Board or Integration Authority Area:",
+                                    group = ~geog,
+                                    sharedData = term_table_data,
+                                    multiple = FALSE
+                                   )
+
+bscols(widths = c(1,5,5,NA), NULL,
+data_filter_year_term, data_filter_geog_term, NULL)
+
+```
+
+<h2 style="margin-left: 60px; margin-top: 0px; margin-bottom: -20px"> Pathways from contact by PDS practitioner to end of post-diagnostic support </h2>
+```{r term-table-2}
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="590px", margin="20px"),
+     DT::datatable(term_table_data, rownames = FALSE,
+              options = list(pageLength = 14,
+                             scrollX = FALSE,
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0:1),
+                                                list(className = 'dt-right', targets = 3:7)#,
+                                                #list(width = '10px', targets = 6)
+                                                ))) %>%
+           DT::formatStyle(3, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+```
+
+
+```{js }
+function filter_default() {
+
+  document.getElementById("met_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("met_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("not_met_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("not_met_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("ongoing_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("ongoing_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("exempt_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("exempt_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+
+  document.getElementById("wait_filter_ijb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("wait_filter_ijb_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("wait_filter_hb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("wait_filter_hb_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("term_filter_year_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("term_filter_year_ijb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("term_filter_year_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("term_filter_year_hb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("term_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("term_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("term_filter_geog").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("term_filter_geog").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("term_filter_year_2").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("term_filter_year_2").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("term_filter_geog_2").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("term_filter_geog_2").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+
+  document.getElementById("trend_filter_age_prop_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("trend_filter_age_prop_hb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("trend_filter_age_prop_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("trend_filter_age_prop_ijb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_trend_age_2_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_trend_age_2_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_pop_age_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_pop_age_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("NHS Ayrshire & Arran", false);
+
+  document.getElementById("filter_pop_age_hb_ijb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("trend_filter_sex_prop_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("trend_filter_sex_prop_hb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("trend_filter_sex_prop_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("trend_filter_sex_prop_ijb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ldp_sex").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_ldp_sex").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("trend_filter_simd_prop_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("trend_filter_simd_prop_hb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("trend_filter_simd_prop_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("trend_filter_simd_prop_ijb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_trend_simd_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_trend_simd_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ldp_simd").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_ldp_simd").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("NHS Ayrshire & Arran", false);
+
+  document.getElementById("trend_filter_hb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("trend_filter_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Aberdeen City", false);
+
+  document.getElementById("trend_filter_ijb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+ 
+   document.getElementById("trend_filter_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+    document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  }
+  
+  window.onload = filter_default;
+
+```
