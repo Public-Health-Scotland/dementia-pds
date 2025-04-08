@@ -666,81 +666,74 @@ bscols(widths = 12,
 
 function filter_default() {
 
-// pathways
+  
+// all referrals - trends and rates  
+  
+    document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("NHS Ayrshire & Arran", false);
 
+  document.getElementById("trend_filter_hb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("trend_filter_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Aberdeen City", false);
+
+  document.getElementById("trend_filter_ijb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
  
-  document.getElementById("not_met_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("not_met_filter_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-   document.getElementById("ongoing_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("ongoing_filter_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("exempt_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("exempt_filter_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("wait_filter_all_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("wait_filter_all_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_median").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_median").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_median_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("filter_median_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("trend_filter_wait").getElementsByClassName("selectized") 
+   document.getElementById("trend_filter_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
-  document.getElementById("trend_filter_wait").getElementsByClassName("selectized")
+  document.getElementById("trend_filter_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("NHS Ayrshire & Arran", false);
 
-  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized")
+  document.getElementById("trend_filter_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+   document.getElementById("trend_filter_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Aberdeen City", false);
 
-  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized")
+  document.getElementById("trend_filter_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-  
-  document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-   document.getElementById("no_contact_filter_year_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
-
-  document.getElementById("no_contact_filter_year_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-
  
+   document.getElementById("trend_filter_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
 
-// demographics
+  document.getElementById("trend_filter_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
+
+  document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
+
+  document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  
+  // demographics
 
   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue("2024/25", false);
 
   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -752,7 +745,7 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_age_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue("2024/25", false);
 
   document.getElementById("filter_hb_age_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -794,13 +787,13 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue("2024/25", false);
 
   document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue("2024/25", false);
 
   document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -830,13 +823,13 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue("2024/25", false);
 
   document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue("2024/25", false);
 
   document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -871,69 +864,76 @@ function filter_default() {
   document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  
-// all referrals - trends and rates  
-  
-    document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("NHS Ayrshire & Arran", false);
 
-  document.getElementById("trend_filter_hb").getElementsByClassName("selectized")
+
+// pathways
+
+  document.getElementById("wait_filter_all_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
+
+  document.getElementById("wait_filter_all_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("trend_filter_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Aberdeen City", false);
+  document.getElementById("filter_median").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
 
-  document.getElementById("trend_filter_ijb").getElementsByClassName("selectized")
+  document.getElementById("filter_median").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_median_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
+
+  document.getElementById("filter_median_hb").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("trend_filter_wait").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("trend_filter_wait").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
  
-   document.getElementById("trend_filter_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
+  document.getElementById("not_met_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
 
-  document.getElementById("trend_filter_pop").getElementsByClassName("selectized")
+  document.getElementById("not_met_filter_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("NHS Ayrshire & Arran", false);
+   document.getElementById("ongoing_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
 
-  document.getElementById("trend_filter_hb").getElementsByClassName("selectized")
+  document.getElementById("ongoing_filter_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-   document.getElementById("trend_filter_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Aberdeen City", false);
+  document.getElementById("exempt_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
 
-  document.getElementById("trend_filter_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
- 
-   document.getElementById("trend_filter_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("trend_filter_pop").getElementsByClassName("selectized")
+  document.getElementById("exempt_filter_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
 
-  document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized")
+  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
 
-  document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized")
+  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
+  document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
 
-  document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized")
+  document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
+   document.getElementById("no_contact_filter_year_ijb").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2024/25", false);
 
-  document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized")
+  document.getElementById("no_contact_filter_year_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-  
+
   
   }
   
