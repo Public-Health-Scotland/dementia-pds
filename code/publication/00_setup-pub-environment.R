@@ -21,10 +21,10 @@
 end_date <- lubridate::dmy(31122023) 
 
 # UPDATE - Date of publication (ddmmyyyy)
-pub_date <- lubridate::dmy(26032024)
+pub_date <- lubridate::dmy(24062025)
 
 # UPDATE - Date of last publication (ddmmyyyy)
-last_pub_date <- lubridate::dmy(28032023)
+last_pub_date <- lubridate::dmy(28052024)
 
 
 ### 1 - Load packages ----
@@ -50,7 +50,7 @@ library(usethis)       # For creating folder structure
 library(rmarkdown)     # For render function
 library(officer)       # For adding cover page and toc to report
 library(english)       # For converting number to text
-library(captioner)
+#library(captioner)
 library(fs)
 library(readxl)        # For reading xlsx workbooks
 
@@ -58,12 +58,12 @@ library(readxl)        # For reading xlsx workbooks
 ### 2 - Define file paths dependent on whether running on server or desktop ----
 
 stats <- case_when(
-  sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ "/conf",
+  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ "/conf",
   TRUE ~ "//stats"
 )
 
 cl_out <- case_when(
-  sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ 
+  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ 
     "/conf/linkage/output",
   TRUE ~ "//stats/cl-out"
 )
