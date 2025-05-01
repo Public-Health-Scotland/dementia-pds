@@ -165,7 +165,7 @@ pds %<>%
   # updated to include broad age groups
   mutate(age_grp_2 = 
            case_when(
-             age < 0 | is.na(age) ~ "Unknown",
+             age <= 0 | is.na(age) ~ "Unknown",
              age %in% 1:79 ~ "79 and Under",
              age %in% 80:84 ~ "80 to 84",
              age >= 85     ~ "85+"
