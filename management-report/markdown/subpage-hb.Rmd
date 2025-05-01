@@ -45,8 +45,13 @@ completeness_text <-
     str_sub(sel_fy, 1, 4) <= year(latest_final_year) ~
       paste0("Data for ", sel_fy, " are now final and will not change in ",
              "future versions of this report."),
-    complete_year == FALSE ~ 
-      paste0("LDP Standard performance figures are not provided ",
+     complete_year == FALSE ~ 
+      paste0("As PDS for some referrals in ", sel_fy, " is still ",
+             "ongoing, it is not known yet whether or not they ",
+             "will meet the LDP standard. Therefore, the figures ",
+             "shown are currently provisional and subject to ",
+             "change in future versions of this report.", "<br>", "<br>",
+             "LDP Standard performance figures are not provided ",
              "until data is available for the full financial year."),
     TRUE ~ 
       paste0("As PDS for some referrals in ", sel_fy, " is still ",
@@ -91,13 +96,11 @@ est_date3 <- dmy(01042023)
               hb == "NHS Grampian" & sel_fy == extract_fin_year(ac_date2) ~
       paste0("",
              "**Please note:** ",
-             "When interpreting figures for Aberdeen City and NHS Grampian, ",
-             "please take into account the following statement from Aberdeen ",
-             "City Health & Social Care Partnership about their data.",
-             " *“Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 ",
-             "to an inhouse hybrid model. This change in model and process of receiving referrals ",
-             "and recording, resulted in the numbers of patient’s recorded as receiving PDS being ",
-             "less than what was actually the case.”*"),
+             "*Aberdeen City Health & Social Care Partnership changed ",
+             "to provide PDS in 2019 to an inhouse hybrid model. ",
+             "This change in model, and process of receiving referrals and recording, ",
+             "resulted in data quality issues for financial years 2019/20 and 2020/21. ",
+             "This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*"),
           TRUE ~ paste0(""))
   
   # Data quality notes - Perth & Kinross
@@ -205,12 +208,14 @@ md_link(
 ```
 
 ***
+FURTHER INFORMATION:
 
-For more information regarding referrals not meeting the LDP Standard and/or where PDS is ongoing please see the [Pathways - PDS Outcomes](#outcomes) page.
-
-***
-
-For more information regarding how the LDP Standard is calculated and how individuals with multiple records are presented, please see the [methodology](#methodology) page.
+<ul style="list-style-type:square;">
+   <li >[Standard Not Met / PDS Ongoing](#outcomes)</li>
+   <li >[Methodology](#methodology)</li>
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
 
 ***
 
