@@ -10,7 +10,7 @@ output:
 ```{r load-setup, include=FALSE}
 source(here::here("code", "00_setup-environment.R"))
 library(crosstalk) # for drop down menus
-library(phsstyles)
+#library(phsstyles)
 library(htmltools)
 
 # Write numbers with thousands separator
@@ -137,6 +137,14 @@ comp_data <- read_rds(get_mi_data_path("comp_data", ext = "rds", test_output = t
 
 ```
 
+<script>
+
+var pds_year = "`r current_fy`";
+
+var ldp_year = "`r last_full_year`";
+
+</script>
+
 Home
 =================================================
 
@@ -153,8 +161,10 @@ These reports reflect the [Dementia PDS dataset](https://publichealthscotland.sc
 
 Data are submitted to PHS by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(start_date, "%d %B %Y")` onwards. Therefore, data for diagnoses from this date onwards are refreshed in each management report and are based on the most recently submitted data. 
 
-Information is shown at Scotland, Health Board and Integration Joint Board level using the drop down menus at the top of the page.
+Information is shown at Scotland, Health Board and Integration Authority Area level using the drop down menus at the top of the page.
 
+For definitions of terms used throughout the report see the [Glossary](#glossary) page.
+ 
 To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the PHS Dementia PDS team mailbox at: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot).
 
 
@@ -177,7 +187,7 @@ div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 
 </div> <br>
 
-For more detail on how the above is calculated, please see the [methodology](#methodology) page.
+For more detail on how the above is calculated, please see the [Methodology](#methodology) page.
 
 Further information regarding the Dementia PDS dataset and submission process can be found on the [Dementia PDS pages](https://publichealthscotland.scot/services/data-management/data-management-in-primary-social-and-community-care/dementia-post-diagnostic-support-pds/){target="_blank"}.
 
@@ -277,7 +287,7 @@ The following method is used to determine whether a service user has met the sta
 #### LDP Standard Not Met
 
 * First contact occurred more than 12 months after diagnosis.
-* No first contact and more than 12 months since diagnosis.
+* No contact and more than 12 months since diagnosis.
 * PDS terminated (for non-exempt reason) less than 11 months after first contact.
 * PDS terminated (for non-exempt reason) without contact.
 
@@ -424,12 +434,13 @@ Row
 
 This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
 
-Row {.tabset data-height=765}
+Row {.tabset data-height=790}
 -------------------------------------------------
 
 ### **Accommodation Type**
 
 <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals with NA or code 98/99 entry (Unknown) for Accommodation Type</h2>
+<h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Accommodation Type is a mandatory field</h4>
 ```{r accommodation-table}
 accom_comp_data<-comp_data %>%
   filter(field_name == "accommodation_type") %>% 
@@ -455,7 +466,7 @@ headers <- htmltools::withTags(table(
 ))
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="650px", margin="15px"),
+       div(style = css(width="98%", height="660px", margin="15px"),
           DT::datatable(accom_comp_data,
                         container = headers,
                         rownames = TRUE,
@@ -483,6 +494,7 @@ bscols(widths = 12,
 ### **Carer's Support**
 
 <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals with NA or code 98/99 entry (Unknown) for Carer's Support</h2>
+<h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Carer's Support is an optional field</h4>
 ```{r carer-table}
 carer_comp_data<-comp_data %>%
   filter(field_name == "carers_support") %>% 
@@ -494,13 +506,13 @@ carer_comp_data<-comp_data %>%
 
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="650px", margin="15px"),
+       div(style = css(width="98%", height="660px", margin="15px"),
           DT::datatable(carer_comp_data,
                         container = headers,
                         rownames = TRUE,
-                        caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
-                       "Note that Carer's Support is an optional field"),
+                      #  caption = htmltools::tags$caption(
+                      # style = 'caption-side: bottom; text-align: left;',
+                      # "Note that Carer's Support is an optional field"),
                         extensions = "FixedColumns",
               options = list(pageLength = 46,
                              scrollX = TRUE,
@@ -524,6 +536,7 @@ bscols(widths = 12,
 ### **Subtype of Dementia**
 
 <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of records with NA or code 98/99 entry (Unknown) and Percentage of records Yet to be determined (YTBD) for Subtype of Dementia</h2>
+<h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Subtype of Dementia is an optional field</h4>
 ```{r subtype-table}
 subtype_comp_data <- comp_data %>%
   filter(field_name == "subtype_of_dementia") %>% 
@@ -551,13 +564,13 @@ headers_ytbd <- htmltools::withTags(table(
 
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="650px", margin="15px"),
+       div(style = css(width="98%", height="660px", margin="15px"),
           DT::datatable(subtype_comp_data,
                         container = headers_ytbd,
                         rownames = TRUE,
-                        caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
-                       "Note that Subtype of Dementia is an optional field"),
+                       # caption = htmltools::tags$caption(
+                     #  style = 'caption-side: bottom; text-align: left;',
+                      # "Note that Subtype of Dementia is an optional field"),
                         extensions = "FixedColumns",
               options = list(pageLength = 46,
                              scrollX = TRUE,
@@ -582,7 +595,7 @@ bscols(widths = 12,
 ### **Clinical Impression of Stage of Illness**
 
 <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of records with NA or code 98/99 entry (Unknown) and Percentage of records Yet to be determined (YTBD) for Clinical Impression of Stage of Illness</h2>
-
+<h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Clinical Impression of Stage of Illness is a mandatory field</h4>
 ```{r stage-table}
 stage_comp_data <- comp_data %>%
   filter(field_name == "clinical_impression_of_stage_of_illness") %>% 
@@ -595,7 +608,7 @@ stage_comp_data <- comp_data %>%
   
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="650px", margin="15px"),
+       div(style = css(width="98%", height="660px", margin="15px"),
           DT::datatable(stage_comp_data,
                         container = headers_ytbd,
                         rownames = TRUE,
@@ -624,6 +637,7 @@ bscols(widths = 12,
 ### **Model of Care**
 
 <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals with NA or code 98/99 entry (Unknown) and Percentage of records Yet to be determined (YTBD) for Model of Care</h2>
+<h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Model of Care is a mandatory field</h4>
 ```{r model-table}
 model_comp_data <- comp_data %>%
   filter(field_name == "model_of_care") %>% 
@@ -636,13 +650,10 @@ model_comp_data <- comp_data %>%
   
 
 bscols(widths = 12,
-       div(style = css(width="98%", height="650px", margin="15px"),
+       div(style = css(width="98%", height="660px", margin="15px"),
           DT::datatable(model_comp_data,
                         container = headers_ytbd,
                         rownames = TRUE,
-                       # caption = htmltools::tags$caption(
-                       #style = 'caption-side: bottom; text-align: left;',
-                      # "Note that Subtype of Dementia is an optional field"),
                         extensions = "FixedColumns",
               options = list(pageLength = 46,
                              scrollX = TRUE,
@@ -662,30 +673,92 @@ bscols(widths = 12,
 
 ```
 
+Glossary
+=================================================
+
+Row
+-------------------------------------------------
+
+###
+
+#### General Information
+
+**Post Diagnostic Support (PDS):** Support commissioned by the Scottish Government that everyone newly diagnosed with dementia is entitled to a minimum of one year’s post-diagnostic support. Further information on post-diagnostic support can be found on the [Alzheimer Scotland](https://www.alzscot.org/pds){target="_blank"} website. 
+
+**Referral:** When a person receives a new diagnosis of dementia, a referral is made to a service that provides post-diagnostic support and allocates a named person to work alongside the individual and those close to them.
+
+**Health Board:** This is the Health Board of the PDS Practitioner or Team providing care and support to the service user. 
+
+**Integration Authority Area (IAA):** This is the IAA of the PDS Practitioner or Team providing care and support to the service user. 
+
+**Population Estimates:** The population estimates used in this report are from the National Records of Scotland (NRS) Mid-year population estimates and the NRS Population estimates by Scottish Index of Multiple Deprivation (SIMD). As figures in this report are by financial year, the estimate for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018. The estimates used throughout the report are for the population that is 65 years and older, as 97.4% of referrals to PDS are in this age group. 
+
+NRS Mid-year population estimates can be found using the links below: 
+
+[Population, migration and households - National Records of Scotland (NRS)](https://www.nrscotland.gov.uk/statistics-and-data/population-migration-and-households){target="_blank"}
+
+[Population estimates by Scottish Index of Multiple Deprivation (SIMD) - National Records of Scotland (NRS)](https://www.nrscotland.gov.uk/publications/population-estimates-by-scottish-index-of-multiple-deprivation-simd/){target="_blank"}
+
+***
+
+#### Demographics
+
+**Age Group:** Age is calculated as at the dementia diagnosis date. 
+
+Across the reported years there are a small number of records (12 in total) with an incomplete date of birth and therefore the age group is unknown. These records have been excluded from the age group analysis. 
+
+*For the rates calculations, for financial year 2024/25 the Mid-2023 populations are used as this is the latest available estimate.*  
+
+**Gender:** Gender is based on the sex recorded for each referral.  
+
+Across the reported years there are 33 records in total where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’). These records have been excluded from the gender analysis.
+
+*For the rates calculations, for financial year 2024/25 the Mid-2023 populations are used as this is the latest available estimate.*
+
+**Deprivation:** Deprivation is calculated by matching postcodes grouped into small geographical areas known as datazones to the Scottish Index of Multiple Deprivation (SIMD) quintiles. SIMD has seven domains (income, employment, education, housing, health, crime, and geographical access) at data zone level, which have been combined into an overall index to pick out area concentrations of multiple deprivation. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived quintile) to 5 (least deprived quintile). At Scotland level, approximately one fifth of the general population are within each deprivation quintile. The quintiles used in this report are from SIMD 2020v2. Further information on SIMD can be found on the [Scottish Government](https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/) website.
+
+Across the reported years there are 56 records where it was not possible to assign a deprivation quintile based on the postcode information available. These records have been excluded from the deprivation analysis. 
+
+*For the rates calculations, for financial years 2023/24 and 2024/25 the Mid-2022 populations are used as this is the latest available estimate.* 
+
+***
+
+#### Pathways
+
+**Dementia Diagnosis Date:** The date on which the service user receives a confirmed diagnosis of dementia. This diagnosis must be confirmed by a doctor or clinical practitioner with sufficient training and experience in the diagnosis of dementia. 
+
+**First Contact:** The date on which an appropriate face to face direct contact took place with the service user by the PDS Practitioner or PDS Team with the knowledge and skills to introduce each model of care. Direct contact can be done in person or by video link and is not restricted to both parties being in the same room. 
+
+**Not Contacted / No Contact:** No date of first contact has been recorded/reported in the PDS submission. 
+
+**Date of Allocation of PDS Practitioner:** The date on which the service user is allocated to the initial PDS Practitioner or PDS Team.
+
+**PDS Terminated / Ended:** PDS is deemed to be at end when a PDS termination date is recorded. The PDS termination date is defined as the date when the PDS was terminated or when the service user was transitioned to a further model of care. 
+
+**Uptake Decision:** The decision	made by the service user whether to uptake their entitlement to receive PDS.
+
+**Average (Median) Days:** The midpoint of the number of days between the given dates for each referral, such that there is an even number of values falling above and below it. The median number of days for each time period will be such that half of the people will have experienced a wait time this long or longer.
+
+***
+
+#### Further Information
+
+**Accommodation Type:** The type of accommodation of the service user’s main residence. 
+
+**Carer’s Support:** Indicates whether ongoing PDS work is carried out in conjunction with the family/carer even if the service user refuses/declines to work with the PDS Practitioner following diagnosis. The work with the carer is directly linked to the eligibility of the person with dementia for PDS.
+
+**Subtype of Dementia:** The subtype of dementia that a service user has been principally diagnosed with. This diagnosis must be made by a doctor or clinical practitioner with sufficient training and experience in the diagnosis of dementia. 
+
+**Clinical Impression of Stage of Illness:** Clinical Impression of Stage of Illness at referral is broadly used to outline the typical symptoms and degree of difficulties associated with dementia disease progression, and the impact on the person with dementia and their carers. 
+
+**Model of Care:** The model of care deemed most appropriate for the service user following their diagnosis. 
+
 ```{js }
 
 function filter_default() {
 
   
 // all referrals - trends and rates  
-  
-    document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("NHS Ayrshire & Arran", false);
-
-  document.getElementById("trend_filter_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-   document.getElementById("trend_filter_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Aberdeen City", false);
-
-  document.getElementById("trend_filter_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
- 
-   document.getElementById("trend_filter_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("trend_filter_pop").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
   
   document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("NHS Ayrshire & Arran", false);
@@ -706,13 +779,13 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -723,61 +796,56 @@ function filter_default() {
   document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized") 
+    document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
   document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   
+  
   // demographics
 
-  document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_ijb_age_pop_group").getElementsByClassName("selectized") 
-  [0].selectize.setValue("85+", false);
-
-  document.getElementById("filter_ijb_age_pop_group").getElementsByClassName("selectized")
+  document.getElementById("filter_ijb_age_pop_geog").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_age_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_hb_age_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_hb_age_pop_group").getElementsByClassName("selectized") 
-  [0].selectize.setValue("85+", false);
-
-  document.getElementById("filter_hb_age_pop_group").getElementsByClassName("selectized")
+  document.getElementById("filter_ijb_age_ldp_geog").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_trend_age_2_pop").getElementsByClassName("selectized") 
+  document.getElementById("filter_trend_age_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
-  document.getElementById("filter_trend_age_2_pop").getElementsByClassName("selectized")
+  document.getElementById("filter_trend_age_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
 
   document.getElementById("filter_ijb_age_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_ijb_age_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
     
   document.getElementById("filter_hb_age_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_hb_age_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized") 
+  document.getElementById("filter_ldp_age").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
-  document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized")
+  document.getElementById("filter_ldp_age").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized") 
@@ -787,25 +855,25 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
     
   document.getElementById("filter_hb_sex_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_hb_sex_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -823,13 +891,13 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -847,13 +915,13 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_simd_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_hb_simd_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -864,24 +932,42 @@ function filter_default() {
   document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-
+  
 
 // pathways
 
+   document.getElementById("not_met_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue(pds_year, false);
+
+  document.getElementById("not_met_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+   document.getElementById("ongoing_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue(pds_year, false);
+
+  document.getElementById("ongoing_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("exempt_filter_year").getElementsByClassName("selectized") 
+  [0].selectize.setValue(pds_year, false);
+
+  document.getElementById("exempt_filter_year").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
   document.getElementById("wait_filter_all_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("wait_filter_all_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_median").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_median").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_median_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_median_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -891,48 +977,31 @@ function filter_default() {
 
   document.getElementById("trend_filter_wait").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
- 
-  document.getElementById("not_met_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
-
-  document.getElementById("not_met_filter_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-   document.getElementById("ongoing_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
-
-  document.getElementById("ongoing_filter_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("exempt_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
-
-  document.getElementById("exempt_filter_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
   
   document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
    document.getElementById("no_contact_filter_year_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2024/25", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("no_contact_filter_year_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
+
 
   
   }
