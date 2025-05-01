@@ -86,7 +86,7 @@ plot_referrals <- function(data,
                                     c(rep(min(data$year), 9), rep(max(data$year), 3)))) +
     
     labs(x = "Month of Diagnosis",
-         y = "Number",
+         y = "Number Referred",
          colour = NULL) +
     
     theme_dementia(xangle = 45) +

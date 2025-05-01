@@ -15,7 +15,7 @@ plot_bar_median<- function(data){
     
     labs(title = "",
          x = "",
-         y = "Median",
+         y = "Median Wait (days)",
          color = NULL) +
     
     scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) +
