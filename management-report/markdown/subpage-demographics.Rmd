@@ -10,9 +10,8 @@ output:
 ```{r load-setup, include=FALSE}
 source(here::here("code", "00_setup-environment.R"))
 library(crosstalk) # for drop down menus
-library(phsstyles)
 library(htmltools)
-library(ggh4x)
+
 
 # Write numbers with thousands separator
 knit_hooks$set(inline = function(x){
@@ -90,27 +89,27 @@ pds_all_totals_2 <- bind_rows(pds_all_totals,
   pds_all %>% filter(age_grp_2 != "Unknown") %>% group_by(geog, fy, age_grp_2) %>% summarise(total_referrals = sum(referrals))
 )
 
-pds_all_totals_2$age_grp_2<- factor(pds_all_totals_2$age_grp_2, levels = c("All", "85+", "80 to 84" ,"79 and Under"))
+pds_all_totals_2$age_grp_2<- factor(pds_all_totals_2$age_grp_2, levels = c("All", "79 and Under", "80 to 84", "85+"))
 
 pds_ijb_totals_2 <- bind_rows(pds_ijb_totals,
     pds_ijb %>% filter(age_grp_2 != "Unknown") %>% group_by(geog, fy, age_grp_2) %>% summarise(total_referrals = sum(referrals))
 )
 
-pds_ijb_totals_2$age_grp_2<- factor(pds_ijb_totals_2$age_grp_2, levels = c("All", "85+", "80 to 84" ,"79 and Under"))
+pds_ijb_totals_2$age_grp_2<- factor(pds_ijb_totals_2$age_grp_2, levels = c("All", "79 and Under", "80 to 84", "85+"))
 
 
 pds_hb_totals_2 <- bind_rows(pds_hb_totals,
     pds_hb %>% filter(age_grp_2 != "Unknown") %>% group_by(geog, fy, age_grp_2) %>% summarise(total_referrals = sum(referrals))
 )
 
-pds_hb_totals_2$age_grp_2<- factor(pds_hb_totals_2$age_grp_2, levels = c("All", "85+", "80 to 84" ,"79 and Under"))
+pds_hb_totals_2$age_grp_2<- factor(pds_hb_totals_2$age_grp_2, levels = c("All", "79 and Under", "80 to 84", "85+"))
 
 
 pds_scot_totals_2 <- bind_rows(pds_scot_totals,
     pds_scot %>% filter(age_grp_2 != "Unknown") %>% group_by(geog, fy, age_grp_2) %>% summarise(total_referrals = sum(referrals))
 )
 
-pds_scot_totals_2$age_grp_2<- factor(pds_scot_totals_2$age_grp_2, levels = c("All", "85+", "80 to 84" ,"79 and Under"))
+pds_scot_totals_2$age_grp_2<- factor(pds_scot_totals_2$age_grp_2, levels = c("All", "79 and Under", "80 to 84", "85+"))
 
 #load population rates data
 pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
@@ -131,13 +130,22 @@ if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years
 
 
 ```
+
+<script>
+
+var pds_year = "`r current_fy`";
+
+var ldp_year = "`r last_full_year`";
+
+</script>
+
 <!-- delete all of above when finished testing -->
 
 
 ```{r data-setup-demo, include=FALSE}
 
 #prepare age data 
-ldp_all_age_2 <- pds_all %>%
+ldp_all_age <- pds_all %>%
   filter(fy %in% full_years, age_grp_2 != "Unknown") %>%
   group_by(geog, fy, age_grp_2, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
@@ -145,34 +153,36 @@ ldp_all_age_2 <- pds_all %>%
   mutate(perc_met = round((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
 complete(nesting(geog, fy), age_grp_2, fill = list(perc_met = NA))
 
-ldp_all_age_2 <- left_join(ldp_all_age_2,
-ldp_all_age_2 %>% filter(geog == "Scotland") %>% select(fy, age_grp_2, perc_met) %>% 
+ldp_all_age <- left_join(ldp_all_age,
+ldp_all_age %>% filter(geog == "Scotland") %>% select(fy, age_grp_2, perc_met) %>% 
   rename(scot_perc_met = perc_met))
 
-ldp_all_age_2$age_grp_2<- factor(ldp_all_age_2$age_grp_2, levels = c("85+", "80 to 84" ,"79 and Under"))
+ldp_all_age$age_grp_2<- factor(ldp_all_age$age_grp_2, levels = c("79 and Under", "80 to 84", "85+"))
 
-pds_all_age_2 <- pds_all %>% filter(age_grp_2 != "Unknown") #remove 6 unknowns from 2016/17 (add note to charts and tables?)
+pds_all_age <- pds_all %>% filter(age_grp_2 != "Unknown") #remove 6 unknowns from 2016/17 (add note to charts and tables?)
 
-pds_all_age_2 %<>% group_by(fy, geog, age_grp_2) %>%
+pds_all_age %<>% group_by(fy, geog, age_grp_2) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop")
+
+pds_all_age$age_grp_2<- factor(pds_all_age$age_grp_2, levels = c("79 and Under", "80 to 84", "85+"))
 
 #prepare population rate data 
 
-pop_data_age_2 <- pop_data %>% filter(sex == "All", age_grp == "All") %>% select(-sex, -age_grp)
+pop_data_age <- pop_data %>% filter(sex == "All", age_grp == "All") %>% select(-sex, -age_grp)
 
-pds_all_age_2_cal_year <- pds_all_age_2 %>%
+pds_all_age_cal_year <- pds_all_age %>%
   mutate(year = as.numeric(substr(fy, 1, 4)))
 
-pds_all_age_2_rates <- left_join(pds_all_age_2_cal_year, pop_data_age_2) %>% select(-year) %>%
+pds_all_age_rates <- left_join(pds_all_age_cal_year, pop_data_age) %>% select(-year) %>%
   mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 1)) %>% select(fy, geog, age_grp_2, pop_rate_10000)
 
-pds_all_age_2_rates$geog<- factor(pds_all_age_2_rates$geog, levels = unique(pds_all_age_2_rates$geog)) 
-pds_all_age_2_rates$age_grp_2<- factor(pds_all_age_2_rates$age_grp_2, levels = c("85+", "80 to 84" ,"79 and Under"))
+pds_all_age_rates$geog<- factor(pds_all_age_rates$geog, levels = unique(pds_all_age_rates$geog)) 
+pds_all_age_rates$age_grp_2<- factor(pds_all_age_rates$age_grp_2, levels = c("79 and Under", "80 to 84", "85+"))
 
-pds_all_age_2_rates %<>% complete(nesting(fy, geog), age_grp_2, fill = list(pop_rate_10000 = 0)) 
+pds_all_age_rates %<>% complete(nesting(fy, geog), age_grp_2, fill = list(pop_rate_10000 = 0)) 
 
-pds_age_rates_2_data <- left_join(pds_all_age_2_rates,
-pds_all_age_2_rates %>% filter(geog == "Scotland") %>% select(fy, age_grp_2, pop_rate_10000) %>% rename(scot_pop_rate_10000 = pop_rate_10000))
+pds_age_rates_2_data <- left_join(pds_all_age_rates,
+pds_all_age_rates %>% filter(geog == "Scotland") %>% select(fy, age_grp_2, pop_rate_10000) %>% rename(scot_pop_rate_10000 = pop_rate_10000))
 
 #prepare gender data
 
@@ -274,6 +284,9 @@ ijb_totals_table <- bind_rows(pds_scot_totals, pds_ijb_totals)  %>%
    
 # colours for simd plots
 simd_colours <- c("#005FAD", "#0078D4", "#3393DD", "#80BCEA", "#B3D7F2")#, "#E6F2FB")
+
+# colours for age plots
+age_colours <- c("#6B5C85", "#0078D4", "#1E7F84")
  
 ```
 
@@ -301,6 +314,14 @@ Sidebar {.sidebar}
 </ul>
 
 ***
+FURTHER INFORMATION:
+
+<ul style="list-style-type:square;">
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
+
+***
 
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
@@ -310,22 +331,33 @@ Row
 
 ### **Note**
 
-**-**
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for given age groups. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area. Use the dropdown menus to select a year to show in the charts and tables. For the Integration Authority tab use the dropdown menu to filter for selected areas to show in the charts and tables.
+
+The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each age group. Use the dropdown menu to select a geographical area to show in the chart alongside the trend for Scotland.
+
+*The rate per 10,000 population for each age group is calculated using the number of referrals in the given age group and the estimated population of the same age group for each geographical area (the population used for the ‘79 and Under’ age group is 65 to 79). See the [Glossary](#glossary) page for more details.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
 
-Row {.tabset data-height=1000}
+Row {.tabset data-height=1110}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb-age-pop}
-
-pds_ijb_age_rates <-  pds_all_age_2_rates %>% filter(!grepl("NHS", geog)) %>% 
-           mutate(age_2_group = age_grp_2, .before = age_grp_2) %>% 
-  mutate(key = paste0(fy,age_2_group), .before = geog)
-
+pds_ijb_age_rates <- #bind_rows(
+  
+  #pds_all_age_rates %>% filter(!grepl("NHS", geog)) %>% 
+         #  mutate(age_grp_2_group = age, .before = age_grp_2) %>% 
+ # mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog),
+  
+   pds_all_age_rates %>% filter(!grepl("NHS", geog)) %>% 
+         mutate(age_grp_2_group = "All", .before = age_grp_2)  %>% 
+  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
+#)
 
 pds_pop_age_data_ijb <- SharedData$new(pds_ijb_age_rates, key = ~key, group = "ijb_age_pop")
 
@@ -336,28 +368,57 @@ data_filter_ijb_age_pop <- filter_select(id = "filter_ijb_age_pop",
                                     multiple = FALSE
                                       )
 
-data_filter_ijb_age_pop_quintile <- filter_select(id = "filter_ijb_age_pop_group",
-                                    label = "Select Age Group:",
-                                    group = ~age_2_group,
+# data_filter_ijb_age_pop_quintile <- filter_select(id = "filter_ijb_age_pop_quintile",
+#                                     label = "Select Age Group:",
+#                                     group = ~age_grp_2_group,
+#                                     sharedData = pds_pop_age_data_ijb,
+#                                     multiple = FALSE
+#                                       )
+
+data_filter_ijb_age_pop_geog <- filter_select(id = "filter_ijb_age_pop_geog",
+                                    label = "Select Integration Authority Area(s):",
+                                    group = ~geog,
                                     sharedData = pds_pop_age_data_ijb,
-                                    multiple = FALSE
+                                    multiple = TRUE
                                       )
 
-bscols(widths = c(1,5,5,NA),
+bscols(widths = c(1,5,NA),
        NULL,
        data_filter_ijb_age_pop,
-       data_filter_ijb_age_pop_quintile,
        NULL)
 
-
+bscols(widths = c(1,10,NA), NULL, data_filter_ijb_age_pop_geog, NULL)
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by Age Group and Integration Authority Area</h2>
-```{r plot-ijb-age-pop}
+```{r plot-ijb-age-legend-pop2}
 
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar_v2(pds_pop_age_data_ijb, y_value = pop_rate_10000, measure = age_grp_2, measure_text = "Age Group: ", measure_2 = age_2_group, x = "Integration Authority Area", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_age %>% filter(geog == "Scotland"), measure = age_grp_2, colours = age_colours)))
+
+```
+
+
+```{r plot-ijb-age-pop2}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="355px", marginBottom="-20px"),
+plot_ly(pds_pop_age_data_ijb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~age_grp_2, type = 'bar', color = ~age_grp_2, colors = age_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Age Group: %{hovertext} <br>",
+                            "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Integration Authority Area", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
 )
 
 ```
@@ -365,48 +426,45 @@ plot_geog_bar_v2(pds_pop_age_data_ijb, y_value = pop_rate_10000, measure = age_g
 
 ```{r table-ijb-age-pop}
 
-ijb_pop_age_table_data <- bind_rows(
- pds_all_age_2_rates %>% filter(!grepl("NHS", geog)) %>% 
-  select(geog,fy,age_grp_2,pop_rate_10000)  %>% 
-     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
-  pivot_wider(names_from =age_grp_2, values_from = pop_rate_10000) %>% 
-    mutate(age_2_group = "85+", .before = fy),
+ijb_pop_age_table_data <- #bind_rows(
   
-  pds_all_age_2_rates %>% filter(!grepl("NHS", geog)) %>% 
-  select(geog,fy,age_grp_2,pop_rate_10000) %>% 
-     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
-  pivot_wider(names_from =age_grp_2, values_from = pop_rate_10000) %>% 
-    mutate(age_2_group = "80 to 84", .before = fy),
- 
- pds_all_age_2_rates %>% filter(!grepl("NHS", geog)) %>% 
-  select(geog,fy,age_grp_2,pop_rate_10000) %>% 
-     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
-  pivot_wider(names_from =age_grp_2, values_from = pop_rate_10000) %>% 
-    mutate(age_2_group = "79 and Under", .before = fy)
-) %>% 
- 
-  mutate(key = paste0(fy,age_2_group), .before = geog) %>% 
-  mutate(across(everything(), ~replace_na(.x, "-"))) %>%
-             rename(`Integration Authority Area` = geog)
+  # pds_all_age_rates %>%
+  # filter(!grepl("NHS", geog)) %>%
+  # select(geog,fy,age_grp_2,pop_rate_10000) %>%
+  #  mutate(age_grp_2_group = age_grp_2, .before = age_grp_2),
 
+  pds_all_age_rates %>%
+  filter(!grepl("NHS", geog)) %>%
+  select(geog,fy,age_grp_2,pop_rate_10000) %>%
+   mutate(age_grp_2_group = "All", .before = age_grp_2
+          ) %>% 
   
+     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
+  arrange(age_grp_2) %>% 
+  pivot_wider(names_from = age_grp_2, values_from = pop_rate_10000) %>%
+  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(age_grp_2_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " ")))) %>%
+             rename(`Integration Authority Area` = geog) 
+
 
 ijb_age_table_pop <- SharedData$new(ijb_pop_age_table_data, key = ~key, group = "ijb_age_pop")
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="430px", margin="20px"),
-DT::datatable(ijb_age_table_pop, rownames = FALSE, 
+       div(style = css(width="97%", height="420px", margin="20px"),
+DT::datatable(ijb_age_table_pop, rownames = FALSE, selection = 'none',
               options = list(pageLength = 33,
                              scrollX = TRUE,
                             # fixedColumns = list(leftColumns = 1),
-                             scrollY = FALSE,
-                             dom = "tB",
+                             scrollY = TRUE,
+                             dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
                                                list(className = 'dt-right', targets = 4:6)
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold", #padding = "4px"
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                           )
         )
      )
@@ -414,14 +472,20 @@ DT::datatable(ijb_age_table_pop, rownames = FALSE,
 
 ```
 
+
 ### **Health Boards**
 
 ```{r dropdown-hb-age-pop}
-
-pds_hb_age_rates <-  pds_all_age_2_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
-           mutate(age_2_group = age_grp_2, .before = age_grp_2) %>% 
-  mutate(key = paste0(fy,age_2_group), .before = geog)
-
+pds_hb_age_rates <- #bind_rows(
+  
+  #pds_all_age_rates %>% filter(!grepl("NHS", geog)) %>% 
+         #  mutate(age_grp_2_group = age, .before = age_grp_2) %>% 
+ # mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog),
+  
+   pds_all_age_rates %>% filter(grepl("NHS", geog) | geog == "Scotland") %>% 
+         mutate(age_grp_2_group = "All", .before = age_grp_2)  %>% 
+  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
+#)
 
 pds_pop_age_data_hb <- SharedData$new(pds_hb_age_rates, key = ~key, group = "hb_age_pop")
 
@@ -432,28 +496,57 @@ data_filter_hb_age_pop <- filter_select(id = "filter_hb_age_pop",
                                     multiple = FALSE
                                       )
 
-data_filter_hb_age_pop_quintile <- filter_select(id = "filter_hb_age_pop_group",
-                                    label = "Select Age Group:",
-                                    group = ~age_2_group,
-                                    sharedData = pds_pop_age_data_hb,
-                                    multiple = FALSE
-                                      )
+# data_filter_hb_age_pop_quintile <- filter_select(id = "filter_hb_age_pop_quintile",
+#                                     label = "Select Age Group:",
+#                                     group = ~age_grp_2_group,
+#                                     sharedData = pds_pop_age_data_hb,
+#                                     multiple = FALSE
+#                                       )
+# 
+# data_filter_hb_age_pop_geog <- filter_select(id = "filter_hb_age_pop_geog",
+#                                     label = "Select Integration Authority Area(s):",
+#                                     group = ~geog,
+#                                     sharedData = pds_pop_age_data_hb,
+#                                     multiple = TRUE
+#                                       )
 
-bscols(widths = c(1,5,5,NA),
+bscols(widths = c(1,5,NA),
        NULL,
        data_filter_hb_age_pop,
-       data_filter_hb_age_pop_quintile,
        NULL)
 
-
+# bscols(widths = c(1,10,NA), NULL, data_filter_hb_age_pop_geog, NULL)
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by Age Group and Health Board</h2>
-```{r plot-hb-age-pop}
+```{r plot-hb-age-legend-pop2}
 
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar_v2(pds_pop_age_data_hb, y_value = pop_rate_10000, measure = age_grp_2, measure_text = "Age Group: ", measure_2 = age_2_group, x = "Health Board", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_age %>% filter(geog == "Scotland"), measure = age_grp_2, colours = age_colours)))
+
+```
+
+
+```{r plot-hb-age-pop2}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="355px", marginBottom="-20px"),
+plot_ly(pds_pop_age_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~age_grp_2, type = 'bar', color = ~age_grp_2, colors = age_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Age Group: %{hovertext} <br>",
+                            "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Integration Authority Area", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
 )
 
 ```
@@ -461,80 +554,76 @@ plot_geog_bar_v2(pds_pop_age_data_hb, y_value = pop_rate_10000, measure = age_gr
 
 ```{r table-hb-age-pop}
 
+hb_pop_age_table_data <- #bind_rows(
+  
+  # pds_all_age_rates %>%
+  # filter(!grepl("NHS", geog)) %>%
+  # select(geog,fy,age_grp_2,pop_rate_10000) %>%
+  #  mutate(age_grp_2_group = age_grp_2, .before = age_grp_2),
 
-hb_pop_age_table_data <- bind_rows(
-  pds_all_age_2_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%
-  select(geog,fy,age_grp_2,pop_rate_10000)  %>% 
-     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
-  pivot_wider(names_from =age_grp_2, values_from = pop_rate_10000) %>% 
-    mutate(age_2_group = "85+", .before = fy),
+  pds_all_age_rates %>%
+  filter(grepl("NHS", geog) | geog == "Scotland") %>%
+  select(geog,fy,age_grp_2,pop_rate_10000) %>%
+   mutate(age_grp_2_group = "All", .before = age_grp_2
+          ) %>% 
   
-    pds_all_age_2_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%
-  select(geog,fy,age_grp_2,pop_rate_10000)  %>% 
      mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
-  pivot_wider(names_from =age_grp_2, values_from = pop_rate_10000) %>% 
-    mutate(age_2_group = "80 to 84", .before = fy),
-  
-  pds_all_age_2_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%
-  select(geog,fy,age_grp_2,pop_rate_10000) %>% 
-     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
-  pivot_wider(names_from =age_grp_2, values_from = pop_rate_10000) %>% 
-    mutate(age_2_group = "79 and Under", .before = fy)
-) %>% 
- 
-  mutate(key = paste0(fy,age_2_group), .before = geog) %>% 
-  mutate(across(everything(), ~replace_na(.x, "-"))) %>%
-           rename(`Health Board` = geog)
-  
+   arrange(age_grp_2) %>% 
+  pivot_wider(names_from = age_grp_2, values_from = pop_rate_10000) %>%
+  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(age_grp_2_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " ")))) %>%
+             rename(`Integration Authority Area` = geog) 
+
 
 hb_age_table_pop <- SharedData$new(hb_pop_age_table_data, key = ~key, group = "hb_age_pop")
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="430px", margin="20px"),
-DT::datatable(hb_age_table_pop, rownames = FALSE, extensions = "FixedColumns",
+       div(style = css(width="97%", height="460px", margin="20px"),
+DT::datatable(hb_age_table_pop, rownames = FALSE, selection = 'none',
               options = list(pageLength = 15,
                              scrollX = TRUE,
-                             fixedColumns = list(leftColumns = 1),
+                            # fixedColumns = list(leftColumns = 1),
                              scrollY = FALSE,
                              dom = "t",
                              ordering = FALSE,
                              columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
                                                list(className = 'dt-right', targets = 4:6)
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold", #padding = "4px"
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
                           )
         )
      )
-
 
 
 ```
 
 ### **Trend**
 
-```{r dropdown-trend-age_2-pop}
+```{r dropdown-trend-age-pop}
 
-pds_pop_age_2_data <- SharedData$new(pds_age_rates_2_data,
-  key = ~geog, group = "trend_age_2_pop")
+pds_pop_age_data <- SharedData$new(pds_age_rates_2_data,
+  key = ~geog, group = "trend_age_pop")
 
-data_filter_trend_age_2_pop <- filter_select(id = "filter_trend_age_2_pop",
+data_filter_trend_age_pop <- filter_select(id = "filter_trend_age_pop",
                                     label = "Select Integration Authority Area or Health Board:",
                                     group = ~geog,
-                                    sharedData = pds_pop_age_2_data,
+                                    sharedData = pds_pop_age_data,
                                     multiple = FALSE
                                       )
 
 bscols(widths = c(1,5,NA),
        NULL,
-       data_filter_trend_age_2_pop,
+       data_filter_trend_age_pop,
        NULL)
 
 
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population by Age Group and Financial Year</h2> 
-```{r plot-trend-age_2-legend-pop}
+```{r plot-trend-age-legend-pop}
 
 bscols(widths = 12,
        div(style = css(height="30px"),
@@ -543,29 +632,30 @@ plot_rate_line_legend_1(legend_data)),NULL
 
 ```
 
-```{r plot-trend-age_2-pop}
+```{r plot-trend-age-pop}
 
 bscols(widths = 12,
   div(style = css(width="98%", height="370px"),
-plot_rate_line(pds_pop_age_2_data, measure = age_grp_2, measure_text = "Age Group: ", y = "Rate per 10,000 Population", scales = "free_y", facet_space = -5))
+plot_rate_line(pds_pop_age_data, measure = age_grp_2, measure_text = "Age Group: ", y = "Rate per 10,000 Population", scales = "free_y", colours = age_colours, facet_space = -5))
 )
 
 ```
 
-```{r table-trend-age_2-pop}
+```{r table-trend-age-pop}
 
-trend_pop_age_2_table_data <- pds_all_age_2_rates %>% filter(!is.na(pop_rate_10000)) %>% 
+trend_pop_age_table_data <- pds_all_age_rates %>% filter(!is.na(pop_rate_10000)) %>% 
   select(geog,fy,age_grp_2,pop_rate_10000) %>%
   pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
+  arrange(age_grp_2) %>% 
              rename(`Age Group` = age_grp_2)
 
 
-trend_pop_age_2_table <- SharedData$new(trend_pop_age_2_table_data, key = ~geog, group = "trend_age_2_pop")
+trend_pop_age_table <- SharedData$new(trend_pop_age_table_data, key = ~geog, group = "trend_age_pop")
 
 
 bscols(widths = 12,
        div(style = css(width="97%", height="170px", margin="20px"),
-DT::datatable(trend_pop_age_2_table, rownames = FALSE, selection = 'none',
+DT::datatable(trend_pop_age_table, rownames = FALSE, selection = 'none',
               options = list(pageLength = 10,
                              scrollX = TRUE,
                              scrollY = FALSE,
@@ -606,8 +696,15 @@ Sidebar {.sidebar}
 </ul>
 
 ***
+FURTHER INFORMATION:
 
-For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
+<ul style="list-style-type:square;">
+   <li >[Methodology](#methodology)</li>
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
+
+***
 
 ***
 
@@ -618,19 +715,27 @@ Row
 
 ### **Note**
 
-**-**
+This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for given age groups. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area. Use the dropdown menus to select a year to show in the charts and tables. For the Integration Authority tab use the dropdown menu to filter for selected areas to show in the charts and tables.
+
+The Trend tab includes a chart and table showing the trend of the percentage by financial year for each age group for a selected geographical area. Use the dropdown menus to select a geographical area to show in the chart and table.
+
+*As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
 
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
-Row {.tabset data-height=1100}
+Row {.tabset data-height=1110}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb-age-ldp}
-ldp_ijb_age_2 <- ldp_all_age_2 %>% filter(!grepl("NHS", geog))
+ldp_ijb_age <- ldp_all_age %>% filter(!grepl("NHS", geog)) %>%  
+         mutate(age_grp_2_group = "All", .before = age_grp_2)  %>% 
+  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
 
-ldp_age_data_ijb <- SharedData$new(ldp_ijb_age_2, key = ~fy,  group = "ijb_age_ldp")
+ldp_age_data_ijb <- SharedData$new(ldp_ijb_age, key = ~key,  group = "ijb_age_ldp")
 
 data_filter_ijb_age_ldp <- filter_select(id = "filter_ijb_age_ldp",
                                     label = "Select Financial Year:",
@@ -639,10 +744,20 @@ data_filter_ijb_age_ldp <- filter_select(id = "filter_ijb_age_ldp",
                                     multiple = FALSE
                                       )
 
+data_filter_ijb_age_ldp_geog <- filter_select(id = "filter_ijb_age_ldp_geog",
+                                    label = "Select Integration Authority Area(s):",
+                                    group = ~geog,
+                                    sharedData = ldp_age_data_ijb,
+                                    multiple = TRUE
+                                      )
+
+
 bscols(widths = c(1,5,NA),
        NULL,
        data_filter_ijb_age_ldp,
        NULL)
+
+bscols(widths = c(1,10,NA), NULL, data_filter_ijb_age_ldp_geog, NULL)
 
 
 ```
@@ -651,74 +766,122 @@ bscols(widths = c(1,5,NA),
 ```{r plot-ijb-age-legend-ldp}
 
  bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_age_2 %>% filter(geog == "Scotland"), measure = age_grp_2)))
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_age %>% filter(geog == "Scotland"), measure = age_grp_2, colours = age_colours)))
 
 ```
 
 
 ```{r plot-ijb-age-ldp}
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar(ldp_age_data_ijb, y_value = perc_met, measure = age_grp_2, measure_text = "Age Group: ", x = "Integration Authority Area", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+  div(style = css(width="98%", height="355px", marginBottom="-20px"),
+plot_ly(ldp_age_data_ijb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~age_grp_2, type = 'bar', color = ~age_grp_2, colors = age_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Age Group: %{hovertext} <br>",
+                            "%{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Integration Authority Area", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
 )
 
 ```
 
 
 ```{r table-ijb-age-ldp}
-ijb_age_ldp_data <- ldp_all_age_2 %>% filter(!grepl("NHS", geog)) %>% 
-  select(geog,fy,age_grp_2,perc_met) %>% 
-   mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
-   pivot_wider(names_from = age_grp_2, values_from = perc_met) %>%
-  select(fy,geog,`85+`, `80 to 84`, `79 and Under`) %>% 
-  mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
-   mutate(type = "% Met Standard/Exempt", .after = geog)
+ijb_age_ldp_data <- bind_rows(
+  
+  ldp_all_age %>% filter(!grepl("NHS", geog)) %>% 
+  select(geog,fy,age_grp_2,perc_met) %>%
+   mutate(age_grp_2_group = age_grp_2, .before = age_grp_2),
+
+  ldp_all_age %>% filter(!grepl("NHS", geog)) %>% 
+  select(geog,fy,age_grp_2,perc_met) %>%
+   mutate(age_grp_2_group = "All", .before = age_grp_2)
+) %>% 
+ mutate(perc_met = if_else(is.na(perc_met), "-", paste0(perc_met,"%"))) %>%
+    arrange(age_grp_2) %>% 
+  pivot_wider(names_from = age_grp_2, values_from = perc_met) %>%
+  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(age_grp_2_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " "))))  %>% 
+  mutate(type = "% Met Standard/Exempt", .after = age_grp_2_group)
 
 
-ijb_age_totals_data <- pds_all_age_2 %>% filter(!grepl("NHS", geog)) %>% 
+
+ijb_age_totals_data <- bind_rows(
+  
+   pds_all_age %>%
+  filter(!grepl("NHS", geog)) %>% 
+  mutate(age_grp_2_group = age_grp_2, .before = age_grp_2), 
+
+ pds_all_age %>%
+  filter(!grepl("NHS", geog)) %>% 
+  mutate(age_grp_2_group = "All", .before = age_grp_2)
+ ) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+    arrange(age_grp_2) %>% 
   pivot_wider(names_from = age_grp_2, values_from = total_referrals) %>%
-  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
-  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-  relocate(`80 to 84`, .before = `79 and Under`) %>%  relocate(`85+`, .before = `80 to 84`) %>% 
-     mutate(type = "Number of Referrals", .after = geog)
+  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(age_grp_2_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " ")))) %>% 
+  mutate(type = "Number of Referrals", .after = age_grp_2_group)
 
+
+         
 
 ijb_ldp_age_table_data <- bind_rows(ijb_age_totals_data, ijb_age_ldp_data) %>% 
-  arrange(fy, geog) %>% 
+  arrange(geog, key, desc(type)) %>% 
   mutate(geog = if_else(type == "% Met Standard/Exempt", " ", geog)) %>% 
- rename(" " = type, `Integration Authority Area` = geog)
+ rename(" " = "type") %>% 
+    rename(`Integration Authority Area` = geog)
 
-ijb_age_table_ldp <- SharedData$new(ijb_ldp_age_table_data, key = ~fy, group = "ijb_age_ldp")
+
+ijb_age_table_ldp <- SharedData$new(ijb_ldp_age_table_data, key = ~key, group = "ijb_age_ldp")
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="500px", margin="20px"),
-DT::datatable(ijb_age_table_ldp, rownames = FALSE, #extensions = "FixedColumns",
-               options = list(pageLength = 66,
+       div(style = css(width="97%", height="410px", margin="20px"),
+DT::datatable(ijb_age_table_ldp, rownames = FALSE, selection = "none", #extensions = "FixedColumns",
+              options = list(pageLength = 66,
                              scrollX = TRUE,
-                           #  fixedColumns = list(leftColumns = 2),
-                             scrollY = TRUE,
+                            # fixedColumns = list(leftColumns = 4),
+                             scrollY = FALSE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 3:5)
-                             ))) %>%
-  DT::formatStyle(2:3, fontWeight = "bold",# padding = "4px"
-  )
+                             columnDefs = list(list(visible = FALSE, targets = c(0,1,3)),
+                                               list(className = 'dt-right', targets = 5:7)
+                                               ))) %>%
+           DT::formatStyle(c(3,5), fontWeight = "bold"#, padding = "4px"
+                          )
         )
      )
-
-
-
-
 ```
 
 ### **Health Boards**
 
 ```{r dropdown-hb-age-ldp}
-ldp_hb_age_2 <- ldp_all_age_2 %>% filter(geog == "Scotland" | grepl("NHS", geog))
+ldp_hb_age <- #bind_rows( 
+  
+ # ldp_all_age %>% filter(!grepl("NHS", geog)) %>% 
+        #   mutate(age_grp_2_group = age_grp_2, .before = age_grp_2) %>% 
+#  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog),
+  
+   ldp_all_age %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%  
+         mutate(age_grp_2_group = "All", .before = age_grp_2)  %>% 
+  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
+#)
 
-ldp_age_data_hb <- SharedData$new(ldp_hb_age_2, key = ~fy, group = "hb_age_ldp")
+ldp_age_data_hb <- SharedData$new(ldp_hb_age, key = ~key, group = "hb_age_ldp")
 
 data_filter_hb_age_ldp <- filter_select(id = "filter_hb_age_ldp",
                                     label = "Select Financial Year:",
@@ -727,10 +890,27 @@ data_filter_hb_age_ldp <- filter_select(id = "filter_hb_age_ldp",
                                     multiple = FALSE
                                       )
 
+# data_filter_hb_age_ldp_quintile <- filter_select(id = "filter_hb_age_ldp_quintile",
+#                                     label = "Select Age Group:",
+#                                     group = ~age_grp_2_group,
+#                                     sharedData = ldp_age_data_hb,
+#                                     multiple = FALSE
+#                                       )
+
+
+#data_filter_hb_age_ldp_geog <- filter_select(id = "filter_hb_age_ldp_geog",
+                             #       label = "Select Integration Authority Area(s):",
+                                  #  group = ~geog,
+                                   # sharedData = ldp_age_data_hb,
+                                   # multiple = TRUE
+                                   #   )
+
 bscols(widths = c(1,5,NA),
        NULL,
        data_filter_hb_age_ldp,
        NULL)
+
+#bscols(widths = c(1,10,NA), NULL, data_filter_hb_age_ldp_geog, NULL)
 
 
 ```
@@ -739,58 +919,103 @@ bscols(widths = c(1,5,NA),
 ```{r plot-hb-age-legend-ldp}
 
  bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_age_2 %>% filter(geog == "Scotland"), measure = age_grp_2)))
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_age %>% filter(geog == "Scotland"), measure = age_grp_2, colours = age_colours)))
 
 ```
 
 
 ```{r plot-hb-age-ldp}
+
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar(ldp_age_data_hb, y_value = perc_met, measure = age_grp_2, measure_text = "Age Group: ", x = "Health Board", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+  div(style = css(width="98%", height="355px", marginBottom="-20px"),
+plot_ly(ldp_age_data_hb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~age_grp_2, type = 'bar', color = ~age_grp_2, colors = age_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Age Group: %{hovertext} <br>",
+                            "%{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Health Board", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
 )
 
 ```
 
 
 ```{r table-hb-age-ldp}
-hb_age_ldp_data <- ldp_all_age_2 %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
-  select(geog,fy,age_grp_2,perc_met) %>% 
-   mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
-   pivot_wider(names_from = age_grp_2, values_from = perc_met) %>%
-  select(fy,geog,`85+`, `80 to 84`, `79 and Under`) %>% 
-  mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
-   mutate(type = "% Met Standard/Exempt", .after = geog)
+hb_age_ldp_data <- bind_rows(
+  
+  ldp_all_age %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  select(geog,fy,age_grp_2,perc_met) %>%
+   mutate(age_grp_2_group = age_grp_2, .before = age_grp_2),
 
-hb_age_totals_data <- pds_all_age_2 %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  ldp_all_age %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  select(geog,fy,age_grp_2,perc_met) %>%
+   mutate(age_grp_2_group = "All", .before = age_grp_2)
+) %>% 
+ mutate(perc_met = if_else(is.na(perc_met), "-", paste0(perc_met,"%"))) %>%
+    arrange(age_grp_2) %>% 
+  pivot_wider(names_from = age_grp_2, values_from = perc_met) %>%
+  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(age_grp_2_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " "))))  %>% 
+  mutate(type = "% Met Standard/Exempt", .after = age_grp_2_group)
+
+
+
+hb_age_totals_data <- bind_rows(
+  
+   pds_all_age %>%
+  filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  mutate(age_grp_2_group = age_grp_2, .before = age_grp_2), 
+
+ pds_all_age %>%
+  filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  mutate(age_grp_2_group = "All", .before = age_grp_2)
+ ) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+    arrange(age_grp_2) %>% 
   pivot_wider(names_from = age_grp_2, values_from = total_referrals) %>%
-  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
-  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
- relocate(`80 to 84`, .before = `79 and Under`) %>%  relocate(`85+`, .before = `80 to 84`) %>% 
-     mutate(type = "Number of Referrals", .after = geog)
+  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(age_grp_2_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " ")))) %>% 
+  mutate(type = "Number of Referrals", .after = age_grp_2_group)
 
+
+         
 
 hb_ldp_age_table_data <- bind_rows(hb_age_totals_data, hb_age_ldp_data) %>% 
-  arrange(fy, geog) %>% 
+  arrange(geog, key, desc(type)) %>% 
   mutate(geog = if_else(type == "% Met Standard/Exempt", " ", geog)) %>% 
- rename(" " = type, `Health Board` = geog)
+ rename(" " = "type") %>% 
+    rename(`Integration Authority Area` = geog)
 
-hb_age_table_ldp <- SharedData$new(hb_ldp_age_table_data, key = ~fy,  group = "hb_age_ldp")
+
+hb_age_table_ldp <- SharedData$new(hb_ldp_age_table_data, key = ~key, group = "hb_age_ldp")
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="500px", margin="20px"),
-DT::datatable(hb_age_table_ldp, rownames = FALSE, #extensions = "FixedColumns",
+       div(style = css(width="97%", height="470px", margin="20px"),
+DT::datatable(hb_age_table_ldp, rownames = FALSE, selection = "none", #extensions = "FixedColumns",
               options = list(pageLength = 30,
                              scrollX = TRUE,
-                             #fixedColumns = list(leftColumns = 2),
+                             #fixedColumns = list(leftColumns = 4),
                              scrollY = TRUE,
                              dom = "t",
                              ordering = FALSE,
-                             columnDefs = list(list(visible = FALSE, targets = 0),
-                                               list(className = 'dt-right', targets = 3:5)
+                             columnDefs = list(list(visible = FALSE, targets = c(0,1,3)),
+                                               list(className = 'dt-right', targets = 5:7)
                                                ))) %>%
-           DT::formatStyle(2:3, fontWeight = "bold", #padding = "4px"
+           DT::formatStyle(c(3,5), fontWeight = "bold"#, padding = "4px"
                           )
         )
      )
@@ -801,57 +1026,57 @@ DT::datatable(hb_age_table_ldp, rownames = FALSE, #extensions = "FixedColumns",
 
 ### **Trend**
 
-```{r dropdown-ldp-age_2}
+```{r dropdown-ldp-age}
 
-ldp_all_age_2_data <- SharedData$new(ldp_all_age_2, key = ~geog, group = "ldp_age_2")
+ldp_all_age_data <- SharedData$new(ldp_all_age, key = ~geog, group = "ldp_age")
 
-data_filter_ldp_age_2 <- filter_select(id = "filter_ldp_age_2",
+data_filter_ldp_age <- filter_select(id = "filter_ldp_age",
                                     label = "Select Integration Authority Area or Health Board:",
                                     group = ~geog,
-                                    sharedData = ldp_all_age_2_data,
+                                    sharedData = ldp_all_age_data,
                                     multiple = FALSE
                                       )
 
 bscols(widths = c(1,5,NA),
        NULL,
-       data_filter_ldp_age_2,
+       data_filter_ldp_age,
        NULL)
 
 
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px">Percentage of referrals who received a minimum of one year’s PDS by Age Group and Financial Year</h2>
-```{r plot-ldp-age_2-legend}
+```{r plot-ldp-age-legend}
 bscols(widths = 12,
        div(style = css(height="30px"),
 plot_ldp_line_legend_1(legend_data)),NULL
 )
 ```
 
-```{r plot-ldp-age_2}
+```{r plot-ldp-age}
 bscols(widths = 12,
   div(style = css(width="98%", height="370px"),
-plot_ldp_line(ldp_all_age_2_data, measure = age_grp_2, measure_text = "Age Group: "))
+plot_ldp_line(ldp_all_age_data, measure = age_grp_2, measure_text = "Age Group: ", colours = age_colours))
 )
 
 ```
 
 
-```{r table-ldp-age_2}
+```{r table-ldp-age}
 
-ldp_age_2_trend <- ldp_all_age_2 %>% filter(!is.na(perc_met)) %>%
+ldp_age_trend <- ldp_all_age %>% filter(!is.na(perc_met)) %>%
   select(geog, fy, age_grp_2, perc_met) %>%
    mutate(perc_met = paste0(perc_met, "%")) %>% 
   pivot_wider(names_from = fy, values_from = perc_met) %>%
   mutate(type = "% Met Standard/Exempt", .before = `2016/17`)
   
-trend_age_2_totals <- pds_all_age_2 %>% filter(fy %in% full_years, total_referrals != 0) %>%
+trend_age_totals <- pds_all_age %>% filter(fy %in% full_years, total_referrals != 0) %>%
   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   pivot_wider(names_from = fy, values_from = total_referrals, values_fill = "0") %>% 
     mutate(type = "Number of Referrals", .before = `2016/17`)
 
 
-ldp_age_2_table_data <- bind_rows(trend_age_2_totals, ldp_age_2_trend) %>% arrange(geog, desc(age_grp_2)) %>% 
+ldp_age_table_data <- bind_rows(trend_age_totals, ldp_age_trend) %>% arrange(geog, age_grp_2) %>% 
             mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
   mutate(age_grp_2 = if_else(type == "% Met Standard/Exempt", " ", age_grp_2)) %>% 
    rename(`Age Group` = age_grp_2) %>% 
@@ -859,12 +1084,12 @@ ldp_age_2_table_data <- bind_rows(trend_age_2_totals, ldp_age_2_trend) %>% arran
 
             
 
-ldp_age_2_table <- SharedData$new(ldp_age_2_table_data, key = ~geog, group = "ldp_age_2")
+ldp_age_table <- SharedData$new(ldp_age_table_data, key = ~geog, group = "ldp_age")
 
 
 bscols(widths = 12,
        div(style = css(width="97%", height="280px", margin="20px"),
-DT::datatable(ldp_age_2_table, rownames = FALSE, selection = 'none',
+DT::datatable(ldp_age_table, rownames = FALSE, selection = 'none',
               options = list(pageLength = 10,
                              scrollX = TRUE,
                              scrollY = FALSE,
@@ -907,6 +1132,16 @@ Sidebar {.sidebar}
   <li>[Outcomes](#gender-outcomes)</li>
 </ul>
 
+
+***
+
+FURTHER INFORMATION:
+
+<ul style="list-style-type:square;">
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
+
 ***
 
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
@@ -916,7 +1151,14 @@ Row
 
 ### **Note**
 
-**-**
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for males and females. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area. Use the dropdown menus to select a year to show in the charts and tables.
+
+The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each gender. Use the dropdown menu to select a geographical area to show in the chart alongside the trend for Scotland.
+
+*The rate per 10,000 population for each gender is calculated using the number of referrals with the given gender and the estimated population of the same gender for each geographical area. See the [Glossary](#glossary) page for more details.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+
 
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
@@ -1172,8 +1414,14 @@ Sidebar {.sidebar}
 </ul>
 
 ***
+FURTHER INFORMATION:
 
-For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
+<ul style="list-style-type:square;">
+   <li >[Methodology](#methodology)</li>
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
+
 
 ***
 
@@ -1184,7 +1432,13 @@ Row
 
 ### **Note**
 
-**-**
+This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for males and females. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area. Use the dropdown menus to select a year to show in the charts and tables.
+
+The Trend tab includes a chart and table showing the trend of the percentage by financial year for each gender for a selected geographical area. Use the dropdown menus to select a geographical area to show in the chart and table.
+
+*As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
 
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
@@ -1467,6 +1721,15 @@ Sidebar {.sidebar}
 
 ***
 
+FURTHER INFORMATION:
+
+<ul style="list-style-type:square;">
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
+
+***
+
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
 Row
@@ -1474,7 +1737,14 @@ Row
 
 ### **Note**
 
-**-**
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for SIMD (Scottish Index of Multiple Deprivation) quintiles. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area. Use the dropdown menus to select a year to show in the charts and tables. For the Integration Authority tab use the dropdown menu to filter for selected areas to show in the charts and tables.
+
+The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each quintile. Use the dropdown menu to select a geographical area to show in the chart alongside the trend for Scotland.
+
+*The rate per 10,000 population for each SIMD quintile is calculated using the number of referrals in the given quintile and the estimated population of the same quintile for each geographical area. See the [Glossary](#glossary) page for more details.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+
 
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
@@ -1834,8 +2104,13 @@ Sidebar {.sidebar}
 </ul>
 
 ***
+FURTHER INFORMATION:
 
-For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
+<ul style="list-style-type:square;">
+   <li >[Methodology](#methodology)</li>
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
 
 ***
 
@@ -1846,7 +2121,14 @@ Row
 
 ### **Note**
 
-**-**
+This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for SIMD (Scottish Index of Multiple Deprivation) quintiles. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area. Use the dropdown menus to select a year to show in the charts and tables. For the Integration Authority tab use the dropdown menu to filter for selected areas to show in the charts and tables.
+
+The Trend tabs include a chart and table showing the trend of the percentage by financial year for each SIMD quintile for a selected geographical area. Use the dropdown menus to select a geographical area to show in the charts and tables.
+
+*As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
+
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
 Row {.tabset data-height=1110}
@@ -2165,9 +2447,6 @@ DT::datatable(hb_simd_table_ldp, rownames = FALSE, selection = "none", #extensio
      )
 
 
-
-
-
 ```
 
 ### **Trend by SIMD Quintile**
@@ -2331,51 +2610,45 @@ DT::datatable(ldp_simd_table_2, rownames = FALSE, selection = 'none',
 function filter_default() {
 
   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_ijb_age_pop_group").getElementsByClassName("selectized") 
-  [0].selectize.setValue("85+", false);
-
-  document.getElementById("filter_ijb_age_pop_group").getElementsByClassName("selectized")
+  document.getElementById("filter_ijb_age_pop_geog").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_age_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_hb_age_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_hb_age_pop_group").getElementsByClassName("selectized") 
-  [0].selectize.setValue("85+", false);
-
-  document.getElementById("filter_hb_age_pop_group").getElementsByClassName("selectized")
+  document.getElementById("filter_ijb_age_ldp_geog").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_trend_age_2_pop").getElementsByClassName("selectized") 
+  document.getElementById("filter_trend_age_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
-  document.getElementById("filter_trend_age_2_pop").getElementsByClassName("selectized")
+  document.getElementById("filter_trend_age_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
 
   document.getElementById("filter_ijb_age_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_ijb_age_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
     
   document.getElementById("filter_hb_age_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_hb_age_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
-  document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized") 
+  document.getElementById("filter_ldp_age").getElementsByClassName("selectized") 
   [0].selectize.setValue("Scotland", false);
 
-  document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized")
+  document.getElementById("filter_ldp_age").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized") 
@@ -2385,25 +2658,25 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
     
   document.getElementById("filter_hb_sex_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_hb_sex_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -2421,13 +2694,13 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -2445,13 +2718,13 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_hb_simd_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_hb_simd_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(ldp_year, false);
 
   document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -2461,7 +2734,6 @@ function filter_default() {
 
   document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-  
   
  
   }
