@@ -38,7 +38,7 @@ la_pop %<>%
            )) %>% 
    mutate(age_grp_2 = 
            case_when(
-             age %in% 18:79 ~ "79 and Under",
+             age %in% 65:79 ~ "79 and Under",
              age %in% 80:84 ~ "80 to 84",
              age >= 85     ~ "85+"
            )) %>%
@@ -133,7 +133,7 @@ hb_pop %<>%
            )) %>% 
   mutate(age_grp_2 = 
            case_when(
-             age %in% 18:79 ~ "79 and Under",
+             age %in% 65:79 ~ "79 and Under",
              age %in% 80:84 ~ "80 to 84",
              age >= 85     ~ "85+"
            )) %>%
@@ -208,26 +208,42 @@ pop_data %>%
 
 ### 3 - read in simd pop file ---- 
 
-simd_pop_16_21 <- read_csv("//conf/dementia/A&I/PDS Development/data/simd_pop_16-21.csv") %>% 
-  select(-Total)
+simd_pop_la <- read_rds(glue("{cl_out}/lookups/Unicode/Populations/Estimates/",
+                             "DataZone2011_pop_est_2011_2022.rds")) %>% filter(year >= 2016) %>%
+select(geog = hscp2019name, year, simd = simd2020v2_sc_quintile, sex, 5:95) 
 
-simd_pop_16_21 %<>% pivot_longer(cols = 5:95,
+simd_pop_hb <- read_rds(glue("{cl_out}/lookups/Unicode/Populations/Estimates/",
+                             "DataZone2011_pop_est_2011_2022.rds")) %>% filter(year >= 2016) %>%
+  select(geog = hb2019name, year, simd = simd2020v2_sc_quintile, sex, 5:95)
+
+simd_pop_16_22 <- bind_rows(simd_pop_la,simd_pop_hb)
+
+
+simd_pop_16_22 %<>% pivot_longer(cols = 5:95,
                                  names_to = "age",
                                  values_to = "pop") %>% 
-  mutate(age = as.numeric(age)) %>% 
+  mutate(age = as.numeric(substring(age,4,5))) %>% 
   filter(age >= 18)
 
-simd_pop_16_21 %<>% mutate(simd = case_when(
-  decile %in% 1:2 ~ "1 - Most Deprived",
-  decile %in% 3:4 ~ "2",
-  decile %in% 5:6 ~ "3",
-  decile %in% 7:8 ~ "4",
-  decile %in% 9:10 ~ "5 - Least Deprived"
-), .before = decile)
+simd_pop_16_22 %<>% mutate(simd = case_when(
+  simd == 1 ~ "1 - Most Deprived",
+  simd == 2 ~ "2",
+  simd == 3 ~ "3",
+  simd == 4 ~ "4",
+  simd == 5 ~ "5 - Least Deprived"
+))
 
 
-simd_pop_data <- simd_pop_16_21 %>% group_by(year, geog, simd, sex, age) %>% 
-  summarise(pop = sum(pop), .groups = "drop")
+
+simd_pop_data <- bind_rows(
+  simd_pop_16_22 %>% group_by(year, geog, simd, sex, age) %>% 
+  summarise(pop = sum(pop), .groups = "drop"),
+  simd_pop_16_22 %>% group_by(year, geog, simd, sex = "All", age) %>% 
+    summarise(pop = sum(pop), .groups = "drop"),
+  simd_pop_16_22 %>% filter(grepl("NHS", geog)) %>% group_by(year, geog = "Scotland", simd, sex, age) %>% 
+    summarise(pop = sum(pop), .groups = "drop"),
+  simd_pop_16_22 %>% filter(grepl("NHS", geog)) %>% group_by(year, geog = "Scotland", simd, sex = "All", age) %>% 
+    summarise(pop = sum(pop), .groups = "drop"))
 
 
 simd_pop_data %<>% mutate(age_grp = 
@@ -243,19 +259,19 @@ simd_pop_data %<>% mutate(age_grp =
                             )) %>% 
   mutate(age_grp_2 = 
            case_when(
-             age %in% 18:74 ~ "74 and Under",
-             age %in% 75:84 ~ "75 to 84",
+             age %in% 65:79 ~ "79 and Under",
+             age %in% 80:84 ~ "80 to 84",
              age >= 85     ~ "85+"
            )) %>%
   mutate(sex = 
            case_when(
-             sex == "Males" ~ "01 Male",
-             sex == "Females" ~ "02 Female",
+             sex == "M" ~ "01 Male",
+             sex == "F" ~ "02 Female",
              sex == "All" ~ "All"
            ))
 
-
 simd_pop_data %<>% group_by(geog, year, age_grp_2, age_grp, sex, simd) %>% summarise(pop = sum(pop), .groups = "drop")
+
 
 simd_pop_summary <- bind_rows(simd_pop_data,
                               
@@ -270,6 +286,7 @@ simd_pop_summary <- bind_rows(simd_pop_data,
   
   )
 
+
 simd_pop_summary %<>% 
   mutate (geog =
             case_when(
@@ -279,34 +296,31 @@ simd_pop_summary %<>%
               TRUE ~ geog
             ))
 
-simd_pop_summary%<>% mutate (geog =
+simd_pop_summary %<>% mutate (geog =
                                case_when(
-                                 str_detect(geog, "City of Edinburgh") ~ "Edinburgh City",
+                                 str_detect(geog, "Edinburgh") ~ "Edinburgh City",
                                  str_detect(geog, "Na h-Eileanan Siar") ~ "Western Isles",
                                  TRUE ~ geog
                                ))
 
-simd_pop_summary %<>% 
-  bind_rows(
+simd_pop_data_final <- 
+  bind_rows(simd_pop_summary,
+            
     simd_pop_summary %>%
-      filter(year == 2021) %>%
-      mutate(year = 2022),
-    
-    simd_pop_summary %>%
-      filter(year == 2021) %>%
+      filter(year == 2022) %>%
       mutate(year = 2023),
     
     simd_pop_summary %>%
-      filter(year == 2021) %>%
-      mutate(year = 2024))
+      filter(year == 2022) %>%
+      mutate(year = 2024)) %>% 
+  complete(nesting(year, geog, age_grp, age_grp_2, sex), simd, fill = list(pop = 0)) 
 
+# cl_stirling <- simd_pop_summary %>% filter(geog == "Clackmannanshire" | geog == "Stirling") %>% mutate(ijb = "Clackmannanshire and Stirling", .before = everything()) 
+# cls_pop<-cl_stirling %>% group_by(ijb, year, age_grp_2, age_grp, sex, simd) %>% summarise(pop = sum(pop)) %>% rename("geog" = "ijb")
 
-cl_stirling <- simd_pop_summary %>% filter(geog == "Clackmannanshire" | geog == "Stirling") %>% mutate(ijb = "Clackmannanshire and Stirling", .before = everything()) 
-cls_pop<-cl_stirling %>% group_by(ijb, year, age_grp_2, age_grp, sex, simd) %>% summarise(pop = sum(pop)) %>% rename("geog" = "ijb")
+# simd_pop_summary %<>% filter(geog != "Clackmannanshire" & geog != "Stirling") 
 
-simd_pop_summary %<>% filter(geog != "Clackmannanshire" & geog != "Stirling") 
-
-simd_pop_data_final <- bind_rows(simd_pop_summary, cls_pop)
+# simd_pop_data_final <- bind_rows(simd_pop_summary, cls_pop)
 
 
 simd_pop_data_final %>% 
