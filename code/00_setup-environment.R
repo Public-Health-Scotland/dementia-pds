@@ -65,12 +65,12 @@ library(fs)            # For setting up directories
 ### 2 - Define file paths dependent on whether running on server or desktop ----
 
 stats <- case_when(
-  sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ "/conf",
+  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ "/conf",
   TRUE ~ "//stats"
 )
 
 cl_out <- case_when(
-  sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ 
+  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ 
     "/conf/linkage/output",
   TRUE ~ "//stats/cl-out"
 )
