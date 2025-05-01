@@ -10,7 +10,7 @@ output:
 ```{r load-setup, include=FALSE}
 source(here::here("code", "00_setup-environment.R"))
 library(crosstalk) # for drop down menus
-library(phsstyles)
+#library(phsstyles)
 library(htmltools)
 
 
@@ -130,6 +130,15 @@ if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years
 
 
 ```
+
+<script>
+
+var pds_year = "`r current_fy`";
+
+var ldp_year = "`r last_full_year`";
+
+</script>
+
 <!-- delete all of above when finished testing -->
 
 
@@ -198,6 +207,14 @@ Sidebar {.sidebar}
 </ul>
 
 ***
+FURTHER INFORMATION:
+
+<ul style="list-style-type:square;">
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
+
+***
 
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
@@ -206,11 +223,18 @@ Row
 
 ### **Note**
 
-**-**
+This page shows pathways from dementia diagnosis to first contact by PDS practitioner. The Integration Authority Areas and Health Boards tabs include a chart and table showing the median number of days between diagnosis and contact for each geographical area by financial year. Use the dropdown menus to select a year to show in the charts and tables.
 
-<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
+The Trend tab includes a chart and table showing the trend of the median days between diagnosis and contact by financial year for Scotland, Integration Authority Areas and Health Boards. Use the dropdown menu to select multiple geographies to show in the chart. 
 
-<!-- **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.* -->
+The Waiting Times Breakdown tab includes a table showing the number of referrals, percentage of referrals allocated and contacted by PDS practitioner, and the median number of days between each pathway. Use the dropdown menu to select a year to show in the table. 
+
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+<br>
+
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=1070}
 ----------------------------------------------------------------------
@@ -250,7 +274,7 @@ NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to contact by PDS practitioner by Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to first contact by PDS practitioner by Integration Authority Area</h2>
 ```{r plot-median-ijb}
 
 bscols(widths = 12,
@@ -422,10 +446,10 @@ data_filter_wait_trend,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to contact by PDS practitioner</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to first contact by PDS practitioner</h2>
 ```{r plot-wait-trend}
 
- wait_plot_trend <- plot_trend(wait_data_trend, median_diagnosis_to_contact, x ="Financial Year of Diagnosis", y = "Median", colours = phs_colours_46, measure_text = "Average (median) days from diagnosis to first contact: ")
+ wait_plot_trend <- plot_trend(wait_data_trend, median_diagnosis_to_contact, x ="Financial Year of Diagnosis", y = "Median Wait (days)", colours = phs_colours_46, measure_text = "Average (median) days from diagnosis to first contact: ")
 
 bscols(widths = 12,
         div(style = css(width="98%", height="385px"),
@@ -523,7 +547,7 @@ data_filter_all_year, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px"> Pathways from diagnosis to contact by PDS practitioner </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: -20px"> Pathways from diagnosis to first contact by PDS practitioner </h2>
 ```{r wait-table-all}
 bscols(widths = 12,
        div(style = css(width="97%", height="785px", margin="20px"),
@@ -594,8 +618,13 @@ Sidebar {.sidebar}
 </ul>
 
 ***
+FURTHER INFORMATION:
 
-For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
+<ul style="list-style-type:square;">
+   <li >[Methodology](#methodology)</li>
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
 
 ***
 
@@ -606,11 +635,22 @@ Row
 
 ### **Note**
 
-**-**
+This page includes further information for referrals in regards to the LDP Standard.
 
-<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
+The LDP Standard Not Met tab includes a table showing the number of individuals and percentage of total referrals who did not receive a minimum of one year’s PDS starting within 12 months of diagnosis, along with the percentage for each reason for not meeting the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year.
 
-<!-- **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.* -->
+The PDS Ongoing tab includes a table showing the number of individuals and percentage of total referrals where the LDP standard cannot yet be determined, along with the percentage of individuals who had not started within 12 months and individuals still receiving PDS within 12 months of their diagnosis for Scotland, Integration Authority Areas and Health Boards by financial year for years that are not yet finalised.
+
+The Exempt tab includes a table showing the number of individuals and percentage of total referrals who are exempt from the LDP standard for Scotland, Integration Authority Areas and Health Boards by financial year.
+
+Use the dropdown menus to select a year to show in the tables.
+
+*As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+<br>
+
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=790}
 ----------------------------------------------------------------------
@@ -666,7 +706,7 @@ headers_notmet <- htmltools::withTags(table(
     ),
     tr(
       th(colspan = 1, "First contact occurred more than 12 months after diagnosis"),
-      th(colspan = 1, "No first contact and more than 12 months since diagnosis"),
+      th(colspan = 1, "No contact and more than 12 months since diagnosis"),
       th(colspan = 1, "PDS terminated less than 11 months after first contact"),
       th(colspan = 1, "PDS terminated without contact")
     )
@@ -868,6 +908,15 @@ Sidebar {.sidebar}
 
 ***
 
+FURTHER INFORMATION:
+
+<ul style="list-style-type:square;">
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
+
+***
+
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
 Row
@@ -875,11 +924,14 @@ Row
 
 ### **Note**
 
-**-**
+This page includes a table showing the percentage of total referrals where 'PDS uptake decision' has been recorded along with the percentage which have been recorded as 'Accepted' or 'Accepted but initially declined' for Integration Authority Areas and Health Boards with comparison to Scotland for each financial year. Use the dropdown menu to select a year to show in the table.
 
-<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
-<!-- **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.* -->
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+<br>
+
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=920}
 ----------------------------------------------------------------------
@@ -938,6 +990,9 @@ bscols(widths = c(1,5,NA),
 bscols(widths = 12,
        div(style = css(width="98%", height="710px", margin="15px"),
           DT::datatable(table_ijb_uptake, rownames = FALSE,
+                       # caption = htmltools::tags$caption(
+                      # style = 'caption-side: bottom; text-align: left;',
+                       #"A dash (-) indicates that due to data quality issues this measure could not be calculated."),
               options = list(pageLength = 32,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -961,7 +1016,7 @@ bscols(widths = 12,
 
  table_hb_uptake_data <- left_join(bind_rows(pds_scot_totals, pds_hb_totals),
   
-  test<-uptake_data %>% 
+  uptake_data %>% 
       filter(age_grp_2 == "All", simd == "All") %>% 
      filter(ijb == "All" | ijb == "Scotland") %>% 
       pivot_wider(names_from = pds_uptake_decision, values_from = referrals) %>% 
@@ -1060,7 +1115,14 @@ Sidebar {.sidebar}
 </ul>
 
 ***
+FURTHER INFORMATION:
 
+<ul style="list-style-type:square;">
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
+
+***
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
 Row
@@ -1068,11 +1130,14 @@ Row
 
 ### **Note**
 
-**-**
+This page includes a table showing the number of individuals and percentage of total referrals with no contact by PDS practitioner within 12 months of contact, along with the number and percentage of total referrals whose PDS was ended with no contact for Integration Authority Areas and Health Boards with comparison to Scotland for each financial year. Use the dropdown menu to select a year to show in the table.
 
-<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
-<!-- **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.* -->
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+<br>
+
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=680}
 ----------------------------------------------------------------------
@@ -1107,7 +1172,7 @@ no_contact_ijb <- left_join(ijb_totals_12, no_contact_term_ijb) %>%
     mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>% arrange(ijb) %>%
     mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
     mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-   mutate(across(starts_with("%"),
+   mutate(across(starts_with("perc"),
                   ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
    mutate(across(starts_with("referrals"),
                   ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
@@ -1139,7 +1204,7 @@ bscols(widths = 12,
        div(style = css(width="97%", height="500px", margin="20px"),
      DT::datatable(no_contact_table_data_ijb, rownames = FALSE, caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
-                       "A dash (-) indicates insufficient data for this measure to be calculated. Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis."),
+                       "A dash (-) indicates that this measure could not be calculated due to data quality issues. Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis."),
               options = list(pageLength = 33,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -1163,7 +1228,7 @@ bscols(widths = 12,
 
 no_contact_term_hb <- term_data_no_contact %>%  
     filter(sex == "All", termination_or_transition_reason == "All reasons", ldp == "All") %>%
-    filter(health_board == "Scotland" | grepl("NHS", health_board)) %>% 
+    filter(ijb == "Scotland" | grepl("NHS", ijb)) %>% 
     pivot_wider(names_from = ldp, values_from = c(referrals, median_referral_to_termination)) %>%
     select(fy, health_board,
            referrals_All) %>% rename(referrals_no_contact_term = referrals_All)
@@ -1240,37 +1305,37 @@ function filter_default() {
 
 
   document.getElementById("not_met_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("not_met_filter_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
    document.getElementById("ongoing_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("ongoing_filter_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("exempt_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("exempt_filter_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("wait_filter_all_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("wait_filter_all_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_median").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_median").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_median_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_median_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
@@ -1282,25 +1347,25 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
    document.getElementById("no_contact_filter_year_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("no_contact_filter_year_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");

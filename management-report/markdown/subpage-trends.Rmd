@@ -10,7 +10,7 @@ output:
 ```{r load-setup, include=FALSE}
 source(here::here("code", "00_setup-environment.R"))
 library(crosstalk) # for drop down menus
-library(phsstyles)
+#library(phsstyles)
 library(htmltools)
 
 
@@ -131,6 +131,15 @@ if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years
 
 
 ```
+
+<script>
+
+var pds_year = "`r current_fy`";
+
+var ldp_year = "`r last_full_year`";
+
+</script>
+
 <!-- delete all of above when finished testing -->
 
 
@@ -187,6 +196,14 @@ Sidebar {.sidebar}
 </ul>
 
 ***
+FURTHER INFORMATION:
+
+<ul style="list-style-type:square;">
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
+
+***
 
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
@@ -196,7 +213,9 @@ Row
 
 ### **Note**
 
-**-**
+This page includes a chart and table showing the trend for number of people referred to PDS by financial year for Scotland, Integration Authority Areas and Health Boards. For the Integration Authority Areas and Health Boards tabs use the dropdown menus to select multiple geographies to show in the charts.  
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
@@ -211,7 +230,7 @@ Row {.tabset data-height=1300}
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS, Scotland</h2>
 ```{r trend-plot}
 
-trends_plot <- plot_trend(pds_scot_totals, total_referrals, x ="Financial Year of Diagnosis", y = "Number", measure_text = "Referrals: ", Scotland = TRUE)
+trends_plot <- plot_trend(pds_scot_totals, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", Scotland = TRUE)
 
 bscols(widths = 12,
         div(style = css(width="98%", height="365px"), 
@@ -258,7 +277,7 @@ data_filter_ijb, NULL)
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS, Integration Authority Areas </h2>
 ```{r trend-plot-ijb}
 
-trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number", measure_text = "Referrals: ")
+trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ")
 
 bscols(widths = 12,
         div(style = css(width="98%", height="395px"),
@@ -304,7 +323,7 @@ data_filter_hb, NULL)
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS, Health Boards </h2>
 ```{r trend-plot-hb}
 
-trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number", measure_text = "Referrals: ")
+trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ")
 
 bscols(widths = 12,
         div(style = css(width="98%", height="395px"),
@@ -354,6 +373,14 @@ Sidebar {.sidebar}
 </ul>
 
 ***
+FURTHER INFORMATION:
+
+<ul style="list-style-type:square;">
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
+
+***
 
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
@@ -363,7 +390,14 @@ Row
 
 ### **Note**
 
-**-**
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over). The Integration Authority Area and Health Board tabs include a chart and table showing the rate for each geographical area by financial year. Use the dropdown menus to select a year to show in the charts. 
+
+The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland, Integration Authority Areas and Health Boards. Use the dropdown menu to select multiple geographies to show in the chart. 
+
+*The rate per 10,000 population is calculated using the number of referrals with a dementia diagnosis date in the given financial year and the estimated population of the same year for each geographical area. See the [Glossary](#glossary) page for more details.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
 
@@ -536,8 +570,14 @@ Sidebar {.sidebar}
 </ul>
 
 ***
+FURTHER INFORMATION:
 
-For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
+<ul style="list-style-type:square;">
+   <li >[Methodology](#methodology)</li>
+   <li >[Glossary](#glossary)</li>
+   <li >[User Guide](#user-guide)</li>
+</ul>
+
 
 ***
 
@@ -549,7 +589,15 @@ Row
 
 ### **Note**
 
-**-**
+This page includes charts and tables showing the trend by financial year for information in regards to the LDP Standard. The first tab shows the percentage of the estimated number of people newly diagnosed with dementia that have been referred to PDS for Scotland and Health Boards (estimates are not available for Integration Authority Areas).
+
+The second tab shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for Scotland, Integration Authority Areas and Health Boards. 
+
+Use the dropdown menus to select multiple geographies to show in the charts.
+
+*As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
 
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
@@ -629,7 +677,7 @@ data_filter_met_trend,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS (Standard Met/Exempt)</h2>
 ```{r plot-med-ldp}
  trends_met_plot <- plot_trend_perc(pds_met_rates_data, perc_met, x ="Financial Year of Diagnosis", colours = phs_colours_46)
 
@@ -660,6 +708,7 @@ pds_met_rates %>% select(geog, fy, perc_met) %>%
 
 
 ```{js }
+
 function filter_default() {
   document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
   [0].selectize.setValue("NHS Ayrshire & Arran", false);
@@ -680,13 +729,13 @@ function filter_default() {
   [0].selectize.removeOption("");
   
   document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
   
   document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("2023/24", false);
+  [0].selectize.setValue(pds_year, false);
 
   document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
