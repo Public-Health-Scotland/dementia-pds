@@ -363,11 +363,7 @@ Sidebar - glossary {.sidebar}
 <br>
 
 ### Glossary
-<<<<<<< HEAD
-#### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
-=======
 #### PDS Quarterly `r paste0(current_fy, " Q", qt)`
->>>>>>> 101acf99de549391d508c0290e0c891e8d5a13fb
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
@@ -470,11 +466,7 @@ Sidebar - navigation guide {.sidebar}
 <br>
 
 ### Navigation Guide
-<<<<<<< HEAD
-#### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
-=======
 #### PDS Quarterly `r paste0(current_fy, " Q", qt)`
->>>>>>> 101acf99de549391d508c0290e0c891e8d5a13fb
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
@@ -526,31 +518,7 @@ scotland <- map(.x = sort(unique(pds$fy)),
 `r paste(knitr::knit_child(text = scotland), collapse = '')`
 
 
-<!-- HEALTH BOARDS -->
 
-```{r health-boards, include=FALSE}
-
-health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
-                                  sort(unique(pds$health_board))), 
-                      .f = ~ set_env(data = pds,
-                                     exp  = exp,
-                                     hb   = .y,
-                                     year = .x,
-                                     quarter = qt))
-
-```
-
-`r paste(knitr::knit_child(text = health_boards), collapse = '')`
-
-
-<!-- TOTAL REFERRALS - TRENDS & RATES -->
-`r knitr::knit_child("subpage-trends.Rmd")`
-
-<!-- DEMOGRAPHICS -->
-`r knitr::knit_child("subpage-demographics.Rmd")`
-
-<!-- PATHWAYS -->
-`r knitr::knit_child("subpage-pathways.Rmd")`
 
 Data Quality
 =================================================

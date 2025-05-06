@@ -146,17 +146,15 @@ var ldp_year = "`r last_full_year`";
 </script>
 
 ```{r glossary calculations}
+
 ldp <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output))
 
 total_age_known <- ldp %>% filter(age_grp != "Unknown") %>% nrow()
 age_65_plus <-ldp %>% filter(age >= 65) %>% nrow()
 
 perc_65_plus <- round(age_65_plus/total_age_known*100,1)
-
-age_unknown <- ldp %>% filter(age_grp == "Unknown") %>% nrow()
-sex_unknown <- ldp %>% filter(sex %in% c("98 Not Specified", "99 Not Known")) %>% nrow()
-simd_unknown <- ldp %>% filter(simd == "Unknown") %>% nrow()
 ```
+
 
 Home
 =================================================
@@ -165,8 +163,8 @@ Sidebar - about this report {.sidebar}
 
 <br>
 
-### About This Report
-#### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
+### PDS Quarterly Report
+#### `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
@@ -176,7 +174,7 @@ Sidebar - about this report {.sidebar}
   <li style="font-size: 20px;">[**About This Report**](#home)</li>
   <li style="font-size: 20px;">[Methodology](#methodology)</li>
   <li style="font-size: 20px;">[Glossary](#glossary)</li>
-  <li style="font-size: 20px;">[Navigation Guide](#navigation-guide)</li>
+  <li style="font-size: 20px;">[User Guide](#user-guide)</li>
 </ul>
 
 ***
@@ -184,23 +182,21 @@ Sidebar - about this report {.sidebar}
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
 Row
--------------------------------------------------
+----------------------------------------------------------------------
 
-### <!-- No Title -->
+###<!-- No title  -->
 
 This report has been produced by Public Health Scotland (PHS) and contains analysis of performance against the [Scottish Government's LDP Standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP){target="_blank"} on provision of Dementia Post Diagnostic Support (PDS).
 
 <span style="color:red"> **The information contained in this report is for management information only and should not be distributed widely.** </span>
 
-These reports reflect the revised [Dementia PDS dataset](https://publichealthscotland.scot/media/20921/2023-12-14-dementia-pds-definitions-and-recording-guidance-v14.pdf){target="_blank"} effective 01 April 2019 and contain data for individuals diagnosed with dementia between **`r format(dmy(01042016), "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`** who were referred for post diagnostic support.
+These reports reflect the [Dementia PDS dataset](https://publichealthscotland.scot/media/20921/2023-12-14-dementia-pds-definitions-and-recording-guidance-v14.pdf){target="_blank"} effective 01 April 2019 and contain data for individuals diagnosed with dementia between **`r format(dmy(01042016), "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`** who were referred for post diagnostic support.
 
-Data are submitted to PHS by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(ymd(paste0(substr(provisional_year, 1,4), "-04-01")), "%d %B %Y")` onwards. Therefore, data for diagnoses from this date onwards are refreshed in each management report and are based on the most recently submitted data. Data for diagnoses prior to `r format(ymd(paste0(substr(provisional_year, 1,4), "-04-01")), "%d %B %Y")` are now final and will not change in future versions of the report. 
+Data are submitted to PHS by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(start_date, "%d %B %Y")` onwards. Therefore, data for diagnoses from this date onwards are refreshed in each management report and are based on the most recently submitted data. 
 
 Information is shown at Scotland, Health Board and Integration Authority Area level using the drop down menus at the top of the page.
 
 For definitions of terms used throughout the report see the [Glossary](#glossary) page.
-
-For information on how to navigate the report and use its features see the [Navigation Guide](#navigation-guide).
  
 To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the PHS Dementia PDS team mailbox at: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot).
 
@@ -258,8 +254,8 @@ Sidebar - methodology {.sidebar}
 
 <br>
 
-### Methodology
-#### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
+### PDS Quarterly Report
+#### `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
@@ -269,7 +265,7 @@ Sidebar - methodology {.sidebar}
   <li style="font-size: 20px;">[About This Report](#home)</li>
   <li style="font-size: 20px;">[**Methodology**](#methodology)</li>
   <li style="font-size: 20px;">[Glossary](#glossary)</li>
-  <li style="font-size: 20px;">[Navigation Guide](#navigation-guide)</li>
+  <li style="font-size: 20px;">[User Guide](#user-guide)</li>
 </ul>
 
 ***
@@ -362,12 +358,8 @@ Sidebar - glossary {.sidebar}
 
 <br>
 
-### Glossary
-<<<<<<< HEAD
-#### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
-=======
-#### PDS Quarterly `r paste0(current_fy, " Q", qt)`
->>>>>>> 101acf99de549391d508c0290e0c891e8d5a13fb
+### PDS Quarterly Report
+#### `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
@@ -377,7 +369,7 @@ Sidebar - glossary {.sidebar}
   <li style="font-size: 20px;">[About This Report](#home)</li>
   <li style="font-size: 20px;">[Methodology](#methodology)</li>
   <li style="font-size: 20px;">[**Glossary**](#glossary)</li>
-  <li style="font-size: 20px;">[Navigation Guide](#navigation-guide)</li>
+  <li style="font-size: 20px;">[User Guide](#user-guide)</li>
 </ul>
 
 ***
@@ -399,7 +391,7 @@ Row
 
 **Integration Authority Area (IAA):** This is the IAA of the PDS Practitioner or Team providing care and support to the service user. 
 
-**Population Estimates:** The population estimates used in this report are from the National Records of Scotland (NRS) Mid-year population estimates and the NRS Population estimates by Scottish Index of Multiple Deprivation (SIMD). As figures in this report are by financial year, the estimate for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimates for the calendar year 2018. The estimates used throughout the report are for the population that is 65 years and older, as `r perc_65_plus`% of referrals to PDS are in this age group. 
+**Population Estimates:** The population estimates used in this report are from the National Records of Scotland (NRS) Mid-year population estimates and the NRS Population estimates by Scottish Index of Multiple Deprivation (SIMD). As figures in this report are by financial year, the estimate for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018. The estimates used throughout the report are for the population that is 65 years and older, as `r perc_65_plus`% of referrals to PDS are in this age group. 
 
 NRS Mid-year population estimates can be found using the links below: 
 
@@ -413,21 +405,21 @@ NRS Mid-year population estimates can be found using the links below:
 
 **Age Group:** Age is calculated as at the dementia diagnosis date. 
 
-Across the reported years there are a small number of records (`r age_unknown` in total) with an incomplete date of birth and therefore the age group is unknown. These records have been excluded from the age group analysis. 
+Across the reported years there are a small number of records (12 in total) with an incomplete date of birth and therefore the age group is unknown. These records have been excluded from the age group analysis. 
 
-*For the rates calculations, for financial year 2024/25 the Mid-2023 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available -->
+*For the rates calculations, for financial year 2024/25 the Mid-2023 populations are used as this is the latest available estimate.*  
 
 **Gender:** Gender is based on the sex recorded for each referral.  
 
-Across the reported years there are `r sex_unknown` records in total where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’). These records have been excluded from the gender analysis.
+Across the reported years there are 33 records in total where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’). These records have been excluded from the gender analysis.
 
-*For the rates calculations, for financial year 2024/25 the Mid-2023 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available -->
+*For the rates calculations, for financial year 2024/25 the Mid-2023 populations are used as this is the latest available estimate.*
 
-**Deprivation:** Deprivation is calculated by matching postcodes grouped into small geographical areas known as datazones to the Scottish Index of Multiple Deprivation (SIMD) quintiles. SIMD has seven domains (income, employment, education, housing, health, crime, and geographical access) at data zone level, which have been combined into an overall index to pick out area concentrations of multiple deprivation. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived quintile) to 5 (least deprived quintile). At Scotland level, approximately one fifth of the general population are within each deprivation quintile. The quintiles used in this report are from SIMD 2020v2. Further information on SIMD can be found on the [Scottish Government](https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/){target="_blank"} website.
+**Deprivation:** Deprivation is calculated by matching postcodes grouped into small geographical areas known as datazones to the Scottish Index of Multiple Deprivation (SIMD) quintiles. SIMD has seven domains (income, employment, education, housing, health, crime, and geographical access) at data zone level, which have been combined into an overall index to pick out area concentrations of multiple deprivation. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived quintile) to 5 (least deprived quintile). At Scotland level, approximately one fifth of the general population are within each deprivation quintile. The quintiles used in this report are from SIMD 2020v2. Further information on SIMD can be found on the [Scottish Government](https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/) website.
 
-Across the reported years there are `r simd_unknown` records where it was not possible to assign a deprivation category. Possible reasons for not being able to assign a deprivation category are that no postcode was provided or the postcode provided is invalid, not in Scotland, or is a newly added postcode. These records have been excluded from the deprivation analysis.
+Across the reported years there are 56 records where it was not possible to assign a deprivation category. Possible reasons for not being able to assign a deprivation category are that no postcode was provided or the postcode provided is invalid, not in Scotland, or is a newly added postcode. These records have been excluded from the deprivation analysis.
 
-*For the rates calculations, for financial years 2023/24 and 2024/25 the Mid-2022 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available -->
+*For the rates calculations, for financial years 2023/24 and 2024/25 the Mid-2022 populations are used as this is the latest available estimate.* 
 
 ***
 
@@ -462,19 +454,15 @@ Across the reported years there are `r simd_unknown` records where it was not po
 **Model of Care:** The model of care deemed most appropriate for the service user following their diagnosis. 
 
 
-Navigation Guide {.hidden}
+User Guide {.hidden}
 =================================================
-Sidebar - navigation guide {.sidebar}
+Sidebar - user guide {.sidebar}
 -----------------------------------------------------------------------
 
 <br>
 
-### Navigation Guide
-<<<<<<< HEAD
-#### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
-=======
-#### PDS Quarterly `r paste0(current_fy, " Q", qt)`
->>>>>>> 101acf99de549391d508c0290e0c891e8d5a13fb
+### PDS Quarterly Report
+#### `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
@@ -484,7 +472,7 @@ Sidebar - navigation guide {.sidebar}
   <li style="font-size: 20px;">[About This Report](#home)</li>
   <li style="font-size: 20px;">[Methodology](#methodology)</li>
   <li style="font-size: 20px;">[Glossary](#glossary)</li>
-  <li style="font-size: 20px;">[**Navigation Guide**](#navigation-guide)</li>
+  <li style="font-size: 20px;">[**User Guide**](#user-guide)</li>
 </ul>
 
 ***
@@ -493,22 +481,6 @@ Please get in touch with any comments, suggestions and feedback: [phs.dementiapd
 
 Row
 -------------------------------------------------
-
-### <!-- No Title -->
-
-Below is an example page from the report with annotations describing common features that can be found on most pages. A link to this guide is available in the sidebar of each page.
-
-Row {data-height=730}
--------------------------------------------------
-
-### <!-- No Title -->
-
-```{r}
-bscols(widths = 12, 
-       div(style = css(width="97%", marginLeft="20px"),
-       img(style = css(width="100%"), src="navigation-guide.png")))
-
-```
 
 <!-- Scotland -->
 
@@ -552,51 +524,17 @@ health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
 <!-- PATHWAYS -->
 `r knitr::knit_child("subpage-pathways.Rmd")`
 
-Data Quality
+
+
+Queries/Errors {data-navmenu="Data Quality"}
 =================================================
-
-Sidebar-queries/errors {.sidebar}
------------------------------------------------------------------------
-
-<br>
-
-### Queries/Errors
-
-***
-
-<font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
-
-***
-
-<ul>
-  <li>[**Queries/Errors**](#data-quality)</li>
-  <li>[Number of Records Submitted](#records)</li>
-  <li>[Data Completion](#completion)</li>
-</ul>
-
-***
-
-**FURTHER INFORMATION:**
-
-<ul style="list-style-type:square;">
-   <li >[Glossary](#glossary)</li>
-   <li >[Navigation Guide](#navigation-guide)</li>
-</ul>
-
-***
-
-Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
 Row
 -------------------------------------------------
 
 ### <!-- No Title -->
 
-This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be. See the [Glossary](#glossary) page for more information.
 
 
 Row
@@ -635,51 +573,15 @@ err %>%
 ```
 
 
-Records {.hidden}
+Number of Records Submitted {data-navmenu="Data Quality"}
 =================================================
-
-Sidebar-records {.sidebar}
------------------------------------------------------------------------
-
-<br>
-
-### Number of Records Submitted
-
-***
-
-<font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
-
-***
-
-<ul>
-  <li>[Queries/Errors](#data-quality)</li>
-  <li>[**Number of Records Submitted**](#records)</li>
-  <li>[Data Completion](#completion)</li>
-</ul>
-
-***
-
-**FURTHER INFORMATION:**
-
-<ul style="list-style-type:square;">
-   <li >[Glossary](#glossary)</li>
-   <li >[Navigation Guide](#navigation-guide)</li>
-</ul>
-
-***
-
-Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
 Row
 -------------------------------------------------
 
 ### <!-- No Title -->
 
-This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be. See the [Glossary](#glossary) page for more information.
 
 Row
 -------------------------------------------------
@@ -713,52 +615,15 @@ err %>%
   scroll_box(height = "740px")
 ```
 
-Completion {.hidden}
+Data Completion {data-navmenu="Data Quality"}
 =================================================
-
-Sidebar-completion {.sidebar}
------------------------------------------------------------------------
-
-<br>
-
-### Data Completion
-
-***
-
-<font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
-
-***
-
-<ul>
-  <li>[Queries/Errors](#data-quality)</li>
-  <li>[Number of Records Submitted](#records)</li>
-  <li>[**Data Completion**](#completion)</li>
-</ul>
-
-***
-
-**FURTHER INFORMATION:**
-
-<ul style="list-style-type:square;">
-   <li >[Glossary](#glossary)</li>
-   <li >[Navigation Guide](#navigation-guide)</li>
-</ul>
-
-***
-
-Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
-
 
 Row
 -------------------------------------------------
 
 ### <!-- No Title -->
 
-This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be. See the [Glossary](#glossary) page for more information.
 
 Row {.tabset data-height=790}
 -------------------------------------------------
