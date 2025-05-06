@@ -292,7 +292,7 @@ age_colours <- c("#6B5C85", "#0078D4", "#1E7F84")
 
 Age Groups {data-navmenu="Demographics"}
 =================================================
-Sidebar {.sidebar}
+Sidebar - age rates {.sidebar}
 -----------------------------------------------------------------------
 
 <br>
@@ -308,17 +308,19 @@ Sidebar {.sidebar}
 </span> </font>
 
 ***
+
 <ul>
   <li>[**Rates per 10,000 population**](#age-groups)</li>
   <li>[Outcomes](#age-outcomes)</li>
 </ul>
 
 ***
-FURTHER INFORMATION:
+
+**FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
    <li >[Glossary](#glossary)</li>
-   <li >[User Guide](#user-guide)</li>
+   <li >[Navigation Guide](#navigation-guide)</li>
 </ul>
 
 ***
@@ -331,9 +333,9 @@ Row
 
 ### **Note**
 
-This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for given age groups. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area. Use the dropdown menus to select a year to show in the charts and tables. For the Integration Authority tab use the dropdown menu to filter for selected areas to show in the charts and tables.
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for given age groups. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area.
 
-The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each age group. Use the dropdown menu to select a geographical area to show in the chart alongside the trend for Scotland.
+The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each age group.
 
 *The rate per 10,000 population for each age group is calculated using the number of referrals in the given age group and the estimated population of the same age group for each geographical area (the population used for the ‘79 and Under’ age group is 65 to 79). See the [Glossary](#glossary) page for more details.*
 
@@ -673,7 +675,7 @@ DT::datatable(trend_pop_age_table, rownames = FALSE, selection = 'none',
 
 Age Outcomes {.hidden}
 =====================================
-Sidebar {.sidebar}
+Sidebar - age outcomes{.sidebar}
 -----------------------------------------------------------------------
 
 <br>
@@ -696,12 +698,13 @@ Sidebar {.sidebar}
 </ul>
 
 ***
-FURTHER INFORMATION:
+
+**FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
    <li >[Methodology](#methodology)</li>
    <li >[Glossary](#glossary)</li>
-   <li >[User Guide](#user-guide)</li>
+   <li >[Navigation Guide](#navigation-guide)</li>
 </ul>
 
 ***
@@ -715,9 +718,9 @@ Row
 
 ### **Note**
 
-This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for given age groups. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area. Use the dropdown menus to select a year to show in the charts and tables. For the Integration Authority tab use the dropdown menu to filter for selected areas to show in the charts and tables.
+This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for given age groups. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area.
 
-The Trend tab includes a chart and table showing the trend of the percentage by financial year for each age group for a selected geographical area. Use the dropdown menus to select a geographical area to show in the chart and table.
+The Trend tab includes a chart and table showing the trend of the percentage by financial year for each age group for a selected geographical area.
 
 *As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
 
@@ -1111,7 +1114,7 @@ DT::datatable(ldp_age_table, rownames = FALSE, selection = 'none',
 Gender {data-navmenu="Demographics"}
 =================================================
 
-Sidebar {.sidebar}
+Sidebar - gender rates {.sidebar}
 -----------------------------------------------------------------------
 
 <br>
@@ -1127,6 +1130,7 @@ Sidebar {.sidebar}
 </span> </font>
 
 ***
+
 <ul>
   <li>[**Rates per 10,000 population**](#gender)</li>
   <li>[Outcomes](#gender-outcomes)</li>
@@ -1135,11 +1139,11 @@ Sidebar {.sidebar}
 
 ***
 
-FURTHER INFORMATION:
+**FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
    <li >[Glossary](#glossary)</li>
-   <li >[User Guide](#user-guide)</li>
+   <li >[Navigation Guide](#navigation-guide)</li>
 </ul>
 
 ***
@@ -1151,9 +1155,9 @@ Row
 
 ### **Note**
 
-This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for males and females. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area. Use the dropdown menus to select a year to show in the charts and tables.
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for males and females. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area.
 
-The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each gender. Use the dropdown menu to select a geographical area to show in the chart alongside the trend for Scotland.
+The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each gender. 
 
 *The rate per 10,000 population for each gender is calculated using the number of referrals with the given gender and the estimated population of the same gender for each geographical area. See the [Glossary](#glossary) page for more details.*
 
@@ -1391,7 +1395,7 @@ DT::datatable(trend_pop_sex_table, rownames = FALSE, selection = 'none',
 
 Gender Outcomes {.hidden}
 =====================================
-Sidebar {.sidebar}
+Sidebar - gender outcomes{.sidebar}
 -----------------------------------------------------------------------
 
 <br>
@@ -1414,12 +1418,13 @@ Sidebar {.sidebar}
 </ul>
 
 ***
-FURTHER INFORMATION:
+
+**FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
    <li >[Methodology](#methodology)</li>
    <li >[Glossary](#glossary)</li>
-   <li >[User Guide](#user-guide)</li>
+   <li >[Navigation Guide](#navigation-guide)</li>
 </ul>
 
 
@@ -1432,9 +1437,9 @@ Row
 
 ### **Note**
 
-This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for males and females. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area. Use the dropdown menus to select a year to show in the charts and tables.
+This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for males and females. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area.
 
-The Trend tab includes a chart and table showing the trend of the percentage by financial year for each gender for a selected geographical area. Use the dropdown menus to select a geographical area to show in the chart and table.
+The Trend tab includes a chart and table showing the trend of the percentage by financial year for each gender for a selected geographical area.
 
 *As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
 
@@ -1698,7 +1703,7 @@ DT::datatable(ldp_sex_table, rownames = FALSE, selection = 'none',
 Deprivation (SIMD) {data-navmenu="Demographics"}
 =====================================
 
-Sidebar {.sidebar}
+Sidebar -simd rates{.sidebar}
 -----------------------------------------------------------------------
 
 <br>
@@ -1714,6 +1719,7 @@ Sidebar {.sidebar}
 </span> </font>
 
 ***
+
 <ul>
   <li>[**Rates per 10,000 population**](#deprivation-simd)</li>
   <li>[Outcomes](#simd-outcomes)</li>
@@ -1721,11 +1727,11 @@ Sidebar {.sidebar}
 
 ***
 
-FURTHER INFORMATION:
+**FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
    <li >[Glossary](#glossary)</li>
-   <li >[User Guide](#user-guide)</li>
+   <li >[Navigation Guide](#navigation-guide)</li>
 </ul>
 
 ***
@@ -1737,9 +1743,9 @@ Row
 
 ### **Note**
 
-This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for SIMD (Scottish Index of Multiple Deprivation) quintiles. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area. Use the dropdown menus to select a year to show in the charts and tables. For the Integration Authority tab use the dropdown menu to filter for selected areas to show in the charts and tables.
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for SIMD (Scottish Index of Multiple Deprivation) quintiles. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area. 
 
-The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each quintile. Use the dropdown menu to select a geographical area to show in the chart alongside the trend for Scotland.
+The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each quintile. 
 
 *The rate per 10,000 population for each SIMD quintile is calculated using the number of referrals in the given quintile and the estimated population of the same quintile for each geographical area. See the [Glossary](#glossary) page for more details.*
 
@@ -2081,7 +2087,7 @@ DT::datatable(trend_pop_simd_table, rownames = FALSE, selection = 'none',
 
 SIMD Outcomes {.hidden}
 =====================================
-Sidebar {.sidebar}
+Sidebar- simd outcomes {.sidebar}
 -----------------------------------------------------------------------
 
 <br>
@@ -2104,12 +2110,13 @@ Sidebar {.sidebar}
 </ul>
 
 ***
-FURTHER INFORMATION:
+
+**FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
    <li >[Methodology](#methodology)</li>
    <li >[Glossary](#glossary)</li>
-   <li >[User Guide](#user-guide)</li>
+   <li >[Navigation Guide](#navigation-guide)</li>
 </ul>
 
 ***
@@ -2121,9 +2128,9 @@ Row
 
 ### **Note**
 
-This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for SIMD (Scottish Index of Multiple Deprivation) quintiles. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area. Use the dropdown menus to select a year to show in the charts and tables. For the Integration Authority tab use the dropdown menu to filter for selected areas to show in the charts and tables.
+This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for SIMD (Scottish Index of Multiple Deprivation) quintiles. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area.
 
-The Trend tabs include a chart and table showing the trend of the percentage by financial year for each SIMD quintile for a selected geographical area. Use the dropdown menus to select a geographical area to show in the charts and tables.
+The Trend tabs include a chart and table showing the trend of the percentage by financial year for each SIMD quintile for a selected geographical area. 
 
 *As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
 

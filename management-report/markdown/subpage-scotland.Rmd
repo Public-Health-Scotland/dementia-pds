@@ -204,13 +204,13 @@ md_link(
 
 ***
 
-FURTHER INFORMATION:
+**FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
    <li >[Standard Not Met / PDS Ongoing](#outcomes)</li>
    <li >[Methodology](#methodology)</li>
    <li >[Glossary](#glossary)</li>
-   <li >[User Guide](#user-guide)</li>
+   <li >[Navigation Guide](#navigation-guide)</li>
 </ul>
 
 ***
