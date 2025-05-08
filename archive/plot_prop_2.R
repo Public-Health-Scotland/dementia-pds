@@ -1,4 +1,4 @@
-plot_prop_2 <- function(data, measure, measure_text, measure_2, colours = phs_colours_32){
+plot_prop_2 <- function(data, measure, measure_text, measure_2, colours = phs_colours_core){
   
   plot <- data %>% ggplot(aes(x = geog, y = total_referrals, fill = {{measure}}, 
                                text = paste0(geog, "<br>",

@@ -1,7 +1,7 @@
 plot_geog_bar_v2 <- function(data, y_value, measure, measure_text, measure_2,
                              y_value_text = NULL, x = NULL, y = NULL,
                              ylabel = waiver(), ylimits = c(0, NA), symbol = NULL,
-                             colours = phs_colours_32){
+                             colours = phs_colours_core){
   
   plot <-  data %>% ggplot() +
     

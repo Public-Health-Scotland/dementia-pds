@@ -1,4 +1,4 @@
-plot_trend_prop <- function(data, measure, measure_text, colours = phs_colours_32){
+plot_trend_prop <- function(data, measure, measure_text, colours = phs_colours_core){
   
   plot <- data %>%  ggplot(aes(x = fy, y = total_referrals, fill = {{measure}}, 
                                text = paste0(geog, "<br>",
