@@ -111,8 +111,6 @@ Row
 
 **NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24* and *2024/25*, which has resulted in some records showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
 
-**NHS Greater Glasgow & Clyde** - Due to local IT system issues West Dunbartonshire have not been able to provide all records for *2024/25*. PHS has been informed that this issue will be rectified in future submissions.
-
 **NHS Highland** - PHS have identified issues with the data submitted by NHS Highland for *2024/25 Q3* which has resulted in one record showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
 
 **NHS Lanarkshire** - PHS have identified issues with the data submitted by NHS Lanarkshire for *2024/25 Q3* which has resulted in one record showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
