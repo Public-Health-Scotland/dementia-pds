@@ -1,4 +1,4 @@
-plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_32, measure_text, Scotland = FALSE){
+plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_core, measure_text, Scotland = FALSE){
   
   plot <- data %>%
     

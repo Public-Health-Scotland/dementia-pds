@@ -79,7 +79,7 @@ plot_referrals <- function(data,
     scale_y_continuous(limits = c(0, NA), breaks = integer_breaks()
                        ) +
     
-    scale_colour_manual(values = phs_colours_32) +
+    scale_colour_manual(values = phs_colours_core) +
     
     # Custom labels on x tick marks
     scale_x_discrete(labels = paste(levels(data$month_abbr),

@@ -1,84 +1,23 @@
-plot_geog_bar <- function(data, y_value, measure, measure_text, y_value_text = NULL, x = NULL, y = NULL, ylabel = waiver(), ylimits = c(0, NA), symbol = NULL){
+plotly_geog_bar <- function(data, x_label = "Health Board", y_value = "pop_rate_10000", y_label =  "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: ", measure = "simd", measure_text = "SIMD Quintile: ", colours = simd_colours){
   
-  plot <-  data %>% ggplot() +
-    
-    geom_col(aes(x = geog, y = {{y_value}}, fill = {{measure}},
-                 text = paste0(geog, "<br>",
-                               fy, "<br>",
-                               measure_text, {{measure}}, "<br>",
-                               y_value_text, {{y_value}}, symbol
-                 )),
-             position = position_dodge()) +
-    
-    labs(title = "",
-         x = x,
-         y = y,
-         fill = NULL
-    ) +
-    
-    scale_y_continuous(expand = c(0, 0),
-                       limits = ylimits,
-                       labels = ylabel
-    ) +
-    
-    scale_fill_manual(values = phs_colours_32) +
-    
-    facet_wrap(vars(fy), ncol = 1) + 
-    
-    theme_dementia(xangle = 45) +
-    
-    theme(strip.background = element_blank(),
-          strip.text.x = element_blank(),
-          legend.position = "none",
-          axis.title.x = element_text(size = 13,
-                                      #face = "bold",
-                                      margin = margin(t = 30)),
-          axis.title.y = element_text(margin = margin(r = 10))
-    ) +
-    
-    theme(panel.spacing = unit(1000, "pt")) #this is for 'stacking' facets so only the selected one is visible
-  
-  ggplotly(plot, tooltip = "text") %>%
-    
+  plot_ly(data, x = ~geog, y = ~data[[y_value]], meta = ~fy, hovertext = ~data[[measure]], type = 'bar', color = ~data[[measure]], colors = colours, 
+                            hovertemplate = paste0("%{x} <br>", "%{meta} <br>", measure_text, "%{hovertext} <br>",
+                                                  y_value_text, "%{y}<extra></extra>")) %>% 
+    layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+           xaxis = list(title = x_label, showline = FALSE, linecolor = "#b3b3b3",
+                        categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+           yaxis = list(title = y_label, linecolor = "#b3b3b3", titlefont = list(size = 16))
+    ) %>%
     config(displayModeBar = TRUE, doubleClick = F,
            modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
                                          'zoomOut2d', 'autoScale2d', 
                                          'toggleSpikelines', 
                                          'hoverCompareCartesian', 
                                          'hoverClosestCartesian', 'toImage'), 
-           displaylogo = F, editable = F) %>%
-    layout(margin = list(l = -5, b = 50, t = 40) # to avoid labels getting cut out
-    ) 
-  
+           displaylogo = F, editable = F)
 }
-
-# plot_geog_bar_legend <- function(data, measure) {
-#   
-#   legend <- data %>% ggplot(aes(x = geog, y = 0, fill = {{measure}})) +
-#     
-#     geom_col(width = 0) +
-#     
-#     labs(fill = NULL) +
-#     
-#     scale_fill_manual(values = phs_colours_32) +
-#     
-#     theme(axis.title = element_blank(),
-#           axis.text = element_blank(),
-#           axis.ticks = element_blank(),
-#           legend.position = c(0.5, 1), # move the legend to the center
-#           panel.grid = element_blank(),
-#           panel.border = element_rect(colour = "white", fill='white', size=0)
-#     )
-#   
-#   legend_plotly<-ggplotly(legend, tooltip = NULL)
-#   
-#   config(legend_plotly, displayModeBar = FALSE, displaylogo = F, editable = F) %>%
-#     layout(legend = list(orientation = "h",
-#                          x = 0.5, y = 1, xanchor = "center", yanchor = "top" ) 
-#     )  
-# }
-
-
+  
+  
 
 
 

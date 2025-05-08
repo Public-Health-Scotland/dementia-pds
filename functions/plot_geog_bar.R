@@ -21,7 +21,7 @@ plot_geog_bar <- function(data, y_value, measure, measure_text, y_value_text = N
                        labels = ylabel
     ) +
     
-    scale_fill_manual(values = phs_colours_32) +
+    scale_fill_manual(values = phs_colours_core) +
     
     facet_wrap(vars(fy), ncol = 1) + 
     
@@ -52,32 +52,32 @@ plot_geog_bar <- function(data, y_value, measure, measure_text, y_value_text = N
   
 }
 
-# plot_geog_bar_legend <- function(data, measure) {
-#   
-#   legend <- data %>% ggplot(aes(x = geog, y = 0, fill = {{measure}})) +
-#     
-#     geom_col(width = 0) +
-#     
-#     labs(fill = NULL) +
-#     
-#     scale_fill_manual(values = phs_colours_32) +
-#     
-#     theme(axis.title = element_blank(),
-#           axis.text = element_blank(),
-#           axis.ticks = element_blank(),
-#           legend.position = c(0.5, 1), # move the legend to the center
-#           panel.grid = element_blank(),
-#           panel.border = element_rect(colour = "white", fill='white', size=0)
-#     )
-#   
-#   legend_plotly<-ggplotly(legend, tooltip = NULL)
-#   
-#   config(legend_plotly, displayModeBar = FALSE, displaylogo = F, editable = F) %>%
-#     layout(legend = list(orientation = "h",
-#                          x = 0.5, y = 1, xanchor = "center", yanchor = "top" ) 
-#     )  
-# }
 
+
+plot_geog_bar_legend <- function(data, measure, colours = phs_colours_core) {
+  
+  legend <- data %>% ggplot(aes(x = geog, y = 0, fill = {{measure}})) +
+    
+    geom_col(width = 0) +
+    
+    labs(fill = NULL) +
+    
+    scale_fill_manual(values = colours) +
+    
+    theme(axis.title = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          panel.grid = element_blank(),
+          panel.border = element_rect(colour = "white", fill='white', linewidth=0)
+    )
+  
+  legend_plotly<-ggplotly(legend, tooltip = NULL)
+  
+  config(legend_plotly, staticPlot = TRUE) %>%
+    layout(legend = list(orientation = "h",
+                         x = 0.5, y = 1, xanchor = "center", yanchor = "top" )
+    )
+}
 
 
 

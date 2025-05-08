@@ -283,7 +283,7 @@ ijb_totals_table <- bind_rows(pds_scot_totals, pds_ijb_totals)  %>%
   mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% pivot_wider(names_from = geog, values_from = total_referrals)
    
 # colours for simd plots
-simd_colours <- c("#005FAD", "#0078D4", "#3393DD", "#80BCEA", "#B3D7F2")#, "#E6F2FB")
+simd_colours <- c("#0062AD", "#0078D4", "#3393DD", "#80BCEA", "#B3D7F2")#, "#E6F2FB")
 
 # colours for age plots
 age_colours <- c("#6B5C85", "#0078D4", "#1E7F84")
@@ -1943,22 +1943,7 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_
 
 bscols(widths = 12,
   div(style = css(width="98%", height="355px", marginBottom="-20px"),
-plot_ly(pds_pop_simd_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
-        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
-                            "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
-  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
-         xaxis = list(title = "Health Board", showline = FALSE, linecolor = "#b3b3b3",
-                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
-         yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
-      ) %>%
-  config(displayModeBar = TRUE, doubleClick = F,
-         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
-                                       'zoomOut2d', 'autoScale2d', 
-                                       'toggleSpikelines', 
-                                       'hoverCompareCartesian', 
-                                       'hoverClosestCartesian', 'toImage'), 
-         displaylogo = F, editable = F)
-  )
+plotly_geog_bar(pds_pop_simd_data_hb))
 )
 
 ```
@@ -2199,10 +2184,6 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_
 
 
 ```{r plot-ijb-simd-ldp}
-# bscols(widths = 12,
-#   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-# plot_geog_bar_v2(ldp_simd_data_ijb, y_value = perc_met, measure = simd, measure_text = "SIMD Quintile: ", x = "Integration Authority Area", measure_2 = simd_group, ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%", colours = simd_colours))
-# )
 
 bscols(widths = 12,
   div(style = css(width="98%", height="355px", marginBottom="-20px"),

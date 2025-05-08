@@ -1,4 +1,4 @@
-plot_ldp_bar <- function(data, measure, measure_text, ncol = 10, nrow = NULL, colours = phs_colours_32){
+plot_ldp_bar <- function(data, measure, measure_text, ncol = 10, nrow = NULL, colours = phs_colours_core){
   
   plot <-  ggplot(data) +
     
@@ -51,7 +51,7 @@ plot_ldp_bar <- function(data, measure, measure_text, ncol = 10, nrow = NULL, co
 }
 
 
-plot_ldp_bar_legend <- function(data, measure, measure_text, colours = phs_colours_32) {
+plot_ldp_bar_legend <- function(data, measure, measure_text, colours = phs_colours_core) {
   
   legend <- data %>% ggplot(aes(x = {{measure}}, y = 0, group = {{measure}}, fill = {{measure}})
   ) +

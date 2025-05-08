@@ -1,6 +1,4 @@
-everyother <- function(x) x[seq_along(x) %% 2 != 0]
-
-plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL, colours = phs_colours_32, facet_space = 6){
+plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL, colours = phs_colours_core, facet_space = 6){
   
   plot <-  ggplot(data) +
     
@@ -105,7 +103,7 @@ plot_rate_line_legend_2 <- function(data, measure, measure_text) {
     
     labs(colour = measure_text) +
     
-    scale_colour_manual(values = phs_colours_32) +
+    scale_colour_manual(values = phs_colours_core) +
     
     theme(axis.title = element_blank(),
           axis.text = element_blank(),

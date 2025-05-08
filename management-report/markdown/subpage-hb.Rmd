@@ -50,7 +50,7 @@ completeness_text <-
              "ongoing, it is not known yet whether or not they ",
              "will meet the LDP standard. Therefore, the figures ",
              "shown are currently provisional and subject to ",
-             "change in future versions of this report.", "<br>", "<br>",
+             "change in future versions of this report.", "<br>",
              "LDP Standard performance figures are not provided ",
              "until data is available for the full financial year."),
     TRUE ~ 
@@ -212,7 +212,7 @@ md_link(
 **FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
-   <li >[Standard Not Met / PDS Ongoing](#outcomes)</li>
+   <li >[Standard Not Met / PDS Ongoing (Pathways - PDS Outcomes)](#outcomes)</li>
    <li >[Methodology](#methodology)</li>
    <li >[Glossary](#glossary)</li>
    <li >[Navigation Guide](#navigation-guide)</li>

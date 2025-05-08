@@ -1,4 +1,4 @@
-plot_trend_perc <- function(data, measure,  x = "", y = "", colours = phs_colours_32){
+plot_trend_perc <- function(data, measure,  x = "", y = "", colours = phs_colours_core){
   
   plot <- data %>%
     

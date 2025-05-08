@@ -1,6 +1,4 @@
-everyother <- function(x) x[seq_along(x) %% 2 != 0]
-
-plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL, colours = phs_colours_32){
+plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL, colours = phs_colours_core){
   
   plot <-  ggplot(data) +
     
@@ -105,7 +103,7 @@ plot_ldp_line_legend_2 <- function(data, measure, measure_text) {
     
     labs(colour = measure_text) +
     
-    scale_colour_manual(values = phs_colours_32) +
+    scale_colour_manual(values = phs_colours_core) +
     
     theme(axis.title = element_blank(),
           axis.text = element_blank(),

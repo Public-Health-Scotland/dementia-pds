@@ -277,7 +277,7 @@ data_filter_ijb, NULL)
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS, Integration Authority Areas </h2>
 ```{r trend-plot-ijb}
 
-trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ")
+trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", colours = phs_colours_31)
 
 bscols(widths = 12,
         div(style = css(width="98%", height="395px"),
@@ -323,7 +323,7 @@ data_filter_hb, NULL)
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS, Health Boards </h2>
 ```{r trend-plot-hb}
 
-trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ")
+trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", colours = phs_colours_14)
 
 bscols(widths = 12,
         div(style = css(width="98%", height="395px"),
@@ -424,11 +424,8 @@ data_filter_year_ijb,NULL)
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+) by Integration Authority Area</h2>
 ```{r plot-ijb-pop}
-#pds_scot_pop_data_2 <- SharedData$new(pds_scot_rates,
-                                  #  key = ~fy, group = "groupijb")
 
 ijb_rates_plot <- plot_bar_pop_rate(pds_ijb_pop_data)
-#, pds_scot_pop_data_2)
 
 bscols(widths = 12,
         div(style = css(width="98%", height="425px"),
@@ -474,12 +471,9 @@ data_filter_year_hb,NULL)
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+) by Health Board</h2>
 ```{r plot-hb-pop}
-#pds_scot_pop_data <- SharedData$new(pds_scot_rates,
-                                  #  key = ~fy, group = "grouphb")
  
  hb_rates_plot <- plot_bar_pop_rate(pds_hb_pop_data)
- #, pds_scot_pop_data)
- 
+
  bscols(widths = 12,
          div(style = css(width="98%", height="425px"),
   hb_rates_plot))
@@ -628,7 +622,7 @@ data_filter_exp_trend,NULL)
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support</h2>
 ```{r trend-plot-exp}
 
- trends_exp_plot <- plot_trend_perc(pds_exp_rates_data, exp_rate, x ="Financial Year of Diagnosis", colours = phs_colours_46)
+ trends_exp_plot <- plot_trend_perc(pds_exp_rates_data, exp_rate, x ="Financial Year of Diagnosis", colours = phs_colours_15)
 
 bscols(widths = 12,
         div(style = css(width="98%", height="385px"),
