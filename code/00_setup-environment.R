@@ -26,7 +26,7 @@
 test_output <- TRUE
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(30092024)
+end_date <- lubridate::dmy(31122024)
 previous_end_date <- lubridate::dmy(30062024)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
