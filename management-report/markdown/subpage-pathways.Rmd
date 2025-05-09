@@ -225,11 +225,13 @@ Row
 
 ### **Note**
 
-This page shows pathways from dementia diagnosis to first contact by PDS practitioner. The Integration Authority Areas and Health Boards tabs include a chart and table showing the median number of days between diagnosis and contact for each geographical area by financial year.
+This page provides information on the pathways from dementia diagnosis to first contact by PDS practitioner. *See the [Glossary](#glossary) for more details.* 
 
-The Trend tab includes a chart and table showing the trend of the median days between diagnosis and contact by financial year for Scotland, Integration Authority Areas and Health Boards.
+The Integration Authority Areas and Health Boards tabs include a chart and table showing the median number of days between diagnosis and contact for each geographical area by financial year.  
 
-The Waiting Times Breakdown tab includes a table showing the number of referrals, percentage of referrals allocated and contacted by PDS practitioner, and the median number of days between each pathway. 
+The Trend tab includes a chart and table showing the trend of the median days between diagnosis and contact by financial year for Scotland, Integration Authority Areas and Health Boards. Multiple geographies can be selected. 
+
+The Waiting Times Breakdown tab provides a table showing the number of referrals, percentage of referrals allocated and contacted by PDS practitioner, and the median number of days between each stage of the pathway. The figures presented here will be reflective of how local services and systems are set up, e.g. referral date and/or date of allocation to a PDS practitioner may be recorded at the same time as the diagnosis.  
 
 *The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
@@ -550,7 +552,7 @@ data_filter_all_year, NULL)
 ```
 
 <h2 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px"> Pathways from diagnosis to first contact by PDS practitioner </h2>
-<h4 style="margin-left: 60px; margin-top: 0px; margin-bottom: -10px; font-style: italic">Please note that waiting times for referral and allocation may be reflective of differences in the set up of local services</h4>
+<h4 style="margin-left: 60px; margin-top: 0px; margin-bottom: -10px; font-style: italic">Please see notes section above for more information</h4>
 ```{r wait-table-all}
 bscols(widths = 12,
        div(style = css(width="97%", height="785px", margin="20px"),
@@ -640,13 +642,13 @@ Row
 
 ### **Note**
 
-This page includes further information for referrals relating to the LDP Standard.
+This page includes further information for referrals relating to the LDP Standard. *See the [Methodology](#methodology) page for more details.* 
 
-The LDP Standard Not Met tab includes a table showing the percentage of total referrals and number of individuals who did not receive a minimum of one year’s PDS starting within 12 months of diagnosis, along with the percentage for each reason for not meeting the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year.
+The LDP Standard Not Met tab provides a table showing the percentage of total referrals and number of individuals who did not receive a minimum of one year’s PDS starting within 12 months of diagnosis, along with the percentage for each reason for not meeting the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year. 
 
-The PDS Ongoing tab includes a table showing the percentage of total referrals and number of individuals where the LDP Standard cannot yet be determined, along with the percentage of individuals where PDS has not yet started and less than 12 months since diagnosis and percentage of individuals still receiving PDS and less than 12 months since first contact for Scotland, Integration Authority Areas and Health Boards by financial year for years that are not yet finalised.
+The PDS Ongoing tab includes a table showing the percentage of total referrals and number of individuals where the LDP Standard cannot yet be determined and is therefore classed as Ongoing. Data is only shown for the financial years where referrals could still be ongoing. *See the [Glossary](#glossary) for more details.* The table also shows what percentage of the ongoing referrals are yet to start PDS with less than 12 months since diagnosis, and the percentage still receiving PDS with less than 12 months since first contact . 
 
-The Exempt tab includes a table showing the percentage of total referrals and number of individuals who are exempt from the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year.
+The Exempt tab includes a table showing the percentage of total referrals and number of individuals who are exempt from the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year. 
 
 *As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
 
@@ -927,7 +929,7 @@ Row
 
 ### **Note**
 
-This page includes a table showing the percentage of total referrals where 'PDS uptake decision' has been recorded along with the percentage which have been recorded as 'Accepted' or 'Accepted but initially declined' for Integration Authority Areas and Health Boards with comparison to Scotland for each financial year. 
+This page includes a table showing the percentage of total referrals where ‘PDS uptake decision’ has been recorded along with the percentage which have been recorded as ‘Accepted’ or ‘Accepted but initially declined’ for Integration Authority Areas and Health Boards with comparison to Scotland for each financial year. 
 
 *The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
@@ -1134,7 +1136,11 @@ Row
 
 ### **Note**
 
-This page includes a table showing the number of individuals and percentage of total referrals with no contact from a PDS practitioner within 12 months of diagnosis, along with the number and percentage of total referrals whose PDS was ended with no contact for Integration Authority Areas and Health Boards with comparison to Scotland for each financial year.
+This page provides tables for Scotland, Integration Authority Areas and Health Boards for the selected financial year, showing: 
+
+the number of individuals and percentage of total referrals with no contact date recorded within 12 months of diagnosis; 
+
+the number and percentage of total referrals whose PDS was ended with no contact date recorded. 
 
 *The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 

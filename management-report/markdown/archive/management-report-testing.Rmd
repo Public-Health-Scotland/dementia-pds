@@ -196,9 +196,9 @@ These reports reflect the revised [Dementia PDS dataset](https://publichealthsco
 
 Data are submitted to PHS by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(ymd(paste0(substr(provisional_year, 1,4), "-04-01")), "%d %B %Y")` onwards. Therefore, data for diagnoses from this date onwards are refreshed in each management report and are based on the most recently submitted data. Data for diagnoses prior to `r format(ymd(paste0(substr(provisional_year, 1,4), "-04-01")), "%d %B %Y")` are now final and will not change in future versions of the report. 
 
-Information is shown at Scotland, Health Board and Integration Authority Area level using the links and dropdown menus at the top of the page.
+Information is shown at Scotland, Health Board and Integration Authority Area level using the drop down menus at the top of the page.
 
-For definitions of terms used throughout the report and for further explanation of each page see the [Glossary](#glossary).
+For definitions of terms used throughout the report see the [Glossary](#glossary) page.
 
 For information on how to navigate the report and use its features see the [Navigation Guide](#navigation-guide).
  
@@ -363,7 +363,7 @@ Sidebar - glossary {.sidebar}
 <br>
 
 ### Glossary
-#### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
+#### PDS Quarterly `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
@@ -395,21 +395,13 @@ Row
 
 **Integration Authority Area (IAA):** This is the IAA of the PDS Practitioner or Team providing care and support to the service user. 
 
-**Population Estimates:** The population estimates used in this report are from the National Records of Scotland (NRS) Mid-year population estimates and the NRS Population estimates by Scottish Index of Multiple Deprivation (SIMD). As figures in this report are by financial year, the estimate for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018. The estimates used throughout the report are for the population that is 65 years and older, as `r perc_65_plus`% of referrals to PDS are in this age group. 
+**Population Estimates:** The population estimates used in this report are from the National Records of Scotland (NRS) Mid-year population estimates and the NRS Population estimates by Scottish Index of Multiple Deprivation (SIMD). As figures in this report are by financial year, the estimate for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimates for the calendar year 2018. The estimates used throughout the report are for the population that is 65 years and older, as `r perc_65_plus`% of referrals to PDS are in this age group. 
 
 NRS Mid-year population estimates can be found using the links below: 
 
 [Population, migration and households - National Records of Scotland (NRS)](https://www.nrscotland.gov.uk/statistics-and-data/population-migration-and-households){target="_blank"}
 
 [Population estimates by Scottish Index of Multiple Deprivation (SIMD) - National Records of Scotland (NRS)](https://www.nrscotland.gov.uk/publications/population-estimates-by-scottish-index-of-multiple-deprivation-simd/){target="_blank"}
-
-**Rates per 10,000 population:** The rate per 10,000 population is calculated using the number of referrals with a dementia diagnosis date in the given financial year and the estimated population, for the relevant cohort, of the same year for each geographical area. 
-
-e.g. the rate for SIMD 1 (the most deprived quintile) for a particular area is calculated by dividing the number of people referred from this quintile, for the specified area, by the total SIMD 1 population aged 65 and over in that area and multiplying by 10,000. 
-
-**Finalised Years and Partial Current Year:** As it can take up to two years for a person to receive 12 months of PDS, the data reported by financial year is deemed to be provisional for two years and PHS do not finalise the data until then. Therefore, the figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report. 
-
-`r if(qt != 4) {paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, ".")}`
 
 ***
 
@@ -474,7 +466,7 @@ Sidebar - navigation guide {.sidebar}
 <br>
 
 ### Navigation Guide
-#### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
+#### PDS Quarterly `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
@@ -526,31 +518,7 @@ scotland <- map(.x = sort(unique(pds$fy)),
 `r paste(knitr::knit_child(text = scotland), collapse = '')`
 
 
-<!-- HEALTH BOARDS -->
 
-```{r health-boards, include=FALSE}
-
-health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
-                                  sort(unique(pds$health_board))), 
-                      .f = ~ set_env(data = pds,
-                                     exp  = exp,
-                                     hb   = .y,
-                                     year = .x,
-                                     quarter = qt))
-
-```
-
-`r paste(knitr::knit_child(text = health_boards), collapse = '')`
-
-
-<!-- TOTAL REFERRALS - TRENDS & RATES -->
-`r knitr::knit_child("subpage-trends.Rmd")`
-
-<!-- DEMOGRAPHICS -->
-`r knitr::knit_child("subpage-demographics.Rmd")`
-
-<!-- PATHWAYS -->
-`r knitr::knit_child("subpage-pathways.Rmd")`
 
 Data Quality
 =================================================

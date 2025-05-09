@@ -333,11 +333,11 @@ Row
 
 ### **Note**
 
-This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for given age groups. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area.
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for given age groups. *See the [Glossary](#glossary) for more details.*
 
-The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each age group.
+The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area for the selected financial year. For the Integration Authority tab use the dropdown menu to select areas to show in the charts and tables. 
 
-*The rate per 10,000 population for each age group is calculated using the number of referrals in the given age group and the estimated population of the same age group for each geographical area (the population used for the ‘79 and Under’ age group is 65 to 79). See the [Glossary](#glossary) page for more details.*
+The Trend tab shows the trend of the rate by financial year for Scotland and the selected geographical area for each age group. The table below the chart shows the rates for the selected geographical area.
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
@@ -718,9 +718,11 @@ Row
 
 ### **Note**
 
-This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for given age groups. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area.
+This page shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for given age groups.  
 
-The Trend tab includes a chart and table showing the trend of the percentage by financial year for each age group for a selected geographical area.
+The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area. For the Integration Authority tab use the dropdown menu to select areas to show in the charts and tables. 
+
+The Trend tab shows the trend of the percentage of referrals that have received one year’s support by financial year for Scotland and the selected geographical area for each age group. The table below the chart shows the figures for the selected geographical area. 
 
 *As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
 
@@ -1155,11 +1157,11 @@ Row
 
 ### **Note**
 
-This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for males and females. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area.
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for males and females. *See the [Glossary](#glossary) for more details.* 
 
-The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each gender. 
+The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area for the selected financial year.  
 
-*The rate per 10,000 population for each gender is calculated using the number of referrals with the given gender and the estimated population of the same gender for each geographical area. See the [Glossary](#glossary) page for more details.*
+The Trend tab shows the trend of the rate by financial year for Scotland and the selected geographical area for each gender. The table below the chart shows the rates for the selected geographical area. 
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
@@ -1437,9 +1439,11 @@ Row
 
 ### **Note**
 
-This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for males and females. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area.
+This page shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for males and females.  
 
-The Trend tab includes a chart and table showing the trend of the percentage by financial year for each gender for a selected geographical area.
+The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area.  
+
+The Trend tab shows the trend of the percentage of referrals that have received one year’s support by financial year for Scotland and the selected geographical area for each gender. The table below the chart shows the figures for the selected geographical area. 
 
 *As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
 
@@ -1743,11 +1747,11 @@ Row
 
 ### **Note**
 
-This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for SIMD (Scottish Index of Multiple Deprivation) quintiles. The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area. 
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for SIMD (Scottish Index of Multiple Deprivation) quintiles. *See the [Glossary](#glossary) for more details.*
 
-The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland and a selected Integration Authority Area or Health Board for each quintile. 
+The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area for the selected financial year. For the Integration Authority tab use the dropdown menu to select areas to show in the charts and tables. 
 
-*The rate per 10,000 population for each SIMD quintile is calculated using the number of referrals in the given quintile and the estimated population of the same quintile for each geographical area. See the [Glossary](#glossary) page for more details.*
+The Trend tab shows the trend of the rate by financial year for Scotland and the selected geographical area for each quintile. The table below the chart shows the rates for the selected geographical area. 
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
@@ -1943,7 +1947,22 @@ div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_
 
 bscols(widths = 12,
   div(style = css(width="98%", height="355px", marginBottom="-20px"),
-plotly_geog_bar(pds_pop_simd_data_hb))
+plot_ly(pds_pop_simd_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
+                            "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Health Board", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
 )
 
 ```
@@ -2113,9 +2132,11 @@ Row
 
 ### **Note**
 
-This page shows the percentage of referrals that have received one year's support which started within a year of diagnosis (or have been exempt from the LDP Standard) for SIMD (Scottish Index of Multiple Deprivation) quintiles. The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area.
+This page shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for SIMD (Scottish Index of Multiple Deprivation) quintiles.  
 
-The Trend tabs include a chart and table showing the trend of the percentage by financial year for each SIMD quintile for a selected geographical area. 
+The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area. For the Integration Authority tab use the dropdown menu to filter for selected areas to show in the charts and table. 
+
+The Trend tabs include a chart showing the trend of the percentage by financial year for the selected geographical area for each SIMD quintile. The table below the charts shows the figures for the selected geographical area. 
 
 *As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
 
