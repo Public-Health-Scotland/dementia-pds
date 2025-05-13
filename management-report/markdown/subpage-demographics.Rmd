@@ -141,6 +141,8 @@ var ldp_year = "`r last_full_year`";
 
 <!-- delete all of above when finished testing -->
 
+Age Groups {data-navmenu="Demographics"}
+=================================================
 
 ```{r data-setup-demo, include=FALSE}
 
@@ -290,8 +292,6 @@ age_colours <- c("#6B5C85", "#0078D4", "#1E7F84")
  
 ```
 
-Age Groups {data-navmenu="Demographics"}
-=================================================
 Sidebar - age rates {.sidebar}
 -----------------------------------------------------------------------
 

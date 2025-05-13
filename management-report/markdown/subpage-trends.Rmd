@@ -143,7 +143,10 @@ var ldp_year = "`r last_full_year`";
 <!-- delete all of above when finished testing -->
 
 
-```{r data-setup, include=FALSE}
+All Referrals - Trends & Rates
+=================================================
+
+```{r data-setup-trends, include=FALSE}
 
 #prepare population rate data
 pop_data_trends <- pop_data %>%  filter(age_grp != "All", age_grp != "59 and Under", age_grp != "60 to 64", age_grp_2 == "All", sex == "All") %>% select(geog, year, age_grp, pop_est) %>% 
@@ -170,9 +173,6 @@ pds_hb_rates <- pds_all_rates %>% filter(geog != "Scotland", grepl("NHS", geog))
  
 ```
 
-
-All Referrals - Trends & Rates
-=================================================
 Sidebar - trend {.sidebar}
 -----------------------------------------------------------------------
 
