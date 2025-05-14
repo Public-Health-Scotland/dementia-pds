@@ -57,9 +57,10 @@ pds %<>%
 
 pds %<>%
   
-  mutate(contact_before_diag = if_else(
-    date_of_initial_first_contact < dementia_diagnosis_confirmed_date, 1, 0)
-  )
+  mutate(contact_before_diag = case_when(
+    date_of_initial_first_contact < dementia_diagnosis_confirmed_date ~1,
+    TRUE ~0)
+  ) 
 
 
 ### 5 - Add LDP standard classification ----
