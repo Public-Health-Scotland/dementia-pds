@@ -13,14 +13,15 @@ plot_bar_median<- function(data){
                                  fy, "<br>",
                                  "Average (median) days from diagnosis to first contact: ", scot_median_diagnosis_to_contact), color = "Scotland"), linetype = 2) +
     
+    scale_color_manual(values = "#C73918") +
+    
     labs(title = "",
          x = "",
          y = "Median Wait (days)",
          color = NULL) +
     
-    scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) +
-    
-    scale_color_manual(values = "#C73918") +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, NA),
+                       breaks = c(0,100,200,300,400,500,600,700,800,900,1000)) +
     
     theme_dementia(xangle = 45)
   
@@ -36,7 +37,8 @@ plot_bar_median<- function(data){
     layout(clickmode = 'none', legend = list(orientation = "h", x = 0.5 , y = -0.8,
                          xanchor = "center", yanchor = "bottom")) %>% 
     layout(margin = list(l = -10, b = 30, t = 30)  # to avoid labels getting cut out
-    ) 
+    ) %>% 
+    layout(yaxis = list(autorange = TRUE))
   
 }
 

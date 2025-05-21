@@ -263,12 +263,12 @@ median_data_ijb %>% filter(ijb == "Scotland") %>% select(fy, median_diagnosis_to
 median_data_ijb$geog<- factor(median_data_ijb$geog, levels = c(unique(median_data_ijb$geog)))
 
 
-median_data_ijb_table <- SharedData$new(median_data_ijb, key = ~fy, group = "median_ijb")
+median_data_ijb_plot <- SharedData$new(median_data_ijb, key = ~fy, group = "median_ijb")
 
 data_filter_median <- filter_select(id = "filter_median",
                                     label = "Select Financial Year of Diagnosis:",
                                     group = ~fy,
-                                    sharedData = median_data_ijb_table,
+                                    sharedData = median_data_ijb_plot,
                                     multiple = FALSE
                                    )
 
@@ -283,7 +283,7 @@ NULL)
 
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_bar_median(median_data_ijb_table))
+plot_bar_median(median_data_ijb_plot))
 )
 
 ```
@@ -354,12 +354,12 @@ median_data_hb %>% filter(health_board == "Scotland") %>% select(fy, median_diag
 median_data_hb$geog<- factor(median_data_hb$geog, levels = c(unique(median_data_hb$geog)))
 
 
-median_data_hb_table <- SharedData$new(median_data_hb, key = ~fy, group = "median_hb")
+median_data_hb_plot <- SharedData$new(median_data_hb, key = ~fy, group = "median_hb")
 
 data_filter_median_hb <- filter_select(id = "filter_median_hb",
                                     label = "Select Financial Year of Diagnosis:",
                                     group = ~fy,
-                                    sharedData = median_data_hb_table,
+                                    sharedData = median_data_hb_plot,
                                     multiple = FALSE
                                    )
 
@@ -374,7 +374,7 @@ NULL)
 
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_bar_median(median_data_hb_table))
+plot_bar_median(median_data_hb_plot))
 )
 
 ```

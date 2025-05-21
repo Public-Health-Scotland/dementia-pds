@@ -268,45 +268,45 @@ data_uptake %>%
   write_file(path = get_mi_data_path("uptake_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-#SUBTYPE OF DEMENTIA----
-data_subtype <- summarise_by_variable(subtype_of_dementia) %>% 
-  mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb)) %>% 
-  mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
-  rename(geog = ijb, subtype = type)
+#SUBTYPE OF DEMENTIA----removed from MI
+# data_subtype <- summarise_by_variable(subtype_of_dementia) %>% 
+#   mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb)) %>% 
+#   mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
+#   rename(geog = ijb, subtype = type)
+# 
+# data_subtype %>% 
+#   write_file(path = get_mi_data_path("subtype_data", ext = "rds", test_output = test_output))
+# 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-data_subtype %>% 
-  write_file(path = get_mi_data_path("subtype_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+#STAGE OF ILLNESS----removed from MI
 
-#STAGE OF ILLNESS----
+# data_stage <- summarise_by_variable(clinical_impression_of_stage_of_illness) %>% 
+#   mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb)) %>% 
+#   mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
+#   rename(geog = ijb, stage = type)
+# 
+# data_stage %>% 
+#   write_file(path = get_mi_data_path("stage_data", ext = "rds", test_output = test_output))
+# 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-data_stage <- summarise_by_variable(clinical_impression_of_stage_of_illness) %>% 
-  mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb)) %>% 
-  mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
-  rename(geog = ijb, stage = type)
+#MODEL OF CARE----removed from MI
 
-data_stage %>% 
-  write_file(path = get_mi_data_path("stage_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+# data_model <- summarise_by_variable_2(model_of_care) %>% 
+#   mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb)) %>% 
+#   mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
+#   rename(geog = ijb, model = type)
+# 
+# data_model %>% 
+#   write_file(path = get_mi_data_path("model_data", ext = "rds", test_output = test_output))
+# 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-#MODEL OF CARE----
+#CARER'S SUPPORT----removed from MI
 
-data_model <- summarise_by_variable_2(model_of_care) %>% 
-  mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb)) %>% 
-  mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
-  rename(geog = ijb, model = type)
-
-data_model %>% 
-  write_file(path = get_mi_data_path("model_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-
-#CARER'S SUPPORT----
-
-data_carer <- summarise_carer(ldp, field = carers_support)
-
-data_carer %>% 
-  write_file(path = get_mi_data_path("carer_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+# data_carer <- summarise_carer(ldp, field = carers_support)
+# 
+# data_carer %>% 
+#   write_file(path = get_mi_data_path("carer_data", ext = "rds", test_output = test_output))
+# 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 ### END OF SCRIPT ###
 
