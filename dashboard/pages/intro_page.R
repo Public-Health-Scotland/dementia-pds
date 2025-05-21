@@ -10,7 +10,7 @@ if(input$home_select == "about"){
       p(strong("Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.")),  
       p("The reports contained in this dashboard reflect the ", a("Dementia PDS dataset", href="https://publichealthscotland.scot/media/20921/2023-12-14-dementia-pds-definitions-and-recording-guidance-v14.pdf"),
         " effective 01 April 2019 and contain data for individuals diagnosed with dementia between ",
-        strong("01 April 2016"), " and ", strong(paste0("31 March ", substr(provisional_year,1,2), substr(provisional_year,6,7))),  " who were referred for post diagnostic support."),
+        strong("01 April 2016"), " and ", strong(paste0("31 March ", substr(last(included_years),1,2), substr(last(included_years),6,7))),  " who were referred for post diagnostic support."),
       # p("Data are submitted to PHS by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from 01 April 2016 onwards. Therefore, data for diagnoses from this date onwards are refreshed in each management report and are based on the most recently submitted data."),
       # p("Information is shown at Scotland, Health Board and Integration Joint Board level using the drop down menus at the top of the page."),
       p("To ensure this dashboard is as useful as possible, we would welcome any comments or feedback you may have via the PHS Dementia PDS team mailbox at: ",

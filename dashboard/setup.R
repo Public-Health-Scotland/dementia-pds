@@ -48,7 +48,7 @@ provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
 
 #included_years <- c(finalised_years, provisional_year)
 
-included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24", "2024/25")
+included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
 
 home_list <- c("Dementia PDS" = "about",
                "Using the Dashboard" = "use",
