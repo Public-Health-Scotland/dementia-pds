@@ -19,9 +19,10 @@ source(here::here("code", "00_setup-environment.R"))
 ### 2 - Create population file from mid-year estimates ----
 
 # Creating population for IJB
+#UPDATE path when new file is available
 
 la_pop <- read_rds(glue("{cl_out}/lookups/Unicode/Populations/Estimates/",
-                        "HSCP2019_pop_est_1981_2023.rds"))%>%
+                        "HSCP2019_pop_est_1981_2023.rds"))%>% 
   filter(year >= 2016, age >= 18)
 
 la_pop %<>%
@@ -114,6 +115,7 @@ la_pop_data %<>%
             ))
 
 # Creating population for HB
+#UPDATE path when new file is available
 
 hb_pop <- read_rds(glue("{cl_out}/lookups/Unicode/Populations/Estimates/",
                         "HB2019_pop_est_1981_2023.rds"))%>%
@@ -188,6 +190,8 @@ pop_data <-bind_rows(la_pop_data, hb_pop_data)
 
 
 # Add 2024 populations from 2023
+# UPDATE when rolling over to new financial year
+
 pop_data %<>%
   
   bind_rows(
@@ -207,6 +211,7 @@ pop_data %>%
 
 
 ### 3 - read in simd pop file ---- 
+#UPDATE path when new file is available
 
 simd_pop_la <- read_rds(glue("{cl_out}/lookups/Unicode/Populations/Estimates/",
                              "DataZone2011_pop_est_2011_2022.rds")) %>% filter(year >= 2016) %>%
@@ -303,6 +308,9 @@ simd_pop_summary %<>% mutate (geog =
                                  TRUE ~ geog
                                ))
 
+# copy 2022 to latest years
+# UPDATE when rolling over to new financial year
+
 simd_pop_data_final <- 
   bind_rows(simd_pop_summary,
             
@@ -315,12 +323,6 @@ simd_pop_data_final <-
       mutate(year = 2024)) %>% 
   complete(nesting(year, geog, age_grp, age_grp_2, sex), simd, fill = list(pop = 0)) 
 
-# cl_stirling <- simd_pop_summary %>% filter(geog == "Clackmannanshire" | geog == "Stirling") %>% mutate(ijb = "Clackmannanshire and Stirling", .before = everything()) 
-# cls_pop<-cl_stirling %>% group_by(ijb, year, age_grp_2, age_grp, sex, simd) %>% summarise(pop = sum(pop)) %>% rename("geog" = "ijb")
-
-# simd_pop_summary %<>% filter(geog != "Clackmannanshire" & geog != "Stirling") 
-
-# simd_pop_data_final <- bind_rows(simd_pop_summary, cls_pop)
 
 
 simd_pop_data_final %>% 
