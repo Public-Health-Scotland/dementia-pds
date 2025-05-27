@@ -159,14 +159,26 @@ est_date3 <- dmy(01042023)
       TRUE ~ paste0(""))
   
   
-   # Data quality notes - highland
-  hlnd_date <- dmy(01042024)
+   # Data quality notes - fife
+  fife_date <- dmy(01042024)
 
-  hlnd_text <-  
-    case_when(hb == "NHS Highland" & sel_fy == extract_fin_year(hlnd_date) ~
+  fife_text <-  
+    case_when(hb == "NHS Fife" & sel_fy == extract_fin_year(fife_date) ~
       paste0(" ",
              "**Please note:** ",
-              "*PHS have identified issues with the data submitted by NHS Highland for 2024/25 Q3 ",
+              "*PHS have identified issues with the data submitted by NHS Fife for 2024/25 ",
+              "which has resulted in one record showing as incorrectly having ", 
+              "met the standard. PHS are working with the Health Board to try and rectify ", 
+              "this data issue in future submissions.*"), TRUE ~ paste0(""))
+  
+     # Data quality notes - borders
+  bord_date <- dmy(01042024)
+
+  bord_text <-  
+    case_when(hb == "NHS Borders" & sel_fy == extract_fin_year(bord_date) ~
+      paste0(" ",
+             "**Please note:** ",
+              "*PHS have identified issues with the data submitted by NHS Borders for 2024/25 ",
               "which has resulted in one record showing as incorrectly having ", 
               "met the standard. PHS are working with the Health Board to try and rectify ", 
               "this data issue in future submissions.*"), TRUE ~ paste0(""))
@@ -178,8 +190,8 @@ est_date3 <- dmy(01042023)
     case_when(hb == "NHS Lanarkshire" & sel_fy == extract_fin_year(lan_date) ~
       paste0(" ",
              "**Please note:** ",
-              "*PHS have identified issues with the data submitted by NHS Lanarkshire for 2024/25 Q3 ",
-              "which has resulted in one record showing as incorrectly having ", 
+              "*PHS have identified issues with the data submitted by NHS Lanarkshire for 2024/25 ",
+              "which has resulted in two records showing as incorrectly having ", 
               "met the standard. PHS are working with the Health Board to try and rectify ", 
               "this data issue in future submissions.*"), TRUE ~ paste0(""))
 
@@ -257,7 +269,9 @@ Row
 
 `r orkney_text`
 
-`r hlnd_text`
+`r fife_text`
+
+`r bord_text`
 
 `r lan_text`
 

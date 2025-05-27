@@ -109,11 +109,13 @@ Row
 
 **NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected.
 
-**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24* and *2024/25*, which has resulted in some records showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
+**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24* and *2024/25*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that this is due to migrating their data to a new IT system. PHS are working with the Health Board to try and rectify this data issue in future submissions. 
 
-**NHS Highland** - PHS have identified issues with the data submitted by NHS Highland for *2024/25 Q3* which has resulted in one record showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
+**NHS Lanarkshire** - PHS have identified issues with the data submitted by NHS Lanarkshire for *2024/25* which has resulted in two records showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
 
-**NHS Lanarkshire** - PHS have identified issues with the data submitted by NHS Lanarkshire for *2024/25 Q3* which has resulted in one record showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
+**NHS Borders** - PHS have identified issues with the data submitted by NHS Borders for *2024/25* which has resulted in one record showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
+
+**NHS Fife** - PHS have identified issues with the data submitted by NHS Fife for *2024/25* which has resulted in one record showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
 
 **Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates.
 
