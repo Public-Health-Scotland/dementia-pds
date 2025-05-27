@@ -263,12 +263,12 @@ median_data_ijb %>% filter(ijb == "Scotland") %>% select(fy, median_diagnosis_to
 median_data_ijb$geog<- factor(median_data_ijb$geog, levels = c(unique(median_data_ijb$geog)))
 
 
-median_data_ijb_plot <- SharedData$new(median_data_ijb, key = ~fy, group = "median_ijb")
+median_data_ijb_table <- SharedData$new(median_data_ijb, key = ~fy, group = "median_ijb")
 
 data_filter_median <- filter_select(id = "filter_median",
                                     label = "Select Financial Year of Diagnosis:",
                                     group = ~fy,
-                                    sharedData = median_data_ijb_plot,
+                                    sharedData = median_data_ijb_table,
                                     multiple = FALSE
                                    )
 
@@ -283,7 +283,7 @@ NULL)
 
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_bar_median(median_data_ijb_plot))
+plot_bar_median(median_data_ijb_table))
 )
 
 ```
@@ -354,12 +354,12 @@ median_data_hb %>% filter(health_board == "Scotland") %>% select(fy, median_diag
 median_data_hb$geog<- factor(median_data_hb$geog, levels = c(unique(median_data_hb$geog)))
 
 
-median_data_hb_plot <- SharedData$new(median_data_hb, key = ~fy, group = "median_hb")
+median_data_hb_table <- SharedData$new(median_data_hb, key = ~fy, group = "median_hb")
 
 data_filter_median_hb <- filter_select(id = "filter_median_hb",
                                     label = "Select Financial Year of Diagnosis:",
                                     group = ~fy,
-                                    sharedData = median_data_hb_plot,
+                                    sharedData = median_data_hb_table,
                                     multiple = FALSE
                                    )
 
@@ -374,7 +374,7 @@ NULL)
 
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_bar_median(median_data_hb_plot))
+plot_bar_median(median_data_hb_table))
 )
 
 ```
@@ -434,11 +434,14 @@ wait_data_trend_all <- wait_data %>% filter(sex == "All", simd == "All") %>%
             mutate(median_diagnosis_to_contact = 
               if_else(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), -999, median_diagnosis_to_contact)) %>% 
             mutate(median_diagnosis_to_contact = 
-              if_else(geog == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), -999, median_diagnosis_to_contact)) 
-  
-wait_data_trend_all$geog<- factor(wait_data_trend_all$geog, levels = unique(pds_all$geog))
+              if_else(geog == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), -999, median_diagnosis_to_contact))
 
-wait_data_trend <- SharedData$new(wait_data_trend_all %>% arrange(geog))
+wait_data_trend_plot <- wait_data_trend_all %>% 
+          mutate(median_diagnosis_to_contact = if_else(median_diagnosis_to_contact < 0, NA, median_diagnosis_to_contact))
+  
+wait_data_trend_plot$geog<- factor(wait_data_trend_plot$geog, levels = unique(pds_all$geog))
+
+wait_data_trend <- SharedData$new(wait_data_trend_plot %>% arrange(geog), key = ~geog)
 
 data_filter_wait_trend <- filter_select(id = "trend_filter_wait",
                                     label = "Select Integration Authority Area(s) or Health Board(s):",
@@ -453,7 +456,30 @@ data_filter_wait_trend,NULL)
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to first contact by PDS practitioner</h2>
 ```{r plot-wait-trend}
 
- wait_plot_trend <- plot_trend(wait_data_trend, median_diagnosis_to_contact, x ="Financial Year of Diagnosis", y = "Median Wait (days)", colours = phs_colours_46, measure_text = "Average (median) days from diagnosis to first contact: ")
+  wait_plot_trend <- #plot_trend(wait_data_trend, median_diagnosis_to_contact, x ="Financial Year of Diagnosis", y = "Median Wait (days)", colours = phs_colours_46, measure_text = "Average (median) days from diagnosis to first contact: ")
+plotly_trend_median(wait_data_trend)
+  #       x = ~fy, y = ~median_diagnosis_to_contact, 
+  #       hovertext = ~geog,
+  #       type = 'scatter', mode = "lines+markers", color = ~geog, colors = phs_colours_46,
+  #       hovertemplate = paste0("%{hovertext} <br>", "%{x} <br>", 
+  #                              "Average (median) days from diagnosis to first contact: %{y}<extra></extra>")
+  #     ) %>% 
+  # layout(clickmode = "none", showlegend = TRUE, legend = list(orientation = 'h', xanchor = "center", x = 0.5, y = -0.3),
+  #        margin = list(l = -5, b = 10, t = 40),
+  #        xaxis = list(title = "Financial Year of Diagnosis", showline = FALSE, linecolor = "#b3b3b3",
+  #                     categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)
+  #                     ),
+  #        yaxis = list(title = "Median Wait (days)", linecolor = "#b3b3b3", titlefont = list(size = 16), 
+  #                     rangemode = "tozero")
+  # ) %>%
+  # config(displayModeBar = TRUE, doubleClick = F,
+  #        modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+  #                                      'zoomOut2d', 'autoScale2d', 
+  #                                      'toggleSpikelines', 
+  #                                      'hoverCompareCartesian', 
+  #                                      'hoverClosestCartesian', 'toImage'), 
+  #        displaylogo = F, editable = F)
+
 
 bscols(widths = 12,
         div(style = css(width="98%", height="385px"),
@@ -465,10 +491,10 @@ wait_plot_trend)
 wait_data_trend_table <-
 wait_data_trend_all %>% arrange(geog) %>% 
               mutate(median_diagnosis_to_contact = if_else(median_diagnosis_to_contact < 0, "-", as.character(median_diagnosis_to_contact))) %>% 
-            mutate(median_diagnosis_to_contact = 
-              if_else(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", median_diagnosis_to_contact)) %>% 
-            mutate(median_diagnosis_to_contact = 
-              if_else(geog == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", median_diagnosis_to_contact)) %>%           
+           # mutate(median_diagnosis_to_contact = 
+             # if_else(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "-", median_diagnosis_to_contact)) %>% 
+          #  mutate(median_diagnosis_to_contact = 
+             # if_else(geog == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", median_diagnosis_to_contact)) %>%           
   pivot_wider(names_from = fy, values_from = median_diagnosis_to_contact) %>%
             rename(`Integration Authority Area/Health Board` = geog)# %>%
             #kable(align = c("l", rep("r", length(all_years)))) %>%
