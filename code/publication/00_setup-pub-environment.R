@@ -18,7 +18,7 @@
 ### 0 - Manual Variable(s) - TO UPDATE ----
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(31122023) 
+end_date <- lubridate::dmy(31032025) 
 
 # UPDATE - Date of publication (ddmmyyyy)
 pub_date <- lubridate::dmy(24062025)
