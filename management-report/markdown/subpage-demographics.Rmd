@@ -285,7 +285,10 @@ ijb_totals_table <- bind_rows(pds_scot_totals, pds_ijb_totals)  %>%
   mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% pivot_wider(names_from = geog, values_from = total_referrals)
    
 # colours for simd plots
-simd_colours <- c("#0062AD", "#0078D4", "#3393DD", "#80BCEA", "#B3D7F2")#, "#E6F2FB")
+simd_colours <- c("#0062AD", "#0078D4", "#3393DD", "#80BCEA", "#B3D7F2")
+
+#colours for gender plots
+sex_colours <- c( "#3F3685", "#9B4393")
 
 # colours for age plots
 age_colours <- c("#6B5C85", "#0078D4", "#1E7F84")
@@ -341,25 +344,15 @@ The Trend tab shows the trend of the rate by financial year for Scotland and the
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
-<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
-
-
 Row {.tabset data-height=1110}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb-age-pop}
-pds_ijb_age_rates <- #bind_rows(
-  
-  #pds_all_age_rates %>% filter(!grepl("NHS", geog)) %>% 
-         #  mutate(age_grp_2_group = age, .before = age_grp_2) %>% 
- # mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog),
-  
-   pds_all_age_rates %>% filter(!grepl("NHS", geog)) %>% 
+pds_ijb_age_rates <- pds_all_age_rates %>% filter(!grepl("NHS", geog)) %>% 
          mutate(age_grp_2_group = "All", .before = age_grp_2)  %>% 
-  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
-#)
+         mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
 
 pds_pop_age_data_ijb <- SharedData$new(pds_ijb_age_rates, key = ~key, group = "ijb_age_pop")
 
@@ -370,12 +363,13 @@ data_filter_ijb_age_pop <- filter_select(id = "filter_ijb_age_pop",
                                     multiple = FALSE
                                       )
 
+
 # data_filter_ijb_age_pop_quintile <- filter_select(id = "filter_ijb_age_pop_quintile",
 #                                     label = "Select Age Group:",
 #                                     group = ~age_grp_2_group,
 #                                     sharedData = pds_pop_age_data_ijb,
-#                                     multiple = FALSE
-#                                       )
+#                                     multiple = FALSE)
+  
 
 data_filter_ijb_age_pop_geog <- filter_select(id = "filter_ijb_age_pop_geog",
                                     label = "Select Integration Authority Area(s):",
@@ -393,14 +387,6 @@ bscols(widths = c(1,10,NA), NULL, data_filter_ijb_age_pop_geog, NULL)
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by Age Group and Integration Authority Area</h2>
-```{r plot-ijb-age-legend-pop}
-
-bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_age %>% filter(geog == "Scotland"), measure = age_grp_2, colours = age_colours)))
-
-```
-
-
 ```{r plot-ijb-age-pop}
 
 bscols(widths = 12,
@@ -408,7 +394,9 @@ bscols(widths = 12,
 plot_ly(pds_pop_age_data_ijb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~age_grp_2, type = 'bar', color = ~age_grp_2, colors = age_colours, 
         hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Age Group: %{hovertext} <br>",
                             "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
-  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+  layout(clickmode = "none", 
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
+         margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "Integration Authority Area", showline = FALSE, linecolor = "#b3b3b3",
                       categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
@@ -428,20 +416,10 @@ plot_ly(pds_pop_age_data_ijb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovert
 
 ```{r table-ijb-age-pop}
 
-ijb_pop_age_table_data <- #bind_rows(
-  
-  # pds_all_age_rates %>%
-  # filter(!grepl("NHS", geog)) %>%
-  # select(geog,fy,age_grp_2,pop_rate_10000) %>%
-  #  mutate(age_grp_2_group = age_grp_2, .before = age_grp_2),
-
-  pds_all_age_rates %>%
-  filter(!grepl("NHS", geog)) %>%
-  select(geog,fy,age_grp_2,pop_rate_10000) %>%
-   mutate(age_grp_2_group = "All", .before = age_grp_2
-          ) %>% 
-  
-     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
+ijb_pop_age_table_data <- pds_all_age_rates %>% filter(!grepl("NHS", geog)) %>%
+   select(geog,fy,age_grp_2,pop_rate_10000) %>%
+    mutate(age_grp_2_group = "All", .before = age_grp_2) %>% 
+    mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
   arrange(age_grp_2) %>% 
   pivot_wider(names_from = age_grp_2, values_from = pop_rate_10000) %>%
   mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog) %>% 
@@ -466,7 +444,7 @@ DT::datatable(ijb_age_table_pop, rownames = FALSE, selection = 'none',
                              columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
                                                list(className = 'dt-right', targets = 4:6)
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+           DT::formatStyle(2, fontWeight = "bold"
                           )
         )
      )
@@ -478,16 +456,9 @@ DT::datatable(ijb_age_table_pop, rownames = FALSE, selection = 'none',
 ### **Health Boards**
 
 ```{r dropdown-hb-age-pop}
-pds_hb_age_rates <- #bind_rows(
-  
-  #pds_all_age_rates %>% filter(!grepl("NHS", geog)) %>% 
-         #  mutate(age_grp_2_group = age, .before = age_grp_2) %>% 
- # mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog),
-  
-   pds_all_age_rates %>% filter(grepl("NHS", geog) | geog == "Scotland") %>% 
+pds_hb_age_rates <- pds_all_age_rates %>% filter(grepl("NHS", geog) | geog == "Scotland") %>% 
          mutate(age_grp_2_group = "All", .before = age_grp_2)  %>% 
-  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
-#)
+         mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
 
 pds_pop_age_data_hb <- SharedData$new(pds_hb_age_rates, key = ~key, group = "hb_age_pop")
 
@@ -502,33 +473,17 @@ data_filter_hb_age_pop <- filter_select(id = "filter_hb_age_pop",
 #                                     label = "Select Age Group:",
 #                                     group = ~age_grp_2_group,
 #                                     sharedData = pds_pop_age_data_hb,
-#                                     multiple = FALSE
-#                                       )
-# 
-# data_filter_hb_age_pop_geog <- filter_select(id = "filter_hb_age_pop_geog",
-#                                     label = "Select Integration Authority Area(s):",
-#                                     group = ~geog,
-#                                     sharedData = pds_pop_age_data_hb,
-#                                     multiple = TRUE
-#                                       )
+#                                     multiple = FALSE)
+
 
 bscols(widths = c(1,5,NA),
        NULL,
        data_filter_hb_age_pop,
        NULL)
 
-# bscols(widths = c(1,10,NA), NULL, data_filter_hb_age_pop_geog, NULL)
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by Age Group and Health Board</h2>
-```{r plot-hb-age-legend-pop}
-
-bscols(widths = 12,
-div(style=css(marginBottom="-10px",height="65px"), plot_geog_bar_legend(pds_all_age %>% filter(geog == "Scotland"), measure = age_grp_2, colours = age_colours)))
-
-```
-
-
 ```{r plot-hb-age-pop}
 
 bscols(widths = 12,
@@ -536,7 +491,9 @@ bscols(widths = 12,
 plot_ly(pds_pop_age_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~age_grp_2, type = 'bar', color = ~age_grp_2, colors = age_colours, 
         hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Age Group: %{hovertext} <br>",
                             "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
-  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+  layout(clickmode = "none", 
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
+         margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "Health Board", showline = FALSE, linecolor = "#b3b3b3",
                       categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
@@ -556,20 +513,11 @@ plot_ly(pds_pop_age_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hoverte
 
 ```{r table-hb-age-pop}
 
-hb_pop_age_table_data <- #bind_rows(
-  
-  # pds_all_age_rates %>%
-  # filter(!grepl("NHS", geog)) %>%
-  # select(geog,fy,age_grp_2,pop_rate_10000) %>%
-  #  mutate(age_grp_2_group = age_grp_2, .before = age_grp_2),
-
-  pds_all_age_rates %>%
+hb_pop_age_table_data <-  pds_all_age_rates %>%
   filter(grepl("NHS", geog) | geog == "Scotland") %>%
   select(geog,fy,age_grp_2,pop_rate_10000) %>%
-   mutate(age_grp_2_group = "All", .before = age_grp_2
-          ) %>% 
-  
-     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
+   mutate(age_grp_2_group = "All", .before = age_grp_2) %>% 
+    mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
    arrange(age_grp_2) %>% 
   pivot_wider(names_from = age_grp_2, values_from = pop_rate_10000) %>%
   mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog) %>% 
@@ -594,7 +542,7 @@ DT::datatable(hb_age_table_pop, rownames = FALSE, selection = 'none',
                              columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
                                                list(className = 'dt-right', targets = 4:6)
                                                ))) %>%
-           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+           DT::formatStyle(2, fontWeight = "bold"
                           )
         )
      )
@@ -728,8 +676,6 @@ The Trend tab shows the trend of the percentage of referrals that have received 
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
 
-<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
-
 Row {.tabset data-height=1110}
 ----------------------------------------------------------------------
 
@@ -768,21 +714,15 @@ bscols(widths = c(1,10,NA), NULL, data_filter_ijb_age_ldp_geog, NULL)
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Age Group and Integration Authority Area</h2>
-```{r plot-ijb-age-legend-ldp}
-
- bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_age %>% filter(geog == "Scotland"), measure = age_grp_2, colours = age_colours)))
-
-```
-
-
 ```{r plot-ijb-age-ldp}
 bscols(widths = 12,
   div(style = css(width="98%", height="350px", marginBottom="-20px"),
 plot_ly(ldp_age_data_ijb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~age_grp_2, type = 'bar', color = ~age_grp_2, colors = age_colours, 
         hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Age Group: %{hovertext} <br>",
                             "%{y}<extra></extra>")) %>% 
-  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+  layout(clickmode = "none", 
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
+         margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "Integration Authority Area", showline = FALSE, linecolor = "#b3b3b3",
                       categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
@@ -820,8 +760,6 @@ ijb_age_ldp_data <- bind_rows(
                                        replace_na(.x, " "))))  %>% 
   mutate(type = "% Met Standard/Exempt", .after = age_grp_2_group)
 
-
-
 ijb_age_totals_data <- bind_rows(
   
    pds_all_age %>%
@@ -841,18 +779,13 @@ ijb_age_totals_data <- bind_rows(
                                        replace_na(.x, " ")))) %>% 
   mutate(type = "Number of Referrals", .after = age_grp_2_group)
 
-
-         
-
 ijb_ldp_age_table_data <- bind_rows(ijb_age_totals_data, ijb_age_ldp_data) %>% 
   arrange(geog, key, desc(type)) %>% 
   mutate(geog = if_else(type == "% Met Standard/Exempt", " ", geog)) %>% 
  rename(" " = "type") %>% 
     rename(`Integration Authority Area` = geog)
 
-
 ijb_age_table_ldp <- SharedData$new(ijb_ldp_age_table_data, key = ~key, group = "ijb_age_ldp")
-
 
 bscols(widths = 12,
        div(style = css(width="97%", height="435px", margin="20px"),
@@ -866,7 +799,7 @@ DT::datatable(ijb_age_table_ldp, rownames = FALSE, selection = "none", #extensio
                              columnDefs = list(list(visible = FALSE, targets = c(0,1,3)),
                                                list(className = 'dt-right', targets = 5:7)
                                                ))) %>%
-           DT::formatStyle(c(3,5), fontWeight = "bold"#, padding = "4px"
+           DT::formatStyle(c(3,5), fontWeight = "bold"
                           )
         )
      )
@@ -875,16 +808,9 @@ DT::datatable(ijb_age_table_ldp, rownames = FALSE, selection = "none", #extensio
 ### **Health Boards**
 
 ```{r dropdown-hb-age-ldp}
-ldp_hb_age <- #bind_rows( 
-  
- # ldp_all_age %>% filter(!grepl("NHS", geog)) %>% 
-        #   mutate(age_grp_2_group = age_grp_2, .before = age_grp_2) %>% 
-#  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog),
-  
-   ldp_all_age %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%  
+ldp_hb_age <- ldp_all_age %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%  
          mutate(age_grp_2_group = "All", .before = age_grp_2)  %>% 
-  mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
-#)
+         mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
 
 ldp_age_data_hb <- SharedData$new(ldp_hb_age, key = ~key, group = "hb_age_ldp")
 
@@ -895,40 +821,14 @@ data_filter_hb_age_ldp <- filter_select(id = "filter_hb_age_ldp",
                                     multiple = FALSE
                                       )
 
-# data_filter_hb_age_ldp_quintile <- filter_select(id = "filter_hb_age_ldp_quintile",
-#                                     label = "Select Age Group:",
-#                                     group = ~age_grp_2_group,
-#                                     sharedData = ldp_age_data_hb,
-#                                     multiple = FALSE
-#                                       )
-
-
-#data_filter_hb_age_ldp_geog <- filter_select(id = "filter_hb_age_ldp_geog",
-                             #       label = "Select Integration Authority Area(s):",
-                                  #  group = ~geog,
-                                   # sharedData = ldp_age_data_hb,
-                                   # multiple = TRUE
-                                   #   )
-
 bscols(widths = c(1,5,NA),
        NULL,
        data_filter_hb_age_ldp,
        NULL)
 
-#bscols(widths = c(1,10,NA), NULL, data_filter_hb_age_ldp_geog, NULL)
-
-
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Age Group and Health Board</h2>
-```{r plot-hb-age-legend-ldp}
-
- bscols(widths = 12,
-div(style=css(marginBottom="-10px",height="65px"), plot_geog_bar_legend(ldp_all_age %>% filter(geog == "Scotland"), measure = age_grp_2, colours = age_colours)))
-
-```
-
-
 ```{r plot-hb-age-ldp}
 
 bscols(widths = 12,
@@ -936,7 +836,9 @@ bscols(widths = 12,
 plot_ly(ldp_age_data_hb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~age_grp_2, type = 'bar', color = ~age_grp_2, colors = age_colours, 
         hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Age Group: %{hovertext} <br>",
                             "%{y}<extra></extra>")) %>% 
-  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+  layout(clickmode = "none", 
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"), 
+         margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "Health Board", showline = FALSE, linecolor = "#b3b3b3",
                       categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
@@ -974,8 +876,6 @@ hb_age_ldp_data <- bind_rows(
                                        replace_na(.x, " "))))  %>% 
   mutate(type = "% Met Standard/Exempt", .after = age_grp_2_group)
 
-
-
 hb_age_totals_data <- bind_rows(
   
    pds_all_age %>%
@@ -995,18 +895,13 @@ hb_age_totals_data <- bind_rows(
                                        replace_na(.x, " ")))) %>% 
   mutate(type = "Number of Referrals", .after = age_grp_2_group)
 
-
-         
-
 hb_ldp_age_table_data <- bind_rows(hb_age_totals_data, hb_age_ldp_data) %>% 
   arrange(geog, key, desc(type)) %>% 
   mutate(geog = if_else(type == "% Met Standard/Exempt", " ", geog)) %>% 
  rename(" " = "type") %>% 
     rename(`Health Board` = geog)
 
-
 hb_age_table_ldp <- SharedData$new(hb_ldp_age_table_data, key = ~key, group = "hb_age_ldp")
-
 
 bscols(widths = 12,
        div(style = css(width="97%", height="460px", margin="20px", marginTop="40px"),
@@ -1020,18 +915,15 @@ DT::datatable(hb_age_table_ldp, rownames = FALSE, selection = "none", #extension
                              columnDefs = list(list(visible = FALSE, targets = c(0,1,3)),
                                                list(className = 'dt-right', targets = 5:7)
                                                ))) %>%
-           DT::formatStyle(c(3,5), fontWeight = "bold"#, padding = "4px"
+           DT::formatStyle(c(3,5), fontWeight = "bold"
                           )
         )
      )
-
-
-
 ```
 
 ### **Trend**
 
-```{r dropdown-ldp-age}
+```{r dropdown-ldp-age-trend}
 
 ldp_all_age_data <- SharedData$new(ldp_all_age, key = ~geog, group = "ldp_age")
 
@@ -1051,14 +943,14 @@ bscols(widths = c(1,5,NA),
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px">Percentage of referrals who received a minimum of one year’s PDS by Age Group and Financial Year</h2>
-```{r plot-ldp-age-legend}
+```{r plot-ldp-age-trend-legend}
 bscols(widths = 12,
        div(style = css(height="30px"),
 plot_ldp_line_legend_1(legend_data)),NULL
 )
 ```
 
-```{r plot-ldp-age}
+```{r plot-ldp-age-trend}
 bscols(widths = 12,
   div(style = css(width="98%", height="350px"),
 plot_ldp_line(ldp_all_age_data, measure = age_grp_2, measure_text = "Age Group: ", colours = age_colours))
@@ -1067,7 +959,7 @@ plot_ldp_line(ldp_all_age_data, measure = age_grp_2, measure_text = "Age Group: 
 ```
 
 
-```{r table-ldp-age}
+```{r table-ldp-age-trend}
 
 ldp_age_trend <- ldp_all_age %>% filter(!is.na(perc_met)) %>%
   select(geog, fy, age_grp_2, perc_met) %>%
@@ -1087,10 +979,7 @@ ldp_age_table_data <- bind_rows(trend_age_totals, ldp_age_trend) %>% arrange(geo
    rename(`Age Group` = age_grp_2) %>% 
   rename(" " = "type")
 
-            
-
 ldp_age_table <- SharedData$new(ldp_age_table_data, key = ~geog, group = "ldp_age")
-
 
 bscols(widths = 12,
        div(style = css(width="97%", height="275px", margin="20px"),
@@ -1107,8 +996,6 @@ DT::datatable(ldp_age_table, rownames = FALSE, selection = 'none',
            DT::formatStyle(2:3, fontWeight = "bold")
         )
      )
-
-
 
 ```
 
@@ -1195,19 +1082,28 @@ bscols(widths = c(1,5,NA),
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by Gender and Integration Authority Area</h2>
-```{r plot-ijb-sex-legend-pop}
-
- bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_sex %>% filter(geog == "Scotland"), measure = sex)))
-
-```
-
-
 ```{r plot-ijb-sex-pop}
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-20px"),
-plot_geog_bar(pds_pop_sex_data_ijb, y_value = pop_rate_10000, measure = sex, measure_text = "Gender: ",
-               x = "Integration Authority Area", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
+  div(style = css(width="98%", height="350px", marginBottom="-20px"),
+plot_ly(pds_pop_sex_data_ijb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~sex, type = 'bar', color = ~sex, colors = sex_colours,
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Gender: %{hovertext} <br>",
+                            "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", 
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
+         margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Integration Authority Area", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16),
+                      range = c(0,max(pds_ijb_sex_rates$pop_rate_10000)))
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
 )
 
 ```
@@ -1228,7 +1124,7 @@ ijb_sex_table_pop <- SharedData$new(ijb_pop_sex_table_data, key = ~fy, group = "
 
 bscols(widths = 12,
        div(style = css(width="97%", height="420px", margin="20px"),
-DT::datatable(ijb_sex_table_pop, rownames = FALSE, #extensions = "FixedColumns",
+DT::datatable(ijb_sex_table_pop, rownames = FALSE, selection = 'none',#extensions = "FixedColumns",
               options = list(pageLength = 33,
                              scrollX = TRUE,
                            #  fixedColumns = list(leftColumns = 1),
@@ -1270,19 +1166,28 @@ bscols(widths = c(1,5,NA),
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by Gender and Health Board</h2>
-```{r plot-hb-sex-legend-pop}
-
- bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_sex %>% filter(geog == "Scotland"), measure = sex)))
-
-```
-
-
 ```{r plot-hb-sex-pop}
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar(pds_pop_sex_data_hb, y_value = pop_rate_10000, measure = sex, measure_text = "Gender: ",
-               x = "Health Board", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
+  div(style = css(width="98%", height="365px", marginBottom="0px"),
+plot_ly(pds_pop_sex_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~sex, type = 'bar', color = ~sex, colors = sex_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Gender: %{hovertext} <br>",
+                            "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", 
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
+         margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Health Board", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16),
+                      range = c(0,max(pds_hb_sex_rates$pop_rate_10000)))
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
 )
 
 ```
@@ -1296,14 +1201,11 @@ hb_pop_sex_table_data <- pds_all_sex_rates %>% filter(geog == "Scotland" | grepl
   pivot_wider(names_from = sex, values_from = pop_rate_10000, values_fill = "-") %>% 
    rename(`Health Board` = geog)
 
-
-
 hb_sex_table_pop <- SharedData$new(hb_pop_sex_table_data, key = ~fy, group = "hb_sex_pop")
-
 
 bscols(widths = 12,
        div(style = css(width="97%", height="410px", margin="20px"),
-DT::datatable(hb_sex_table_pop, rownames = FALSE,# extensions = "FixedColumns",
+DT::datatable(hb_sex_table_pop, rownames = FALSE, selection = 'none',# extensions = "FixedColumns",
               options = list(pageLength = 15,
                              scrollX = TRUE,
                           #   fixedColumns = list(leftColumns = 1),
@@ -1313,12 +1215,10 @@ DT::datatable(hb_sex_table_pop, rownames = FALSE,# extensions = "FixedColumns",
                              columnDefs = list(list(visible = FALSE, targets = 1),
                                                list(className = 'dt-right', targets = 2:3)
                                                ))) %>%
-           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+           DT::formatStyle(1, fontWeight = "bold"
                           )
         )
      )
-
-
 
 ```
 
@@ -1346,7 +1246,6 @@ bscols(widths = c(1,5,NA),
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population (65+) by Gender and Financial Year</h2>
 ```{r plot-trend-sex-legend-pop}
-
 bscols(widths = 12,
        div(style = css(height="30px"),
 plot_rate_line_legend_1(legend_data)),NULL
@@ -1356,7 +1255,6 @@ plot_rate_line_legend_1(legend_data)),NULL
 
 
 ```{r plot-trend-sex-pop}
-
 bscols(widths = 12,
   div(style = css(width="98%", height="370px"),
 plot_rate_line(pds_pop_sex_data, measure = sex, measure_text = "Gender: ", y = "Rate per 10,000 Population"))
@@ -1366,15 +1264,12 @@ plot_rate_line(pds_pop_sex_data, measure = sex, measure_text = "Gender: ", y = "
 
 
 ```{r table-trend-sex-pop}
-
 trend_pop_sex_table_data <- pds_all_sex_rates %>% filter(!is.na(pop_rate_10000)) %>% 
   select(geog,fy,sex,pop_rate_10000) %>%
   pivot_wider(names_from = fy, values_from = pop_rate_10000) %>% arrange(sex) %>% 
              rename(`Gender` = sex)
 
-
 trend_pop_sex_table <- SharedData$new(trend_pop_sex_table_data, key = ~geog, group = "trend_sex_pop")
-
 
 bscols(widths = 12,
        div(style = css(width="97%", height="140px", margin="20px"),
@@ -1390,9 +1285,6 @@ DT::datatable(trend_pop_sex_table, rownames = FALSE, selection = 'none',
                           )
         )
      )
-
-
-
 ```
 
 Gender Outcomes {.hidden}
@@ -1477,18 +1369,27 @@ bscols(widths = c(1,5,NA),
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Gender and Integration Authority Area</h2>
-```{r plot-ijb-sex-legend-ldp}
-
- bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_sex %>% filter(geog == "Scotland"), measure = sex)))
-
-```
-
-
 ```{r plot-ijb-sex-ldp}
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar(ldp_sex_data_ijb, y_value = perc_met, measure = sex, measure_text = "Gender: ", x = "Integration Authority Area", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+  div(style = css(width="98%", height="350px", marginBottom="-20px"),
+plot_ly(ldp_sex_data_ijb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~sex, type = 'bar', color = ~sex, colors = sex_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Gender: %{hovertext} <br>",
+                            "%{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", 
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
+         margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Integration Authority Area", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
 )
 
 ```
@@ -1517,7 +1418,7 @@ ijb_sex_table_ldp <- SharedData$new(ijb_ldp_sex_table_data, key = ~fy, group = "
 
 bscols(widths = 12,
        div(style = css(width="97%", height="460px", margin="20px"),
-DT::datatable(ijb_sex_table_ldp, rownames = FALSE, #extensions = "FixedColumns",
+DT::datatable(ijb_sex_table_ldp, rownames = FALSE, selection = 'none', #extensions = "FixedColumns",
                options = list(pageLength = 66,
                              scrollX = TRUE,
                             # fixedColumns = list(leftColumns = 2),
@@ -1560,18 +1461,27 @@ bscols(widths = c(1,5,NA),
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Gender and Health Board</h2>
-```{r plot-hb-sex-legend-ldp}
-
- bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_sex %>% filter(geog == "Scotland"), measure = sex)))
-
-```
-
-
 ```{r plot-hb-sex-ldp}
 bscols(widths = 12,
-  div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_geog_bar(ldp_sex_data_hb, y_value = perc_met, measure = sex, measure_text = "Gender: ", x = "Health Board", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+  div(style = css(width="98%", height="365px", marginBottom="0px"),
+plot_ly(ldp_sex_data_hb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~sex, type = 'bar', color = ~sex, colors = sex_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Gender: %{hovertext} <br>",
+                            "%{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", 
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"), 
+         margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Health Board", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
 )
 
 ```
@@ -1602,7 +1512,7 @@ hb_sex_table_ldp <- SharedData$new(hb_ldp_sex_table_data, key = ~fy,  group = "h
 
 bscols(widths = 12,
        div(style = css(width="97%", height="460px", margin="20px"),
-DT::datatable(hb_sex_table_ldp, rownames = FALSE,# extensions = "FixedColumns",
+DT::datatable(hb_sex_table_ldp, rownames = FALSE, selection = 'none',# extensions = "FixedColumns",
               options = list(pageLength = 30,
                              scrollX = TRUE,
                              #fixedColumns = list(leftColumns = 2),
@@ -1808,22 +1718,16 @@ bscols(widths = c(1,10,NA), NULL, data_filter_ijb_simd_pop_geog, NULL)
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by SIMD Quintile and Integration Authority Area</h2>
-```{r plot-ijb-simd-legend-pop2}
-
-bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
-
-```
-
-
-```{r plot-ijb-simd-pop2}
+```{r plot-ijb-simd-pop}
 
 bscols(widths = 12,
   div(style = css(width="98%", height="355px", marginBottom="-20px"),
 plot_ly(pds_pop_simd_data_ijb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
         hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
                             "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
-  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+  layout(clickmode = "none",
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
+         margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "Integration Authority Area", showline = FALSE, linecolor = "#b3b3b3",
                       categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
@@ -1935,14 +1839,6 @@ bscols(widths = c(1,5,NA),
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by SIMD Quintile and Health Board</h2>
-```{r plot-hb-simd-legend-pop}
-
-bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
-
-```
-
-
 ```{r plot-hb-simd-pop}
 
 bscols(widths = 12,
@@ -1950,7 +1846,9 @@ bscols(widths = 12,
 plot_ly(pds_pop_simd_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
         hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
                             "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
-  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+  layout(clickmode = "none", 
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
+         margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "Health Board", showline = FALSE, linecolor = "#b3b3b3",
                       categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
@@ -2196,14 +2094,6 @@ bscols(widths = c(1,10,NA), NULL, data_filter_ijb_simd_ldp_geog, NULL)
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by SIMD Quintile and Integration Authority Area</h2>
-```{r plot-ijb-simd-legend-ldp}
-
- bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
-
-```
-
-
 ```{r plot-ijb-simd-ldp}
 
 bscols(widths = 12,
@@ -2211,7 +2101,9 @@ bscols(widths = 12,
 plot_ly(ldp_simd_data_ijb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
         hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
                             "%{y}<extra></extra>")) %>% 
-  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+  layout(clickmode = "none", 
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
+         margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "Integration Authority Area", showline = FALSE, linecolor = "#b3b3b3",
                       categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
@@ -2353,14 +2245,6 @@ bscols(widths = c(1,5,NA),
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by SIMD Quintile and Health Board</h2>
-```{r plot-hb-simd-legend-ldp}
-
- bscols(widths = 12,
-div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
-
-```
-
-
 ```{r plot-hb-simd-ldp}
 
 bscols(widths = 12,
@@ -2368,7 +2252,9 @@ bscols(widths = 12,
 plot_ly(ldp_simd_data_hb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
         hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
                             "%{y}<extra></extra>")) %>% 
-  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+  layout(clickmode = "none", 
+         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"), 
+         margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "Health Board", showline = FALSE, linecolor = "#b3b3b3",
                       categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
