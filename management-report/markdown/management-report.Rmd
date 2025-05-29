@@ -209,9 +209,17 @@ Row
 
 **NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected.
 
-**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24* and *2024/25*, which has resulted in some records showing as incorrectly having met the standard. PHS are working with the Health Board to try and rectify this data issue in future submissions.
+**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24* and *2024/25*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. This is likely to be completed by the end of the year. 
 
-**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23* and *2023/24*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates.
+**NHS Lanarkshire** - PHS have identified two records submitted by NHS Lanarkshire for *2024/25* that show inconsistent dates. The reported dates resulted in these records showing as having met the standard. PHS have queried the dates with the Health Board and are awaiting a response.  
+
+**NHS Borders** - PHS have identified one record submitted by NHS Borders for *2024/25* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are awaiting a response. 
+
+**NHS Fife** - PHS have identified one record submitted by NHS Fife for *2024/25* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are awaiting a response.
+
+**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates.
+
+
 
 
 
@@ -301,7 +309,7 @@ Service users for whom it is not yet known if they have met the standard as thei
 
 In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report.
 
-For financial years *2021/22, 2022/23 and 2023/24,* the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates. 
+For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25* the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates. 
 
 Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018.
 
