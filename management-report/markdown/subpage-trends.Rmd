@@ -73,7 +73,7 @@ This page includes a chart and table showing the trend for number of people refe
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
-Row {.tabset data-height=1280}
+Row {.tabset data-height=1210}
 ----------------------------------------------------------------------
 
 ### **Scotland**
@@ -106,7 +106,7 @@ pds_all_totals %>%
             add_header_above(
                        c(" " = 1,
                          "Financial Year of Diagnosis" = length(all_years))) %>%
-            scroll_box(height = "765px")
+            scroll_box(height = "685px")
  
 
 ```
@@ -152,7 +152,7 @@ pds_all_totals %>% filter(geog == "Scotland" | !grepl("NHS", geog)) %>%
             add_header_above(
                        c(" " = 1,
                          "Financial Year of Diagnosis" = length(all_years))) %>%
-            scroll_box(height = "720px")
+            scroll_box(height = "660px")
  
 
 ```
@@ -254,7 +254,7 @@ The Trend tab includes a chart and table showing the trend of the rate by financ
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
 
-Row {.tabset data-height=1300}
+Row {.tabset data-height=1260}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
@@ -299,7 +299,7 @@ pds_all_rates %>% filter(geog == "Scotland" | !grepl("NHS", geog)) %>%
             add_header_above(
                        c(" " = 1,
                          "Financial Year of Diagnosis" = length(all_years))) %>%
-            scroll_box(height = "700px")
+            scroll_box(height = "650px")
 
 
 ```
@@ -388,7 +388,7 @@ pds_all_rates %>%
             add_header_above(
                     c(" " = 1,
                      "Financial Year of Diagnosis" = length(all_years))) %>%
-            scroll_box(height = "720px")
+            scroll_box(height = "700px")
 
 ```
 
@@ -449,7 +449,7 @@ The second tab shows the percentage of referrals that have received one year’s
 <!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
 
-Row {.tabset data-height=1240}
+Row {.tabset data-height=1215}
 ----------------------------------------------------------------------
 
 ### **Percentage of estimated diagnoses referred to PDS**
@@ -549,6 +549,8 @@ pds_met_rates %>% select(geog, fy, perc_met) %>%
             add_header_above(
                     c(" " = 1,
                      "Financial Year of Diagnosis" = length(full_years))) %>% 
-  scroll_box(height = "670px")
+  scroll_box(height = "650px")
 
 ```
+
+<!-- END OF SCRIPT -->

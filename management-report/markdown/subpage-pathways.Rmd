@@ -1,5 +1,5 @@
 ---
-title: "PATHWAYS DRAFT"
+title: "PATHWAYS DRAFT PATHWAYS DRAFT PATHWAYS DRAFT PATHWAYS DRAFT PATHWAYS DRAFT"
 output: 
   flexdashboard::flex_dashboard:
     logo: phs-logo.png
@@ -240,7 +240,7 @@ The Waiting Times Breakdown tab provides a table showing the number of referrals
 
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
-Row {.tabset data-height=1070}
+Row {.tabset data-height=1180}
 ----------------------------------------------------------------------
 
 ### **Integration Authority Areas**
@@ -314,7 +314,7 @@ median_ijb_table <- SharedData$new(median_ijb_table_data, key = ~fy, group = "me
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="460px", margin="20px"),
+       div(style = css(width="97%", height="450px", margin="20px"),
 DT::datatable(median_ijb_table, rownames = FALSE, extensions = "FixedColumns",
                caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
@@ -401,7 +401,7 @@ median_hb_table <- SharedData$new(median_hb_table_data, key = ~fy, group = "medi
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="470px", margin="20px"),
+       div(style = css(width="97%", height="450px", margin="20px"),
 DT::datatable(median_hb_table, rownames = FALSE, extensions = "FixedColumns",
               caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
@@ -509,7 +509,7 @@ wait_data_trend_all %>% arrange(geog) %>%
 
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="470px", margin="20px"),
+       div(style = css(width="97%", height="580px", margin="20px"),
     DT::datatable(wait_data_trend_table, rownames = FALSE,  
                                        caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',
@@ -581,7 +581,7 @@ data_filter_all_year, NULL)
 <h4 style="margin-left: 60px; margin-top: 0px; margin-bottom: -10px; font-style: italic">Please see notes section above for more information</h4>
 ```{r wait-table-all}
 bscols(widths = 12,
-       div(style = css(width="97%", height="785px", margin="20px"),
+       div(style = css(width="97%", height="770px", margin="20px"),
     DT::datatable(wait_table_data_all, rownames = FALSE,  
                                        caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left;',

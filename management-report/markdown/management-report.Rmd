@@ -1031,7 +1031,7 @@ function filter_default() {
   
   // demographics
 
-   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
+  document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
   [0].selectize.setValue(pds_year, false);
 
   document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized")
@@ -1156,7 +1156,6 @@ function filter_default() {
 
   document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized")
   [0].selectize.removeOption("");
-  
   
 
 // pathways
