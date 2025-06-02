@@ -863,7 +863,7 @@ summarise_uptake <- function(data, field = pds_uptake_decision){
   )
 }
 
-summarise_carer <- function(data, field = pds_uptake_decision){
+summarise_carer <- function(data, field = carers_support){
   
   bind_rows(
     
