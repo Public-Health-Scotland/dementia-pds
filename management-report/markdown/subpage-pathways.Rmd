@@ -150,9 +150,7 @@ PDS Pathways
 #load pathways data
 wait_data <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output))
 
-term_data_contact <- read_rds(get_mi_data_path("wait_data_2", ext = "rds", test_output = test_output))
-
-term_data_no_contact <- read_rds(get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
+# term_data_contact <- read_rds(get_mi_data_path("wait_data_2", ext = "rds", test_output = test_output))
 
 wait_data$health_board <- as.factor(wait_data$health_board)
 wait_data$fy <- as.factor(wait_data$fy)
@@ -160,14 +158,15 @@ wait_data$simd <- as.factor(wait_data$simd)
 wait_data$sex <- as.factor(wait_data$sex)
 wait_data$ijb <- as.factor(wait_data$ijb)
 
+# term_data_contact$health_board <- as.factor(term_data_contact$health_board)
+# term_data_contact$fy <- as.factor(term_data_contact$fy)
+# term_data_contact %<>% arrange(termination_or_transition_reason)
+# term_data_contact$sex <- as.factor(term_data_contact$sex)
+# term_data_contact$ijb <- factor(term_data_contact$ijb, levels = unique(pds_all$geog))
+# term_data_contact %<>% mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "14 All reasons", substring(termination_or_transition_reason, 4), termination_or_transition_reason))
+# term_data_contact$termination_or_transition_reason <- as.factor(term_data_contact$termination_or_transition_reason)
 
-term_data_contact$health_board <- as.factor(term_data_contact$health_board)
-term_data_contact$fy <- as.factor(term_data_contact$fy)
-term_data_contact %<>% arrange(termination_or_transition_reason)
-term_data_contact$sex <- as.factor(term_data_contact$sex)
-term_data_contact$ijb <- factor(term_data_contact$ijb, levels = unique(pds_all$geog))
-term_data_contact %<>% mutate(termination_or_transition_reason = if_else(termination_or_transition_reason == "14 All reasons", substring(termination_or_transition_reason, 4), termination_or_transition_reason))
-term_data_contact$termination_or_transition_reason <- as.factor(term_data_contact$termination_or_transition_reason)
+term_data_no_contact <- read_rds(get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
 
 term_data_no_contact$health_board <- as.factor(term_data_no_contact$health_board)
 term_data_no_contact$fy <- as.factor(term_data_no_contact$fy)
@@ -236,8 +235,7 @@ The Waiting Times Breakdown tab provides a table showing the number of referrals
 *The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
-<br>
-
+`r if(qt != 4) {HTML("<br>")}`
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=1180}
@@ -672,15 +670,14 @@ This page includes further information for referrals relating to the LDP Standar
 
 The LDP Standard Not Met tab provides a table showing the percentage of total referrals and number of individuals who did not receive a minimum of one year’s PDS starting within 12 months of diagnosis, along with the percentage for each reason for not meeting the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year. 
 
-The PDS Ongoing tab includes a table showing the percentage of total referrals and number of individuals where the LDP Standard cannot yet be determined and is therefore classed as Ongoing. Data is only shown for the financial years where referrals could still be ongoing. *See the [Glossary](#glossary) for more details.* The table also shows what percentage of the ongoing referrals are yet to start PDS with less than 12 months since diagnosis, and the percentage still receiving PDS with less than 12 months since first contact . 
+The PDS Ongoing tab includes a table showing the percentage of total referrals and number of individuals where the LDP Standard cannot yet be determined and is therefore classed as Ongoing. Data is only shown for the financial years where referrals could still be ongoing. *See the [Glossary](#glossary) for more details.* The table also shows what percentage of the ongoing referrals are yet to start PDS with less than 12 months since diagnosis, and the percentage still receiving PDS with less than 12 months since first contact. 
 
 The Exempt tab includes a table showing the percentage of total referrals and number of individuals who are exempt from the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year. 
 
 *As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
-<br>
-
+`r if(qt != 4) {HTML("<br>")}`
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=790}
@@ -960,8 +957,7 @@ This page includes a table showing the percentage of total referrals where ‘PD
 *The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
-<br>
-
+`r if(qt != 4) {HTML("<br>")}`
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=920}
@@ -987,7 +983,8 @@ Row {.tabset data-height=920}
       select(2,1,4,7,8,9,10,11,12) %>% 
   mutate(perc_declined = if_else(Known == 0, "-", paste0(round(100*Declined/Known,1), "%"))) %>%
   mutate(perc_accepted = if_else(Known == 0, "-", paste0(round((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
-          mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+          mutate(across(where(is.numeric), ~format(., big.mark = ","))
+                    ) %>% 
   select(fy, geog, total_referrals, perc_known, perc_accepted, perc_declined) %>% 
   rename("Number of People Referred to PDS" = "total_referrals",
          "% of referrals where Uptake Decision is Recorded" = "perc_known",
@@ -1166,13 +1163,12 @@ This page provides tables for Scotland, Integration Authority Areas and Health B
 
 the number of individuals and percentage of total referrals with no contact date recorded within 12 months of diagnosis; 
 
-the number and percentage of total referrals whose PDS was ended with no contact date recorded. 
+the number and percentage of total referrals whose PDS was ended with no contact date recorded, including those exempt from the LDP Standard. 
 
 *The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
-<br>
-
+`r if(qt != 4) {HTML("<br>")}`
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=680}
