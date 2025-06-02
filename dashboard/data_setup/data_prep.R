@@ -131,7 +131,8 @@ den_ijb <- pds %>%
 
 pds_rate_ijb <- full_join(num_ijb, den_ijb, by = c("health_board", "ijb", "fy")) %>%
   mutate(rate = round(num/den*100, 1),
-         rate = replace_na(rate, 0)) %>%
+       #  rate = replace_na(rate, 0)
+         ) %>%
   select(-num, -den)
 
 
