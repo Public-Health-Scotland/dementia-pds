@@ -18,27 +18,25 @@ source(here::here("code", "00_setup-environment.R"))
 ### 1 load functions ----
 source(here::here("functions", "summarise_functions.R"))
 
-
-#read in individual data ----
+### 2 read in individual data ----
 ldp <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output)) %>% 
   
   mutate(ldp = word(ldp, 1)) %>% 
   
-    # Remove codes from board, IJB, and sex
+    # Remove codes from board and IJB
   mutate(n_referrals = 1,
          health_board = str_sub(health_board, 3, -1),
          ijb          = if_else(is.na(ijb),
                                 "Unknown",
                                 str_sub(ijb, 11, -1)))
 
-### DATA COMPLETION ----
-
+### 3 DATA COMPLETION ----
+# remove unused variables
 ldp_select <- ldp %>% select(-contact_before_diag, -pds_calc_months, -date2, -ddcd_check,
                              -fake_id, -simd, -age, -age_grp, -ldp, -pds_11, -pds_12,
                              -diag_12, -month, -x29, -x30, -error_flag)
 
-# calculate yet to be determined totals
-
+# set flag for all variables (except year, healthboard and ijb) if marked as yet to be determined
 set_ytbd <- function(x){
   case_when(str_detect(x, "Yet to be determined") ~ 1,
             TRUE ~ 0)
@@ -46,10 +44,9 @@ set_ytbd <- function(x){
 
 cols <- names(ldp_select %>% select(-fy,-health_board,-ijb))
 
-
 ldp_select_ytbd <- ldp_select %>%  mutate(across(all_of(cols), set_ytbd))
 
-
+# calculate total number of referrals for healthboards and Scotland
 totals_hb <- bind_rows(
   ldp_select_ytbd %>% group_by(fy, health_board) %>% summarise(number_of_records = n()),
   
@@ -61,8 +58,7 @@ totals_hb <- bind_rows(
   
 )
 
-
-
+# calculate total number of ytbds for healthboards and Scotland
 ytbd_hb <- bind_rows(
   
   ldp_select_ytbd %>% group_by(fy, health_board) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
@@ -74,29 +70,27 @@ ytbd_hb <- bind_rows(
   ldp_select_ytbd %>% group_by(fy = "All", health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}"))
 )
 
-
 hb <- full_join(ytbd_hb, totals_hb) %>% rename(geog = health_board)
 
 
-
+# calculate total number of referrals for ijbs
 totals_ijb <- bind_rows(
   ldp_select_ytbd %>% group_by(fy, ijb) %>% summarise(number_of_records = n()),
   
   ldp_select_ytbd %>% group_by(fy = "All", ijb) %>% summarise(number_of_records = n())
 )
 
-
+# calculate total number of ytbds for ijbs
 ytbd_ijb <- bind_rows(
   ldp_select_ytbd %>% group_by(fy, ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
   
   ldp_select_ytbd %>% group_by(fy = "All", ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}"))
 )
 
-
 ijb <- full_join(ytbd_ijb, totals_ijb) %>% rename(geog = ijb)
 
+# combine Scotland, hb and ijb data
 summary_ytbd <- bind_rows(ijb,hb)  
-
 
 summary_ytbd %<>% pivot_longer(cols= cols,
                                names_to='field_name',
@@ -104,10 +98,7 @@ summary_ytbd %<>% pivot_longer(cols= cols,
   relocate(number_of_records, .after = field_name)
 
 
-
-
-# calculate na and unknown totals
-
+# set flag for all variables (except year, healthboard and ijb) if NA or marked as unknown
 set_na <- function(x){
   case_when(str_detect(x, "^99") ~ NA,
             str_detect(x, "^98") ~ NA,
@@ -126,7 +117,7 @@ na_fun <- function(x){
 
 ldp_select_na %<>% mutate(across(all_of(cols), na_fun))
 
-
+# calculate total number of unknowns for healthboards and Scotland
 missing_hb <- bind_rows(
   
   ldp_select_na %>% group_by(fy, health_board) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
@@ -138,10 +129,9 @@ missing_hb <- bind_rows(
   ldp_select_na %>% group_by(fy = "All", health_board = "Scotland") %>% summarise(across(all_of(cols), sum, .names = "{.col}"))
 )
 
-
 missing_hb %<>% rename(geog = health_board)
 
-
+# calculate total number of unknowns for ijbs
 missing_ijb <-bind_rows(
   ldp_select_na %>% group_by(fy, ijb) %>% summarise(across(all_of(cols), sum, .names = "{.col}")),
   
@@ -150,17 +140,17 @@ missing_ijb <-bind_rows(
 
 missing_ijb %<>% rename(geog = ijb)
 
-
+# combine Scotland, hb and ijb data
 summary_na <- bind_rows(missing_ijb, missing_hb)  
-
 
 summary_na %<>% pivot_longer(cols= cols,
                              names_to='field_name',
                              values_to='no_of_records_missing_not_known')
 
+# join ytbd summary with unknown summary
 summary <- full_join(summary_ytbd, summary_na)
 
-
+# add mandatory/optional column
 summary %<>% mutate(mandatory_optional = 
                       case_when(field_name %in% c("locality", "additional_disability", "living_alone", 
                                                   "subtype_of_dementia", "practitioner_team_id", "carers_support") ~ "optional",
@@ -169,16 +159,18 @@ summary %<>% mutate(mandatory_optional =
                                                   "termination_or_transition_date", "termination_or_transition_reason") ~ "conditional mandatory",
                                 TRUE ~ "mandatory"), .after = field_name)
 
+# calculate percentage of unknowns
 summary %<>% mutate(perc_of_records_missing_not_known = round(100*no_of_records_missing_not_known/number_of_records, 1))
 
+#calcualte percentage of ytbds
 summary %<>% mutate(perc_of_records_ytbd = round(100*no_of_records_ytbd/number_of_records, 1))
 
+#save output
 summary %>% 
   write_file(path = get_mi_data_path("comp_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-### PATHWAYS ----
-
+### 4 PATHWAYS: UPTAKE DECISION ----
 
 # remove codes
 variables <- c("ethnic_group",
@@ -193,20 +185,29 @@ variables <- c("ethnic_group",
                "pds_status",
                "carers_support")
 
-ldp %<>% mutate(across(all_of(variables), ~substring(.x, 3))) %>%
+ldp_clean <- ldp %>% mutate(across(all_of(variables), ~substring(.x, 3))) %>%
   mutate(across(all_of(variables), ~if_else(is.na(.x), "Not Known", .x))) %>%
   mutate(across(all_of(variables), ~str_trim(.x, "left")))
 
-ldp %<>% mutate(sex = substring(sex, 3)) %>% 
+ldp_clean %<>% mutate(sex = substring(sex, 3)) %>% 
    mutate(sex = str_trim(sex, "left")) %>% 
   mutate(sex = if_else(is.na(sex) | sex == "Not Known", "Unknown", sex)) 
 
 
-ldp_wait_times <- ldp %>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Known", "Homeless", "No Fixed Address"),
+# summarise data
+data_uptake <- summarise_uptake(ldp_clean)
+data_uptake %>% 
+  write_file(path = get_mi_data_path("uptake_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+### 5 PATHWAYS: WAITING TIMES ----
+
+# combine not known and other seldom used responses into one category for accommodation type and referral source
+ldp_wait_times <- ldp_clean %>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Known", "Homeless", "No Fixed Address"),
                                              "Not Known/Other", accommodation_type),
                 pds_referral_source = if_else(pds_referral_source %in% c("Not Known", "Local Authority", "Other", "Private Professional/Service/Organisation", "Self Referral"),
                                               "Not Known/Other", pds_referral_source))
-
+#calculate days between each stage of pathway
 ldp_wait_times %<>% 
   mutate(n_referrals = 1,
          diagnosis_to_referral_days = time_length(interval(dementia_diagnosis_confirmed_date, date_pds_referral_received), "days"),
@@ -218,32 +219,30 @@ ldp_wait_times %<>%
          referral_to_termination_days = time_length(interval(date_pds_referral_received, termination_or_transition_date), "days")
   )
 
+# mark termination reason as PDS Active if no termination date and as Unknown if reason is NA
 ldp_wait_times %<>%
-  #   mutate(termination_or_transition_reason = if_else(ldp == 'exempt', paste0(termination_or_transition_reason, " (exempt from LDP Standard)"), termination_or_transition_reason)) %>%
-  #  mutate(termination_or_transition_reason = substring(termination_or_transition_reason, 3)) %>% 
   mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_date), "PDS Active", termination_or_transition_reason)) %>%
   mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_reason), "13 Unknown Reason", termination_or_transition_reason))
-# mutate(termination_or_transition_reason = str_trim(termination_or_transition_reason, "left"))
 
+# save out individual data with wait times for checking/ further analysis
 ldp_wait_times %>% 
   write_file(path = get_mi_data_path("ldp_wait_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
-# create summary
+# create summaries
+# summary with wait times for each stage of pathway
 data_wait <- summarise_pathways(ldp_wait_times)
-
 data_wait %<>% mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb),
                       perc_allocated = round((allocated_referrals/total_referrals)*100,1),
                       perc_contacted = round((contacted_referrals/total_referrals)*100,1))
 
+# # summary with termination reasons for those that have been contacted
+# data_wait_2 <- summarise_pathways_2(ldp_wait_times)
+# data_wait_2 %<>% mutate(ijb = if_else(ijb == "All", health_board, ijb))
 
-data_wait_2 <- summarise_pathways_2(ldp_wait_times)
-
-data_wait_2 %<>% mutate(ijb = if_else(ijb == "All", health_board, ijb))
-
+# summary with termination reasons for those that have NOT been contacted
 data_wait_3 <- summarise_pathways_3(ldp_wait_times)
-
 data_wait_3 %<>% mutate(ijb = if_else(ijb == "All", health_board, ijb))
 
 
@@ -251,22 +250,14 @@ data_wait %>%
   write_file(path = get_mi_data_path("wait_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-data_wait_2 %>% 
-  write_file(path = get_mi_data_path("wait_data_2", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+# data_wait_2 %>% 
+#   write_file(path = get_mi_data_path("wait_data_2", ext = "rds", test_output = test_output))
+#0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 data_wait_3 %>% 
   write_file(path = get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-
-#DATA UPTAKE----
-
-data_uptake <- summarise_uptake(ldp)
-
-data_uptake %>% 
-  write_file(path = get_mi_data_path("uptake_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 #SUBTYPE OF DEMENTIA----removed from MI
 # data_subtype <- summarise_by_variable(subtype_of_dementia) %>% 
