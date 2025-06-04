@@ -18,7 +18,7 @@ ldp_all_age %>% filter(geog == "Scotland") %>% select(fy, age_grp_2, perc_met) %
 
 ldp_all_age$age_grp_2<- factor(ldp_all_age$age_grp_2, levels = c("79 and Under", "80 to 84", "85+"))
 
-pds_all_age <- pds_all %>% filter(age_grp_2 != "Unknown") #remove 6 unknowns from 2016/17 (add note to charts and tables?)
+pds_all_age <- pds_all %>% filter(age_grp_2 != "Unknown") 
 
 pds_all_age %<>% group_by(fy, geog, age_grp_2) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop")
@@ -46,7 +46,7 @@ pds_all_age_rates %>% filter(geog == "Scotland") %>% select(fy, age_grp_2, pop_r
 #prepare gender data
 
 ldp_all_sex <- pds_all %>%
-  filter(fy %in% full_years, sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown") %>% #need note about how many unknowns have been removed
+  filter(fy %in% full_years, sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown") %>% 
   group_by(geog, fy, sex, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
@@ -209,6 +209,7 @@ Row {.tabset data-height=1180}
 ```{r dropdown-ijb-age-pop}
 #filter for authority areas
 pds_ijb_age_rates <- pds_all_age_rates %>% filter(!grepl("NHS", geog)) %>% 
+   mutate(pop_rate_10000 = if_else(is.na(pop_rate_10000), 0, pop_rate_10000)) %>% #this was added to avoid any areas with missing data being placed at the end of the chart
 #age_grp_2_group is for use with age group dropdown below which has been removed in current version
          mutate(age_grp_2_group = "All", .before = age_grp_2)  %>% 
 #create key for connecting dropdown to plot and table
@@ -356,7 +357,7 @@ plot_ly(pds_pop_age_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hoverte
          showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
          margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "", showline = FALSE, linecolor = "#b3b3b3",
-                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+                      categoryorder = "array", categoryarray = pds_hb_age_rates$geog, tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
       ) %>%
   config(displayModeBar = TRUE, doubleClick = F,
@@ -544,6 +545,7 @@ Row {.tabset data-height=1180}
 
 ```{r dropdown-ijb-age-ldp}
 ldp_ijb_age <- ldp_all_age %>% filter(!grepl("NHS", geog)) %>%  
+  mutate(perc_met = if_else(is.na(perc_met), 0, perc_met))  %>% #this was added to avoid any areas with missing data being placed at the end of the chart
          mutate(age_grp_2_group = "All", .before = age_grp_2)  %>% 
   mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
 
@@ -701,7 +703,7 @@ plot_ly(ldp_age_data_hb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~age_
          showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"), 
          margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "", showline = FALSE, linecolor = "#b3b3b3",
-                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+                      categoryorder = "array", categoryarray = ldp_hb_age$geog, tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
       ) %>%
   config(displayModeBar = TRUE, doubleClick = F,
@@ -923,7 +925,8 @@ Row {.tabset data-height=1180}
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb-sex-pop}
-pds_ijb_sex_rates <- pds_all_sex_rates %>% filter(!grepl("NHS", geog))
+pds_ijb_sex_rates <- pds_all_sex_rates %>% filter(!grepl("NHS", geog)) %>%
+  mutate(pop_rate_10000 = if_else(is.na(pop_rate_10000), 0, pop_rate_10000))  #this was added to avoid any areas with missing data being placed at the end of the chart
 
 pds_pop_sex_data_ijb <- SharedData$new(pds_ijb_sex_rates, key = ~fy, group = "ijb_sex_pop")
 
@@ -1037,7 +1040,7 @@ plot_ly(pds_pop_sex_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hoverte
          showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
          margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "", showline = FALSE, linecolor = "#b3b3b3",
-                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+                      categoryorder = "array", categoryarray = pds_hb_sex_rates$geog, tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16),
                       range = c(0,max(pds_hb_sex_rates$pop_rate_10000)))
       ) %>%
@@ -1210,7 +1213,8 @@ Row {.tabset data-height=1180}
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb-sex-ldp}
-ldp_ijb_sex <- ldp_all_sex %>% filter(!grepl("NHS", geog))
+ldp_ijb_sex <- ldp_all_sex %>% filter(!grepl("NHS", geog)) %>% 
+  mutate(perc_met = if_else(is.na(perc_met), 0, perc_met))  #this was added to avoid any areas with missing data being placed at the end of the chart
 
 ldp_sex_data_ijb <- SharedData$new(ldp_ijb_sex, key = ~fy,  group = "ijb_sex_ldp")
 
@@ -1332,7 +1336,7 @@ plot_ly(ldp_sex_data_hb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~sex,
          showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"), 
          margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "", showline = FALSE, linecolor = "#b3b3b3",
-                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+                      categoryorder = "array", categoryarray = ldp_hb_sex$geog, tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
       ) %>%
   config(displayModeBar = TRUE, doubleClick = F,
@@ -1518,7 +1522,7 @@ Row
 
 ### **Note**
 
-This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for SIMD (Scottish Index of Multiple Deprivation) quintiles. *See the [Glossary](#glossary) for more details.*
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for deprivation (Scottish Index of Multiple Deprivation (SIMD)) quintiles. *See the [Glossary](#glossary) for more details.*
 
 The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area for the selected financial year. For the Integration Authority tab use the dropdown menu to select areas to show in the charts and tables. 
 
@@ -1536,16 +1540,11 @@ Row {.tabset data-height=1180}
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb-simd-pop}
-pds_ijb_simd_rates <- #bind_rows(
-  
-  #pds_all_simd_rates %>% filter(!grepl("NHS", geog)) %>% 
-         #  mutate(simd_group = simd, .before = simd) %>% 
- # mutate(key = paste0(fy,simd_group,geog), .before = geog),
-  
+pds_ijb_simd_rates <- 
    pds_all_simd_rates %>% filter(!grepl("NHS", geog)) %>% 
+  mutate(pop_rate_10000 = if_else(is.na(pop_rate_10000), 0, pop_rate_10000)) %>% #this was added to avoid any areas with missing data being placed at the end of the chart
          mutate(simd_group = "All", .before = simd)  %>% 
   mutate(key = paste0(fy,simd_group,geog), .before = geog)
-#)
 
 pds_pop_simd_data_ijb <- SharedData$new(pds_ijb_simd_rates, key = ~key, group = "ijb_simd_pop")
 
@@ -1578,13 +1577,13 @@ bscols(widths = c(1,5,NA),
 bscols(widths = c(1,10,NA), NULL, data_filter_ijb_simd_pop_geog, NULL)
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by SIMD Quintile and Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by Deprivation Quintile and Integration Authority Area</h2>
 ```{r plot-ijb-simd-pop}
 
 bscols(widths = 12,
   div(style = css(width="98%", height="350px", marginBottom="-20px"),
 plot_ly(pds_pop_simd_data_ijb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
-        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "deprivation quintile: %{hovertext} <br>",
                             "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
   layout(clickmode = "none",
          showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
@@ -1657,16 +1656,10 @@ DT::datatable(ijb_simd_table_pop, rownames = FALSE, selection = 'none',
 ### **Health Boards**
 
 ```{r dropdown-hb-simd-pop}
-pds_hb_simd_rates <- #bind_rows(
-  
-  #pds_all_simd_rates %>% filter(!grepl("NHS", geog)) %>% 
-         #  mutate(simd_group = simd, .before = simd) %>% 
- # mutate(key = paste0(fy,simd_group,geog), .before = geog),
-  
-   pds_all_simd_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+pds_hb_simd_rates <- pds_all_simd_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
          mutate(simd_group = "All", .before = simd)  %>% 
   mutate(key = paste0(fy,simd_group,geog), .before = geog)
-#)
+
 
 pds_pop_simd_data_hb <- SharedData$new(pds_hb_simd_rates, key = ~key, group = "hb_simd_pop")
 
@@ -1699,19 +1692,19 @@ bscols(widths = c(1,5,NA),
 # bscols(widths = c(1,10,NA), NULL, data_filter_hb_simd_pop_geog, NULL)
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by SIMD Quintile and Health Board</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by Deprivation Quintile and Health Board</h2>
 ```{r plot-hb-simd-pop}
 
 bscols(widths = 12,
   div(style = css(width="98%", height="365px", marginBottom="-20px"),
 plot_ly(pds_pop_simd_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
-        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "deprivation quintile: %{hovertext} <br>",
                             "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
   layout(clickmode = "none", 
          showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
          margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "", showline = FALSE, linecolor = "#b3b3b3",
-                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+                      categoryorder = "array", categoryarray = pds_hb_simd_rates$geog, tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
       ) %>%
   config(displayModeBar = TRUE, doubleClick = F,
@@ -1796,7 +1789,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population (65+) by SIMD Quintile and Financial Year</h2> 
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population (65+) by Deprivation Quintile and Financial Year</h2> 
 ```{r plot-trend-simd-legend-pop}
 
 bscols(widths = 12,
@@ -1811,7 +1804,7 @@ plot_rate_line_legend_1(legend_data)),NULL
 
 bscols(widths = 12,
   div(style = css(width="98%", height="320px"),
-plot_rate_line(pds_pop_simd_data, measure = simd, measure_text = "SIMD Quintile: ", y = "Rate per 10,000 Population", colours = simd_colours))
+plot_rate_line(pds_pop_simd_data, measure = simd, measure_text = "deprivation quintile: ", y = "Rate per 10,000 Population", colours = simd_colours))
 )
 
 ```
@@ -1822,7 +1815,7 @@ plot_rate_line(pds_pop_simd_data, measure = simd, measure_text = "SIMD Quintile:
 trend_pop_simd_table_data <- pds_all_simd_rates %>% filter(!is.na(pop_rate_10000)) %>% 
   select(geog,fy,simd,pop_rate_10000) %>%
   pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
-             rename(`SIMD Quintile` = simd)
+             rename(`Deprivation Quintile` = simd)
 
 
 trend_pop_simd_table <- SharedData$new(trend_pop_simd_table_data, key = ~geog, group = "trend_simd_pop")
@@ -1891,11 +1884,11 @@ Row
 
 ### **Note**
 
-This page shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for SIMD (Scottish Index of Multiple Deprivation) quintiles.  
+This page shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for deprivation (Scottish Index of Multiple Deprivation (SIMD)) quintiles.  
 
 The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area. For the Integration Authority tab use the dropdown menu to filter for selected areas to show in the charts and table. 
 
-The Trend tabs include a chart showing the trend of the percentage by financial year for the selected geographical area for each SIMD quintile. The table below the charts shows the figures for the selected geographical area. 
+The Trend tabs include a chart showing the trend of the percentage by financial year for the selected geographical area for each deprivation quintile. The table below the charts shows the figures for the selected geographical area. 
 
 *As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
 
@@ -1909,16 +1902,10 @@ Row {.tabset data-height=1180}
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb-simd-ldp}
-ldp_ijb_simd <- #bind_rows( 
-  
- # ldp_all_simd %>% filter(!grepl("NHS", geog)) %>% 
-        #   mutate(simd_group = simd, .before = simd) %>% 
-#  mutate(key = paste0(fy,simd_group,geog), .before = geog),
-  
-   ldp_all_simd %>% filter(!grepl("NHS", geog)) %>%  
+ldp_ijb_simd <-  ldp_all_simd %>% filter(!grepl("NHS", geog)) %>%  
+  mutate(perc_met = if_else(is.na(perc_met), 0, perc_met)) %>% #this was added to avoid any areas with missing data being placed at the end of the chart
          mutate(simd_group = "All", .before = simd)  %>% 
   mutate(key = paste0(fy,simd_group,geog), .before = geog)
-#)
 
 ldp_simd_data_ijb <- SharedData$new(ldp_ijb_simd, key = ~key, group = "ijb_simd_ldp")
 
@@ -1954,13 +1941,13 @@ bscols(widths = c(1,10,NA), NULL, data_filter_ijb_simd_ldp_geog, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by SIMD Quintile and Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Deprivation Quintile and Integration Authority Area</h2>
 ```{r plot-ijb-simd-ldp}
 
 bscols(widths = 12,
   div(style = css(width="98%", height="350px", marginBottom="-20px"),
 plot_ly(ldp_simd_data_ijb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
-        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "deprivation quintile: %{hovertext} <br>",
                             "%{y}<extra></extra>")) %>% 
   layout(clickmode = "none", 
          showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
@@ -2060,16 +2047,9 @@ DT::datatable(ijb_simd_table_ldp, rownames = FALSE, selection = "none", #extensi
 ### **Health Boards**
 
 ```{r dropdown-hb-simd-ldp}
-ldp_hb_simd <- #bind_rows( 
-  
- # ldp_all_simd %>% filter(!grepl("NHS", geog)) %>% 
-        #   mutate(simd_group = simd, .before = simd) %>% 
-#  mutate(key = paste0(fy,simd_group,geog), .before = geog),
-  
-   ldp_all_simd %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%  
+ldp_hb_simd <- ldp_all_simd %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%  
          mutate(simd_group = "All", .before = simd)  %>% 
   mutate(key = paste0(fy,simd_group,geog), .before = geog)
-#)
 
 ldp_simd_data_hb <- SharedData$new(ldp_hb_simd, key = ~key, group = "hb_simd_ldp")
 
@@ -2080,44 +2060,27 @@ data_filter_hb_simd_ldp <- filter_select(id = "filter_hb_simd_ldp",
                                     multiple = FALSE
                                       )
 
-# data_filter_hb_simd_ldp_quintile <- filter_select(id = "filter_hb_simd_ldp_quintile",
-#                                     label = "Select SIMD Quintile:",
-#                                     group = ~simd_group,
-#                                     sharedData = ldp_simd_data_hb,
-#                                     multiple = FALSE
-#                                       )
-
-
-#data_filter_hb_simd_ldp_geog <- filter_select(id = "filter_hb_simd_ldp_geog",
-                             #       label = "Select Integration Authority Area(s):",
-                                  #  group = ~geog,
-                                   # sharedData = ldp_simd_data_hb,
-                                   # multiple = TRUE
-                                   #   )
 
 bscols(widths = c(1,5,NA),
        NULL,
        data_filter_hb_simd_ldp,
        NULL)
 
-#bscols(widths = c(1,10,NA), NULL, data_filter_hb_simd_ldp_geog, NULL)
-
-
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by SIMD Quintile and Health Board</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Deprivation Quintile and Health Board</h2>
 ```{r plot-hb-simd-ldp}
 
 bscols(widths = 12,
   div(style = css(width="98%", height="365px", marginBottom="-20px"),
 plot_ly(ldp_simd_data_hb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
-        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "deprivation quintile: %{hovertext} <br>",
                             "%{y}<extra></extra>")) %>% 
   layout(clickmode = "none", 
          showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"), 
          margin = list(l = -5, b = 10, t = 40),
          xaxis = list(title = "", showline = FALSE, linecolor = "#b3b3b3",
-                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+                     categoryorder = "array", categoryarray = ldp_hb_simd$geog, tickangle = -45, titlefont = list(size = 16)),
          yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
       ) %>%
   config(displayModeBar = TRUE, doubleClick = F,
@@ -2205,7 +2168,7 @@ DT::datatable(hb_simd_table_ldp, rownames = FALSE, selection = "none", #extensio
 
 ```
 
-### **Trend by SIMD Quintile**
+### **Trend by Deprivation Quintile**
 
 ```{r dropdown-ldp-simd}
 
@@ -2226,7 +2189,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px">Percentage of referrals who received a minimum of one year’s PDS by SIMD Quintile and Financial Year </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px">Percentage of referrals who received a minimum of one year’s PDS by Deprivation Quintile and Financial Year </h2>
 ```{r plot-ldp-simd-legend}
 bscols(widths = 12,
        div(style = css(height="30px"),
@@ -2238,7 +2201,7 @@ plot_ldp_line_legend_1(legend_data)),NULL
 ```{r plot-ldp-simd}
 bscols(widths = 12,
   div(style = css(width="98%", height="320px"),
-plot_ldp_line(ldp_all_simd_data, measure = simd, measure_text = "SIMD Quintile: ", colours = simd_colours))
+plot_ldp_line(ldp_all_simd_data, measure = simd, measure_text = "deprivation quintile: ", colours = simd_colours))
 )
 
 
@@ -2260,8 +2223,8 @@ trend_simd_totals <- pds_all_simd %>% filter(fy %in% full_years, total_referrals
 
 
 ldp_simd_table_data <- bind_rows(trend_simd_totals, ldp_simd_trend) %>% arrange(geog, simd) %>% 
-           rename(`SIMD Quintile` = simd) %>% mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
-  mutate(`SIMD Quintile` = if_else(type == "% Met Standard/Exempt", " ", `SIMD Quintile`)) %>% 
+           rename(`Deprivation Quintile` = simd) %>% mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+  mutate(`Deprivation Quintile` = if_else(type == "% Met Standard/Exempt", " ", `Deprivation Quintile`)) %>% 
  rename(" " = "type")
             
           
@@ -2311,7 +2274,7 @@ bscols(widths = c(1,5,NA),
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 18px">Percentage of referrals who received a minimum of one year’s PDS by Financial Year and SIMD Quintile</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 18px">Percentage of referrals who received a minimum of one year’s PDS by Financial Year and Deprivation Quintile</h2>
 ```{r plot-ldp-simd-legend_bar}
 
 bscols(widths = 12, div(style = css(height="30px", marginBottom="-7px"),
@@ -2323,7 +2286,7 @@ plot_ldp_bar_legend(ldp_all_simd, measure = simd, measure_text = "", colours = s
 ```{r plot-ldp-simd_bar}
 bscols(widths = 12,
   div(style = css(width="98%", height="290px"),
-plot_ldp_bar(ldp_all_simd_data_2, measure = simd, measure_text = "SIMD Quintile: ", colours = simd_colours))
+plot_ldp_bar(ldp_all_simd_data_2, measure = simd, measure_text = "deprivation quintile: ", colours = simd_colours))
 )
 
 
