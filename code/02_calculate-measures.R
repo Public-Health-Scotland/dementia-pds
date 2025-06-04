@@ -187,7 +187,7 @@ pds_Ab <- bind_rows(pds, Ab_19_20, Ab_20_21)
 
 ### 4 - Remove duplicate records ----
 
-pds_Ab_dupes <- pds_Ab %>%
+pds_Ab_dupe_flag <- pds_Ab %>%
   
   group_by(chi_number) %>%
   
@@ -196,7 +196,9 @@ pds_Ab_dupes <- pds_Ab %>%
   
   ungroup()
 
-pds <- pds_Ab_dupes %>% filter(dupe == 1 & ldp != "Aberdeen City Exemption" | dupe != 1)
+# records from Ab_19_20 and Ab_20_21 are marked as "Aberdeen City Exemption" in ldp column. 
+# This line removes those records if they are duplicated in the most up to date ldp file.
+pds <- pds_Ab_dupe_flag %>% filter(dupe == 1 & ldp != "Aberdeen City Exemption" | dupe != 1)
 
 
 ### 7 - Save individual level file for checking ----
