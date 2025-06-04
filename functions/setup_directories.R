@@ -99,8 +99,9 @@ get_mi_data_path <- function(type = c("error_data",
                                       "ldp_data",
                                       "final_data",
                                       "wait_data",
-                                      "wait_data_2",
-                                      "wait_data_3"),
+                                      "glossary_figures",
+                                      "uptake_data",
+                                      "comp_data"),
                              ext = c("rds", "csv"), 
                              test_output = FALSE, 
                              previous_data = FALSE,
@@ -116,14 +117,13 @@ get_mi_data_path <- function(type = c("error_data",
       "final_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_final-data"),
       "ldp_wait_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_ldp_wait-data"),
       "wait_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data"),
-      "wait_data_2" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data-2"),
-      "wait_data_3" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data-3"),
       "comp_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_comp-data"),
       "subtype_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_subtype-data"),
       "stage_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_stage-data"),
       "model_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_model-data"),
       "uptake_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_uptake-data"),
-      "carer_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_carer-data")
+      "carer_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_carer-data"),
+      "glossary_figures" ~ stringr::str_glue("{previous_fy}-{previous_qt}_glossary_figures"),
       )
       
   } else if(previous_year_to_qt){
@@ -136,14 +136,13 @@ get_mi_data_path <- function(type = c("error_data",
       "final_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_final-data"),
       "ldp_wait_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_ldp_wait-data"),
       "wait_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_wait-data"),
-      "wait_data_2" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_wait-data-2"),
-      "wait_data_3" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_wait-data-3"),
       "comp_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_comp-data"),
       "subtype_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_subtype-data"),
       "stage_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_stage-data"),
       "model_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_model-data"),
       "uptake_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_uptake-data"),
-      "carer_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_carer-data")
+      "carer_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_carer-data"),
+      "glossary_figures" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_glossary_figures"),
     )   
       
   } else {
@@ -157,13 +156,13 @@ get_mi_data_path <- function(type = c("error_data",
     "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data"),
     "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data"),
     "wait_data_2" ~ stringr::str_glue("{fy}-{qt}_wait-data-2"),
-    "wait_data_3" ~ stringr::str_glue("{fy}-{qt}_wait-data-3"),
     "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data"),
     "subtype_data" ~ stringr::str_glue("{fy}-{qt}_subtype-data"),
     "stage_data" ~ stringr::str_glue("{fy}-{qt}_stage-data"),
     "model_data" ~ stringr::str_glue("{fy}-{qt}_model-data"),
     "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data"),
-    "carer_data" ~ stringr::str_glue("{fy}-{qt}_carer-data")
+    "carer_data" ~ stringr::str_glue("{fy}-{qt}_carer-data"),
+    "glossary_figures" ~ stringr::str_glue("{fy}-{qt}_glossary_figures")
     )
   }
   

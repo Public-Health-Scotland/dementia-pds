@@ -242,8 +242,8 @@ data_wait %<>% mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb)
 # data_wait_2 %<>% mutate(ijb = if_else(ijb == "All", health_board, ijb))
 
 # summary with termination reasons for those that have NOT been contacted
-data_wait_3 <- summarise_pathways_3(ldp_wait_times)
-data_wait_3 %<>% mutate(ijb = if_else(ijb == "All", health_board, ijb))
+# data_wait_3 <- summarise_pathways_3(ldp_wait_times)
+# data_wait_3 %<>% mutate(ijb = if_else(ijb == "All", health_board, ijb))
 
 
 data_wait %>% 
@@ -254,9 +254,27 @@ data_wait %>%
 #   write_file(path = get_mi_data_path("wait_data_2", ext = "rds", test_output = test_output))
 #0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-data_wait_3 %>% 
-  write_file(path = get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+# data_wait_3 %>% 
+#   write_file(path = get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
+# 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+
+###6 GLOSSARY CALCULATIONS ---- 
+#calculate total number of referrals where age is known and percentage of those that are 65+
+total_age_known <- ldp %>% filter(age_grp != "Unknown") %>% nrow()
+age_65_plus <-ldp %>% filter(age >= 65) %>% nrow()
+perc_65_plus <- round(age_65_plus/total_age_known*100,1)
+  
+#calculate number of unknown records
+age_unknown <- ldp %>% filter(age_grp == "Unknown") %>% nrow()
+sex_unknown <- ldp %>% filter(sex %in% c("98 Not Specified", "99 Not Known")) %>% nrow()
+simd_unknown <- ldp %>% filter(simd == "Unknown") %>% nrow()
+  
+glossary_figures <- c(perc_65_plus, age_unknown, sex_unknown, simd_unknown)
+
+glossary_figures %>% 
+  write_file(path = get_mi_data_path("glossary_figures", ext = "rds", test_output = test_output))
+  
 
 
 #SUBTYPE OF DEMENTIA----removed from MI
