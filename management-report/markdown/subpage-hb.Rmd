@@ -67,17 +67,18 @@ table_title <-
 est_date1 <- dmy(01042021)
 est_date2 <- dmy(01042022)
 est_date3 <- dmy(01042023)
+est_date4 <- dmy(01042024)
 
   est_text <-  
-    case_when(sel_fy == extract_fin_year(est_date1) | sel_fy == extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) ~
+    case_when(sel_fy == extract_fin_year(est_date1) | sel_fy == extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == extract_fin_year(est_date4) ~
       paste0("",
              "**Please note:** ",
              "In December 2016, the Scottish Government published a report: 2014-2020 ",
              "Estimated and Projected Diagnosis Rates for Dementia in Scotland:",
              "(https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/). ", 
-             "For financial years *2021/22, 2022/23 and 2023/24,* the rates referenced in ", 
+             "For financial years *2021/22*, *2022/23*, *2023/24*, and *2024/25* the rates referenced in ", 
              "the report were used to create national, age specific rates of dementia incidence ",
-             "per 1,000 population which were then applied to the National Records of ", 
+             "per 1,000 population which were then applied to the National Records of ",
              "Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates."),
       TRUE ~ paste0(""))
   
@@ -119,11 +120,11 @@ est_date3 <- dmy(01042023)
       hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date3)|
       hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date4)~
         paste0(" ", 
-           "**Please note:** ",
-           "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24 ", 
-           "and 2024/25, which has resulted in some records showing as incorrectly having ",
-           "met the standard. PHS are working with the Health Board to try and rectify ",
-           "this data issue in future submissions.*"),
+            "**Please note:** ",
+              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24 ", 
+              "and 2024/25, which has resulted in some records showing as incorrectly having met the standard. ",
+              "NHS Tayside has informed PHS that these data issues will be rectified once they have completed the ", 
+              "migration to a new IT system. This is likely to be completed by the end of the year.*"), 
     TRUE ~ paste0(""))
   
   
@@ -158,42 +159,42 @@ est_date3 <- dmy(01042023)
               "and the PDS service in Shetland has resumed.*"), 
       TRUE ~ paste0(""))
   
-   # Data quality notes - West Dunbartonshire
-  wd_date <- dmy(01042024)
+  
+   # Data quality notes - fife
+  fife_date <- dmy(01042024)
 
-  wd_text <-  
-    case_when(hb == "NHS Greater Glasgow & Clyde" & sel_fy == extract_fin_year(wd_date) ~
+  fife_text <-  
+    case_when(hb == "NHS Fife" & sel_fy == extract_fin_year(fife_date) ~
       paste0(" ",
-             "**Please note:** ",
-             "*Due to local IT system issues West Dunbartonshire ",
-             "have not been able to provide all records for 2024/25. ",
-             "PHS has been informed that this issue will ",
-             "be rectified in future submissions.*"), TRUE ~ paste0(""))
+              "**Please note:** ",
+              "*PHS have identified one record submitted by NHS Fife ", 
+              "for 2024/25 that shows inconsistent dates. The reported dates resulted in this record ",
+              "showing as having met the standard. PHS have queried the ", 
+              "dates with the Health Board and are expecting these to be rectified in future submissions.*"),  TRUE ~ paste0(""))
   
-  
-   # Data quality notes - highland
-  hlnd_date <- dmy(01042024)
+     # Data quality notes - borders
+  bord_date <- dmy(01042024)
 
-  hlnd_text <-  
-    case_when(hb == "NHS Highland" & sel_fy == extract_fin_year(hlnd_date) ~
+  bord_text <-  
+    case_when(hb == "NHS Borders" & sel_fy == extract_fin_year(bord_date) ~
       paste0(" ",
-             "**Please note:** ",
-              "*PHS have identified issues with the data submitted by NHS Highland for 2024/25 Q3 ",
-              "which has resulted in one record showing as incorrectly having ", 
-              "met the standard. PHS are working with the Health Board to try and rectify ", 
-              "this data issue in future submissions.*"), TRUE ~ paste0(""))
+              "**Please note:** ",
+              "*PHS have identified one record submitted by NHS Borders ", 
+              "for 2024/25 that shows inconsistent dates. The reported dates resulted in this record ",
+              "showing as having met the standard. PHS have queried the ", 
+              "dates with the Health Board and are expecting these to be rectified in future submissions.*"), TRUE ~ paste0(""))
   
-     # Data quality notes - highland
+     # Data quality notes - lanarkshire
   lan_date <- dmy(01042024)
 
   lan_text <-  
     case_when(hb == "NHS Lanarkshire" & sel_fy == extract_fin_year(lan_date) ~
       paste0(" ",
              "**Please note:** ",
-              "*PHS have identified issues with the data submitted by NHS Lanarkshire for 2024/25 Q3 ",
-              "which has resulted in one record showing as incorrectly having ", 
-              "met the standard. PHS are working with the Health Board to try and rectify ", 
-              "this data issue in future submissions.*"), TRUE ~ paste0(""))
+              "*PHS have identified two records submitted by NHS Lanarkshire ", 
+              "for 2024/25 that show inconsistent dates. The reported dates resulted in these records ",
+              "showing as having met the standard. PHS have queried the ", 
+              "dates with the Health Board and are expecting these to be rectified in future submissions.*"),  TRUE ~ paste0(""))
 
 
 ```
@@ -269,9 +270,9 @@ Row
 
 `r orkney_text`
 
-`r wd_text`
+`r fife_text`
 
-`r hlnd_text`
+`r bord_text`
 
 `r lan_text`
 
