@@ -65,20 +65,18 @@ plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL,
   
 }
 
-
-
-plot_rate_line_legend_1 <- function(data) {
+plot_rate_line_legend  <- function(data) {
   
-  legend <- data %>% ggplot(aes(x = x, y = y, fill = geog)
+  legend_plot <- data %>% ggplot(aes(x = x, y = y, 
+                                     linetype = legend)
   ) +
-    
-    geom_line(aes(linetype = geog)) +
+    geom_line()+
+   
+    scale_linetype_manual(values = c(c(rep("solid", 45), "dashed"))) +
     
     labs(fill = NULL, linetype = NULL) +
     
-    scale_fill_manual(values = c("black","black")) +
-    
-    theme(axis.title = element_blank(),
+       theme(axis.title = element_blank(),
           axis.text = element_blank(),
           axis.ticks = element_blank(),
           legend.position = c(0.5, 0.5), # move the legend to the center
@@ -86,40 +84,51 @@ plot_rate_line_legend_1 <- function(data) {
           panel.border = element_rect(colour = "white", fill='white', size=0)
     )
   
-  legend_plotly<-ggplotly(legend, tooltip = NULL)
+  legend_plotly<-ggplotly(legend_plot, tooltip = NULL)
   
   config(legend_plotly, staticPlot = TRUE) %>%
     layout(legend = list(orientation = "h",
-                         x = 0.5, y = 0.5, xanchor = "center", yanchor = "right" )#,
-           # margin = list(r = -500, l = -500, b = -500, t = 40)
-    )  
-}
-
-plot_rate_line_legend_2 <- function(data, measure, measure_text) {
-  
-  legend <- data %>% ggplot(aes(x = fy, y = 0, group = {{measure}}, colour = {{measure}})
-  ) +
-    geom_point() +
-    
-    labs(colour = measure_text) +
-    
-    scale_colour_manual(values = phs_colours_core) +
-    
-    theme(axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.ticks = element_blank(),
-          legend.position = c(0.5, 0.5), # move the legend to the center
-          panel.grid = element_blank(),
-          panel.border = element_rect(colour = "white", fill='white', size=0)
-    )
-  
-  legend_plotly<-ggplotly(legend, tooltip = NULL)
-  
-  config(legend_plotly, staticPlot = TRUE) %>%
-    layout(legend = list(orientation = "h",
-                         x = 0.5, y = 0.5, xanchor = "center", yanchor = "right" )#,
-           # margin = list(r = -500, l = -500, b = -500, t = 40)
+                         x = 0.5, y = 0.5, xanchor = "center", yanchor = "right" )
+          
     )  
 }
 
 
+
+
+
+
+
+
+
+# <- function(data) {
+#   
+#   legend_plot <- data %>% ggplot(aes(x = x, y = y, #fill = legend,
+#                                      linetype = legend)
+#   ) +
+#     
+#     geom_line(color = c(rep("black",45), "white", "black",rep("black",43), "black", "black")) +
+#     
+#     scale_linetype_manual(values = c(c(rep("solid", 45), "blank", "dashed"))) +
+#     
+#     labs(fill = NULL, linetype = NULL) +
+#     
+#     theme(axis.title = element_blank(),
+#           axis.text = element_blank(),
+#           axis.ticks = element_blank(),
+#           legend.position = c(0.5, 0.5), # move the legend to the center
+#           panel.grid = element_blank(),
+#           panel.border = element_rect(colour = "white", fill='white', size=0)
+#     )
+#   
+#   legend_plotly<-ggplotly(legend_plot, tooltip = NULL)
+#   
+#   config(legend_plotly, staticPlot = TRUE) %>%
+#     layout(legend = list(orientation = "h",
+#                          x = 0.5, y = 0.5, xanchor = "center", yanchor = "right" )
+#     )  
+# }
+# 
+# 
+# 
+# 

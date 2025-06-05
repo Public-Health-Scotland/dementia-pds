@@ -66,60 +66,35 @@ plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL, co
 
 
 
-plot_ldp_line_legend_1 <- function(data) {
-  
-  legend <- data %>% ggplot(aes(x = x, y = y, fill = geog)
-  ) +
-    
-    geom_line(aes(linetype = geog)) +
-    
-    labs(fill = NULL, linetype = NULL) +
-    
-    scale_fill_manual(values = c("black","black")) +
-    
-    theme(axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.ticks = element_blank(),
-          legend.position = c(0.5, 0.5), # move the legend to the center
-          panel.grid = element_blank(),
-          panel.border = element_rect(colour = "white", fill='white', size=0)
-    )
-  
-  legend_plotly<-ggplotly(legend, tooltip = NULL)
-  
-  config(legend_plotly, staticPlot = TRUE) %>%
-    layout(legend = list(orientation = "h",
-                         x = 0.5, y = 0.5, xanchor = "center", yanchor = "right" )#,
-           # margin = list(r = -500, l = -500, b = -500, t = 40)
-    )  
-}
-
-
-plot_ldp_line_legend_2 <- function(data, measure, measure_text) {
-  
-  legend <- data %>% ggplot(aes(x = fy, y = 0, group = {{measure}}, colour = {{measure}})
-  ) +
-    geom_point() +
-    
-    labs(colour = measure_text) +
-    
-    scale_colour_manual(values = phs_colours_core) +
-    
-    theme(axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.ticks = element_blank(),
-          legend.position = c(0.5, 0.5), # move the legend to the center
-          panel.grid = element_blank(),
-          panel.border = element_rect(colour = "white", fill='white', size=0)
-    )
-  
-  legend_plotly<-ggplotly(legend, tooltip = NULL)
-  
-  config(legend_plotly, staticPlot = TRUE) %>%
-    layout(legend = list(orientation = "h",
-                         x = 0.5, y = 0.5, xanchor = "center", yanchor = "right" )#,
-           # margin = list(r = -500, l = -500, b = -500, t = 40)
-    )  
-}
+ plot_ldp_line_legend <- function(data) {
+   
+   legend_plot <- data %>% ggplot(aes(x = x, y = y, 
+                                      linetype = legend)
+   ) +
+     geom_line()+
+     
+     scale_linetype_manual(values = c(c(rep("solid", 45), "dashed"))) +
+     
+     labs(fill = NULL, linetype = NULL) +
+     
+     theme(axis.title = element_blank(),
+           axis.text = element_blank(),
+           axis.ticks = element_blank(),
+           legend.position = c(0.5, 0.5), # move the legend to the center
+           panel.grid = element_blank(),
+           panel.border = element_rect(colour = "white", fill='white', size=0)
+     )
+   
+   legend_plotly<-ggplotly(legend_plot, tooltip = NULL)
+   
+   config(legend_plotly, staticPlot = TRUE) %>%
+     layout(legend = list(orientation = "h",
+                          x = 0.5, y = 0.5, xanchor = "center", yanchor = "right" )
+            
+     )  
+ }
+ 
+ 
+ 
 
 
