@@ -173,7 +173,7 @@ est_date4 <- dmy(01042024)
               "*PHS have identified some records submitted by NHS Lanarkshire, NHS Borders and NHS Fife ", 
               "for 2024/25 that show inconsistent dates. The reported dates resulted in these records ",
               "showing as having met the standard. PHS have queried the ", 
-              "dates with the Health Boards and are awaiting a response.*"), 
+              "dates with the Health Boards and are expecting these to be rectified in future submissions.*"), 
             TRUE ~ paste0(""))
   
     
