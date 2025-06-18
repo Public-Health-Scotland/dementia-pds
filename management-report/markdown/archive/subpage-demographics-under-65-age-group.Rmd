@@ -1,0 +1,2458 @@
+---
+title: "DEMOGRAPHICS DRAFT"
+output: 
+  flexdashboard::flex_dashboard:
+    logo: phs-logo.png
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{r load-setup, include=FALSE}
+source(here::here("code", "00_setup-environment.R"))
+library(crosstalk) # for drop down menus
+library(phsstyles)
+library(htmltools)
+library(ggh4x)
+
+# Write numbers with thousands separator
+knit_hooks$set(inline = function(x){
+  if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
+})
+```
+
+---
+date: "`r paste('Data as at', format(end_date, '%d %B %Y'))`"
+---
+
+```{r setup, include=FALSE}
+
+# Load functions
+walk(dir(here::here("functions"), full.names = TRUE), source)
+
+
+# Load PDS data
+pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
+  
+  # Remove codes from board and IJB
+  mutate(health_board = str_sub(health_board, 3, -1),
+         ijb          = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
+
+# Load expected diagnoses reference file
+exp <- read_csv(get_exp_diagnoses_path())
+
+
+# Load error summary
+err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
+
+  mutate(ijb = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
+
+# calculate referrals for Scotland and health boards
+pds_ijb <- pds %>% arrange(ijb)
+
+pds_ijb %<>% rename(geog = ijb) 
+
+pds_ijb$geog<- factor(pds_ijb$geog, levels = unique(pds_ijb$geog))
+
+pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>%  summarise(referrals = sum(referrals), .groups = "drop")
+
+pds_scot %<>% rename(geog = ijb) 
+
+pds_scot$geog<- factor(pds_scot$geog, levels = unique(pds_scot$geog))
+
+pds_hb <- pds %>% group_by(health_board, fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
+
+pds_hb %<>% rename(geog = ijb) 
+
+pds_hb$geog<- factor(pds_hb$geog, levels = unique(pds_hb$geog))
+
+# combine data for ijb, hb and Scotland
+pds_all <- bind_rows(pds_scot, pds_ijb, pds_hb)
+
+pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
+
+#get totals for all geogs, hbs, ijbs, scotland
+pds_all_totals <- pds_all %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
+
+pds_ijb_totals <- pds_ijb %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
+
+pds_hb_totals <- pds_hb %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
+
+pds_scot_totals <- pds_scot %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
+
+
+#get totals for all geogs, hbs, ijbs, scotland with LARGE AGE GROUPS
+pds_all_totals_2 <- bind_rows(pds_all_totals,
+  pds_all %>% filter(age_grp_2 != "Unknown") %>% group_by(geog, fy, age_grp_2) %>% summarise(total_referrals = sum(referrals))
+)
+
+pds_all_totals_2$age_grp_2<- factor(pds_all_totals_2$age_grp_2, levels = c("All", "65+", "64 and Under"))
+
+pds_ijb_totals_2 <- bind_rows(pds_ijb_totals,
+    pds_ijb %>% filter(age_grp_2 != "Unknown") %>% group_by(geog, fy, age_grp_2) %>% summarise(total_referrals = sum(referrals))
+)
+
+pds_ijb_totals_2$age_grp_2<- factor(pds_ijb_totals_2$age_grp_2, levels = c("All", "65+", "64 and Under"))
+
+
+pds_hb_totals_2 <- bind_rows(pds_hb_totals,
+    pds_hb %>% filter(age_grp_2 != "Unknown") %>% group_by(geog, fy, age_grp_2) %>% summarise(total_referrals = sum(referrals))
+)
+
+pds_hb_totals_2$age_grp_2<- factor(pds_hb_totals_2$age_grp_2, levels = c("All", "65+", "64 and Under"))
+
+
+pds_scot_totals_2 <- bind_rows(pds_scot_totals,
+    pds_scot %>% filter(age_grp_2 != "Unknown") %>% group_by(geog, fy, age_grp_2) %>% summarise(total_referrals = sum(referrals))
+)
+
+pds_scot_totals_2$age_grp_2<- factor(pds_scot_totals_2$age_grp_2, levels = c("All", "65+", "64 and Under"))
+
+#load population rates data
+pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
+
+#create year lists
+provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
+                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
+
+current_fy <- paste0(substr(fy,1,4),
+                           "/", as.numeric(substr(fy,3,4)) + 1)
+
+last_full_year <- if_else(qt == 4, current_fy, paste0(as.numeric(substr(fy,1,4)) - 1,
+                           "/", as.numeric(substr(fy,3,4))))
+
+all_years <- unique(pds_all$fy)
+
+if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
+
+
+```
+<!-- delete all of above when finished testing -->
+
+
+```{r data-setup-demo, include=FALSE}
+
+#prepare age data for LARGE AGE GROUPS
+ldp_all_age_2 <- pds_all %>%
+  filter(fy %in% full_years, age_grp_2 != "Unknown") %>%
+  group_by(geog, fy, age_grp_2, ldp) %>%
+  summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
+  pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
+  mutate(perc_met = round((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
+complete(nesting(geog, fy), age_grp_2, fill = list(perc_met = NA))
+
+ldp_all_age_2 <- left_join(ldp_all_age_2,
+ldp_all_age_2 %>% filter(geog == "Scotland") %>% select(fy, age_grp_2, perc_met) %>% 
+  rename(scot_perc_met = perc_met))
+
+ldp_all_age_2$age_grp_2<- factor(ldp_all_age_2$age_grp_2, levels = c("65+", "64 and Under"))
+
+pds_all_age_2 <- pds_all %>% filter(age_grp_2 != "Unknown") #remove 6 unknowns from 2016/17 (add note to charts and tables?)
+
+pds_all_age_2 %<>% group_by(fy, geog, age_grp_2) %>%
+  summarise(total_referrals = sum(referrals), .groups = "drop")
+
+#prepare population rate data with large age groups
+
+pop_data_age_2 <- pop_data %>% filter(sex == "All", age_grp == "All") %>% select(-sex, -age_grp)
+
+pds_all_age_2_cal_year <- pds_all_age_2 %>%
+  mutate(year = as.numeric(substr(fy, 1, 4)))
+
+pds_all_age_2_rates <- left_join(pds_all_age_2_cal_year, pop_data_age_2) %>% select(-year) %>%
+  mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 1)) %>% select(fy, geog, age_grp_2, pop_rate_10000)
+
+pds_all_age_2_rates$geog<- factor(pds_all_age_2_rates$geog, levels = unique(pds_all_age_2_rates$geog)) 
+pds_all_age_2_rates$age_grp_2<- factor(pds_all_age_2_rates$age_grp_2, levels = c("65+", "64 and Under"))
+
+pds_all_age_2_rates %<>% complete(nesting(fy, geog), age_grp_2, fill = list(pop_rate_10000 = 0)) 
+
+pds_age_rates_2_data <- left_join(pds_all_age_2_rates,
+pds_all_age_2_rates %>% filter(geog == "Scotland") %>% select(fy, age_grp_2, pop_rate_10000) %>% rename(scot_pop_rate_10000 = pop_rate_10000))
+
+#prepare gender data
+
+ldp_all_sex <- pds_all %>%
+  filter(fy %in% full_years, sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown") %>% #need note about how many unknowns have been removed
+  group_by(geog, fy, sex, ldp) %>%
+  summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
+  pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
+  mutate(perc_met = round((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
+complete(nesting(geog, fy), sex, fill = list(perc_met = NA))
+
+ldp_all_sex <- left_join(ldp_all_sex,
+ldp_all_sex %>% filter(geog == "Scotland") %>% select(fy, sex, perc_met) %>% 
+  rename(scot_perc_met = perc_met)) %>% mutate(sex = substring(sex, 4))
+
+ldp_all_sex$sex<- factor(ldp_all_sex$sex, levels = c("Male", "Female"))
+
+pds_all_sex <- pds_all %>% group_by(geog, fy, sex) %>% filter(sex != "98 Not Specified", sex != "99 Not Known", sex != "Unknown") %>% 
+  summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
+complete(nesting(geog, fy), sex, fill = list(total_referrals = 0)) %>% mutate(sex = substring(sex, 4))
+
+pds_all_sex$sex<- factor(pds_all_sex$sex, levels = c("Male", "Female"))
+
+#prepare population rate data for gender
+
+pop_data_sex <- pop_data %>% filter(age_grp == "All", age_grp_2 == "65+", sex != "All") %>% select(-age_grp, -age_grp_2) %>% mutate(sex = substring(sex, 4))
+
+pds_all_sex_cal_year <- pds_all_sex %>% 
+  mutate(year = as.numeric(substr(fy, 1, 4)))
+
+pds_all_sex_rates <- left_join(pds_all_sex_cal_year, pop_data_sex) %>% select(-year) %>%
+  mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 1))
+
+pds_all_sex_rates$geog <- factor(pds_all_sex_rates$geog, levels = unique(pds_all_sex_rates$geog))
+pds_all_sex_rates$sex <- as.factor(pds_all_sex_rates$sex)
+
+pds_all_sex_rates %<>% complete(nesting(geog, fy), sex, fill = list(pop_est = NA, pop_rate_10000 = NA)) 
+
+pds_all_sex_rates <- left_join(pds_all_sex_rates,
+pds_all_sex_rates %>% filter(geog == "Scotland") %>% select(fy, sex, pop_rate_10000) %>% rename(scot_pop_rate_10000 = pop_rate_10000))
+
+pds_all_sex_rates$sex<- factor(pds_all_sex_rates$sex, levels = c("Male", "Female"))
+
+
+#prepare simd data
+ldp_all_simd <- pds_all %>%
+  filter(fy %in% full_years, simd != "Unknown") %>%
+  group_by(geog, fy, simd, ldp) %>%
+  summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
+  pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
+  mutate(perc_met = round((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
+complete(nesting(geog, fy), simd, fill = list(perc_met = NA))
+
+ldp_all_simd <- left_join(ldp_all_simd,
+ldp_all_simd %>% filter(geog == "Scotland") %>% select(fy, simd, perc_met) %>% 
+  rename(scot_perc_met = perc_met))
+
+pds_all_simd <- pds_all %>% group_by(geog, fy, simd) %>% filter(simd != "Unknown") %>% 
+  summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
+complete(nesting(geog, fy), simd, fill = list(total_referrals = 0))
+
+
+#prepare population rate data for simd
+simd_pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/simd_pop_data.rds")
+
+pop_data_simd <- simd_pop_data %>% filter(sex == "All", age_grp == "All", age_grp_2 == "65+") %>% select(-sex, -age_grp, -age_grp_2)
+
+pds_all_simd_cal_year <- pds_all_simd %>% 
+  mutate(year = as.numeric(substr(fy, 1, 4)))
+
+pds_all_simd_rates <- left_join(pds_all_simd_cal_year, pop_data_simd) %>% select(-year) %>%
+  mutate(pop_rate_10000 = round((total_referrals/pop)*10000, 1))
+
+pds_all_simd_rates$geog <- factor(pds_all_simd_rates$geog, levels = unique(pds_all_simd_rates$geog))
+
+pds_all_simd_rates$simd <- as.factor(pds_all_simd_rates$simd)
+
+pds_all_simd_rates %<>% complete(nesting(geog, fy), simd, fill = list(pop = NA, pop_rate_10000 = NA)) 
+
+pds_all_simd_rates <- left_join(pds_all_simd_rates,
+pds_all_simd_rates %>% filter(geog == "Scotland") %>% select(fy, simd, pop_rate_10000) %>% rename(scot_pop_rate_10000 = pop_rate_10000))
+
+#legend tibble
+legend_data <- tibble(
+  geog = c("Selected Health Board/Integration Authority Area", "Scotland"),
+  x = c(1,2),
+  y = c(0,0))
+
+legend_data$geog <- factor(legend_data$geog, levels = unique(legend_data$geog))
+
+# total referrals for tables
+hb_totals_table <- bind_rows(pds_scot_totals, pds_hb_totals) %>%
+  mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% pivot_wider(names_from = geog, values_from = total_referrals)
+
+ijb_totals_table <- bind_rows(pds_scot_totals, pds_ijb_totals)  %>%
+  mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% pivot_wider(names_from = geog, values_from = total_referrals)
+   
+# colours for simd plots
+simd_colours <- c("#005FAD", "#0078D4", "#3393DD", "#80BCEA", "#B3D7F2")#, "#E6F2FB")
+ 
+```
+
+Age Groups {data-navmenu="Demographics"}
+=================================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Age Groups - Rates per 10,000 population 
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+<ul>
+  <li>[**Rates per 10,000 population**](#age-groups)</li>
+  <li>[Outcomes](#age-outcomes)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**-**
+
+<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
+
+
+Row {.tabset data-height=1000}
+----------------------------------------------------------------------
+
+### **Integration Authority Areas**
+
+```{r dropdown-ijb-age-pop}
+
+pds_ijb_age_rates <-  pds_all_age_2_rates %>% filter(!grepl("NHS", geog)) %>% 
+           mutate(age_2_group = age_grp_2, .before = age_grp_2) %>% 
+  mutate(key = paste0(fy,age_2_group), .before = geog)
+
+
+pds_pop_age_data_ijb <- SharedData$new(pds_ijb_age_rates, key = ~key, group = "ijb_age_pop")
+
+data_filter_ijb_age_pop <- filter_select(id = "filter_ijb_age_pop",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = pds_pop_age_data_ijb,
+                                    multiple = FALSE
+                                      )
+
+data_filter_ijb_age_pop_quintile <- filter_select(id = "filter_ijb_age_pop_group",
+                                    label = "Select Age Group:",
+                                    group = ~age_2_group,
+                                    sharedData = pds_pop_age_data_ijb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,5,NA),
+       NULL,
+       data_filter_ijb_age_pop,
+       data_filter_ijb_age_pop_quintile,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by Age Group and Integration Authority Area</h2>
+```{r plot-ijb-age-pop}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar_v2(pds_pop_age_data_ijb, y_value = pop_rate_10000, measure = age_grp_2, measure_text = "Age Group: ", measure_2 = age_2_group, x = "Integration Authority Area", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
+)
+
+```
+
+
+```{r table-ijb-age-pop}
+
+ijb_pop_age_table_data <- bind_rows(
+  pds_all_age_2_rates %>% filter(!grepl("NHS", geog)) %>% 
+  select(geog,fy,age_grp_2,pop_rate_10000)  %>% 
+     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
+  pivot_wider(names_from =age_grp_2, values_from = pop_rate_10000) %>% 
+    mutate(age_2_group = "65+", .before = fy),
+  
+  pds_all_age_2_rates %>% 
+  select(geog,fy,age_grp_2,pop_rate_10000) %>% filter(!grepl("NHS", geog)) %>% 
+     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
+  pivot_wider(names_from =age_grp_2, values_from = pop_rate_10000) %>% 
+    mutate(age_2_group = "64 and Under", .before = fy)
+) %>% 
+ 
+  mutate(key = paste0(fy,age_2_group), .before = geog) %>% 
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>%
+             rename(`Integration Authority Area` = geog)
+
+  
+
+ijb_age_table_pop <- SharedData$new(ijb_pop_age_table_data, key = ~key, group = "ijb_age_pop")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="430px", margin="20px"),
+DT::datatable(ijb_age_table_pop, rownames = FALSE, 
+              options = list(pageLength = 33,
+                             scrollX = TRUE,
+                            # fixedColumns = list(leftColumns = 1),
+                             scrollY = FALSE,
+                             dom = "tB",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
+                                               list(className = 'dt-right', targets = 4:5)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold", #padding = "4px"
+                          )
+        )
+     )
+
+
+```
+
+### **Health Boards**
+
+```{r dropdown-hb-age-pop}
+
+pds_hb_age_rates <-  pds_all_age_2_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+           mutate(age_2_group = age_grp_2, .before = age_grp_2) %>% 
+  mutate(key = paste0(fy,age_2_group), .before = geog)
+
+
+pds_pop_age_data_hb <- SharedData$new(pds_hb_age_rates, key = ~key, group = "hb_age_pop")
+
+data_filter_hb_age_pop <- filter_select(id = "filter_hb_age_pop",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = pds_pop_age_data_hb,
+                                    multiple = FALSE
+                                      )
+
+data_filter_hb_age_pop_quintile <- filter_select(id = "filter_hb_age_pop_group",
+                                    label = "Select Age Group:",
+                                    group = ~age_2_group,
+                                    sharedData = pds_pop_age_data_hb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,5,NA),
+       NULL,
+       data_filter_hb_age_pop,
+       data_filter_hb_age_pop_quintile,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by Age Group and Health Board</h2>
+```{r plot-hb-age-pop}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar_v2(pds_pop_age_data_hb, y_value = pop_rate_10000, measure = age_grp_2, measure_text = "Age Group: ", measure_2 = age_2_group, x = "Health Board", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
+)
+
+```
+
+
+```{r table-hb-age-pop}
+
+
+hb_pop_age_table_data <- bind_rows(
+  pds_all_age_2_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%
+  select(geog,fy,age_grp_2,pop_rate_10000)  %>% 
+     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
+  pivot_wider(names_from =age_grp_2, values_from = pop_rate_10000) %>% 
+    mutate(age_2_group = "65+", .before = fy),
+  
+  pds_all_age_2_rates %>% 
+  select(geog,fy,age_grp_2,pop_rate_10000) %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%
+     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
+  pivot_wider(names_from =age_grp_2, values_from = pop_rate_10000) %>% 
+    mutate(age_2_group = "64 and Under", .before = fy)
+) %>% 
+ 
+  mutate(key = paste0(fy,age_2_group), .before = geog) %>% 
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>%
+           rename(`Health Board` = geog)
+  
+
+hb_age_table_pop <- SharedData$new(hb_pop_age_table_data, key = ~key, group = "hb_age_pop")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="430px", margin="20px"),
+DT::datatable(hb_age_table_pop, rownames = FALSE, extensions = "FixedColumns",
+              options = list(pageLength = 15,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 1),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
+                                               list(className = 'dt-right', targets = 4:5)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold", #padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+### **Trend**
+
+```{r dropdown-trend-age_2-pop}
+
+pds_pop_age_2_data <- SharedData$new(pds_age_rates_2_data,
+  key = ~geog, group = "trend_age_2_pop")
+
+data_filter_trend_age_2_pop <- filter_select(id = "filter_trend_age_2_pop",
+                                    label = "Select Integration Authority Area or Health Board:",
+                                    group = ~geog,
+                                    sharedData = pds_pop_age_2_data,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_trend_age_2_pop,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population by Age Group and Financial Year</h2> 
+```{r plot-trend-age_2-legend-pop}
+
+bscols(widths = 12,
+       div(style = css(height="30px"),
+plot_rate_line_legend_1(legend_data)),NULL
+)
+
+```
+
+```{r plot-trend-age_2-pop}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="370px"),
+plot_rate_line(pds_pop_age_2_data, measure = age_grp_2, measure_text = "Age Group: ", y = "Rate per 10,000 Population", scales = "free_y"))
+)
+
+```
+
+```{r table-trend-age_2-pop}
+
+trend_pop_age_2_table_data <- pds_all_age_2_rates %>% filter(!is.na(pop_rate_10000)) %>% 
+  select(geog,fy,age_grp_2,pop_rate_10000) %>%
+  pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
+             rename(`Age Group` = age_grp_2)
+
+
+trend_pop_age_2_table <- SharedData$new(trend_pop_age_2_table_data, key = ~geog, group = "trend_age_2_pop")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="130px", margin="20px"),
+DT::datatable(trend_pop_age_2_table, rownames = FALSE, selection = 'none',
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0)))
+              ) %>%
+           DT::formatStyle(2, fontWeight = "bold")
+        )
+     )
+
+
+
+```
+
+Age Outcomes {.hidden}
+=====================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Age Groups - Outcomes 
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Rates per 10,000 population](#age-groups)</li>
+  <li>[**Outcomes**](#age-outcomes)</li>
+</ul>
+
+***
+
+For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**-**
+
+<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
+
+Row {.tabset data-height=1100}
+----------------------------------------------------------------------
+
+### **Integration Authority Areas**
+
+```{r dropdown-ijb-age-ldp}
+ldp_ijb_age_2 <- ldp_all_age_2 %>% filter(!grepl("NHS", geog))
+
+ldp_age_data_ijb <- SharedData$new(ldp_ijb_age_2, key = ~fy,  group = "ijb_age_ldp")
+
+data_filter_ijb_age_ldp <- filter_select(id = "filter_ijb_age_ldp",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = ldp_age_data_ijb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_ijb_age_ldp,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Age Group and Integration Authority Area</h2>
+```{r plot-ijb-age-legend-ldp}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_age_2 %>% filter(geog == "Scotland"), measure = age_grp_2)))
+
+```
+
+
+```{r plot-ijb-age-ldp}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar(ldp_age_data_ijb, y_value = perc_met, measure = age_grp_2, measure_text = "Age Group: ", x = "Integration Authority Area", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+)
+
+```
+
+
+```{r table-ijb-age-ldp}
+ijb_age_ldp_data <- ldp_all_age_2 %>% filter(!grepl("NHS", geog)) %>% 
+  select(geog,fy,age_grp_2,perc_met) %>% 
+   mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
+   pivot_wider(names_from = age_grp_2, values_from = perc_met) %>%
+  select(fy,geog,`65+`,`64 and Under`) %>% 
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+   mutate(type = "% Met Standard/Exempt", .after = geog)
+
+
+ijb_age_totals_data <- pds_all_age_2 %>% filter(!grepl("NHS", geog)) %>% 
+  pivot_wider(names_from = age_grp_2, values_from = total_referrals) %>%
+  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  relocate(`65+`, .before = `64 and Under`) %>% 
+     mutate(type = "Number of Referrals", .after = geog)
+
+
+ijb_ldp_age_table_data <- bind_rows(ijb_age_totals_data, ijb_age_ldp_data) %>% 
+  arrange(fy, geog) %>% 
+  mutate(geog = if_else(type == "% Met Standard/Exempt", " ", geog)) %>% 
+ rename(" " = type, `Integration Authority Area` = geog)
+
+ijb_age_table_ldp <- SharedData$new(ijb_ldp_age_table_data, key = ~fy, group = "ijb_age_ldp")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="500px", margin="20px"),
+DT::datatable(ijb_age_table_ldp, rownames = FALSE, #extensions = "FixedColumns",
+               options = list(pageLength = 66,
+                             scrollX = TRUE,
+                           #  fixedColumns = list(leftColumns = 2),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 3:4)
+                             ))) %>%
+  DT::formatStyle(2:3, fontWeight = "bold",# padding = "4px"
+  )
+        )
+     )
+
+
+
+
+```
+
+### **Health Boards**
+
+```{r dropdown-hb-age-ldp}
+ldp_hb_age_2 <- ldp_all_age_2 %>% filter(geog == "Scotland" | grepl("NHS", geog))
+
+ldp_age_data_hb <- SharedData$new(ldp_hb_age_2, key = ~fy, group = "hb_age_ldp")
+
+data_filter_hb_age_ldp <- filter_select(id = "filter_hb_age_ldp",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = ldp_age_data_hb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_hb_age_ldp,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Age Group and Health Board</h2>
+```{r plot-hb-age-legend-ldp}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_age_2 %>% filter(geog == "Scotland"), measure = age_grp_2)))
+
+```
+
+
+```{r plot-hb-age-ldp}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar(ldp_age_data_hb, y_value = perc_met, measure = age_grp_2, measure_text = "Age Group: ", x = "Health Board", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+)
+
+```
+
+
+```{r table-hb-age-ldp}
+hb_age_ldp_data <- ldp_all_age_2 %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  select(geog,fy,age_grp_2,perc_met) %>% 
+   mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
+   pivot_wider(names_from = age_grp_2, values_from = perc_met) %>%
+  select(fy,geog,`65+`,`64 and Under`) %>% 
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+   mutate(type = "% Met Standard/Exempt", .after = geog)
+
+hb_age_totals_data <- pds_all_age_2 %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  pivot_wider(names_from = age_grp_2, values_from = total_referrals) %>%
+  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  relocate(`65+`, .before = `64 and Under`) %>% 
+     mutate(type = "Number of Referrals", .after = geog)
+
+
+hb_ldp_age_table_data <- bind_rows(hb_age_totals_data, hb_age_ldp_data) %>% 
+  arrange(fy, geog) %>% 
+  mutate(geog = if_else(type == "% Met Standard/Exempt", " ", geog)) %>% 
+ rename(" " = type, `Health Board` = geog)
+
+hb_age_table_ldp <- SharedData$new(hb_ldp_age_table_data, key = ~fy,  group = "hb_age_ldp")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="500px", margin="20px"),
+DT::datatable(hb_age_table_ldp, rownames = FALSE, #extensions = "FixedColumns",
+              options = list(pageLength = 30,
+                             scrollX = TRUE,
+                             #fixedColumns = list(leftColumns = 2),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 3:4)
+                                               ))) %>%
+           DT::formatStyle(2:3, fontWeight = "bold", #padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+### **Trend**
+
+```{r dropdown-ldp-age_2}
+
+ldp_all_age_2_data <- SharedData$new(ldp_all_age_2, key = ~geog, group = "ldp_age_2")
+
+data_filter_ldp_age_2 <- filter_select(id = "filter_ldp_age_2",
+                                    label = "Select Integration Authority Area or Health Board:",
+                                    group = ~geog,
+                                    sharedData = ldp_all_age_2_data,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_ldp_age_2,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px">Percentage of referrals who received a minimum of one year’s PDS by Age Group and Financial Year</h2>
+```{r plot-ldp-age_2-legend}
+bscols(widths = 12,
+       div(style = css(height="30px"),
+plot_ldp_line_legend_1(legend_data)),NULL
+)
+```
+
+```{r plot-ldp-age_2}
+bscols(widths = 12,
+  div(style = css(width="98%", height="370px"),
+plot_ldp_line(ldp_all_age_2_data, measure = age_grp_2, measure_text = "Age Group: "))
+)
+
+```
+
+
+```{r table-ldp-age_2}
+
+ldp_age_2_trend <- ldp_all_age_2 %>% filter(!is.na(perc_met)) %>%
+  select(geog, fy, age_grp_2, perc_met) %>%
+   mutate(perc_met = paste0(perc_met, "%")) %>% 
+  pivot_wider(names_from = fy, values_from = perc_met) %>%
+  mutate(type = "% Met Standard/Exempt", .before = `2016/17`)
+  
+trend_age_2_totals <- pds_all_age_2 %>% filter(fy %in% full_years, total_referrals != 0) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  pivot_wider(names_from = fy, values_from = total_referrals, values_fill = "0") %>% 
+    mutate(type = "Number of Referrals", .before = `2016/17`)
+
+
+ldp_age_2_table_data <- bind_rows(trend_age_2_totals, ldp_age_2_trend) %>% arrange(geog, desc(age_grp_2)) %>% 
+            mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+  mutate(age_grp_2 = if_else(type == "% Met Standard/Exempt", " ", age_grp_2)) %>% 
+   rename(`Age Group` = age_grp_2) %>% 
+  rename(" " = "type")
+
+            
+
+ldp_age_2_table <- SharedData$new(ldp_age_2_table_data, key = ~geog, group = "ldp_age_2")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="200px", margin="20px"),
+DT::datatable(ldp_age_2_table, rownames = FALSE, selection = 'none',
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right',
+                                                    targets = 3:(length(full_years)+2))
+                                               ))) %>%
+           DT::formatStyle(2:3, fontWeight = "bold")
+        )
+     )
+
+
+
+```
+
+
+Gender {data-navmenu="Demographics"}
+=================================================
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Gender - Rates per 10,000 population 
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+<ul>
+  <li>[**Rates per 10,000 population**](#gender)</li>
+  <li>[Outcomes](#gender-outcomes)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**-**
+
+<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
+
+
+Row {.tabset data-height=1020}
+----------------------------------------------------------------------
+
+### **Integration Authority Areas**
+
+```{r dropdown-ijb-sex-pop}
+pds_ijb_sex_rates <- pds_all_sex_rates %>% filter(!grepl("NHS", geog))
+
+pds_pop_sex_data_ijb <- SharedData$new(pds_ijb_sex_rates, key = ~fy, group = "ijb_sex_pop")
+
+data_filter_ijb_sex_pop <- filter_select(id = "filter_ijb_sex_pop",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = pds_pop_sex_data_ijb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_ijb_sex_pop,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by Gender and Integration Authority Area</h2>
+```{r plot-ijb-sex-legend-pop}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_sex %>% filter(geog == "Scotland"), measure = sex)))
+
+```
+
+
+```{r plot-ijb-sex-pop}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar(pds_pop_sex_data_ijb, y_value = pop_rate_10000, measure = sex, measure_text = "Gender: ",
+               x = "Integration Authority Area", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
+)
+
+```
+
+
+```{r table-ijb-sex-pop}
+
+ijb_pop_sex_table_data <- pds_all_sex_rates %>%
+  filter(!grepl("NHS", geog)) %>% 
+  select(geog,fy,sex,pop_rate_10000) %>% mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>% 
+    arrange(sex) %>% 
+  pivot_wider(names_from = sex, values_from = pop_rate_10000, values_fill = "-") %>%  
+            rename(`Integration Authority Area` = geog)
+
+
+ijb_sex_table_pop <- SharedData$new(ijb_pop_sex_table_data, key = ~fy, group = "ijb_sex_pop")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="420px", margin="20px"),
+DT::datatable(ijb_sex_table_pop, rownames = FALSE, #extensions = "FixedColumns",
+              options = list(pageLength = 33,
+                             scrollX = TRUE,
+                           #  fixedColumns = list(leftColumns = 1),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                               list(className = 'dt-right', targets = 2:3)
+                                               ))) %>%
+           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+### **Health Boards**
+
+```{r dropdown-hb-sex-pop}
+pds_hb_sex_rates <- pds_all_sex_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) 
+
+pds_pop_sex_data_hb <- SharedData$new(pds_hb_sex_rates, key = ~fy, group = "hb_sex_pop")
+
+data_filter_hb_sex_pop <- filter_select(id = "filter_hb_sex_pop",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = pds_pop_sex_data_hb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_hb_sex_pop,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by Gender and Health Board</h2>
+```{r plot-hb-sex-legend-pop}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_sex %>% filter(geog == "Scotland"), measure = sex)))
+
+```
+
+
+```{r plot-hb-sex-pop}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar(pds_pop_sex_data_hb, y_value = pop_rate_10000, measure = sex, measure_text = "Gender: ",
+               x = "Health Board", y = "Rate per 10,000 Population", y_value_text = "Rate per 10,000 Population: "))
+)
+
+```
+
+
+```{r table-hb-sex-pop}
+
+hb_pop_sex_table_data <- pds_all_sex_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  select(geog,fy,sex,pop_rate_10000) %>% mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
+  arrange(sex) %>% 
+  pivot_wider(names_from = sex, values_from = pop_rate_10000, values_fill = "-") %>% 
+   rename(`Health Board` = geog)
+
+
+
+hb_sex_table_pop <- SharedData$new(hb_pop_sex_table_data, key = ~fy, group = "hb_sex_pop")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="410px", margin="20px"),
+DT::datatable(hb_sex_table_pop, rownames = FALSE,# extensions = "FixedColumns",
+              options = list(pageLength = 15,
+                             scrollX = TRUE,
+                          #   fixedColumns = list(leftColumns = 1),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 1),
+                                               list(className = 'dt-right', targets = 2:3)
+                                               ))) %>%
+           DT::formatStyle(1, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+### **Trend**
+
+```{r dropdown-trend-sex-pop}
+
+pds_pop_sex_data <- SharedData$new(pds_all_sex_rates,
+  key = ~geog, group = "trend_sex_pop")
+
+data_filter_trend_sex_pop <- filter_select(id = "filter_trend_sex_pop",
+                                    label = "Select Integration Authority Area or Health Board:",
+                                    group = ~geog,
+                                    sharedData = pds_pop_sex_data,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_trend_sex_pop,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population (65+) by Gender and Financial Year</h2>
+```{r plot-trend-sex-legend-pop}
+
+bscols(widths = 12,
+       div(style = css(height="30px"),
+plot_rate_line_legend_1(legend_data)),NULL
+)
+
+```
+
+
+```{r plot-trend-sex-pop}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="370px"),
+plot_rate_line(pds_pop_sex_data, measure = sex, measure_text = "Gender: ", y = "Rate per 10,000 Population"))
+)
+
+```
+
+
+```{r table-trend-sex-pop}
+
+trend_pop_sex_table_data <- pds_all_sex_rates %>% filter(!is.na(pop_rate_10000)) %>% 
+  select(geog,fy,sex,pop_rate_10000) %>%
+  pivot_wider(names_from = fy, values_from = pop_rate_10000) %>% arrange(sex) %>% 
+             rename(`Gender` = sex)
+
+
+trend_pop_sex_table <- SharedData$new(trend_pop_sex_table_data, key = ~geog, group = "trend_sex_pop")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="140px", margin="20px"),
+DT::datatable(trend_pop_sex_table, rownames = FALSE, selection = 'none',
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+Gender Outcomes {.hidden}
+=====================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Gender - Outcomes 
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Rates per 10,000 population](#gender)</li>
+  <li>[**Outcomes**](#gender-outcomes)</li>
+</ul>
+
+***
+
+For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**-**
+
+<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
+
+Row {.tabset data-height=1100}
+----------------------------------------------------------------------
+
+### **Integration Authority Areas**
+
+```{r dropdown-ijb-sex-ldp}
+ldp_ijb_sex <- ldp_all_sex %>% filter(!grepl("NHS", geog))
+
+ldp_sex_data_ijb <- SharedData$new(ldp_ijb_sex, key = ~fy,  group = "ijb_sex_ldp")
+
+data_filter_ijb_sex_ldp <- filter_select(id = "filter_ijb_sex_ldp",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = ldp_sex_data_ijb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_ijb_sex_ldp,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Gender and Integration Authority Area</h2>
+```{r plot-ijb-sex-legend-ldp}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_sex %>% filter(geog == "Scotland"), measure = sex)))
+
+```
+
+
+```{r plot-ijb-sex-ldp}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar(ldp_sex_data_ijb, y_value = perc_met, measure = sex, measure_text = "Gender: ", x = "Integration Authority Area", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+)
+
+```
+
+
+```{r table-ijb-sex-ldp}
+ijb_sex_ldp_data <- ldp_all_sex %>% filter(!grepl("NHS", geog)) %>% 
+  select(geog,fy,sex,perc_met) %>% 
+   mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
+   pivot_wider(names_from = sex, values_from = perc_met)%>%
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>%
+  mutate(type = "% Met Standard/Exempt", .before = fy)
+  
+ijb_sex_totals_data <- pds_all_sex %>% filter(!grepl("NHS", geog)) %>% 
+  pivot_wider(names_from = sex, values_from = total_referrals) %>%
+  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+  mutate(type = "Number of Referrals", .before = fy)
+
+ijb_ldp_sex_table_data <- bind_rows(ijb_sex_totals_data, ijb_sex_ldp_data) %>% 
+  arrange(fy, geog) %>% 
+  mutate(geog = if_else(type == "% Met Standard/Exempt", " ", geog)) %>% 
+ rename(" " = type, `Integration Authority Area` = geog)
+  
+ijb_sex_table_ldp <- SharedData$new(ijb_ldp_sex_table_data, key = ~fy, group = "ijb_sex_ldp")
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="460px", margin="20px"),
+DT::datatable(ijb_sex_table_ldp, rownames = FALSE, #extensions = "FixedColumns",
+               options = list(pageLength = 66,
+                             scrollX = TRUE,
+                            # fixedColumns = list(leftColumns = 2),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 2),
+                                               list(className = 'dt-right', targets = 3:4)
+                             ))) %>%
+  DT::formatStyle(1:2, fontWeight = "bold",# padding = "4px"
+  )
+        )
+     )
+
+
+
+
+```
+
+### **Health Boards**
+
+```{r dropdown-hb-sex-ldp}
+ldp_hb_sex <- ldp_all_sex %>% filter(geog == "Scotland" | grepl("NHS", geog))
+
+ldp_sex_data_hb <- SharedData$new(ldp_hb_sex, key = ~fy, group = "hb_sex_ldp")
+
+data_filter_hb_sex_ldp <- filter_select(id = "filter_hb_sex_ldp",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = ldp_sex_data_hb,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_hb_sex_ldp,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by Gender and Health Board</h2>
+```{r plot-hb-sex-legend-ldp}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_sex %>% filter(geog == "Scotland"), measure = sex)))
+
+```
+
+
+```{r plot-hb-sex-ldp}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px", marginBottom="-30px"),
+plot_geog_bar(ldp_sex_data_hb, y_value = perc_met, measure = sex, measure_text = "Gender: ", x = "Health Board", ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%"))
+)
+
+```
+
+
+```{r table-hb-sex-ldp}
+hb_sex_ldp_data <- ldp_all_sex %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  select(geog,fy,sex,perc_met) %>% 
+   mutate(perc_met = if_else(is.na(perc_met), as.character(perc_met), paste0(perc_met, "%"))) %>% 
+   pivot_wider(names_from = sex, values_from = perc_met)%>%
+  mutate(across(everything(), ~replace_na(.x, "-"))) %>%
+  mutate(type = "% Met Standard/Exempt", .before = fy)
+  
+hb_sex_totals_data <- pds_all_sex %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  pivot_wider(names_from = sex, values_from = total_referrals) %>%
+  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+  mutate(type = "Number of Referrals", .before = fy)
+
+hb_ldp_sex_table_data <- bind_rows(hb_sex_totals_data, hb_sex_ldp_data) %>% 
+  arrange(fy, geog) %>% 
+  mutate(geog = if_else(type == "% Met Standard/Exempt", " ", geog)) %>% 
+ rename(" " = type, `Health Board` = geog)
+
+
+hb_sex_table_ldp <- SharedData$new(hb_ldp_sex_table_data, key = ~fy,  group = "hb_sex_ldp")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="460px", margin="20px"),
+DT::datatable(hb_sex_table_ldp, rownames = FALSE,# extensions = "FixedColumns",
+              options = list(pageLength = 30,
+                             scrollX = TRUE,
+                             #fixedColumns = list(leftColumns = 2),
+                             scrollY = TRUE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 2),
+                                               list(className = 'dt-right', targets = 3:4)
+                                               ))) %>%
+           DT::formatStyle(1:2, fontWeight = "bold", #padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+### **Trend**
+
+```{r dropdown-ldp-sex}
+
+ldp_all_sex_data <- SharedData$new(ldp_all_sex, key = ~geog, group = "ldp_sex")
+
+data_filter_ldp_sex <- filter_select(id = "filter_ldp_sex",
+                                    label = "Select Integration Authority Area or Health Board:",
+                                    group = ~geog,
+                                    sharedData = ldp_all_sex_data,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_ldp_sex,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 20px">Percentage of referrals who received a minimum of one year’s PDS by Gender and Financial Year </h2>
+```{r plot-ldp-sex-legend}
+bscols(widths = 12,
+       div(style = css(height="30px"),
+plot_ldp_line_legend_1(legend_data)),NULL
+)
+
+```
+
+```{r plot-ldp-sex}
+bscols(widths = 12,
+  div(style = css(width="98%", height="370px"),
+plot_ldp_line(ldp_all_sex_data, measure = sex, measure_text = "Gender: "))
+)
+
+```
+
+
+```{r table-ldp-sex}
+
+ldp_sex_trend <- ldp_all_sex %>% filter(!is.na(perc_met)) %>%
+  select(geog, fy, sex, perc_met) %>%
+   mutate(perc_met = paste0(perc_met, "%")) %>% 
+  pivot_wider(names_from = fy, values_from = perc_met) %>%
+  mutate(type = "% Met Standard/Exempt", .before = `2016/17`)
+  
+trend_sex_totals <- pds_all_sex %>% filter(fy %in% full_years, total_referrals != 0) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  pivot_wider(names_from = fy, values_from = total_referrals, values_fill = "0") %>% 
+    mutate(type = "Number of Referrals", .before = `2016/17`)
+
+
+ldp_sex_table_data <- bind_rows(trend_sex_totals, ldp_sex_trend) %>% arrange(geog, sex) %>% 
+            mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+  mutate(sex = if_else(type == "% Met Standard/Exempt", " ", sex)) %>% 
+   rename(`Gender` = sex) %>% 
+  rename(" " = "type")
+            
+
+ldp_sex_table <- SharedData$new(ldp_sex_table_data, key = ~geog, group = "ldp_sex")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="200px", margin="20px"),
+DT::datatable(ldp_sex_table, rownames = FALSE, selection = 'none',
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right',
+                                                    targets = 3:(length(full_years)+2))
+                                               ))) %>%
+           DT::formatStyle(2:3, fontWeight = "bold")
+        )
+     )
+
+
+
+```
+
+Deprivation (SIMD) {data-navmenu="Demographics"}
+=====================================
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Deprivation - Rates per 10,000 population 
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+<ul>
+  <li>[**Rates per 10,000 population**](#deprivation-simd)</li>
+  <li>[Outcomes](#simd-outcomes)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**-**
+
+<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
+
+
+Row {.tabset data-height=1000}
+----------------------------------------------------------------------
+
+### **Integration Authority Areas**
+
+```{r dropdown-ijb-simd-pop}
+pds_ijb_simd_rates <- #bind_rows(
+  
+  #pds_all_simd_rates %>% filter(!grepl("NHS", geog)) %>% 
+         #  mutate(simd_group = simd, .before = simd) %>% 
+ # mutate(key = paste0(fy,simd_group,geog), .before = geog),
+  
+   pds_all_simd_rates %>% filter(!grepl("NHS", geog)) %>% 
+         mutate(simd_group = "All", .before = simd)  %>% 
+  mutate(key = paste0(fy,simd_group,geog), .before = geog)
+#)
+
+pds_pop_simd_data_ijb <- SharedData$new(pds_ijb_simd_rates, key = ~key, group = "ijb_simd_pop")
+
+data_filter_ijb_simd_pop <- filter_select(id = "filter_ijb_simd_pop",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = pds_pop_simd_data_ijb,
+                                    multiple = FALSE
+                                      )
+
+# data_filter_ijb_simd_pop_quintile <- filter_select(id = "filter_ijb_simd_pop_quintile",
+#                                     label = "Select SIMD Quintile:",
+#                                     group = ~simd_group,
+#                                     sharedData = pds_pop_simd_data_ijb,
+#                                     multiple = FALSE
+#                                       )
+
+data_filter_ijb_simd_pop_geog <- filter_select(id = "filter_ijb_simd_pop_geog",
+                                    label = "Select Integration Authority Area(s):",
+                                    group = ~geog,
+                                    sharedData = pds_pop_simd_data_ijb,
+                                    multiple = TRUE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_ijb_simd_pop,
+       NULL)
+
+bscols(widths = c(1,10,NA), NULL, data_filter_ijb_simd_pop_geog, NULL)
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by SIMD Quintile and Integration Authority Area</h2>
+```{r plot-ijb-simd-legend-pop2}
+
+bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
+
+```
+
+
+```{r plot-ijb-simd-pop2}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="355px", marginBottom="-20px"),
+plot_ly(pds_pop_simd_data_ijb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
+                            "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Integration Authority Area", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
+)
+
+```
+
+
+```{r table-ijb-simd-pop}
+
+ijb_pop_simd_table_data <- #bind_rows(
+  
+  # pds_all_simd_rates %>%
+  # filter(!grepl("NHS", geog)) %>%
+  # select(geog,fy,simd,pop_rate_10000) %>%
+  #  mutate(simd_group = simd, .before = simd),
+
+  pds_all_simd_rates %>%
+  filter(!grepl("NHS", geog)) %>%
+  select(geog,fy,simd,pop_rate_10000) %>%
+   mutate(simd_group = "All", .before = simd
+          ) %>% 
+  
+     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
+  pivot_wider(names_from = simd, values_from = pop_rate_10000) %>%
+  mutate(key = paste0(fy,simd_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(simd_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " ")))) %>%
+             rename(`Integration Authority Area` = geog)
+
+
+ijb_simd_table_pop <- SharedData$new(ijb_pop_simd_table_data, key = ~key, group = "ijb_simd_pop")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="350px", margin="20px"),
+DT::datatable(ijb_simd_table_pop, rownames = FALSE, selection = 'none',
+              options = list(pageLength = 33,
+                             scrollX = TRUE,
+                            # fixedColumns = list(leftColumns = 1),
+                             scrollY = FALSE,
+                             dom = "Bt",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
+                                               list(className = 'dt-right', targets = 4:8)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+```
+
+
+### **Health Boards**
+
+```{r dropdown-hb-simd-pop}
+pds_hb_simd_rates <- #bind_rows(
+  
+  #pds_all_simd_rates %>% filter(!grepl("NHS", geog)) %>% 
+         #  mutate(simd_group = simd, .before = simd) %>% 
+ # mutate(key = paste0(fy,simd_group,geog), .before = geog),
+  
+   pds_all_simd_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+         mutate(simd_group = "All", .before = simd)  %>% 
+  mutate(key = paste0(fy,simd_group,geog), .before = geog)
+#)
+
+pds_pop_simd_data_hb <- SharedData$new(pds_hb_simd_rates, key = ~key, group = "hb_simd_pop")
+
+data_filter_hb_simd_pop <- filter_select(id = "filter_hb_simd_pop",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = pds_pop_simd_data_hb,
+                                    multiple = FALSE
+                                      )
+
+# data_filter_hb_simd_pop_quintile <- filter_select(id = "filter_hb_simd_pop_quintile",
+#                                     label = "Select SIMD Quintile:",
+#                                     group = ~simd_group,
+#                                     sharedData = pds_pop_simd_data_hb,
+#                                     multiple = FALSE
+#                                       )
+# 
+# data_filter_hb_simd_pop_geog <- filter_select(id = "filter_hb_simd_pop_geog",
+#                                     label = "Select Health Board(s):",
+#                                     group = ~geog,
+#                                     sharedData = pds_pop_simd_data_hb,
+#                                     multiple = TRUE
+#                                       )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_hb_simd_pop,
+       NULL)
+
+# bscols(widths = c(1,10,NA), NULL, data_filter_hb_simd_pop_geog, NULL)
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population (65+) by SIMD Quintile and Health Board</h2>
+```{r plot-hb-simd-legend-pop}
+
+bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(pds_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
+
+```
+
+
+```{r plot-hb-simd-pop}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="355px", marginBottom="-20px"),
+plot_ly(pds_pop_simd_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
+                            "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Health Board", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
+)
+
+```
+
+
+```{r table-hb-simd-pop}
+
+ hb_pop_simd_table_data <- #bind_rows(
+#   
+#   pds_all_simd_rates %>%
+#   filter(geog == "Scotland" | grepl("NHS", geog)) %>%
+#   select(geog,fy,simd,pop_rate_10000) %>%
+#    mutate(simd_group = simd, .before = simd),
+
+  pds_all_simd_rates %>%
+  filter(geog == "Scotland" | grepl("NHS", geog)) %>%
+  select(geog,fy,simd,pop_rate_10000) %>%
+   mutate(simd_group = "All", .before = simd
+) %>% 
+  
+     mutate(pop_rate_10000 = as.character(pop_rate_10000)) %>%
+  pivot_wider(names_from = simd, values_from = pop_rate_10000) %>%
+  mutate(key = paste0(fy,simd_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(simd_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " ")))) %>%
+             rename(`Health Board` = geog)
+
+
+hb_simd_table_pop <- SharedData$new(hb_pop_simd_table_data, key = ~key, group = "hb_simd_pop")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="400px", margin="20px"),
+DT::datatable(hb_simd_table_pop, rownames = FALSE, selection = "none", #extensions = "FixedColumns",
+                  options = list(pageLength = 15,
+                             scrollX = TRUE,
+                            # fixedColumns = list(leftColumns = 1),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
+                                               list(className = 'dt-right', targets = 4:8)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+```
+
+### **Trend**
+
+```{r dropdown-trend-simd-pop}
+
+pds_pop_simd_data <- SharedData$new(pds_all_simd_rates,
+  key = ~geog, group = "trend_simd_pop")
+
+data_filter_trend_simd_pop <- filter_select(id = "filter_trend_simd_pop",
+                                    label = "Select Integration Authority Area or Health Board:",
+                                    group = ~geog,
+                                    sharedData = pds_pop_simd_data,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_trend_simd_pop,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 15px"> Number of people referred to PDS per 10,000 population (65+) by SIMD Quintile and Financial Year</h2> 
+```{r plot-trend-simd-legend-pop}
+
+bscols(widths = 12,
+       div(style = css(height="30px"),
+plot_rate_line_legend_1(legend_data)),NULL
+)
+
+```
+
+
+```{r plot-trend-simd-pop}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="370px"),
+plot_rate_line(pds_pop_simd_data, measure = simd, measure_text = "SIMD Quintile: ", y = "Rate per 10,000 Population", colours = simd_colours))
+)
+
+```
+
+
+```{r table-trend-simd-pop}
+
+trend_pop_simd_table_data <- pds_all_simd_rates %>% filter(!is.na(pop_rate_10000)) %>% 
+  select(geog,fy,simd,pop_rate_10000) %>%
+  pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
+             rename(`SIMD Quintile` = simd)
+
+
+trend_pop_simd_table <- SharedData$new(trend_pop_simd_table_data, key = ~geog, group = "trend_simd_pop")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="235px", margin="20px"),
+DT::datatable(trend_pop_simd_table, rownames = FALSE, selection = 'none',
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:9)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+SIMD Outcomes {.hidden}
+=====================================
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Deprivation - Outcomes 
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Rates per 10,000 population](#deprivation-simd)</li>
+  <li>[**Outcomes**](#simd-outcomes)</li>
+</ul>
+
+***
+
+For more information regarding how the LDP Standard is calculated please see the [methodology](#methodology) page.
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**-**
+<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
+
+Row {.tabset data-height=1110}
+----------------------------------------------------------------------
+
+### **Integration Authority Areas**
+
+```{r dropdown-ijb-simd-ldp}
+ldp_ijb_simd <- #bind_rows( 
+  
+ # ldp_all_simd %>% filter(!grepl("NHS", geog)) %>% 
+        #   mutate(simd_group = simd, .before = simd) %>% 
+#  mutate(key = paste0(fy,simd_group,geog), .before = geog),
+  
+   ldp_all_simd %>% filter(!grepl("NHS", geog)) %>%  
+         mutate(simd_group = "All", .before = simd)  %>% 
+  mutate(key = paste0(fy,simd_group,geog), .before = geog)
+#)
+
+ldp_simd_data_ijb <- SharedData$new(ldp_ijb_simd, key = ~key, group = "ijb_simd_ldp")
+
+data_filter_ijb_simd_ldp <- filter_select(id = "filter_ijb_simd_ldp",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = ldp_simd_data_ijb,
+                                    multiple = FALSE
+                                      )
+
+# data_filter_ijb_simd_ldp_quintile <- filter_select(id = "filter_ijb_simd_ldp_quintile",
+#                                     label = "Select SIMD Quintile:",
+#                                     group = ~simd_group,
+#                                     sharedData = ldp_simd_data_ijb,
+#                                     multiple = FALSE
+#                                       )
+
+
+data_filter_ijb_simd_ldp_geog <- filter_select(id = "filter_ijb_simd_ldp_geog",
+                                    label = "Select Integration Authority Area(s):",
+                                    group = ~geog,
+                                    sharedData = ldp_simd_data_ijb,
+                                    multiple = TRUE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_ijb_simd_ldp,
+       NULL)
+
+bscols(widths = c(1,10,NA), NULL, data_filter_ijb_simd_ldp_geog, NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by SIMD Quintile and Integration Authority Area</h2>
+```{r plot-ijb-simd-legend-ldp}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
+
+```
+
+
+```{r plot-ijb-simd-ldp}
+# bscols(widths = 12,
+#   div(style = css(width="98%", height="385px", marginBottom="-30px"),
+# plot_geog_bar_v2(ldp_simd_data_ijb, y_value = perc_met, measure = simd, measure_text = "SIMD Quintile: ", x = "Integration Authority Area", measure_2 = simd_group, ylabel = function(x) paste0(x,"%"), ylimits = c(0, 101), symbol = "%", colours = simd_colours))
+# )
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="355px", marginBottom="-20px"),
+plot_ly(ldp_simd_data_ijb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
+                            "%{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Integration Authority Area", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
+)
+
+```
+
+
+```{r table-ijb-simd-ldp}
+ijb_simd_ldp_data <- bind_rows(
+  
+  ldp_all_simd %>% filter(!grepl("NHS", geog)) %>% 
+  select(geog,fy,simd,perc_met) %>%
+   mutate(simd_group = simd, .before = simd),
+
+  ldp_all_simd %>% filter(!grepl("NHS", geog)) %>% 
+  select(geog,fy,simd,perc_met) %>%
+   mutate(simd_group = "All", .before = simd)
+) %>% 
+ mutate(perc_met = if_else(is.na(perc_met), "-", paste0(perc_met,"%"))) %>%
+  pivot_wider(names_from = simd, values_from = perc_met) %>%
+  mutate(key = paste0(fy,simd_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(simd_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " "))))  %>% 
+  mutate(type = "% Met Standard/Exempt", .after = simd_group)
+
+
+
+ijb_simd_totals_data <- bind_rows(
+  
+   pds_all_simd %>%
+  filter(!grepl("NHS", geog)) %>% 
+  mutate(simd_group = simd, .before = simd), 
+
+ pds_all_simd %>%
+  filter(!grepl("NHS", geog)) %>% 
+  mutate(simd_group = "All", .before = simd)
+ ) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+  pivot_wider(names_from = simd, values_from = total_referrals) %>%
+  mutate(key = paste0(fy,simd_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(simd_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " ")))) %>% 
+  mutate(type = "Number of Referrals", .after = simd_group)
+
+
+         
+
+ijb_ldp_simd_table_data <- bind_rows(ijb_simd_totals_data, ijb_simd_ldp_data) %>% 
+  arrange(geog, key, desc(type)) %>% 
+  mutate(geog = if_else(type == "% Met Standard/Exempt", " ", geog)) %>% 
+ rename(" " = "type") %>% 
+    rename(`Integration Authority Area` = geog)
+
+
+ijb_simd_table_ldp <- SharedData$new(ijb_ldp_simd_table_data, key = ~key, group = "ijb_simd_ldp")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="430px", margin="20px"),
+DT::datatable(ijb_simd_table_ldp, rownames = FALSE, selection = "none", #extensions = "FixedColumns",
+              options = list(pageLength = 66,
+                             scrollX = TRUE,
+                            # fixedColumns = list(leftColumns = 4),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
+                                               list(className = 'dt-right', targets = 5:9)
+                                               ))) %>%
+           DT::formatStyle(c(2,5), fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+
+
+
+```
+
+### **Health Boards**
+
+```{r dropdown-hb-simd-ldp}
+ldp_hb_simd <- #bind_rows( 
+  
+ # ldp_all_simd %>% filter(!grepl("NHS", geog)) %>% 
+        #   mutate(simd_group = simd, .before = simd) %>% 
+#  mutate(key = paste0(fy,simd_group,geog), .before = geog),
+  
+   ldp_all_simd %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%  
+         mutate(simd_group = "All", .before = simd)  %>% 
+  mutate(key = paste0(fy,simd_group,geog), .before = geog)
+#)
+
+ldp_simd_data_hb <- SharedData$new(ldp_hb_simd, key = ~key, group = "hb_simd_ldp")
+
+data_filter_hb_simd_ldp <- filter_select(id = "filter_hb_simd_ldp",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = ldp_simd_data_hb,
+                                    multiple = FALSE
+                                      )
+
+# data_filter_hb_simd_ldp_quintile <- filter_select(id = "filter_hb_simd_ldp_quintile",
+#                                     label = "Select SIMD Quintile:",
+#                                     group = ~simd_group,
+#                                     sharedData = ldp_simd_data_hb,
+#                                     multiple = FALSE
+#                                       )
+
+
+#data_filter_hb_simd_ldp_geog <- filter_select(id = "filter_hb_simd_ldp_geog",
+                             #       label = "Select Integration Authority Area(s):",
+                                  #  group = ~geog,
+                                   # sharedData = ldp_simd_data_hb,
+                                   # multiple = TRUE
+                                   #   )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_hb_simd_ldp,
+       NULL)
+
+#bscols(widths = c(1,10,NA), NULL, data_filter_hb_simd_ldp_geog, NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS by SIMD Quintile and Health Board</h2>
+```{r plot-hb-simd-legend-ldp}
+
+ bscols(widths = 12,
+div(style=css(marginBottom="-20px",height="65px"), plot_geog_bar_legend(ldp_all_simd %>% filter(geog == "Scotland"), measure = simd, colours = simd_colours)))
+
+```
+
+
+```{r plot-hb-simd-ldp}
+
+bscols(widths = 12,
+  div(style = css(width="98%", height="355px", marginBottom="-20px"),
+plot_ly(ldp_simd_data_hb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~simd, type = 'bar', color = ~simd, colors = simd_colours, 
+        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "SIMD Quintile: %{hovertext} <br>",
+                            "%{y}<extra></extra>")) %>% 
+  layout(clickmode = "none", showlegend = FALSE, margin = list(l = -5, b = 10, t = 40),
+         xaxis = list(title = "Health Board", showline = FALSE, linecolor = "#b3b3b3",
+                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
+         yaxis = list(title = "", linecolor = "#b3b3b3", ticksuffix = "%")
+      ) %>%
+  config(displayModeBar = TRUE, doubleClick = F,
+         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                       'zoomOut2d', 'autoScale2d', 
+                                       'toggleSpikelines', 
+                                       'hoverCompareCartesian', 
+                                       'hoverClosestCartesian', 'toImage'), 
+         displaylogo = F, editable = F)
+  )
+)
+
+```
+
+
+```{r table-hb-simd-ldp}
+hb_simd_ldp_data <- bind_rows(
+  
+  ldp_all_simd %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  select(geog,fy,simd,perc_met) %>%
+   mutate(simd_group = simd, .before = simd),
+
+  ldp_all_simd %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  select(geog,fy,simd,perc_met) %>%
+   mutate(simd_group = "All", .before = simd)
+) %>% 
+ mutate(perc_met = if_else(is.na(perc_met), "-", paste0(perc_met,"%"))) %>%
+  pivot_wider(names_from = simd, values_from = perc_met) %>%
+  mutate(key = paste0(fy,simd_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(simd_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " "))))  %>% 
+  mutate(type = "% Met Standard/Exempt", .after = simd_group)
+
+
+
+hb_simd_totals_data <- bind_rows(
+  
+   pds_all_simd %>%
+  filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  mutate(simd_group = simd, .before = simd), 
+
+ pds_all_simd %>%
+  filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+  mutate(simd_group = "All", .before = simd)
+ ) %>% 
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+  pivot_wider(names_from = simd, values_from = total_referrals) %>%
+  mutate(key = paste0(fy,simd_group,geog), .before = geog) %>% 
+  mutate(across(everything(), ~if_else(simd_group == "All", 
+                                       replace_na(.x, "-"), 
+                                       replace_na(.x, " ")))) %>% 
+  mutate(type = "Number of Referrals", .after = simd_group)
+
+
+         
+
+hb_ldp_simd_table_data <- bind_rows(hb_simd_totals_data, hb_simd_ldp_data) %>% 
+  arrange(geog, key, desc(type)) %>% 
+  mutate(geog = if_else(type == "% Met Standard/Exempt", " ", geog)) %>% 
+ rename(" " = "type") %>% 
+    rename(`Integration Authority Area` = geog)
+
+
+hb_simd_table_ldp <- SharedData$new(hb_ldp_simd_table_data, key = ~key, group = "hb_simd_ldp")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="460px", margin="20px"),
+DT::datatable(hb_simd_table_ldp, rownames = FALSE, selection = "none", #extensions = "FixedColumns",
+              options = list(pageLength = 30,
+                             scrollX = TRUE,
+                             #fixedColumns = list(leftColumns = 4),
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = c(0,2,3)),
+                                               list(className = 'dt-right', targets = 5:9)
+                                               ))) %>%
+           DT::formatStyle(c(2,5), fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+
+
+
+```
+
+### **Trend by SIMD Quintile**
+
+```{r dropdown-ldp-simd}
+
+ldp_all_simd_data <- SharedData$new(ldp_all_simd, key = ~geog, group = "ldp_simd")
+
+data_filter_ldp_simd <- filter_select(id = "filter_ldp_simd",
+                                    label = "Select Integration Authority Area or Health Board:",
+                                    group = ~geog,
+                                    sharedData = ldp_all_simd_data,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_ldp_simd,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 20px">Percentage of referrals who received a minimum of one year’s PDS by SIMD Quintile and Financial Year </h2>
+```{r plot-ldp-simd-legend}
+bscols(widths = 12,
+       div(style = css(height="30px"),
+plot_ldp_line_legend_1(legend_data)),NULL
+)
+
+```
+
+```{r plot-ldp-simd}
+bscols(widths = 12,
+  div(style = css(width="98%", height="330px"),
+plot_ldp_line(ldp_all_simd_data, measure = simd, measure_text = "SIMD Quintile: ", colours = simd_colours))
+)
+
+
+```
+
+
+```{r table-ldp-simd}
+
+ldp_simd_trend <- ldp_all_simd %>% filter(!is.na(perc_met)) %>%
+  select(geog,fy,simd,perc_met) %>%
+   mutate(perc_met = paste0(perc_met,"%")) %>% 
+  pivot_wider(names_from = fy, values_from = perc_met) %>% 
+    mutate(type = "% Met Standard/Exempt", .before = `2016/17`) 
+
+trend_simd_totals <- pds_all_simd %>% filter(fy %in% full_years, total_referrals != 0) %>%
+  mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+  pivot_wider(names_from = fy, values_from = total_referrals, values_fill = "0") %>% 
+    mutate(type = "Number of Referrals", .before = `2016/17`)
+
+
+ldp_simd_table_data <- bind_rows(trend_simd_totals, ldp_simd_trend) %>% arrange(geog, simd) %>% 
+           rename(`SIMD Quintile` = simd) %>% mutate(across(everything(), ~replace_na(.x, "-"))) %>% 
+  mutate(`SIMD Quintile` = if_else(type == "% Met Standard/Exempt", " ", `SIMD Quintile`)) %>% 
+ rename(" " = "type")
+            
+          
+
+
+ldp_simd_table <- SharedData$new(ldp_simd_table_data, key = ~geog, group = "ldp_simd")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="430px", margin="20px", marginTop="-10px"),
+DT::datatable(ldp_simd_table, rownames = FALSE, selection = 'none',
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right',
+                                                    targets = 3:(length(full_years)+2))
+                                               ))) %>%
+           DT::formatStyle(2:3, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+### **Trend by Financial Year**
+
+```{r dropdown-ldp-simd-bar}
+ldp_all_simd_data_2 <- SharedData$new(ldp_all_simd, key = ~geog, group = "ldp_simd_2")
+
+data_filter_ldp_simd_bar <- filter_select(id = "filter_ldp_simd_bar",
+                                    label = "Select Integration Authority Area or Health Board:",
+                                    group = ~geog,
+                                    sharedData = ldp_all_simd_data_2,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_ldp_simd_bar,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 18px">Percentage of referrals who received a minimum of one year’s PDS by Financial Year and SIMD Quintile</h2>
+```{r plot-ldp-simd-legend_bar}
+
+bscols(widths = 12, div(style = css(height="30px", marginBottom="-7px"),
+plot_ldp_bar_legend(ldp_all_simd, measure = simd, measure_text = "", colours = simd_colours))
+)
+
+```
+
+```{r plot-ldp-simd_bar}
+bscols(widths = 12,
+  div(style = css(width="98%", height="290px"),
+plot_ldp_bar(ldp_all_simd_data_2, measure = simd, measure_text = "SIMD Quintile: ", colours = simd_colours))
+)
+
+
+```
+
+```{r plot-ldp-simd-legend_labels}
+bscols(widths = 12,
+  div(style = css(width="98%", height="70px", marginTop="-35px", marginLeft="-3px"),
+plot_ldp_bar_labels(ldp_all_simd %>% filter(geog == "Scotland"), measure = simd))
+)
+
+```
+
+```{r table-ldp-simd_bar}
+
+ldp_simd_table_2 <- SharedData$new(ldp_simd_table_data, key = ~geog, group = "ldp_simd_2")
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="430px", margin="20px", marginTop="-25px"),
+DT::datatable(ldp_simd_table_2, rownames = FALSE, selection = 'none',
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right',
+                                                    targets = 3:(length(full_years)+2))
+                                               ))) %>%
+           DT::formatStyle(2:3, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+```{js }
+function filter_default() {
+
+  document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ijb_age_pop_group").getElementsByClassName("selectized") 
+  [0].selectize.setValue("65+", false);
+
+  document.getElementById("filter_ijb_age_pop_group").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_hb_age_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_hb_age_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_hb_age_pop_group").getElementsByClassName("selectized") 
+  [0].selectize.setValue("65+", false);
+
+  document.getElementById("filter_hb_age_pop_group").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_trend_age_2_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_trend_age_2_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+
+  document.getElementById("filter_ijb_age_ldp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_ijb_age_ldp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+    
+  document.getElementById("filter_hb_age_ldp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_hb_age_ldp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_ldp_age_2").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+    
+  document.getElementById("filter_hb_sex_ldp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_hb_sex_ldp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ldp_sex").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_ldp_sex").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_trend_simd_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_trend_simd_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ijb_simd_pop_geog").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ijb_simd_ldp_geog").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ldp_simd").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_ldp_simd").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_hb_simd_ldp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_hb_simd_ldp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized") 
+  [0].selectize.setValue("2023/24", false);
+
+  document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized") 
+  [0].selectize.setValue("Scotland", false);
+
+  document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized")
+  [0].selectize.removeOption("");
+  
+  
+ 
+  }
+  
+  $(document).ready(filter_default);
+
+```
+
