@@ -163,25 +163,24 @@ pds %<>%
              age >= 90      ~ "90+"
            )) %>%
   
-  # updated to include broad age groups
-  mutate(age_grp_2 = 
-           case_when(
-             age <= 0 | is.na(age) ~ "Unknown",
-             age %in% 1:79 ~ "79 and Under",
-             age %in% 80:84 ~ "80 to 84",
-             age >= 85     ~ "85+"
-           )) %>%
-  
   mutate(postcode = format_postcode(postcode)) %>%
   left_join(simd(), by = c("postcode" = "pc7")) %>%
-  mutate(simd = replace_na(simd, "Unknown"))
+  mutate(simd = replace_na(simd, "Unknown")) 
 
-# Add Aberdeen City data for 2019/20 and 2020/21
+# Add Aberdeen City data for 2019/20 and 2020/21 and update simd
 ### 3 read in Aberdeen data and append ----
 
-Ab_19_20 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2019-20_individuals-with-ldp_aberdeen-city.rds")
+Ab_19_20 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2019-20_individuals-with-ldp_aberdeen-city.rds") %>%
+  select(-simd) %>% 
+  mutate(postcode = format_postcode(postcode)) %>%
+  left_join(simd(), by = c("postcode" = "pc7")) %>%
+  mutate(simd = replace_na(simd, "Unknown")) 
 
-Ab_20_21 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2020-21_individuals-with-ldp_aberdeen-city.rds")
+Ab_20_21 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2020-21_individuals-with-ldp_aberdeen-city.rds") %>%
+  select(-simd) %>% 
+  mutate(postcode = format_postcode(postcode)) %>%
+  left_join(simd(), by = c("postcode" = "pc7")) %>%
+  mutate(simd = replace_na(simd, "Unknown")) 
 
 pds_Ab <- bind_rows(pds, Ab_19_20, Ab_20_21) 
 
@@ -199,6 +198,15 @@ pds_Ab_dupe_flag <- pds_Ab %>%
 # records from Ab_19_20 and Ab_20_21 are marked as "Aberdeen City Exemption" in ldp column. 
 # This line removes those records if they are duplicated in the most up to date ldp file.
 pds <- pds_Ab_dupe_flag %>% filter(dupe == 1 & ldp != "Aberdeen City Exemption" | dupe != 1)
+
+pds %<>% # add broad age groups
+  mutate(age_grp_2 = 
+           case_when(
+             age <= 0 | is.na(age) ~ "Unknown",
+             age %in% 1:79 ~ "79 and Under",
+             age %in% 80:84 ~ "80 to 84",
+             age >= 85     ~ "85+"
+           ), .after = age_grp) 
 
 
 ### 7 - Save individual level file for checking ----

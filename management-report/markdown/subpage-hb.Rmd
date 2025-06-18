@@ -53,13 +53,10 @@ completeness_text <-
       paste0("Data for ", sel_fy, " are now final and will not change in ",
              "future versions of this report."),
      complete_year == FALSE ~ 
-      paste0("As PDS for some referrals in ", sel_fy, " is still ",
-             "ongoing, it is not known yet whether or not they ",
-             "will meet the LDP standard. Therefore, the figures ",
-             "shown are currently provisional and subject to ",
-             "change in future versions of this report.", "<br>",
-             "LDP Standard performance figures are not provided ",
-             "until data is available for the full financial year."),
+      paste0("LDP Standard performance figures are not provided ",
+             "until data is available for the full financial year. ",
+             "The figures shown are currently provisional and subject to ",
+             "change in future versions of this report."),
     TRUE ~ 
       paste0("As PDS for some referrals in ", sel_fy, " is still ",
              "ongoing, it is not known yet whether or not they ",
@@ -175,7 +172,7 @@ est_date4 <- dmy(01042024)
               "*PHS have identified one record submitted by NHS Fife ", 
               "for 2024/25 that shows inconsistent dates. The reported dates resulted in this record ",
               "showing as having met the standard. PHS have queried the ", 
-              "dates with the Health Board and are awaiting a response.*"),  TRUE ~ paste0(""))
+              "dates with the Health Board and expecting these to be rectified in future submissions.*"),  TRUE ~ paste0(""))
   
      # Data quality notes - borders
   bord_date <- dmy(01042024)
@@ -187,7 +184,7 @@ est_date4 <- dmy(01042024)
               "*PHS have identified one record submitted by NHS Borders ", 
               "for 2024/25 that shows inconsistent dates. The reported dates resulted in this record ",
               "showing as having met the standard. PHS have queried the ", 
-              "dates with the Health Board and are awaiting a response.*"), TRUE ~ paste0(""))
+              "dates with the Health Board and are expecting these to be rectified in future submissions.*"), TRUE ~ paste0(""))
   
      # Data quality notes - lanarkshire
   lan_date <- dmy(01042024)
@@ -199,7 +196,7 @@ est_date4 <- dmy(01042024)
               "*PHS have identified two records submitted by NHS Lanarkshire ", 
               "for 2024/25 that show inconsistent dates. The reported dates resulted in these records ",
               "showing as having met the standard. PHS have queried the ", 
-              "dates with the Health Board and are awaiting a response.*"),  TRUE ~ paste0(""))
+              "dates with the Health Board and are expecting these to be rectified in future submissions.*"),  TRUE ~ paste0(""))
 
 ```
 

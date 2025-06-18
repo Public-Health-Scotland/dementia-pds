@@ -202,11 +202,11 @@ Row
 
 **NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24* and *2024/25*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. This is likely to be completed by the end of the year. 
 
-**NHS Lanarkshire** - PHS have identified two records submitted by NHS Lanarkshire for *2024/25* that show inconsistent dates. The reported dates resulted in these records showing as having met the standard. PHS have queried the dates with the Health Board and are awaiting a response.  
+**NHS Lanarkshire** - PHS have identified two records submitted by NHS Lanarkshire for *2024/25* that show inconsistent dates. The reported dates resulted in these records showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions.  
 
-**NHS Borders** - PHS have identified one record submitted by NHS Borders for *2024/25* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are awaiting a response. 
+**NHS Borders** - PHS have identified one record submitted by NHS Borders for *2024/25* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions. 
 
-**NHS Fife** - PHS have identified one record submitted by NHS Fife for *2024/25* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are awaiting a response.
+**NHS Fife** - PHS have identified one record submitted by NHS Fife for *2024/25* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions.
 
 **Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates.
 
@@ -313,7 +313,7 @@ For a relatively small number of individuals, multiple records have been submitt
 2. Keep record with termination reason 04 Service user has moved to a different Health Board area. If no record was terminated for this reason, then;
 3. Keep record with earliest first contact date.
 
-There also exists a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IJB. The support provided to these service users has been apportioned to NHS Highland in this report, as part of the LDP Standard is a population based measure, and so by not including these Argyll & Bute residents this figure may be skewed.
+There is a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IAA. The support provided to these service users has been apportioned to NHS Highland in this report. 
 
 If you have any queries regarding the above, please contact [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot).
 
@@ -536,8 +536,8 @@ Sidebar-queries/errors {.sidebar}
 
 <ul>
   <li>[**Queries/Errors**](#data-quality)</li>
-  <li>[Number of Records Submitted](#records)</li>
   <li>[Data Completion](#completion)</li>
+  <li>[Number of Records Submitted](#records)</li>
 </ul>
 
 ***
@@ -558,8 +558,13 @@ Row
 
 ### <!-- No Title -->
 
-This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+This page includes information about data quality. 
 
+Queries/Errors - Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+
+Data Completion – The tables show, for three key mandatory fields, the percentage of records which are reported as NA/code 98/99 (Unknown)/Yet to be determined (YTBD). As these are fields of interest we would like to see a reduction in the number of records with these codes so that meaningful information can be produced from these data. The tables are designed to help areas monitor the number of cases they report as NA/98/99/YTBD.
+
+Number of Records Submitted – This table shows the number of records submitted for each area. Note these are the number of records, including duplicate records, therefore this is not the same as the number of people referred.
 
 Row
 -------------------------------------------------
@@ -600,88 +605,6 @@ err %>%
                notation = "none") 
 ```
 
-
-Records {.hidden}
-=================================================
-
-Sidebar-records {.sidebar}
------------------------------------------------------------------------
-
-<br>
-
-### Number of Records Submitted
-
-***
-
-<font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
-
-***
-
-<ul>
-  <li>[Queries/Errors](#data-quality)</li>
-  <li>[**Number of Records Submitted**](#records)</li>
-  <li>[Data Completion](#completion)</li>
-</ul>
-
-***
-
-**FURTHER INFORMATION:**
-
-<ul style="list-style-type:square;">
-   <li >[Glossary](#glossary)</li>
-   <li >[Navigation Guide](#navigation-guide)</li>
-</ul>
-
-***
-
-Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
-
-Row
--------------------------------------------------
-
-### <!-- No Title -->
-
-This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
-
-Row {data-height=700}
--------------------------------------------------
-
-### **Number of Records Submitted**
-
-The table below shows the number of records submitted by each Health Board. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
-
-```{r record-summary}
-# add table showing number of records submitted by each health board
-err %>%
-  filter(str_sub(fy, 1, 4) >= year(start_date)) %>%
-  group_by(fy, health_board, ijb) %>% 
-  summarise(records = sum(records),
-            .groups = "drop") %>%
-  bind_rows(
-    err %>%
-    group_by(fy = "All", health_board, ijb) %>% 
-    summarise(records = sum(records),
-              .groups = "drop")) %>%
-  mutate(records = format(records, big.mark = ",")) %>%
-  pivot_wider(names_from = fy, 
-              values_from = records,
-              values_fill = list(records = "0")) %>%
-  arrange(health_board, ijb) %>%
-  rename(`Health Board` = health_board,
-         `Integration Joint Board (IJB)` = ijb) %>%
-# right justify numeric columns
-     kable(align = c("l", "l", rep("r", length(unique(err$fy)) + 1))) %>%
-  kable_styling(full_width = FALSE) %>%
-# make Scotland row bold
-    row_spec(length(unique(paste(err$health_board, err$ijb))), bold = TRUE) %>%
-  collapse_rows(columns = 1, valign = "top") %>%
-  scroll_box(height = "570px")
-```
-
 Completion {.hidden}
 =================================================
 
@@ -704,8 +627,8 @@ Sidebar-completion {.sidebar}
 
 <ul>
   <li>[Queries/Errors](#data-quality)</li>
-  <li>[Number of Records Submitted](#records)</li>
   <li>[**Data Completion**](#completion)</li>
+  <li>[Number of Records Submitted](#records)</li>
 </ul>
 
 ***
@@ -727,7 +650,13 @@ Row
 
 ### <!-- No Title -->
 
-This page includes information about data quality. Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+This page includes information about data quality. 
+
+Queries/Errors - Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+
+Data Completion – The tables show, for three key mandatory fields, the percentage of records which are reported as NA/code 98/99 (Unknown)/Yet to be determined (YTBD). As these are fields of interest we would like to see a reduction in the number of records with these codes so that meaningful information can be produced from these data. The tables are designed to help areas monitor the number of cases they report as NA/98/99/YTBD.
+
+Number of Records Submitted – This table shows the number of records submitted for each area. Note these are the number of records, including duplicate records, therefore this is not the same as the number of people referred.
 
 Row {.tabset data-height=700}
 -------------------------------------------------
@@ -786,103 +715,103 @@ bscols(widths = 12,
 
 ```
 
-### **Carer's Support**
+<!-- ### **Carer's Support** -->
 
-<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals with NA or code 98/99 entry (Unknown) for Carer's Support</h2>
-<h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Carer's Support is an optional field</h4>
+<!-- <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals with NA or code 98/99 entry (Unknown) for Carer's Support</h2> -->
+<!-- <h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Carer's Support is an optional field</h4> -->
 ```{r carer-table}
-carer_comp_data<-comp_data %>%
-  filter(field_name == "carers_support") %>% 
-  select(geog, fy, number_of_records, perc_of_records_missing_not_known) %>% 
-  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
-   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-  pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known),
-              names_vary = "slowest") 
-
-
-bscols(widths = 12,
-       div(style = css(width="98%", height="550px", margin="15px"),
-          DT::datatable(carer_comp_data,
-                        container = headers,
-                        rownames = TRUE,
-                      #  caption = htmltools::tags$caption(
-                      # style = 'caption-side: bottom; text-align: left;',
-                      # "Note that Carer's Support is an optional field"),
-                        extensions = "FixedColumns",
-              options = list(pageLength = 46,
-                             scrollX = TRUE,
-                             fixedColumns = list(leftColumns = 1),
-                             scrollY = TRUE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = F, targets = 0),
-                                                list(className = 'dt-right',
-                                                     targets = 2:(2*length(all_years)+3)))
-                             )) %>% 
-            DT::formatStyle(0, target = "row",
-              fontWeight = DT::styleEqual(dim(carer_comp_data)[1],"bold")) %>% 
-               DT::formatStyle(c(1,3,5,7,9,11,13,15,17,19), `border-right` = "solid 1px")
-            )
-       )
-
+# carer_comp_data<-comp_data %>%
+#   filter(field_name == "carers_support") %>% 
+#   select(geog, fy, number_of_records, perc_of_records_missing_not_known) %>% 
+#   mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
+#    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+#   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known),
+#               names_vary = "slowest") 
+# 
+# 
+# bscols(widths = 12,
+#        div(style = css(width="98%", height="550px", margin="15px"),
+#           DT::datatable(carer_comp_data,
+#                         container = headers,
+#                         rownames = TRUE,
+#                       #  caption = htmltools::tags$caption(
+#                       # style = 'caption-side: bottom; text-align: left;',
+#                       # "Note that Carer's Support is an optional field"),
+#                         extensions = "FixedColumns",
+#               options = list(pageLength = 46,
+#                              scrollX = TRUE,
+#                              fixedColumns = list(leftColumns = 1),
+#                              scrollY = TRUE,
+#                              dom = "t",
+#                              ordering = FALSE,
+#                              columnDefs = list(list(visible = F, targets = 0),
+#                                                 list(className = 'dt-right',
+#                                                      targets = 2:(2*length(all_years)+3)))
+#                              )) %>% 
+#             DT::formatStyle(0, target = "row",
+#               fontWeight = DT::styleEqual(dim(carer_comp_data)[1],"bold")) %>% 
+#                DT::formatStyle(c(1,3,5,7,9,11,13,15,17,19), `border-right` = "solid 1px")
+#             )
+#        )
+# 
 
 ```
 
-### **Subtype of Dementia**
+<!-- ### **Subtype of Dementia** -->
 
-<h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of records with NA or code 98/99 entry (Unknown) and Percentage of records Yet to be determined (YTBD) for Subtype of Dementia</h2>
-<h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Subtype of Dementia is an optional field</h4>
+<!-- <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of records with NA or code 98/99 entry (Unknown) and Percentage of records Yet to be determined (YTBD) for Subtype of Dementia</h2> -->
+<!-- <h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Subtype of Dementia is an optional field</h4> -->
 ```{r subtype-table}
-subtype_comp_data <- comp_data %>%
-  filter(field_name == "subtype_of_dementia") %>% 
-  select(geog, fy, number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
-  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
-  mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
-   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-  pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd),
-              names_vary = "slowest")
-  
-headers_ytbd <- htmltools::withTags(table(
-  class = 'display',
-  thead(
-    tr(
-      th(colspan = 1, ' '),
-      th(rowspan = 2, "Integration Authority Area/Health Board"),
-      lapply(all_years, th, colspan = 3, style = css(textAlign="center")),
-      th(colspan = 3, 'All', style = css(textAlign="center"))
-    ),
-    tr(
-      lapply(c(" ",rep(c("Number of referrals", "% Unknown", "% YTBD"), 10)), th)
-    )
-  )
-))
-
-
-bscols(widths = 12,
-       div(style = css(width="98%", height="540px", margin="15px"),
-          DT::datatable(subtype_comp_data,
-                        container = headers_ytbd,
-                        rownames = TRUE,
-                       # caption = htmltools::tags$caption(
-                     #  style = 'caption-side: bottom; text-align: left;',
-                      # "Note that Subtype of Dementia is an optional field"),
-                        extensions = "FixedColumns",
-              options = list(pageLength = 46,
-                             scrollX = TRUE,
-                             fixedColumns = list(leftColumns = 1),
-                             scrollY = TRUE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = F, targets = 0),
-                                                list(className = 'dt-right',
-                                                     targets = 2:(3*length(all_years)+4)))
-                             )) %>% 
-            DT::formatStyle(0, target = "row",
-              fontWeight = DT::styleEqual(dim(subtype_comp_data)[1],"bold")) %>% 
-               DT::formatStyle(c(1,4,7,10,13,16,19,22,25,28), `border-right` = "solid 1px")
-            )
-       )
-
+# subtype_comp_data <- comp_data %>%
+#   filter(field_name == "subtype_of_dementia") %>% 
+#   select(geog, fy, number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
+#   mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
+#   mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
+#    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+#   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd),
+#               names_vary = "slowest")
+#   
+# headers_ytbd <- htmltools::withTags(table(
+#   class = 'display',
+#   thead(
+#     tr(
+#       th(colspan = 1, ' '),
+#       th(rowspan = 2, "Integration Authority Area/Health Board"),
+#       lapply(all_years, th, colspan = 3, style = css(textAlign="center")),
+#       th(colspan = 3, 'All', style = css(textAlign="center"))
+#     ),
+#     tr(
+#       lapply(c(" ",rep(c("Number of referrals", "% Unknown", "% YTBD"), 10)), th)
+#     )
+#   )
+# ))
+# 
+# 
+# bscols(widths = 12,
+#        div(style = css(width="98%", height="540px", margin="15px"),
+#           DT::datatable(subtype_comp_data,
+#                         container = headers_ytbd,
+#                         rownames = TRUE,
+#                        # caption = htmltools::tags$caption(
+#                      #  style = 'caption-side: bottom; text-align: left;',
+#                       # "Note that Subtype of Dementia is an optional field"),
+#                         extensions = "FixedColumns",
+#               options = list(pageLength = 46,
+#                              scrollX = TRUE,
+#                              fixedColumns = list(leftColumns = 1),
+#                              scrollY = TRUE,
+#                              dom = "t",
+#                              ordering = FALSE,
+#                              columnDefs = list(list(visible = F, targets = 0),
+#                                                 list(className = 'dt-right',
+#                                                      targets = 2:(3*length(all_years)+4)))
+#                              )) %>% 
+#             DT::formatStyle(0, target = "row",
+#               fontWeight = DT::styleEqual(dim(subtype_comp_data)[1],"bold")) %>% 
+#                DT::formatStyle(c(1,4,7,10,13,16,19,22,25,28), `border-right` = "solid 1px")
+#             )
+#        )
+# 
 
 
 ```
@@ -900,7 +829,21 @@ stage_comp_data <- comp_data %>%
    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd),
               names_vary = "slowest")
-  
+
+headers_ytbd <- htmltools::withTags(table(
+  class = 'display',
+  thead(
+    tr(
+      th(colspan = 1, ' '),
+      th(rowspan = 2, "Integration Authority Area/Health Board"),
+      lapply(all_years, th, colspan = 3, style = css(textAlign="center")),
+      th(colspan = 3, 'All', style = css(textAlign="center"))
+    ),
+    tr(
+      lapply(c(" ",rep(c("Number of referrals", "% Unknown", "% YTBD"), 10)), th)
+    )
+  )
+))
 
 bscols(widths = 12,
        div(style = css(width="98%", height="540px", margin="15px"),
@@ -966,6 +909,93 @@ bscols(widths = 12,
             )
        )
 
+```
+
+Records {.hidden}
+=================================================
+
+Sidebar-records {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Number of Records Submitted
+
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Queries/Errors](#data-quality)</li>
+  <li>[Data Completion](#completion)</li>
+  <li>[**Number of Records Submitted**](#records)</li>
+</ul>
+
+***
+
+**FURTHER INFORMATION:**
+
+<ul style="list-style-type:square;">
+   <li >[Glossary](#glossary)</li>
+   <li >[Navigation Guide](#navigation-guide)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+Row
+-------------------------------------------------
+
+### <!-- No Title -->
+
+This page includes information about data quality. 
+
+Queries/Errors - Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+
+Data Completion – The tables show, for three key mandatory fields, the percentage of records which are reported as NA/code 98/99 (Unknown)/Yet to be determined (YTBD). As these are fields of interest we would like to see a reduction in the number of records with these codes so that meaningful information can be produced from these data. The tables are designed to help areas monitor the number of cases they report as NA/98/99/YTBD.
+
+Number of Records Submitted – This table shows the number of records submitted for each area. Note these are the number of records, including duplicate records, therefore this is not the same as the number of people referred.
+
+Row {data-height=700}
+-------------------------------------------------
+
+### **Number of Records Submitted**
+
+The table below shows the number of records submitted by each Health Board. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
+
+```{r record-summary}
+# add table showing number of records submitted by each health board
+err %>%
+  filter(str_sub(fy, 1, 4) >= year(start_date)) %>%
+  group_by(fy, health_board, ijb) %>% 
+  summarise(records = sum(records),
+            .groups = "drop") %>%
+  bind_rows(
+    err %>%
+    group_by(fy = "All", health_board, ijb) %>% 
+    summarise(records = sum(records),
+              .groups = "drop")) %>%
+  mutate(records = format(records, big.mark = ",")) %>%
+  pivot_wider(names_from = fy, 
+              values_from = records,
+              values_fill = list(records = "0")) %>%
+  arrange(health_board, ijb) %>%
+  rename(`Health Board` = health_board,
+         `Integration Authority Area` = ijb) %>%
+# right justify numeric columns
+     kable(align = c("l", "l", rep("r", length(unique(err$fy)) + 1))) %>%
+  kable_styling(full_width = FALSE) %>%
+# make Scotland row bold
+    row_spec(length(unique(paste(err$health_board, err$ijb))), bold = TRUE) %>%
+  collapse_rows(columns = 1, valign = "top") %>%
+  scroll_box(height = "570px")
 ```
 
 <!-- converts R environment objects for use with js script below -->
