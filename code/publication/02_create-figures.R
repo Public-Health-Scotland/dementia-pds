@@ -77,7 +77,7 @@ c1 <-
   geom_bar(stat = "identity", width = 0.8) +
   geom_text(aes(x = perc, y = health_board, label = perc_formatted),
             nudge_x = -5, colour = "white", size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_fill_manual(values = c("#3F3685", "#9B4393")) +
   theme(panel.grid.major.y = element_blank()) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 100)) +
@@ -92,7 +92,7 @@ c1 <-
 ggsave(get_pub_figures_path(type = "c1", test_output = test_output),
   plot = c1,
   height = 6,
-  width = 6,
+  width = 7,
   dpi = 600,
   device = "png"
 )
@@ -121,7 +121,7 @@ c2 <-
   geom_bar(stat = "identity", width = 0.8) +
   geom_text(aes(x = perc, y = health_board, label = perc_formatted),
             nudge_x = -5, colour = "white", size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_fill_manual(values = c("#3F3685", "#9B4393")) +
   theme(panel.grid.major.y = element_blank()) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 100)) +
@@ -131,7 +131,7 @@ c2 <-
 ggsave(get_pub_figures_path(type = "c2", test_output = test_output),
   plot = c2,
   height = 6,
-  width = 6,
+  width = 7,
   dpi = 600,
   device = "png"
 )
@@ -140,7 +140,7 @@ ggsave(get_pub_figures_path(type = "c2", test_output = test_output),
 ggsave(get_pub_figures_path(type = "twitter", test_output = test_output),
   plot = c2,
   height = 6,
-  width = 6,
+  width = 7,
   dpi = 600,
   device = "png"
 )
@@ -190,7 +190,7 @@ c3 <-
   geom_bar(stat = "identity", width = 0.8) +
   geom_text(aes(x = perc, y = ijb, label = perc_formatted),
             nudge_x = -5, colour = "white", size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_fill_manual(values = c("#3F3685", "#9B4393")) +
   theme(panel.grid.major.y = element_blank()) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 100)) +
@@ -200,7 +200,7 @@ c3 <-
 ggsave(get_pub_figures_path(type = "c3", test_output = test_output),
   plot = c3,
   height = 9,
-  width = 6,
+  width = 7,
   dpi = 600,
   device = "png"
 )
@@ -244,7 +244,7 @@ c4 <-
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
             vjust = -0.5,
             size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_y_continuous(
     limits = c(0, c4_limit),
     breaks = seq(0, c4_limit, by = 5),
@@ -318,7 +318,7 @@ c5 <-
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
             vjust = -0.5,
             size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
   scale_x_discrete(labels = str_wrap(c5_data$age_grp, width = 8)) +
   xlab("Age Group") +
@@ -370,7 +370,7 @@ c6 <-
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
             vjust = -0.5,
             size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_y_continuous(
     limits = c(0, c6_limit),
     breaks = seq(0, c6_limit, by = 5),
@@ -436,7 +436,7 @@ c7 <-
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
             vjust = -0.5,
             size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 110)) +
   scale_x_discrete(labels = str_wrap(c7_data$simd, width = 8)) +
   xlab("Deprivation Quintile") +
