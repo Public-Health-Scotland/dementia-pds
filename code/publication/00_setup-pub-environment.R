@@ -14,6 +14,8 @@
 #               to be updated every time the process is run.
 #########################################################################
 
+### run MI set up ----
+source(here::here("code", "00_setup-environment.R"))
 
 ### 0 - Manual Variable(s) - TO UPDATE ----
 
