@@ -243,9 +243,11 @@ data_wait <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = t
 write_rds(data_wait, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_wait.rds")
 
+# 10 pop data
+data_pop <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
 
-
-
+write_rds(data_pop, 
+          "//conf/dementia/A&I/Outputs/dashboard/data/data_pop.rds")
 
 
 ##### END OF SCRIPT #####

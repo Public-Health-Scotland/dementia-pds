@@ -29,6 +29,7 @@ data_simd <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_simd.rds"
 #data_accom <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_accom.rds")
 data_sex <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_sex.rds")
 #data_uptake <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_uptake.rds")
+data_pop <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_pop.rds")
 
 
 # 2 read in error data ----

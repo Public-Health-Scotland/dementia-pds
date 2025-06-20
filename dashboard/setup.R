@@ -10,14 +10,6 @@ library(shinycssloaders)
 library(bslib)
 library(DT)
 
-# Data wrangling packages ----
-library(dplyr)
-library(tidyr)
-library(magrittr)
-
-# Plotting packages ----
-library(plotly)
-
 # PHS styling packages ----
 library(phsstyles)
 
@@ -60,13 +52,13 @@ trend_list <- c("Number of referrals" = "referrals_trend",
                 "Percentage receiving one year's support" = "pds_perc_trend",
                 "Percentage of estimated diagnoses referred" = "exp_perc_trend")
 
-data_list <- c("Subtype of Dementia" = "data_subtype",
-               "Stage of Dementia" = "data_stage",
-               "PDS Referral Source" = "data_referral",
-               "Model of Care" = "data_model",
-               "PDS Uptake" = "uptake",
-               "PDS Pathways" = "waiting_times"
-)
+# data_list <- c("Subtype of Dementia" = "data_subtype",
+#                "Stage of Dementia" = "data_stage",
+#                "PDS Referral Source" = "data_referral",
+#                "Model of Care" = "data_model",
+#                "PDS Uptake" = "uptake",
+#                "PDS Pathways" = "waiting_times"
+# )
 
 demographics_list <- c("Gender" = "data_sex",
                        "Age" = "data_age",
@@ -77,8 +69,8 @@ method_list <- c("Local Delivery Plan (LDP) Classification" = "ldp_class",
                        "Number of Expected Diagnoses" = "exp_diag",
                        "Removal of Duplicate Records" = "duplicates") 
 
-quality_list <- c("Queries/Errors" = "errors",
-                  "Number of Records Submitted" = "records") 
+# quality_list <- c("Queries/Errors" = "errors",
+#                   "Number of Records Submitted" = "records") 
 
 
 boards <- as.character(sort(unique(filter(annual_table_data, health_board != "Scotland")$health_board)))
@@ -86,8 +78,4 @@ ijb_list <- as.character(sort(unique(filter(annual_table_data, ijb != "Scotland"
 
 simd_list <- as.character(sort(unique(filter(data_simd, type != "Unknown")$type)))
 
-
-
-tabyl(annual_table_data$health_board)
-
-boards
+### END OF SCRIPT----
