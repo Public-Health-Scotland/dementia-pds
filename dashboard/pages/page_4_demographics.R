@@ -25,13 +25,13 @@ output$page_4_ui <-  renderUI({
                            plotlyOutput("plot_gender_ldp"), width = 6),
     linebreaks(1)), #fluidRow
                              
-                         h3(strong(htmlOutput("chart_title_gender_referrals_trend"))),
-                         #DT::dataTableOutput("gender_trend_table"),
-                         plotlyOutput("plot_gender_referrals_trend"),
-    linebreaks(1),
-                         h3(strong(htmlOutput("chart_title_gender_ldp_trend"))),
-                         plotlyOutput("plot_gender_ldp_trend"),
-    linebreaks(1),
+    #                      h3(strong(htmlOutput("chart_title_gender_referrals_trend"))),
+    #                      #DT::dataTableOutput("gender_trend_table"),
+    #                      plotlyOutput("plot_gender_referrals_trend"),
+    # linebreaks(1),
+    #                      h3(strong(htmlOutput("chart_title_gender_ldp_trend"))),
+    #                      plotlyOutput("plot_gender_ldp_trend"),
+    # linebreaks(1),
                          width = 12,
                          style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white"
                       ) # column
@@ -67,11 +67,11 @@ output$page_4_ui <-  renderUI({
                           plotlyOutput("plot_demo_referrals", height = "500px"),
                           h3(strong(htmlOutput("chart_title_demo_ldp"))),
                           plotlyOutput("plot_demo_ldp", height = "500px")),
-                          h3(strong(htmlOutput("chart_title_demo_referrals_trend"))),
+                        #  h3(strong(htmlOutput("chart_title_demo_referrals_trend"))),
                           #DT::dataTableOutput("gender_trend_table"),
-                          plotlyOutput("plot_demo_referrals_trend"),
-                          h3(strong(htmlOutput("chart_title_demo_ldp_trend"))),
-                          plotlyOutput("plot_demo_ldp_trend"),
+                          #plotlyOutput("plot_demo_referrals_trend"),
+                         # h3(strong(htmlOutput("chart_title_demo_ldp_trend"))),
+                          #plotlyOutput("plot_demo_ldp_trend"),
       linebreaks(1),
                           width = 12,
                           style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white") 
@@ -136,31 +136,31 @@ output$plot_gender_ldp <- renderPlotly({
 })
 
 #referrals trend plot title
-output$chart_title_gender_referrals_trend <- renderUI({HTML(paste0("Number of individuals diagnosed with dementia and referred for PDS by Gender - Trend; ", 
-                                                    input$select_hb_ijb_demo, ", SIMD Quintile: ", input$select_simd_demo))
-})
+# output$chart_title_gender_referrals_trend <- renderUI({HTML(paste0("Number of individuals diagnosed with dementia and referred for PDS by Gender - Trend; ", 
+#                                                     input$select_hb_ijb_demo, ", SIMD Quintile: ", input$select_simd_demo))
+# })
 
-#referrals trend plot
-output$plot_gender_referrals_trend <- renderPlotly({
-plot_trend_referrals(data_sex %>% 
-mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-  filter(ijb == input$select_hb_ijb_demo, simd == input$select_simd_demo, type != "Unknown", type != "Not Specified"),
-  measure = total_referrals, group = type)
-})
+# #referrals trend plot
+# output$plot_gender_referrals_trend <- renderPlotly({
+# plot_trend_referrals(data_sex %>% 
+# mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+#   filter(ijb == input$select_hb_ijb_demo, simd == input$select_simd_demo, type != "Unknown", type != "Not Specified"),
+#   measure = total_referrals, group = type)
+# })
 
 
-#percent met trend plot title
-output$chart_title_gender_ldp_trend <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one year’s PDS by Gender - Trend; ", 
-                                                                   input$select_hb_ijb_demo, ", SIMD Quintile: ", input$select_simd_demo))
-})
+# #percent met trend plot title
+# output$chart_title_gender_ldp_trend <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one year’s PDS by Gender - Trend; ", 
+#                                                                    input$select_hb_ijb_demo, ", SIMD Quintile: ", input$select_simd_demo))
+# })
 
 #percent met trend plot
-output$plot_gender_ldp_trend <- renderPlotly({
-  plot_trend(data_sex %>% 
-                         mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-                         filter(ijb == input$select_hb_ijb_demo, simd == input$select_simd_demo, type != "Unknown", type != "Not Specified"),
-                       measure = percent_met, group = type)
-})
+# output$plot_gender_ldp_trend <- renderPlotly({
+#   plot_trend(data_sex %>% 
+#                          mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+#                          filter(ijb == input$select_hb_ijb_demo, simd == input$select_simd_demo, type != "Unknown", type != "Not Specified"),
+#                        measure = percent_met, group = type)
+# })
 
 
 
@@ -288,57 +288,57 @@ output$plot_demo_ldp <- renderPlotly({
 })
 
 #referrals trend plot title
-output$chart_title_demo_referrals_trend <- renderUI({HTML(paste0("Number of individuals diagnosed with dementia and referred for PDS by ",
-                                                                   
-                                                                   
-                                                                   
-                                                                   if (input$select_data_demo == "data_age"){
-                                                             "Age Group"
-                                                           } else if(input$select_data_demo == "data_simd"){
-                                                             "Scottish Index of Multiple Deprivation (SIMD)"
-                                                           } else if(input$select_data_demo == "data_accom"){
-                                                             "Accommodation Type"
-                                                           },
-                                                                   
-                                                                   
-                                                                   
-                                                                   
-                                                                   " - Trend; ", 
-                                                                   input$select_hb_ijb_demo, ", Gender: ", input$select_sex_demo))
-})
+# output$chart_title_demo_referrals_trend <- renderUI({HTML(paste0("Number of individuals diagnosed with dementia and referred for PDS by ",
+#                                                                    
+#                                                                    
+#                                                                    
+#                                                                    if (input$select_data_demo == "data_age"){
+#                                                              "Age Group"
+#                                                            } else if(input$select_data_demo == "data_simd"){
+#                                                              "Scottish Index of Multiple Deprivation (SIMD)"
+#                                                            } else if(input$select_data_demo == "data_accom"){
+#                                                              "Accommodation Type"
+#                                                            },
+#                                                                    
+#                                                                    
+#                                                                    
+#                                                                    
+#                                                                    " - Trend; ", 
+#                                                                    input$select_hb_ijb_demo, ", Gender: ", input$select_sex_demo))
+# })
+# 
+# #referrals trend plot
+# output$plot_demo_referrals_trend <- renderPlotly({
+#   plot_trend_referrals(data_selected() %>% 
+#                          mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+#                          filter(ijb == input$select_hb_ijb_demo, sex == input$select_sex_demo, type != "Unknown"),# type != "Not Specified"),
+#                        measure = total_referrals, group = type)
+# })
+# 
 
-#referrals trend plot
-output$plot_demo_referrals_trend <- renderPlotly({
-  plot_trend_referrals(data_selected() %>% 
-                         mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-                         filter(ijb == input$select_hb_ijb_demo, sex == input$select_sex_demo, type != "Unknown"),# type != "Not Specified"),
-                       measure = total_referrals, group = type)
-})
-
-
-#percent met trend plot title
-output$chart_title_demo_ldp_trend <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one year’s PDS by ",
-                                                             
-                                                             
-                                                             if (input$select_data_demo == "data_age"){
-                                                               "Age Group"
-                                                             } else if(input$select_data_demo == "data_simd"){
-                                                               "Scottish Index of Multiple Deprivation (SIMD)"
-                                                             } else if(input$select_data_demo == "data_accom"){
-                                                               "Accommodation Type"
-                                                             },
-                                                             
-                                                             
-                                                             " - Trend; ", 
-                                                             input$select_hb_ijb_demo, ", Gender: ", input$select_sex_demo))
-})
-
-#percent met trend plot
-output$plot_demo_ldp_trend <- renderPlotly({
-  plot_trend(data_selected()%>% 
-               mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-               filter(ijb == input$select_hb_ijb_demo, sex == input$select_sex_demo, type != "Unknown"),# type != "Not Specified"),
-             measure = percent_met, group = type)
-})
+# #percent met trend plot title
+# output$chart_title_demo_ldp_trend <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one year’s PDS by ",
+#                                                              
+#                                                              
+#                                                              if (input$select_data_demo == "data_age"){
+#                                                                "Age Group"
+#                                                              } else if(input$select_data_demo == "data_simd"){
+#                                                                "Scottish Index of Multiple Deprivation (SIMD)"
+#                                                              } else if(input$select_data_demo == "data_accom"){
+#                                                                "Accommodation Type"
+#                                                              },
+#                                                              
+#                                                              
+#                                                              " - Trend; ", 
+#                                                              input$select_hb_ijb_demo, ", Gender: ", input$select_sex_demo))
+# })
+# 
+# #percent met trend plot
+# output$plot_demo_ldp_trend <- renderPlotly({
+#   plot_trend(data_selected()%>% 
+#                mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+#                filter(ijb == input$select_hb_ijb_demo, sex == input$select_sex_demo, type != "Unknown"),# type != "Not Specified"),
+#              measure = percent_met, group = type)
+# })
 
 

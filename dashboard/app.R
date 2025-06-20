@@ -190,49 +190,49 @@ tabPanel(title = "Demographics",
 ##############################################.
 # PAGE 5: Additional Analysis----
 ##############################################.
-tabPanel(title = "Additional Analysis",
-         # Look at https://fontawesome.com/search?m=free for icons
-         icon = icon_no_warning_fn("magnifying-glass-chart"),
-         value = "data",
-         
-         box(h1("Dementia Post-Diagnostic Support - Additional Analysis"),
-             width = 12,
-             collapsible = TRUE, collapsed = FALSE),
-    
-         linebreaks(1),
-         
-         sidebarLayout(
-           sidebarPanel(radioGroupButtons("select_data_add", label = NULL, choices = data_list,
-                                          status = "secondary",
-                                          direction = "vertical", 
-                                          justified = T,
-                                          size = "normal"), 
-          linebreaks(1),              
-                        selectInput("select_year_add",
-                                           label = "Select Financial Year of Diagnosis:",
-                                           choices = included_years,
-                                           selected = provisional_year),
-          
-  conditionalPanel(condition= 'input.select_data_add == "data_subtype" || input.select_data_add == "data_stage" || input.select_data_add == "data_referral" || input.select_data_add == "data_model"',      
-           
-                       selectInput("select_hb_ijb_add",
-                                           label = "Select Health Board/Integration Authority Area:",
-                                           choices = c("Scotland", boards, ijb_list))),
-          
-                        selectInput("select_sex_add",
-                                           label="Select Gender:",
-                                           choices=c("All", "Female", "Male")),
-   
-                        
-                        width = 2, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
-          
-           
-           mainPanel(width = 10,
-            
-               uiOutput("page_5_ui") 
-           ) # main panel
-         )  #sidebar layout
-     ), # tabpanel
+# tabPanel(title = "Additional Analysis",
+#          # Look at https://fontawesome.com/search?m=free for icons
+#          icon = icon_no_warning_fn("magnifying-glass-chart"),
+#          value = "data",
+#          
+#          box(h1("Dementia Post-Diagnostic Support - Additional Analysis"),
+#              width = 12,
+#              collapsible = TRUE, collapsed = FALSE),
+#     
+#          linebreaks(1),
+#          
+#          sidebarLayout(
+#            sidebarPanel(radioGroupButtons("select_data_add", label = NULL, choices = data_list,
+#                                           status = "secondary",
+#                                           direction = "vertical", 
+#                                           justified = T,
+#                                           size = "normal"), 
+#           linebreaks(1),              
+#                         selectInput("select_year_add",
+#                                            label = "Select Financial Year of Diagnosis:",
+#                                            choices = included_years,
+#                                            selected = provisional_year),
+#           
+#   conditionalPanel(condition= 'input.select_data_add == "data_subtype" || input.select_data_add == "data_stage" || input.select_data_add == "data_referral" || input.select_data_add == "data_model"',      
+#            
+#                        selectInput("select_hb_ijb_add",
+#                                            label = "Select Health Board/Integration Authority Area:",
+#                                            choices = c("Scotland", boards, ijb_list))),
+#           
+#                         selectInput("select_sex_add",
+#                                            label="Select Gender:",
+#                                            choices=c("All", "Female", "Male")),
+#    
+#                         
+#                         width = 2, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+#           
+#            
+#            mainPanel(width = 10,
+#             
+#                uiOutput("page_5_ui") 
+#            ) # main panel
+#          )  #sidebar layout
+#      ), # tabpanel
 
 
 ##############################################.
@@ -305,7 +305,7 @@ server <- function(input, output, session) {
     source(file.path(here("dashboard/pages/page_2_healthboards.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_3_trends.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_4_demographics.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_5_additional_analysis.R")), local = TRUE)$value
+   # source(file.path(here("dashboard/pages/page_5_additional_analysis.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_6_methodology.R")), local = TRUE)$value
    # source(file.path(here("dashboard/pages/page_7.R")), local = TRUE)$value
 

@@ -30,15 +30,15 @@ linebreaks(1),
                     title = (p(strong("How is this figure calculated?"))),
                     width = 5), #box
         ), #fluidRow
- # monthly referrals plot ----
         fluidRow(
-linebreaks(1),
-              h3(strong(htmlOutput("chart_title_p1"))),
-              plotlyOutput("monthly_referrals_plot_scotland"),
+ # monthly referrals plot ----
+# linebreaks(1),
+#               h3(strong(htmlOutput("chart_title_p1"))),
+#               plotlyOutput("monthly_referrals_plot_scotland"),
 linebreaks(1),
 # ldp standard table ----
               h3(strong(htmlOutput("pds_table_title_p1"))),
-       fluidRow(column(
+            fluidRow(column(
               radioButtons("select_hb_ijb",
                      label = "In the table below show Scotland and: ",
                      choices = c("Health Boards", "Integration Authority Areas"),
@@ -83,17 +83,17 @@ output$scot_pds_text <- renderUI({
 
 
 #referrals monthly plot ----
-output$chart_title_p1 <- renderUI({HTML(paste("Number of individuals diagnosed with dementia and referred for post-diagnostic support: Scotland, Financial Year ", 
-                                              input$select_year_p1))
-})
-
-scotland_chart_data <- reactive({pds_plot_data %>%
-    filter(fy == input$select_year_p1)})
-
-
-output$monthly_referrals_plot_scotland <- renderPlotly({
-    plot_referrals(scotland_chart_data(), scotland = TRUE)
-})
+# output$chart_title_p1 <- renderUI({HTML(paste("Number of individuals diagnosed with dementia and referred for post-diagnostic support: Scotland, Financial Year ", 
+#                                               input$select_year_p1))
+# })
+# 
+# scotland_chart_data <- reactive({pds_plot_data %>%
+#     filter(fy == input$select_year_p1)})
+# 
+# 
+# output$monthly_referrals_plot_scotland <- renderPlotly({
+#     plot_referrals(scotland_chart_data(), scotland = TRUE)
+# })
 
 # Data table hb pds percentage ----
 #output$hb_table_title_p1 <- renderUI({HTML(paste("Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support: Financial Year ", 

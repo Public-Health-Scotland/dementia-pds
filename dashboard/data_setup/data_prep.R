@@ -18,13 +18,13 @@ provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
 
 #included_years = c(finalised_years, provisional_year)
 
-included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
+#included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24", "2024/25")
 
 # 2 Load PDS data ----
 pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
   
   # inlcude only finalised years
-  filter(fy %in% included_years) %>% 
+ # filter(fy %in% included_years) %>% 
   
   
   # Remove codes from board and IJB
@@ -33,9 +33,8 @@ pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_o
                                 "Unknown",
                                 str_sub(ijb, 11, -1))) %>% 
   
+#re-class all aberdeen city referrals from 2019/20 and 2020/21 so they are not included in ldp calculations  
    mutate(ldp = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20","2020/21"), "Aberdeen", ldp))
-
-boards <- sort(unique(pds$health_board))
 
 # 3 prepare data for plot_referrals() ----
 
@@ -44,14 +43,14 @@ pds_plot_data_ijb <- pds %>%
   summarise(referrals = sum(referrals), .groups = "drop") %>% 
   arrange(ijb)
 
-pls_plot_data_boards <- 
+pds_plot_data_boards <- 
   pds %>%
   mutate(ijb = health_board) %>%
   group_by(fy, month, health_board, ijb) %>%
   summarise(referrals = sum(referrals), .groups = "drop")
 
 pds_plot_data <-
-  bind_rows(pls_plot_data_boards, pds_plot_data_ijb) %>% 
+  bind_rows(pds_plot_data_boards, pds_plot_data_ijb) %>% 
   ungroup() 
 
 
@@ -237,41 +236,14 @@ write_rds(data_uptake,
 
   
 
-# 9 calculate waiting times ----
-ldp_wait_times <- ldp %>% 
-  mutate(n_referrals = 1,
-         diagnosis_to_referral_days = time_length(interval(dementia_diagnosis_confirmed_date, date_pds_referral_received), "days"),
-         referral_to_allocation_days = time_length(interval(date_pds_referral_received, initial_pds_practitioner_allocation_date), "days"),
-         allocation_to_contact_days = time_length(interval(initial_pds_practitioner_allocation_date, date_of_initial_first_contact), "days"),
-         referral_to_contact_days = time_length(interval(date_pds_referral_received, date_of_initial_first_contact), "days"),
-         diagnosis_to_contact_days = time_length(interval(dementia_diagnosis_confirmed_date, date_of_initial_first_contact), "days"),
-         contact_to_termination_days = time_length(interval(date_of_initial_first_contact, termination_or_transition_date), "days")
-               )
+# 9 waiting times ----
 
- ldp_wait_times %<>%
-#   mutate(termination_or_transition_reason = if_else(ldp == 'exempt', paste0(termination_or_transition_reason, " (exempt from LDP Standard)"), termination_or_transition_reason)) %>%
- #  mutate(termination_or_transition_reason = substring(termination_or_transition_reason, 3)) %>% 
-   mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_date), "PDS Active", termination_or_transition_reason)) %>%
-   mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_reason), "13 Unknown Reason", termination_or_transition_reason))
-  # mutate(termination_or_transition_reason = str_trim(termination_or_transition_reason, "left"))
-
-
-
-# create summary
-data_wait <- summarise_pathways_dashboard(ldp_wait_times)
-
-data_wait %<>% mutate(ijb = if_else(health_board == "Scotland", "Scotland", ijb))
-
-data_wait_2 <- summarise_pathways_2_dashboard(ldp_wait_times)
-
-data_wait_2 %<>% mutate(ijb = if_else(ijb == "All", health_board, ijb))
-
+data_wait <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output))
 
 write_rds(data_wait, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_wait.rds")
 
-write_rds(data_wait_2, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_wait_2.rds")
+
 
 
 

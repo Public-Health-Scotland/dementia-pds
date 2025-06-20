@@ -57,7 +57,7 @@ home_list <- c("Dementia PDS" = "about",
                "Accessibility" = "accessibility")
 
 trend_list <- c("Number of referrals" = "referrals_trend",
-                "Percentage of LDP standard achieved" = "pds_perc_trend",
+                "Percentage receiving one year's support" = "pds_perc_trend",
                 "Percentage of estimated diagnoses referred" = "exp_perc_trend")
 
 data_list <- c("Subtype of Dementia" = "data_subtype",
@@ -70,8 +70,8 @@ data_list <- c("Subtype of Dementia" = "data_subtype",
 
 demographics_list <- c("Gender" = "data_sex",
                        "Age" = "data_age",
-                       "SIMD" = "data_simd",
-                       "Accommodation" = "data_accom") 
+                       "SIMD" = "data_simd")
+                      # "Accommodation" = "data_accom") 
 
 method_list <- c("Local Delivery Plan (LDP) Classification" = "ldp_class",
                        "Number of Expected Diagnoses" = "exp_diag",
@@ -81,12 +81,13 @@ quality_list <- c("Queries/Errors" = "errors",
                   "Number of Records Submitted" = "records") 
 
 
-boards <- sort(unique(pds_plot_data$health_board))
-ijb_list <- as.character(sort(unique(filter(err, ijb != "" & ijb != "Unknown")$ijb)))
+boards <- as.character(sort(unique(filter(annual_table_data, health_board != "Scotland")$health_board)))
+ijb_list <- as.character(sort(unique(filter(annual_table_data, ijb != "Scotland", !grepl("NHS", ijb))$ijb)))
 
 simd_list <- as.character(sort(unique(filter(data_simd, type != "Unknown")$type)))
 
 
 
+tabyl(annual_table_data$health_board)
 
-
+boards
