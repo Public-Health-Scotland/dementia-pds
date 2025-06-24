@@ -1,6 +1,6 @@
 ####################### Page 1: SCOTLAND LDP #######################
 # UI ----
-output$page_1_ui <-  renderUI({
+output$scotland_ui <-  renderUI({
 
   div(
     fluidRow(
@@ -111,8 +111,9 @@ output$table_pds <- DT::renderDataTable({
   table_hb_data <- annual_table_data %>% 
     filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
     filter(fy == input$select_year_p1) %>%
-    group_by(health_board)%>%
     select(health_board,ldp,referrals,rate)%>%
+    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+    mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
     pivot_wider(names_from=ldp,values_from=referrals) %>% 
     select(health_board, total, complete, exempt, ongoing, fail, rate) %>% 
     mutate(health_board = if_else(health_board == "Scotland","AAA Scotland", health_board)) %>% 
@@ -120,8 +121,7 @@ output$table_pds <- DT::renderDataTable({
     mutate(health_board = if_else(health_board == "AAA Scotland","Scotland", health_board)) %>% 
     mutate(rate = paste0(rate, "%")) %>% 
     set_colnames(c("NHS Board","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")) 
-   make_table(table_hb_data, right_align = 1:6, selected = 1, table_elements = "t") %>% 
-     formatCurrency(c(2:6), currency = "", interval = 3, mark = ",", digits = 0)
+   make_table(table_hb_data, right_align = 1:6, selected = 1, table_elements = "t") 
 
   
 }else{
@@ -134,9 +134,8 @@ output$table_pds <- DT::renderDataTable({
  table_ijb_data <- annual_table_data %>%
     filter(!grepl("NHS", ijb)) %>% 
     filter(fy == input$select_year_p1) %>%
-   mutate(rate = if_else(is.na(rate), "-", paste0(rate, "%"))) %>% 
    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-   group_by(ijb) %>%
+   mutate(rate = if_else(is.na(rate), "-", paste0(rate, "%"))) %>% 
    mutate(referrals = if_else(fy %in% c("2019/20", "2020/21") & ijb == "Aberdeen City" & ldp != "total", "-", as.character(referrals))) %>% 
    select(ijb,ldp,referrals,rate) %>%
    pivot_wider(names_from=ldp,values_from=referrals) %>% 

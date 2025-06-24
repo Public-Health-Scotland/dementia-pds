@@ -1,6 +1,6 @@
 ####################### Page 4 DEMOGRAPHICS #######################
 #UI----
-output$page_4_ui <-  renderUI({
+output$demo_ui <-  renderUI({
   #1 gender ----
   div(
     conditionalPanel(condition = 'input.select_data_demo == "data_sex"',
@@ -91,16 +91,34 @@ output$table_title_gender <- renderUI({HTML(paste0("Number and percentage of peo
 })
 
 output$table_gender <- DT::renderDataTable({
-  table_data_gender <- data_sex %>% 
-    mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-    filter(ijb == input$select_hb_ijb_demo,
-           fy == input$select_year_demo,
-           simd == input$select_simd_demo) %>% 
-    select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met) %>% 
-    mutate(percent_met = paste0(percent_met,"%")) %>% 
-    set_colnames(c(" ","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
-  make_table(table_data_gender, right_align = 1:6, table_elements = "t") %>% 
-    formatCurrency(c(2:5), currency = "", interval = 3, mark = ",", digits = 0)
+  table_data_gender <- bind_rows(
+    
+    data_sex %>% 
+      mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+      filter(ijb == input$select_hb_ijb_demo,
+             fy == input$select_year_demo,
+             simd == input$select_simd_demo) %>% 
+    select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met),
+    
+    data_sex %>% 
+      mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+      filter(ijb == input$select_hb_ijb_demo,
+             fy == input$select_year_demo,
+             simd == input$select_simd_demo) %>% 
+      summarise(type = "Total",
+                total_referrals = sum(total_referrals),
+                complete = sum(complete),
+                exempt = sum(exempt),
+                ongoing = sum(ongoing),
+                not_met = sum(not_met)) %>%
+      mutate(percent_met = round(((complete + exempt)/(complete + exempt + not_met))*100, 1)) 
+  ) %>% 
+    mutate(perc_prop = round(100*total_referrals/max(total_referrals),1), .after = total_referrals) %>% 
+    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+    mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>% 
+    set_colnames(c(" ","Number of People Referred to PDS", "Proportion of Total Referrals", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
+  make_table(table_data_gender, right_align = 1:7, table_elements = "t", ordering = FALSE, selected = nrow(table_data_gender)) 
+    
 })
 
 
@@ -196,12 +214,30 @@ output$table_title_demo <- renderUI({HTML(paste0("Number and percentage of peopl
 
 
 output$table_demo <- DT::renderDataTable({
-  table_data_demo <- data_demo() %>% filter(sex == input$select_sex_demo) %>% 
-    select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met) %>% 
-    mutate(percent_met = paste0(percent_met,"%")) %>% 
-    set_colnames(c(" ","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
-  make_table(table_data_demo, right_align = 1:6, table_elements = "t") %>% 
-    formatCurrency(c(2:5), currency = "", interval = 3, mark = ",", digits = 0)
+  
+  table_data_demo <- bind_rows(
+    
+    data_demo() %>% filter(sex == input$select_sex_demo) %>% 
+      select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met),
+    
+    data_demo() %>% 
+      filter(ijb == input$select_hb_ijb_demo,
+             fy == input$select_year_demo,
+             sex == input$select_sex_demo) %>% 
+      summarise(type = "Total",
+                total_referrals = sum(total_referrals),
+                complete = sum(complete),
+                exempt = sum(exempt),
+                ongoing = sum(ongoing),
+                not_met = sum(not_met)) %>%
+      mutate(percent_met = round(((complete + exempt)/(complete + exempt + not_met))*100, 1)) 
+  ) %>% 
+    mutate(perc_prop = round(100*total_referrals/max(total_referrals),1), .after = total_referrals) %>% 
+    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
+    mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>% 
+    set_colnames(c(" ","Number of People Referred to PDS", "Proportion of Total Referrals", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
+  make_table(table_data_demo, right_align = 1:7, table_elements = "t", ordering = FALSE, selected = nrow(table_data_demo)) 
+  
 })
 
 

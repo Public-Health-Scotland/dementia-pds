@@ -72,8 +72,10 @@ tabPanel(title = "Scotland LDP Standard",
                 selected= provisional_year),
         width = 2, style = "width: auto; margin-top: -10px"),
             style = "border-bottom: solid; border-bottom-width: medium; border-bottom-color: var(--phs-purple-50);"),
-      uiOutput("page_1_ui")
+      uiOutput("scotland_ui")
    ), # tabpanel
+
+
 
 ##############################################.
 # PAGE 2: Health Boards LDP Standard  ----
@@ -99,7 +101,7 @@ tabPanel(title = "Health Boards LDP Standard",
                             choices = boards),
                 width = 2, style = "width: auto; margin-top: -10px"),
              style = "border-bottom: solid; border-bottom-width: medium; border-bottom-color: var(--phs-purple-50);"),
-          uiOutput("page_2_ui")
+          uiOutput("hbs_ui")
         ), # tabpanel
 
 ##############################################.
@@ -124,7 +126,7 @@ tabPanel(title = "Trends",
                   width = 12)
                 ), #fluidRow
         
-           uiOutput("page_3_ui")
+           uiOutput("trends_ui")
   
 ), # tabpanel
 
@@ -180,7 +182,7 @@ tabPanel(title = "Demographics",
                    
                        
         
-           uiOutput("page_4_ui") 
+           uiOutput("demo_ui") 
            ) #main panel
         ) #sidebar layout
 
@@ -188,55 +190,59 @@ tabPanel(title = "Demographics",
 
 
 ##############################################.
-# PAGE 5: Additional Analysis----
+# PAGE 5: Rates Per 10,000 Population ----
 ##############################################.
-# tabPanel(title = "Additional Analysis",
-#          # Look at https://fontawesome.com/search?m=free for icons
-#          icon = icon_no_warning_fn("magnifying-glass-chart"),
-#          value = "data",
-#          
-#          box(h1("Dementia Post-Diagnostic Support - Additional Analysis"),
-#              width = 12,
-#              collapsible = TRUE, collapsed = FALSE),
-#     
-#          linebreaks(1),
-#          
-#          sidebarLayout(
-#            sidebarPanel(radioGroupButtons("select_data_add", label = NULL, choices = data_list,
-#                                           status = "secondary",
-#                                           direction = "vertical", 
-#                                           justified = T,
-#                                           size = "normal"), 
-#           linebreaks(1),              
-#                         selectInput("select_year_add",
-#                                            label = "Select Financial Year of Diagnosis:",
-#                                            choices = included_years,
-#                                            selected = provisional_year),
-#           
-#   conditionalPanel(condition= 'input.select_data_add == "data_subtype" || input.select_data_add == "data_stage" || input.select_data_add == "data_referral" || input.select_data_add == "data_model"',      
-#            
-#                        selectInput("select_hb_ijb_add",
-#                                            label = "Select Health Board/Integration Authority Area:",
-#                                            choices = c("Scotland", boards, ijb_list))),
-#           
-#                         selectInput("select_sex_add",
-#                                            label="Select Gender:",
-#                                            choices=c("All", "Female", "Male")),
-#    
-#                         
-#                         width = 2, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
-#           
-#            
-#            mainPanel(width = 10,
-#             
-#                uiOutput("page_5_ui") 
-#            ) # main panel
-#          )  #sidebar layout
-#      ), # tabpanel
+tabPanel(title = "Rates",
+         # Look at https://fontawesome.com/search?m=free for icons
+         icon = icon_no_warning_fn("braille"),
+         value = "rates",
+         
+         box(h1("Dementia Post-Diagnostic Support - Rates Per 10,000 Population"),
+             width = 12,
+             collapsible = TRUE, collapsed = FALSE),
+         
+         # linebreaks(1),
+         fluidRow(column(
+           # radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
+           #                   status = "tab",
+           #                   direction = "horizontal", 
+           #                   justified = T,
+           #                   size = "lg"), 
+           width = 12)
+         ), #fluidRow
+         
+         uiOutput("rates_ui")
+         
+), # tabpanel
+
+##############################################.
+# PAGE 6: Pathways ----
+##############################################.
+tabPanel(title = "Pathways",
+         # Look at https://fontawesome.com/search?m=free for icons
+         icon = icon_no_warning_fn("arrows-turn-to-dots"),
+         value = "pathways",
+         
+         box(h1("Dementia Post-Diagnostic Support - Pathways"),
+             width = 12,
+             collapsible = TRUE, collapsed = FALSE),
+         
+         # linebreaks(1),
+         fluidRow(
+           column(
+             selectInput("select_year_pathways",
+                         label = "Select Financial Year of Diagnosis:",
+                         choices = included_years,
+                         selected= provisional_year),
+                      width = 2, style = "width: auto; margin-top: -10px"),
+            style = "border-bottom: solid; border-bottom-width: medium; border-bottom-color: var(--phs-purple-50);"),
+         uiOutput("pathways_ui")
+         
+), # tabpanel
 
 
 ##############################################.
-# PAGE 6: Methodology ----
+# PAGE 7: Methodology ----
 ##############################################.
 tabPanel(title = "Methodology",
          # Look at https://fontawesome.com/search?m=free for icons
@@ -260,24 +266,9 @@ tabPanel(title = "Methodology",
                              direction = "horizontal", 
                              justified = T,
                              size = "lg"), width = 12)),
-         uiOutput("page_6_ui")
+         uiOutput("method_ui")
       
 ), # tabPanel
-
-##############################################.
-# PAGE 7: Data Quality
-##############################################.
-# tabPanel(title = "Data Quality",
-#          # Look at https://fontawesome.com/search?m=free for icons
-#          icon = icon_no_warning_fn("circle-check"),
-#          value = "quality",
-#          h1("Dementia Post-Diagnostic Support - Data Quality"),
-#               
-#            uiOutput("page_7_ui")
-#   
-# ) # tabPanel
-
-
 
     collapsible = TRUE) # navbar
   ) # taglist
@@ -305,8 +296,9 @@ server <- function(input, output, session) {
     source(file.path(here("dashboard/pages/page_2_healthboards.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_3_trends.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_4_demographics.R")), local = TRUE)$value
-   # source(file.path(here("dashboard/pages/page_5_additional_analysis.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_6_methodology.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_5_rates.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_6_pathways.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_7_methodology.R")), local = TRUE)$value
    # source(file.path(here("dashboard/pages/page_7.R")), local = TRUE)$value
 
 }

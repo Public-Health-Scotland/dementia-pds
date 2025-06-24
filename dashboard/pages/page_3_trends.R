@@ -1,6 +1,6 @@
 ####################### Page 3: TRENDS #######################
 #UI ----
-output$page_3_ui <-  renderUI({
+output$trends_ui <-  renderUI({
 
   div(
     # 1 referrals----
@@ -142,6 +142,7 @@ output$table_hb_ijb_trend <- DT::renderDataTable({
   trend_hb_data <- annual_table_data %>% 
     filter(fy %in% included_years) %>% 
   select(health_board, fy, rate) %>%
+    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
     mutate(rate = paste0(rate, "%")) %>% 
     distinct(health_board, fy, .keep_all = T) %>% 
     pivot_wider(names_from = fy, values_from = rate) %>% 

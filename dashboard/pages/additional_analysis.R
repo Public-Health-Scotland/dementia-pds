@@ -1,6 +1,6 @@
-####################### Page 5 ADDITIONAL ANALYSIS #######################
+####################### ADDITIONAL ANALYSIS #######################
 # UI ----
-output$page_5_ui <-  renderUI({
+output$add_ui <-  renderUI({
   
   div(
     

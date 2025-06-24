@@ -1,6 +1,6 @@
 ####################### Page 2: HEALTH BOARDS LDP#######################
 # UI ----
-output$page_2_ui <-  renderUI({
+output$hbs_ui <-  renderUI({
   
   div(
          fluidRow(

@@ -1,6 +1,6 @@
-####################### Page 6: methodology #######################
+####################### Page 7: methodology #######################
 # UI ----
-output$page_6_ui <-  renderUI({
+output$method_ui <-  renderUI({
 
   div(
     conditionalPanel(
