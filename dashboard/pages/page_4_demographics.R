@@ -85,8 +85,8 @@ output$demo_ui <-  renderUI({
 #1a table for gender ----
 # table title
 output$table_title_gender <- renderUI({HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support by Gender: ",
-                                                   input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo,
-                                                   ", SIMD Quintile: ", input$select_simd_demo))
+                                                   "Scotland", ", Financial Year ", input$select_year_demo
+                                                   ))
   
 })
 
@@ -95,16 +95,16 @@ output$table_gender <- DT::renderDataTable({
     
     data_sex %>% 
       mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-      filter(ijb == input$select_hb_ijb_demo,
+      filter(ijb == "Scotland",
              fy == input$select_year_demo,
-             simd == input$select_simd_demo) %>% 
+             simd == "All") %>% 
     select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met),
     
     data_sex %>% 
       mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-      filter(ijb == input$select_hb_ijb_demo,
+      filter(ijb == "Scotland",
              fy == input$select_year_demo,
-             simd == input$select_simd_demo) %>% 
+             simd == "All") %>% 
       summarise(type = "Total",
                 total_referrals = sum(total_referrals),
                 complete = sum(complete),
@@ -125,15 +125,15 @@ output$table_gender <- DT::renderDataTable({
 #1b plots for gender----
 #proportion plot title
 output$chart_title_gender_referrals <- renderUI({HTML(paste0("Proportion of total referrals for PDS by Gender: ", 
-                                      input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo,
-                                      ", SIMD Quintile: ", input$select_simd_demo))
+                                      "Scotland", ", Financial Year ", input$select_year_demo
+                                      ))
 })
 
 #proportion plot 
 output$plot_gender_referrals <- renderPlotly({
   proportion_bar_chart(data_sex %>%
                          mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-                         filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo, simd == input$select_simd_demo),
+                         filter(ijb == "Scotland", fy == input$select_year_demo, simd == "All"),
   x_text_angle = 0, fill = type
   )
 })
@@ -141,42 +141,42 @@ output$plot_gender_referrals <- renderPlotly({
 
 # percent met title
 output$chart_title_gender_ldp <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one year’s post-diagnostic support by Gender: ", 
-                                input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo, ", SIMD Quintile: "
-                                , input$select_simd_demo))
+                                "Scotland", ", Financial Year ", input$select_year_demo
+                                ))
 })
 
 #percent met plot
 output$plot_gender_ldp <- renderPlotly({
   percent_met_bar_chart(data_sex %>%
                           mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-                          filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo, simd == input$select_simd_demo),
+                          filter(ijb == "Scotland", fy == input$select_year_demo, simd == "All"),
   x_text_angle = 0, fill = type)
 })
 
 #referrals trend plot title
 # output$chart_title_gender_referrals_trend <- renderUI({HTML(paste0("Number of individuals diagnosed with dementia and referred for PDS by Gender - Trend; ", 
-#                                                     input$select_hb_ijb_demo, ", SIMD Quintile: ", input$select_simd_demo))
+#                                                     "Scotland", ", SIMD Quintile: ", input$select_simd_demo))
 # })
 
 # #referrals trend plot
 # output$plot_gender_referrals_trend <- renderPlotly({
 # plot_trend_referrals(data_sex %>% 
 # mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-#   filter(ijb == input$select_hb_ijb_demo, simd == input$select_simd_demo, type != "Unknown", type != "Not Specified"),
+#   filter(ijb == "Scotland", simd == input$select_simd_demo, type != "Unknown", type != "Not Specified"),
 #   measure = total_referrals, group = type)
 # })
 
 
 # #percent met trend plot title
 # output$chart_title_gender_ldp_trend <- renderUI({HTML(paste0("Percentage of referrals who received a minimum of one year’s PDS by Gender - Trend; ", 
-#                                                                    input$select_hb_ijb_demo, ", SIMD Quintile: ", input$select_simd_demo))
+#                                                                    "Scotland", ", SIMD Quintile: ", input$select_simd_demo))
 # })
 
 #percent met trend plot
 # output$plot_gender_ldp_trend <- renderPlotly({
 #   plot_trend(data_sex %>% 
 #                          mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-#                          filter(ijb == input$select_hb_ijb_demo, simd == input$select_simd_demo, type != "Unknown", type != "Not Specified"),
+#                          filter(ijb == "Scotland", simd == input$select_simd_demo, type != "Unknown", type != "Not Specified"),
 #                        measure = percent_met, group = type)
 # })
 
@@ -195,7 +195,7 @@ data_selected <-reactive({
 
 data_demo <- reactive({data_selected() %>%
     mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-    filter(ijb == input$select_hb_ijb_demo, fy == input$select_year_demo)
+    filter(ijb == "Scotland", fy == input$select_year_demo)
 })
 # table title
 output$table_title_demo <- renderUI({HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support by ", 
@@ -207,7 +207,7 @@ output$table_title_demo <- renderUI({HTML(paste0("Number and percentage of peopl
                                                  } else if(input$select_data_demo == "data_accom"){
                                                    "Accommodation Type"
                                                  },
-                                                 ": ", input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
+                                                 ": ", "Scotland", ", Financial Year ", input$select_year_demo
 )
 )
 })
@@ -217,13 +217,13 @@ output$table_demo <- DT::renderDataTable({
   
   table_data_demo <- bind_rows(
     
-    data_demo() %>% filter(sex == input$select_sex_demo) %>% 
+    data_demo() %>% filter(sex == "All") %>% 
       select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met),
     
     data_demo() %>% 
-      filter(ijb == input$select_hb_ijb_demo,
+      filter(ijb == "Scotland",
              fy == input$select_year_demo,
-             sex == input$select_sex_demo) %>% 
+             sex == "All") %>% 
       summarise(type = "Total",
                 total_referrals = sum(total_referrals),
                 complete = sum(complete),
@@ -252,7 +252,7 @@ output$chart_title_demo_referrals <- renderUI({HTML(paste0("Proportion of total 
                                                            } else if(input$select_data_demo == "data_accom"){
                                                              "Accommodation Type"
                                                            },
-                                                           ": ", input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
+                                                           ": ", "Scotland", ", Financial Year ", input$select_year_demo
 )
 )
 })
@@ -271,7 +271,7 @@ output$plot_demo_referrals_all <- renderPlotly({
 
 #plot 1 if specific gender is selected
 output$plot_demo_referrals <- renderPlotly({
-  proportion_bar_chart(data_demo() %>% filter(sex == input$select_sex_demo),
+  proportion_bar_chart(data_demo() %>% filter(sex == "All"),
                        x_text_angle = if_else(input$select_data_demo == "data_accom", 45, 0))
 })
 
@@ -286,7 +286,7 @@ if (input$select_data_demo == "data_age"){
 } else if(input$select_data_demo == "data_accom"){
   "Accommodation Type"
 },
-": ", input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
+": ", "Scotland", ", Financial Year ", input$select_year_demo
 )
 )
 })
@@ -301,7 +301,7 @@ if (input$select_data_demo == "data_age"){
 } else if(input$select_data_demo == "data_accom"){
   "Accommodation Type"
 },
-": ", input$select_hb_ijb_demo, ", Financial Year ", input$select_year_demo, ", Gender: ", input$select_sex_demo
+": ", "Scotland", ", Financial Year ", input$select_year_demo
 )
 )
 })
@@ -319,7 +319,7 @@ output$plot_demo_ldp_all <- renderPlotly({
 
 #plot 2 if specific gender is selected
 output$plot_demo_ldp <- renderPlotly({
-  percent_met_bar_chart(data_demo() %>% filter(sex == input$select_sex_demo),
+  percent_met_bar_chart(data_demo() %>% filter(sex == "All"),
                         x_text_angle = if_else(input$select_data_demo == "data_accom", 45, 0))
 })
 
@@ -340,14 +340,14 @@ output$plot_demo_ldp <- renderPlotly({
 #                                                                    
 #                                                                    
 #                                                                    " - Trend; ", 
-#                                                                    input$select_hb_ijb_demo, ", Gender: ", input$select_sex_demo))
+#                                                                    "Scotland", ", Gender: ", input$select_sex_demo))
 # })
 # 
 # #referrals trend plot
 # output$plot_demo_referrals_trend <- renderPlotly({
 #   plot_trend_referrals(data_selected() %>% 
 #                          mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-#                          filter(ijb == input$select_hb_ijb_demo, sex == input$select_sex_demo, type != "Unknown"),# type != "Not Specified"),
+#                          filter(ijb == "Scotland", sex == input$select_sex_demo, type != "Unknown"),# type != "Not Specified"),
 #                        measure = total_referrals, group = type)
 # })
 # 
@@ -366,14 +366,14 @@ output$plot_demo_ldp <- renderPlotly({
 #                                                              
 #                                                              
 #                                                              " - Trend; ", 
-#                                                              input$select_hb_ijb_demo, ", Gender: ", input$select_sex_demo))
+#                                                              "Scotland", ", Gender: ", input$select_sex_demo))
 # })
 # 
 # #percent met trend plot
 # output$plot_demo_ldp_trend <- renderPlotly({
 #   plot_trend(data_selected()%>% 
 #                mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-#                filter(ijb == input$select_hb_ijb_demo, sex == input$select_sex_demo, type != "Unknown"),# type != "Not Specified"),
+#                filter(ijb == "Scotland", sex == input$select_sex_demo, type != "Unknown"),# type != "Not Specified"),
 #              measure = percent_met, group = type)
 # })
 
