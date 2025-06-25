@@ -5,14 +5,10 @@ output$method_ui <-  renderUI({
   div(
     conditionalPanel(
       condition= 'input.method_tab == "ldp_class"',
-   
+      
       fluidRow(column(
-        p("The following steps are taken to ensure the data is of sufficient quality for analysis:"),
+        p("The following method is used to determine whether a service user has met the standard to receive at least 12 months of post-diagnostic support."),
         
-        p(tags$ul(tags$li("Remove records with diagnosis date outwith the reporting period."),
-                  tags$li("Remove records with missing diagnosis date.")
-        )
-        ),
         h3("LDP Standard Met"),
         
         p(tags$ul(tags$li("Started PDS within 12 months of diagnosis and support ongoing after 12 months."),
@@ -30,11 +26,11 @@ output$method_ui <-  renderUI({
         h3("Exempt from LDP Standard"),
         
         p(tags$ul(tags$li("No first contact date or less than 12 months between diagnosis and first contact date and one of the following termination reasons:"),
-          tags$ul(tags$li("03 Service user has died."),
-                  tags$li("04 Service user has moved to a different Health Board area."),
-                  tags$li("05 Service user has terminated PDS early/refused."),
-                  tags$li("06 Service user no longer able to engage in PDS.")
-        )
+                  tags$ul(tags$li("03 Service user has died."),
+                          tags$li("04 Service user has moved to a different Health Board area."),
+                          tags$li("05 Service user has terminated PDS early/refused."),
+                          tags$li("06 Service user no longer able to engage in PDS.")
+                  )
         )
         ),
         h3("PDS Ongoing"),
@@ -44,9 +40,13 @@ output$method_ui <-  renderUI({
         )
         ),
         
+        p("This part of the LDP standard is calculated as:"),
+        
+        withMathJax("$$\\text{LDP Standard Achieved (%)}=\\frac{\\text{LDP Standard met + Exempt from LDP Standard}}{\\text{LDP Standard met + Exempt + LDP Standard not met}}\\times\\text{100}$$"),
+        
+        p("Service users for whom it is not yet known if they have met the standard as their PDS is ongoing are excluded from the percentage figures."),
+        linebreaks(1),
         width = 12)),
-      
-      
       
     ), #cond panel 1
     
@@ -74,7 +74,7 @@ conditionalPanel(
                          tags$li("Keep record with earliest first contact date.")
                )
                ), 
-               p("There also exists a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire Integration Authority Area. The support provided to these service users has been apportioned to NHS Highland in this report, as part of the LDP Standard is a population based measure, and so by not including these Argyll & Bute residents this figure may be skewed."),
+               p("There is a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IAA. The support provided to these service users has been apportioned to NHS Highland in this report."),
                p("If you have any queries regarding the above, please contact ", a("phs.dementiapds@phs.scot", href="mailto:phs.dementiapds@phs.scot")),
                
       width = 12)) #fluid Row

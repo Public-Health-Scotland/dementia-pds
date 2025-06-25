@@ -520,9 +520,15 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 
 
 /* Hack to get the colours we want on shinydashboard varBox */
-.small-box.bg-green { background-color:var(--phs-green); !important; color:#000000 !important; }
-.small-box.bg-purple { background-color:var(--phs-purple); !important; color:#000000 !important; }
-.small-box.bg-fuchsia { background-color:var(--phs-magenta); !important; color:#000000 !important; }
-.small-box.bg-olive { background-color:var(--phs-graphite); !important; color:#000000 !important; }
-.small-box.bg-teal { background-color:var(--phs-teal); !important; color:#000000 !important; }
-.small-box.bg-red { background-color:var(--phs-rust); !important; color:#000000 !important; }
+.small-box.bg-green { background-color:var(--phs-green) !important; color:#000000 !important; }
+.small-box.bg-purple { background-color:var(--phs-purple) !important; color:#000000 !important; }
+.small-box.bg-fuchsia { background-color:var(--phs-magenta) !important; color:#000000 !important; }
+.small-box.bg-olive { background-color:var(--phs-graphite) !important; color:#000000 !important; }
+.small-box.bg-teal { background-color:var(--phs-teal) !important; color:#000000 !important; }
+.small-box.bg-red { background-color:var(--phs-rust) !important; color:#000000 !important; }
+
+/* left align formula */
+.MathJax_Display {
+  text-align: left !important; 
+  font-size: 14px;
+  }
