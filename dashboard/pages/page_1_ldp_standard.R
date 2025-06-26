@@ -1,12 +1,15 @@
-####################### Page 1: SCOTLAND LDP #######################
+####################### Page 1: LDP Standard #######################
 # UI ----
-output$scotland_ui <-  renderUI({
+output$ldp_ui <-  renderUI({
 
   div(
+#LDP PART 1----
+    conditionalPanel(condition = 'input.select_ldp == "ldp_part_1"',
     fluidRow(
        column(
+         h2(strong(htmlOutput("title_part_1"))),
 linebreaks(1),          
- # percentage of expected diagnoses ----
+ # value box ----
          fluidRow(
              shinydashboard::valueBox(
                  value = textOutput("scot_exp_perc"),
@@ -18,36 +21,10 @@ linebreaks(1),
                     title = (p(strong("How is this figure calculated?"))),
                     width = 5), # box
          ), #fluidRow
- # percentage acheived ldp standard ----
         fluidRow(
-              shinydashboard::valueBox(
-                 value = textOutput("scot_pds_perc"),
-                 subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
-                 width = 7,
-                 color = "blue"), #valueBox
-              box(htmlOutput("scot_pds_text"),
-                    status = "primary", 
-                    title = (p(strong("How is this figure calculated?"))),
-                    width = 5), #box
-        ), #fluidRow
-        fluidRow(
- # monthly referrals plot ----
-# linebreaks(1),
-#               h3(strong(htmlOutput("chart_title_p1"))),
-#               plotlyOutput("monthly_referrals_plot_scotland"),
 linebreaks(1),
-# ldp standard table ----
-              h3(strong(htmlOutput("pds_table_title_p1"))),
-            fluidRow(column(
-              radioButtons("select_hb_ijb",
-                     label = "In the table below show Scotland and: ",
-                     choices = c("Health Boards", "Integration Authority Areas"),
-                     selected = "Health Boards",
-                     inline = TRUE),
-                width = 4)),
-              DT::dataTableOutput("table_pds"),
-linebreaks(1),
-# expected diagnoses table ----
+
+#  table ----
               h3(strong(htmlOutput("hb_exp_table_title_p1"))),
               DT::dataTableOutput("table_hb_exp"),
 linebreaks(1)
@@ -55,7 +32,47 @@ linebreaks(1)
             width = 12,
             style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"),
          ) #fluidRow
-      ) # div
+      ), #cond panel 1
+
+#LDP PART 2 ----
+conditionalPanel(condition = 'input.select_ldp == "ldp_part_2"',
+                 fluidRow(
+                   column(
+                     h2(strong(htmlOutput("title_part_2"))),
+                     linebreaks(1),          
+                    
+                     # value box ----
+                     fluidRow(
+                       shinydashboard::valueBox(
+                         value = textOutput("scot_pds_perc"),
+                         subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
+                         width = 7,
+                         color = "blue"), #valueBox
+                       box(htmlOutput("scot_pds_text"),
+                           status = "primary", 
+                           title = (p(strong("How is this figure calculated?"))),
+                           width = 5), #box
+                     ), #fluidRow
+                     fluidRow(
+                       linebreaks(1),
+                       # table ----
+                       h3(strong(htmlOutput("pds_table_title_p1"))),
+                       fluidRow(column(
+                         radioButtons("select_hb_ijb",
+                                      label = "In the table below show Scotland and: ",
+                                      choices = c("Health Boards", "Integration Authority Areas"),
+                                      selected = "Health Boards",
+                                      inline = TRUE),
+                         width = 12)),
+                       DT::dataTableOutput("table_pds"),
+                       linebreaks(1),
+                     ), # fluid Row
+                     width = 12,
+                     style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"),
+                 ) #fluidRow
+) #cond panel 2
+
+)# div
 }) # renderUI
 
 #SERVER ----
@@ -82,18 +99,17 @@ output$scot_pds_text <- renderUI({
              "<b>", prettyNum(vb_2_data()$total - vb_2_data()$ongoing, big.mark = ","), "</b>", "the total number of referrals (excluding those whose support is ongoing)."))})
 
 
-#referrals monthly plot ----
-# output$chart_title_p1 <- renderUI({HTML(paste("Number of individuals diagnosed with dementia and referred for post-diagnostic support: Scotland, Financial Year ", 
-#                                               input$select_year_p1))
-# })
-# 
-# scotland_chart_data <- reactive({pds_plot_data %>%
-#     filter(fy == input$select_year_p1)})
-# 
-# 
-# output$monthly_referrals_plot_scotland <- renderPlotly({
-#     plot_referrals(scotland_chart_data(), scotland = TRUE)
-# })
+#part 1 title ----
+ output$title_part_1 <- renderUI({HTML(paste("Percentage of estimated diagnoses referred to PDS: Scotland, Financial Year ", 
+                                              input$select_year_p1))
+ })
+
+#part 2 title ----
+output$title_part_2 <- renderUI({HTML(paste("Percentage receving one year's PDS support: Scotland, Financial Year ", 
+                                            input$select_year_p1))
+})
+
+
 
 # Data table hb pds percentage ----
 #output$hb_table_title_p1 <- renderUI({HTML(paste("Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support: Financial Year ", 

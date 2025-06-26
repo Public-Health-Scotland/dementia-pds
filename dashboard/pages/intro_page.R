@@ -6,7 +6,7 @@ if(input$home_select == "about"){
     fluidRow(
       h3("About This Dashboard"),
       p("This dashboard has been produced by Public Health Scotland (PHS) and contains analysis of performance against the Scottish Government’s Local Delivery Plan (LDP) Standard on provision of Dementia Post Diagnostic Support (PDS)."),
-      p(strong(span("This dashboard is in development and should not be distributed widely.", style="color:red"))),
+     # p(strong(span("This dashboard is in development and should not be distributed widely.", style="color:red"))),
       p(strong("Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.")),  
       p("The reports contained in this dashboard reflect the ", a("Dementia PDS dataset", href="https://publichealthscotland.scot/media/20921/2023-12-14-dementia-pds-definitions-and-recording-guidance-v14.pdf"),
         " effective 01 April 2019 and contain data for individuals diagnosed with dementia between ",
@@ -43,7 +43,6 @@ if(input$home_select == "about"){
       fluidRow(
         h3("How to use this dashboard"),
         p("This dashboard..."),
-        p(strong(span("some red text", style="color:red"))),
         p(strong("some bold text"))  
       ), #fluidrow
       

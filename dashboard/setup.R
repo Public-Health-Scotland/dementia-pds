@@ -35,22 +35,21 @@ source(here("dashboard/data_setup/data_load_shiny.R"))
 
 # selections lists
 
-provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
-                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
+provisional_year_sup <- "2022/23" %p% supsc("P")
 
-included_years <- c(finalised_years, provisional_year)
+included_years <- c(finalised_years, provisional_year_sup)
 
 #included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
 
-home_list <- c("Dementia PDS" = "about",
+home_list <- c("About" = "about",
                "Using the Dashboard" = "use",
                "Further Information" = "info",
                #"Data Definitions" = "defs",
                "Accessibility" = "accessibility")
 
-trend_list <- c("Number of referrals" = "referrals_trend",
-                "Percentage receiving one year's support" = "pds_perc_trend",
-                "Percentage of estimated diagnoses referred" = "exp_perc_trend")
+# trend_list <- c("Number of referrals" = "referrals_trend",
+#                 "Percentage receiving one year's support" = "pds_perc_trend",
+#                 "Percentage of estimated diagnoses referred" = "exp_perc_trend")
 
 # data_list <- c("Subtype of Dementia" = "data_subtype",
 #                "Stage of Dementia" = "data_stage",
@@ -58,14 +57,18 @@ trend_list <- c("Number of referrals" = "referrals_trend",
 #                "Model of Care" = "data_model",
 #                "PDS Uptake" = "uptake",
 #                "PDS Pathways" = "waiting_times"
-# )
+
+ldp_list <- c("LDP Standard Part 1" = "ldp_part_1",
+              "LDP Standard Part 2" = "ldp_part_2"
+                 )
+
 
 demographics_list <- c("Gender" = "data_sex",
                        "Age" = "data_age",
                        "SIMD" = "data_simd")
                       # "Accommodation" = "data_accom") 
 
-method_list <- c("Local Delivery Plan (LDP) Classification" = "ldp_class",
+method_list <- c("LDP Classification" = "ldp_class",
                        "Number of Expected Diagnoses" = "exp_diag",
                        "Removal of Duplicate Records" = "duplicates") 
 
@@ -77,5 +80,6 @@ boards <- as.character(sort(unique(filter(annual_table_data, health_board != "Sc
 ijb_list <- as.character(sort(unique(filter(annual_table_data, ijb != "Scotland", !grepl("NHS", ijb))$ijb)))
 
 simd_list <- as.character(sort(unique(filter(data_simd, type != "Unknown")$type)))
+
 
 ### END OF SCRIPT----

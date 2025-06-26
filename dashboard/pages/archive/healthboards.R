@@ -37,9 +37,9 @@ linebreaks(1),
                 DT::dataTableOutput("table_hb_ijb"),
 linebreaks(1),
  # monthly referrals plot ----
-               h3(strong(htmlOutput("chart_title_p2"))),
-               plotlyOutput("hb_ijb_plot"),
-linebreaks(1)
+            #   h3(strong(htmlOutput("chart_title_p2"))),
+              # plotlyOutput("hb_ijb_plot"),
+#linebreaks(1)
          ),# fluidRow
             width = 12,
             style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"),

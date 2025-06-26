@@ -52,87 +52,102 @@ tabPanel(title = "Home",
 
 ), # tabpanel
 ##############################################.
-# PAGE 1: Scotland LDP Standard  ----
+# PAGE 1: LDP Standard  ----
 ##############################################.
 
-tabPanel(title = "Scotland LDP Standard",
+tabPanel(title = "LDP Standard",
     # Look at https://fontawesome.com/search?m=free for icons
     icon = icon_no_warning_fn("clipboard"),
-    value = "ldp-scot",
+    value = "ldp-standard",
     
-    box(h1("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard - Scotland"),
+    box(h1("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard"),
         width = 12,
         collapsible = TRUE, collapsed = FALSE),
-    #linebreaks(1),
-    fluidRow(
-      column(
-        selectInput("select_year_p1",
-                label = "Select Financial Year of Diagnosis:",
-                choices = included_years,
-                selected= provisional_year),
-        width = 2, style = "width: auto; margin-top: -10px"),
-            style = "border-bottom: solid; border-bottom-width: medium; border-bottom-color: var(--phs-purple-50);"),
-      uiOutput("scotland_ui")
+    
+    sidebarLayout(
+      sidebarPanel(linebreaks(1),
+        radioGroupButtons("select_ldp", label = NULL, choices = ldp_list,
+                                     status = "secondary",
+                                     direction = "vertical", 
+                                     justified = T,
+                                     size = "lg"
+      ),
+      linebreaks(1),
+          selectInput("select_year_p1",
+                      label = "Select Financial Year of Diagnosis:",
+                      choices = included_years,
+                      selected= provisional_year_sup),
+  
+       # style = "border-bottom: solid; border-bottom-width: medium; border-bottom-color: var(--phs-purple-50);"),
+     
+      
+    width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+      
+      mainPanel(width = 9,
+                
+                
+
+      uiOutput("ldp_ui")
+          )#main panel
+      )#sidebar layout
    ), # tabpanel
 
 
-
 ##############################################.
-# PAGE 2: Health Boards LDP Standard  ----
+# PAGE 2: Referrals and Rates ----
 ##############################################.
-tabPanel(title = "Health Boards LDP Standard",
+tabPanel(title = "Referrals & Rates",
          # Look at https://fontawesome.com/search?m=free for icons
-         icon = icon_no_warning_fn("clipboard-list"),
-         value = "ldp-hb",
-
-            box(h1(htmlOutput("page_2_title")), width = 12,
-                collapsible = TRUE, collapsed = FALSE),
-         #linebreaks(1),
-            fluidRow(
-                column(
-                  selectInput("select_year_p2",
-                             label = "Select Financial Year of Diagnosis:",
-                             choices = included_years,
-                             selected = provisional_year),
-                width = 2, style = "width: auto; margin-top: -10px"),
-                column(
-                  selectInput("select_hb_p2",
-                            label = "Select Health Board:",
-                            choices = boards),
-                width = 2, style = "width: auto; margin-top: -10px"),
-             style = "border-bottom: solid; border-bottom-width: medium; border-bottom-color: var(--phs-purple-50);"),
-          uiOutput("hbs_ui")
-        ), # tabpanel
-
-##############################################.
-# PAGE 3: Trend  ----
-##############################################.
-tabPanel(title = "Trends",
-         # Look at https://fontawesome.com/search?m=free for icons
-         icon = icon_no_warning_fn("chart-line"),
-         value = "trends",
+         icon = icon_no_warning_fn("braille"),
+         value = "rates",
          
-         box(h1("Dementia Post-Diagnostic Support - Trends"),
+         box(h1("Dementia Post-Diagnostic Support; Referrals to PDS"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
-        # linebreaks(1),
-      fluidRow(column(
-                radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
-                          status = "tab",
-                          direction = "horizontal", 
-                          justified = T,
-                          size = "lg"), 
-                  width = 12)
-                ), #fluidRow
-        
-           uiOutput("trends_ui")
-  
+         # linebreaks(1),
+         fluidRow(column(
+           # radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
+           #                   status = "tab",
+           #                   direction = "horizontal", 
+           #                   justified = T,
+           #                   size = "lg"), 
+           width = 12)
+         ), #fluidRow
+         
+         uiOutput("rates_ui")
+         
 ), # tabpanel
+
+##############################################.
+# PAGE: Trend  ----
+##############################################.
+# tabPanel(title = "Trends",
+#          # Look at https://fontawesome.com/search?m=free for icons
+#          icon = icon_no_warning_fn("chart-line"),
+#          value = "trends",
+#          
+#          box(h1("Dementia Post-Diagnostic Support - Trends"),
+#              width = 12,
+#              collapsible = TRUE, collapsed = FALSE),
+#          
+#         # linebreaks(1),
+#       fluidRow(column(
+#                 radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
+#                           status = "tab",
+#                           direction = "horizontal", 
+#                           justified = T,
+#                           size = "lg"), 
+#                   width = 12)
+#                 ), #fluidRow
+#         
+#            uiOutput("trends_ui")
+#   
+# ), # tabpanel
 
 
 ##############################################.
-# PAGE 4: Demographics ----
+# PAGE 3: Demographics ----
 ##############################################.
 tabPanel(title = "Demographics",
          # Look at https://fontawesome.com/search?m=free for icons
@@ -156,24 +171,24 @@ tabPanel(title = "Demographics",
                         selectInput("select_year_demo",
                                            label = "Select Financial Year of Diagnosis:",
                                            choices = included_years,
-                                           selected = provisional_year),
+                                           selected = provisional_year_sup),
                                
                                
-                        selectInput("select_hb_ijb_demo",
-                                           label = "Select Health Board/Integration Authority Area:",
-                                           choices = c("Scotland", boards, ijb_list)),
+                        # selectInput("select_hb_ijb_demo",
+                        #                    label = "Select Health Board/Integration Authority Area:",
+                        #                    choices = c("Scotland", boards, ijb_list)),
                         
-         conditionalPanel(condition = 'input.select_data_demo == "data_sex"',
-                                         
-                        selectInput("select_simd_demo",
-                                           label = "Select SIMD Quintile:",
-                                           choices = c("All",simd_list))), 
+         # conditionalPanel(condition = 'input.select_data_demo == "data_sex"',
+         #                                 
+         #                selectInput("select_simd_demo",
+         #                                   label = "Select SIMD Quintile:",
+         #                                   choices = c("All",simd_list))), 
          
-         conditionalPanel(condition = 'input.select_data_demo != "data_sex"',
-                          
-                        selectInput("select_sex_demo",
-                                            label="Select Gender:",
-                                            choices=c("All", "Female", "Male"))),
+         # conditionalPanel(condition = 'input.select_data_demo != "data_sex"',
+         #                  
+         #                selectInput("select_sex_demo",
+         #                                    label="Select Gender:",
+         #                                    choices=c("All", "Female", "Male"))),
                         
                         
                         width = 2, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
@@ -189,34 +204,9 @@ tabPanel(title = "Demographics",
       ), # tabpanel
 
 
-##############################################.
-# PAGE 5: Rates Per 10,000 Population ----
-##############################################.
-tabPanel(title = "Rates",
-         # Look at https://fontawesome.com/search?m=free for icons
-         icon = icon_no_warning_fn("braille"),
-         value = "rates",
-         
-         box(h1("Dementia Post-Diagnostic Support - Rates Per 10,000 Population"),
-             width = 12,
-             collapsible = TRUE, collapsed = FALSE),
-         
-         # linebreaks(1),
-         fluidRow(column(
-           # radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
-           #                   status = "tab",
-           #                   direction = "horizontal", 
-           #                   justified = T,
-           #                   size = "lg"), 
-           width = 12)
-         ), #fluidRow
-         
-         uiOutput("rates_ui")
-         
-), # tabpanel
 
 ##############################################.
-# PAGE 6: Pathways ----
+# PAGE 4: Pathways ----
 ##############################################.
 tabPanel(title = "Pathways",
          # Look at https://fontawesome.com/search?m=free for icons
@@ -233,7 +223,7 @@ tabPanel(title = "Pathways",
              selectInput("select_year_pathways",
                          label = "Select Financial Year of Diagnosis:",
                          choices = included_years,
-                         selected= provisional_year),
+                         selected= provisional_year_sup),
                       width = 2, style = "width: auto; margin-top: -10px"),
             style = "border-bottom: solid; border-bottom-width: medium; border-bottom-color: var(--phs-purple-50);"),
          uiOutput("pathways_ui")
@@ -242,7 +232,7 @@ tabPanel(title = "Pathways",
 
 
 ##############################################.
-# PAGE 7: Methodology ----
+# PAGE 5: Methodology ----
 ##############################################.
 tabPanel(title = "Methodology",
          # Look at https://fontawesome.com/search?m=free for icons
@@ -253,12 +243,12 @@ tabPanel(title = "Methodology",
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
-         fluidRow(
-           box("This page includes more detail regarding the methodology used to arrive at the figures in this report. It is hoped that by sharing this, the reports will be easier to understand and local reporting will be more consistent.",
-               background = "blue",
-               width = 12
-           )),
-         linebreaks(1),
+         # fluidRow(
+         #   box("This page includes more detail regarding the methodology used to arrive at the figures in this report. It is hoped that by sharing this, the reports will be easier to understand and local reporting will be more consistent.",
+         #       background = "blue",
+         #       width = 12
+         #   )),
+         # linebreaks(1),
          fluidRow(column(
            
            radioGroupButtons("method_tab", label = NULL, choices = method_list,
@@ -292,13 +282,11 @@ server <- function(input, output, session) {
   
     # Get content for individual pages
     source(file.path(here("dashboard/pages/intro_page.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_1_scotland.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_2_healthboards.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_3_trends.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_4_demographics.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_5_rates.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_6_pathways.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_7_methodology.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_1_ldp_standard.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_2_rates.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_3_demographics.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_4_pathways.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_5_methodology.R")), local = TRUE)$value
    # source(file.path(here("dashboard/pages/page_7.R")), local = TRUE)$value
 
 }

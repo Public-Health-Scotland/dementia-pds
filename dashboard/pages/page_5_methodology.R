@@ -1,4 +1,4 @@
-####################### Page 7: methodology #######################
+####################### Page 5: methodology #######################
 # UI ----
 output$method_ui <-  renderUI({
 

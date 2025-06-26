@@ -1,4 +1,4 @@
-####################### Page 4 DEMOGRAPHICS #######################
+####################### Page 3 DEMOGRAPHICS #######################
 #UI----
 output$demo_ui <-  renderUI({
   #1 gender ----
