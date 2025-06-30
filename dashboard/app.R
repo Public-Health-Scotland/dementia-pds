@@ -45,8 +45,8 @@ tabPanel(title = "Home",
                                      direction = "vertical", 
                                      justified = T,
                                      size = "lg"), width = 3),
-      mainPanel(
-    uiOutput("intro_page_ui")
+             mainPanel(
+                uiOutput("intro_page_ui")
       )
     )
 
@@ -57,7 +57,7 @@ tabPanel(title = "Home",
 
 tabPanel(title = "LDP Standard",
     # Look at https://fontawesome.com/search?m=free for icons
-    icon = icon_no_warning_fn("clipboard"),
+    icon = icon_no_warning_fn("clipboard-list"),
     value = "ldp-standard",
     
     box(h1("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard"),
@@ -65,32 +65,31 @@ tabPanel(title = "LDP Standard",
         collapsible = TRUE, collapsed = FALSE),
     
     sidebarLayout(
-      sidebarPanel(linebreaks(1),
-        radioGroupButtons("select_ldp", label = NULL, choices = ldp_list,
+      sidebarPanel(
+        #linebreaks(1),
+        radioGroupButtons("ldp_sidebar", label = NULL, choices = ldp_sidebar_list,
                                      status = "secondary",
                                      direction = "vertical", 
                                      justified = T,
                                      size = "lg"
       ),
       linebreaks(1),
+      
+      conditionalPanel(condition = 'input.ldp_sidebar != "trends"',
+     
           selectInput("select_year_p1",
                       label = "Select Financial Year of Diagnosis:",
                       choices = included_years,
-                      selected= provisional_year_sup),
-  
-       # style = "border-bottom: solid; border-bottom-width: medium; border-bottom-color: var(--phs-purple-50);"),
-     
-      
+                      selected= provisional_year_sup)
+          ),#conditionalPanel
     width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
       
       mainPanel(width = 9,
                 
-                
-
       uiOutput("ldp_ui")
-          )#main panel
-      )#sidebar layout
-   ), # tabpanel
+              )#mainPanel
+         )#sidebarLayout
+     ), # tabpanel
 
 
 ##############################################.
@@ -118,32 +117,6 @@ tabPanel(title = "Referrals & Rates",
          uiOutput("rates_ui")
          
 ), # tabpanel
-
-##############################################.
-# PAGE: Trend  ----
-##############################################.
-# tabPanel(title = "Trends",
-#          # Look at https://fontawesome.com/search?m=free for icons
-#          icon = icon_no_warning_fn("chart-line"),
-#          value = "trends",
-#          
-#          box(h1("Dementia Post-Diagnostic Support - Trends"),
-#              width = 12,
-#              collapsible = TRUE, collapsed = FALSE),
-#          
-#         # linebreaks(1),
-#       fluidRow(column(
-#                 radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
-#                           status = "tab",
-#                           direction = "horizontal", 
-#                           justified = T,
-#                           size = "lg"), 
-#                   width = 12)
-#                 ), #fluidRow
-#         
-#            uiOutput("trends_ui")
-#   
-# ), # tabpanel
 
 
 ##############################################.
@@ -173,30 +146,10 @@ tabPanel(title = "Demographics",
                                            choices = included_years,
                                            selected = provisional_year_sup),
                                
-                               
-                        # selectInput("select_hb_ijb_demo",
-                        #                    label = "Select Health Board/Integration Authority Area:",
-                        #                    choices = c("Scotland", boards, ijb_list)),
-                        
-         # conditionalPanel(condition = 'input.select_data_demo == "data_sex"',
-         #                                 
-         #                selectInput("select_simd_demo",
-         #                                   label = "Select SIMD Quintile:",
-         #                                   choices = c("All",simd_list))), 
-         
-         # conditionalPanel(condition = 'input.select_data_demo != "data_sex"',
-         #                  
-         #                selectInput("select_sex_demo",
-         #                                    label="Select Gender:",
-         #                                    choices=c("All", "Female", "Male"))),
-                        
-                        
-                        width = 2, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+                    width = 2, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
            
            mainPanel(width = 10,
                    
-                       
-        
            uiOutput("demo_ui") 
            ) #main panel
         ) #sidebar layout
@@ -217,17 +170,36 @@ tabPanel(title = "Pathways",
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
-         # linebreaks(1),
-         fluidRow(
-           column(
-             selectInput("select_year_pathways",
-                         label = "Select Financial Year of Diagnosis:",
-                         choices = included_years,
-                         selected= provisional_year_sup),
-                      width = 2, style = "width: auto; margin-top: -10px"),
-            style = "border-bottom: solid; border-bottom-width: medium; border-bottom-color: var(--phs-purple-50);"),
+         sidebarLayout(
+           sidebarPanel(
+             #linebreaks(1),
+             radioGroupButtons("pathways_sidebar", label = NULL, choices = pathways_list,
+                               status = "secondary",
+                               direction = "vertical", 
+                               justified = T,
+                               size = "lg"
+             ),
+             linebreaks(1),
+             
+             conditionalPanel(condition = 'input.pathways_sidebar == "wait"',
+                              
+                                selectInput("select_year_pathways",
+                                            label = "Select Financial Year of Diagnosis:",
+                                            choices = included_years,
+                                            selected= provisional_year_sup),
+                                                           
+                                radioButtons("select_hb_ijb_pathways",
+                                             label = "In the chart and table show Scotland and: ",
+                                             choices = c("Health Boards", "Integration Authority Areas"),
+                                             selected = "Health Boards",
+                                             inline = FALSE)
+                              ), #conditionalPanel
+                         width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+           
+           mainPanel(width = 9,
          uiOutput("pathways_ui")
-         
+           ) # mainPanel
+         ) #sidebarLayout
 ), # tabpanel
 
 
@@ -236,7 +208,7 @@ tabPanel(title = "Pathways",
 ##############################################.
 tabPanel(title = "Methodology",
          # Look at https://fontawesome.com/search?m=free for icons
-         icon = icon_no_warning_fn("diagram-successor"),
+         icon = icon_no_warning_fn("signs-post"),
          value = "method",
          
          box(h1("Dementia Post-Diagnostic Support - Methodology"),
