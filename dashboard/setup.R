@@ -9,6 +9,7 @@ library(shinydashboard)
 library(shinycssloaders)
 library(bslib)
 library(DT)
+library(reporter)
 
 # PHS styling packages ----
 library(phsstyles)
@@ -26,9 +27,11 @@ yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE, size = 4
                     tickfont = list(size=14), titlefont = list(size=14))
 
 # Buttons to remove from plotly plots
-bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
-                     'autoScale2d',   'toggleSpikelines',  'hoverCompareCartesian',
-                     'hoverClosestCartesian')
+bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 
+                     'zoomOut2d', 'autoScale2d', 
+                     'toggleSpikelines', 
+                     'hoverCompareCartesian', 
+                     'hoverClosestCartesian', 'toImage')
 # LOAD IN DATA ----
 
 source(here("dashboard/data_setup/data_load_shiny.R"))
@@ -58,15 +61,22 @@ home_list <- c("About" = "about",
 #                "PDS Uptake" = "uptake",
 #                "PDS Pathways" = "waiting_times"
 
-ldp_list <- c("LDP Standard Part 1" = "ldp_part_1",
+ldp_tab_list <- c("LDP Standard Part 1" = "ldp_part_1",
               "LDP Standard Part 2" = "ldp_part_2"
                  )
 
+ldp_sidebar_list <- c("Outcomes by Financial Year" = "outcomes",
+                      "Trends" = "trends"
+                      )
 
 demographics_list <- c("Gender" = "data_sex",
                        "Age" = "data_age",
-                       "SIMD" = "data_simd")
+                       "Deprivation (SIMD)" = "data_simd")
                       # "Accommodation" = "data_accom") 
+
+pathways_list <- c("Waiting Times by Financial Year" = "wait",
+                      "Trends" = "trends"
+)
 
 method_list <- c("LDP Classification" = "ldp_class",
                        "Number of Expected Diagnoses" = "exp_diag",
