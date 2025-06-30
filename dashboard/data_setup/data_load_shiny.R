@@ -12,12 +12,13 @@
 #source(here::here("code", "00_setup-environment.R"))
 
 
-
+provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
+                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
 
 # 1 read in data from data_prep.R ----
 #monthly_table_data <- read_rds(here("dashboard/data/monthly_table_data.rds"))
 annual_table_data <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/annual_table_data.rds")
-pds_plot_data <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/pds_plot_data.rds")
+#pds_plot_data <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/pds_plot_data.rds")
 data_wait <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_wait.rds")
 #data_wait_2 <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_wait_2.rds")
 #data_subtype <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_subtype.rds")
@@ -39,12 +40,13 @@ data_pop <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/data_pop.rds")
 #   mutate(ijb = if_else(is.na(ijb),
 #                        "Unknown",
 #                        str_sub(ijb, 11, -1)))
+
 # 3 convert data types ----
 
 
-pds_plot_data %<>%
-  filter(!is.na(ijb)) %>%
-  mutate(ijb = factor(ijb, levels = (unique(ijb))))
+# pds_plot_data %<>%
+#   filter(!is.na(ijb)) %>%
+#   mutate(ijb = factor(ijb, levels = (unique(ijb))))
 
 annual_table_data$health_board <- as.factor(annual_table_data$health_board)
 annual_table_data$ijb <- as.factor(annual_table_data$ijb)
@@ -52,11 +54,15 @@ annual_table_data$ijb <- factor(annual_table_data$ijb, levels=unique(annual_tabl
 annual_table_data$fy <- as.factor(annual_table_data$fy)
 annual_table_data$ldp<- as.factor(annual_table_data$ldp)
 
+annual_table_data <- annual_table_data %>% mutate(fy = if_else(fy == provisional_year, "2022/23" %p% supsc("P"), fy))
+
 data_wait$health_board <- as.factor(data_wait$health_board)
 data_wait$fy <- as.factor(data_wait$fy)
 data_wait$simd <- as.factor(data_wait$simd)
 data_wait$sex <- as.factor(data_wait$sex)
 data_wait$ijb <- as.factor(data_wait$ijb)
+
+data_wait <- data_wait %>%  mutate(fy = if_else(fy == provisional_year, "2022/23" %p% supsc("P"), fy)) 
 
 
 # data_wait_2$health_board <- as.factor(data_wait_2$health_board)
@@ -94,15 +100,24 @@ data_age$fy <- as.factor(data_age$fy)
 data_age$sex <- as.factor(data_age$sex)
 data_age$type <- as.factor(data_age$type)
 
+data_age <- data_age %>%  mutate(fy = if_else(fy == provisional_year, "2022/23" %p% supsc("P"), fy)) %>% 
+  filter(sex == "All")
+
 data_sex$health_board <- as.factor(data_sex$health_board)
 data_sex$fy <- as.factor(data_sex$fy)
 data_sex$simd <- as.factor(data_sex$simd)
-data_sex$type <- as.factor(data_sex$type)
+data_sex$type <- factor(data_sex$type, levels = c("Male", "Female", "Not Specified", "Unknown"))
+
+data_sex <- data_sex %>%  mutate(fy = if_else(fy == provisional_year, "2022/23" %p% supsc("P"), fy)) %>% 
+  filter(simd == "All")
 
 data_simd$health_board <- as.factor(data_simd$health_board)
 data_simd$fy <- as.factor(data_simd$fy)
 data_simd$sex <- as.factor(data_simd$sex)
 data_simd$type <- as.factor(data_simd$type)
+
+data_simd <- data_simd %>%  mutate(fy = if_else(fy == provisional_year, "2022/23" %p% supsc("P"), fy)) %>% 
+  filter(sex == "All")
 
 # data_accom$health_board <- as.factor(data_accom$health_board)
 # data_accom$fy <- as.factor(data_accom$fy)
