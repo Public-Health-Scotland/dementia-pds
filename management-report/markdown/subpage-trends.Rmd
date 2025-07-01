@@ -140,7 +140,7 @@ trends_plot_ijb))
 
 ```{r trend-table-ijb}
 
-pds_all_totals %>% filter(geog == "Scotland" | !grepl("NHS", geog)) %>% 
+pds_all_totals %>% filter(!grepl("NHS", geog), geog != "Scotland") %>% 
             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
             pivot_wider(names_from = fy, values_from = total_referrals) %>% 
             rename(`Integration Authority Area` = geog) %>%
@@ -186,7 +186,7 @@ trends_plot_hb))
 
 ```{r trend-table-hb}
 
-pds_all_totals %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+pds_all_totals %>% filter(grepl("NHS", geog)) %>% 
             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
             pivot_wider(names_from = fy, values_from = total_referrals) %>%
             rename(`Health Board` = geog) %>%
