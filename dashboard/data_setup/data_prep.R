@@ -13,8 +13,8 @@
 # 1 Load set up ----
 source(here::here("code", "00_setup-environment.R"))
 
-provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
-       "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
+# provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
+#        "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
 
 #included_years = c(finalised_years, provisional_year)
 
@@ -238,7 +238,8 @@ write_rds(data_uptake,
 
 # 9 waiting times ----
 
-data_wait <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output))
+data_wait <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output)) %>% 
+   mutate(ijb = if_else(ijb == "All", health_board, ijb))
 
 write_rds(data_wait, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_wait.rds")

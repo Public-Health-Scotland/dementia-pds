@@ -60,7 +60,7 @@ data_wait$health_board <- as.factor(data_wait$health_board)
 data_wait$fy <- as.factor(data_wait$fy)
 data_wait$simd <- as.factor(data_wait$simd)
 data_wait$sex <- as.factor(data_wait$sex)
-data_wait$ijb <- as.factor(data_wait$ijb)
+data_wait$ijb <- factor(data_wait$ijb, levels=unique(annual_table_data$ijb))
 
 data_wait <- data_wait %>%  mutate(fy = if_else(fy == provisional_year, "2022/23" %p% supsc("P"), fy)) 
 
