@@ -60,7 +60,7 @@ output$ldp_ui <-  renderUI({
                                           plotlyOutput("trend_plot_part_1"),
                                           #linebreaks(1),
                                           # table ----
-                                          h3(strong("Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support; Scotland and Health Boards")),
+                                          h3(strong(htmlOutput("table_title_hb_trend_part_1"))),
                                           DT::dataTableOutput("table_hb_trend_part_1"),
                                           linebreaks(1),
                                           width = 12,
@@ -93,13 +93,13 @@ output$ldp_ui <-  renderUI({
                                             linebreaks(1),
                                             #plot ----
                                             h3(strong(htmlOutput("perc_met_plot_title"))),
-                                            fluidRow(column(
-                                              radioButtons("select_hb_ijb",
-                                                           label = "In the chart and table below show Scotland and: ",
-                                                           choices = c("Health Boards", "Integration Authority Areas"),
-                                                           selected = "Health Boards",
-                                                           inline = TRUE),
-                                              width = 12)),
+                                            # fluidRow(column(
+                                            #   radioButtons("select_hb_ijb",
+                                            #                label = "In the chart and table below show Scotland and: ",
+                                            #                choices = c("Health Boards", "Integration Authority Areas"),
+                                            #                selected = "Health Boards",
+                                            #                inline = TRUE),
+                                            #   width = 12)),
                                             plotlyOutput("perc_met_plot"),
                                             # table ----
                                             h3(strong(htmlOutput("perc_met_table_title"))),
@@ -126,7 +126,7 @@ output$ldp_ui <-  renderUI({
                                    #table----
                                    h3(strong(htmlOutput("table_trend_part_2_title"))),
                                    radioButtons("select_table_trend_part_2",
-                                                label = "In the table below show Scotland and: ",
+                                                label = "In the table below show:",
                                                 choices = c("Health Boards", "Integration Authority Areas"),
                                                 selected = "Health Boards",
                                                 inline = TRUE),
@@ -144,12 +144,12 @@ output$ldp_ui <-  renderUI({
 #SERVER ----
 
 #part 1 title ----
-output$title_part_1 <- renderUI({HTML(paste("Percentage of estimated diagnoses referred to PDS: Scotland, Financial Year ", 
+output$title_part_1 <- renderUI({HTML(paste("Percentage of estimated diagnoses referred for PDS; Scotland, ", 
                                             input$select_year_p1))
 })
 
 #part 2 title ----
-output$title_part_2 <- renderUI({HTML(paste("Percentage of referrals who received one year's PDS support: Scotland, Financial Year ", 
+output$title_part_2 <- renderUI({HTML(paste("Percentage of referrals for PDS who received one year's support; Scotland, ", 
                                             input$select_year_p1))
 })
 
@@ -176,7 +176,7 @@ output$scot_pds_text <- renderUI({
 
 
 # plot ldp part 1 ----
-output$hb_exp_plot_title <- renderUI({HTML(paste0("Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support: Financial Year ", 
+output$hb_exp_plot_title <- renderUI({HTML(paste0("Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; ", 
                                                       input$select_year_p1, ", Scotland and Health Boards"))
 })
 
@@ -191,7 +191,7 @@ output$hb_exp_plot <- renderPlotly({
 
 
 # data table ldp part 1 ----
-output$hb_exp_table_title <- renderUI({HTML(paste0("Number and percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support: Financial Year ", 
+output$hb_exp_table_title <- renderUI({HTML(paste0("Number and percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; ", 
                                                       input$select_year_p1, ", Scotland and Health Boards"))
 })
 
@@ -210,7 +210,7 @@ output$table_hb_exp <- DT::renderDataTable({
 })
 
 #plot ldp part 2 ----
-output$perc_met_plot_title <- renderUI({HTML(paste0("Percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support: Financial Year ", 
+output$perc_met_plot_title <- renderUI({HTML(paste0("Percentage of people referred for PDS who received a minimum of one year’s support within 12 month's of diagnosis; ", 
                                                     input$select_year_p1, ", Scotland and ", input$select_hb_ijb))
 })
 
@@ -236,7 +236,7 @@ output$perc_met_plot <- renderPlotly({
   })
     
     # data table lpd part 2 ----
-    output$perc_met_table_title <- renderUI({HTML(paste0("Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support: Financial Year ", 
+    output$perc_met_table_title <- renderUI({HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support within 12 month's of diagnosis; ", 
                                                        input$select_year_p1, ", Scotland and ", input$select_hb_ijb))
     })
     
@@ -281,7 +281,7 @@ output$perc_met_plot <- renderPlotly({
     
 #plot trends part 1----
     
-    output$chart_title_trend_part_1 <- renderUI({HTML(paste("Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support; Scotland "),
+    output$chart_title_trend_part_1 <- renderUI({HTML(paste0("Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; Trend, Scotland "),
                                                             if(input$select_hb_trend_part_1 == ""){""
                                                             }else{
                                                               paste0("and ", input$select_hb_trend_part_1)})
@@ -298,6 +298,8 @@ output$perc_met_plot <- renderPlotly({
     })
 
 # data table trends part 1----     
+    
+output$table_title_hb_trend_part_1 <- renderUI({HTML(paste0("Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; Trend, Scotland and Health Boards"))})
 
 output$table_hb_trend_part_1 <- DT::renderDataTable({
   trend_hb_data_2 <- annual_table_data %>% 
@@ -316,7 +318,7 @@ output$table_hb_trend_part_1 <- DT::renderDataTable({
 
 #plot trends part 2 ----
 
-output$chart_title_trend_part_2 <- renderUI({HTML(paste("Percentage of people referred for dementia PDS who received a minimum of one year’s support; Scotland "),
+output$chart_title_trend_part_2 <- renderUI({HTML(paste("Percentage of people referred for PDS who received a minimum of one year’s support within 12 months of diagnosis; Trend, Scotland "),
                                                         if(input$select_hb_ijb_trend_part_2 == ""){""
                                                         }else{
                                                           paste0("and ", input$select_hb_ijb_trend_part_2)})
@@ -337,7 +339,7 @@ output$trend_plot_part_2 <- renderPlotly({
 #data table trends part 2----    
 
 output$table_trend_part_2_title <- renderUI({
-  HTML(paste0("Percentage of people referred for dementia PDS who received a minimum of one year’s support; Scotland and ", input$select_table_trend_part_2))
+  HTML(paste0("Percentage of people referred for PDS who received a minimum of one year’s support within 12 months of diagnosis; Trend, Scotland and ", input$select_table_trend_part_2))
 })
 
 output$table_hb_ijb_trend_part_2 <- DT::renderDataTable({
