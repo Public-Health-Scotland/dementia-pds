@@ -75,13 +75,22 @@ tabPanel(title = "LDP Standard",
       ),
       linebreaks(1),
       
-      conditionalPanel(condition = 'input.ldp_sidebar != "trends"',
+      conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
      
           selectInput("select_year_p1",
                       label = "Select Financial Year of Diagnosis:",
                       choices = included_years,
-                      selected= provisional_year_sup)
-          ),#conditionalPanel
+                      selected= provisional_year_sup),
+          
+          conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"',
+                           
+                radioButtons("select_hb_ijb",
+                       label = "In the chart and table show:",
+                       choices = c("Health Boards", "Integration Authority Areas"),
+                       selected = "Health Boards",
+                       inline = FALSE)
+            ) #cond panel ldp part 2
+          ), #cond panel outcomes
     width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
       
       mainPanel(width = 9,
@@ -127,7 +136,7 @@ tabPanel(title = "Demographics",
          icon = icon_no_warning_fn("id-card"),
          value = "demo",
          
-         box(h1("Dementia Post-Diagnostic Support - Demographics"),
+         box(h1("Dementia Post-Diagnostic Support; Demographics"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
       
@@ -166,7 +175,7 @@ tabPanel(title = "Pathways",
          icon = icon_no_warning_fn("arrows-turn-to-dots"),
          value = "pathways",
          
-         box(h1("Dementia Post-Diagnostic Support - Pathways"),
+         box(h1("Dementia Post-Diagnostic Support; Pathways"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
@@ -189,7 +198,7 @@ tabPanel(title = "Pathways",
                                             selected= provisional_year_sup),
                                                            
                                 radioButtons("select_hb_ijb_pathways",
-                                             label = "In the chart and table show Scotland and: ",
+                                             label = "In the chart and table show:",
                                              choices = c("Health Boards", "Integration Authority Areas"),
                                              selected = "Health Boards",
                                              inline = FALSE)
@@ -211,7 +220,7 @@ tabPanel(title = "Methodology",
          icon = icon_no_warning_fn("signs-post"),
          value = "method",
          
-         box(h1("Dementia Post-Diagnostic Support - Methodology"),
+         box(h1("Dementia Post-Diagnostic Support; Methodology"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
