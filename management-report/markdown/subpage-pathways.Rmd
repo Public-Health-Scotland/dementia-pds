@@ -301,9 +301,11 @@ wait_plot_trend)
 ```
 
 ```{r table-wait-trend}
-wait_data_trend_table <-
-wait_data_trend_all %>% arrange(geog) %>% 
-              mutate(median_diagnosis_to_contact = if_else(median_diagnosis_to_contact < 0, "-", as.character(median_diagnosis_to_contact))) %>% 
+wait_data_trend_table <- wait_data_trend_all
+wait_data_trend_table$geog<- factor(wait_data_trend_table$geog, levels = unique(pds_all$geog))
+
+wait_data_trend_table %<>% arrange(geog) %>% 
+  mutate(median_diagnosis_to_contact = if_else(median_diagnosis_to_contact < 0, "-", as.character(median_diagnosis_to_contact))) %>% 
   pivot_wider(names_from = fy, values_from = median_diagnosis_to_contact) %>%
             rename(`Integration Authority Area/Health Board` = geog)
             
