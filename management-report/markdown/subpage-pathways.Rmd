@@ -794,9 +794,6 @@ bscols(widths = c(1,5,NA),
 bscols(widths = 12,
        div(style = css(width="98%", height="650px", margin="15px"),
           DT::datatable(table_ijb_uptake, rownames = FALSE,
-                        caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left; color:black;',
-                       "A dash (-) indicates that due to data quality issues this measure could not be calculated."),
               options = list(pageLength = 32,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -989,7 +986,6 @@ bscols(widths = 12,
        div(style = css(width="97%", height="750px", margin="20px"),
      DT::datatable(no_contact_table_data_ijb, rownames = FALSE, caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left; color:black;',
-                       "A dash (-) indicates that this measure could not be calculated due to data quality issues.", htmltools::tags$br(), 
                        "Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis, but does not include those with a termination date.", htmltools::tags$br(), 
                        "Number of referrals whose PDS ended with no contact refers to those with no contact date recorded and a termination date recorded at any time after diagnosis, therefore this may include referrals with a termination date more than 12 months after diagnosis.
 "),
@@ -1033,7 +1029,7 @@ no_contact_hb <- left_join(hb_totals_12, no_contact_term_hb) %>%
          perc_no_contact_12, referrals_no_contact_12,
          perc_no_contact_term, referrals_no_contact_term) %>% 
      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-   mutate(across(starts_with("%"),
+   mutate(across(starts_with("perc"),
                   ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
    mutate(across(starts_with("referrals"),
                   ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
@@ -1042,7 +1038,7 @@ no_contact_hb <- left_join(hb_totals_12, no_contact_term_hb) %>%
                    "Number of referrals not contacted within 12 months of diagnosis",
                    "% of total referrals whose PDS ended with no contact",
                    "Number of referrals whose PDS ended with no contact"))
-    
+
 no_contact_table_data_hb <- SharedData$new(no_contact_hb)
 
 data_filter_year_no_contact_hb <- filter_select(id = "no_contact_filter_year_hb",
@@ -1063,7 +1059,6 @@ bscols(widths = 12,
        div(style = css(width="97%", height="750px", margin="20px"),
      DT::datatable(no_contact_table_data_hb, rownames = FALSE, caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left; color:black;',
-                       "A dash (-) indicates that this measure could not be calculated due to data quality issues.", htmltools::tags$br(), 
                        "Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis, but does not include those with a termination date.", htmltools::tags$br(), 
                        "Number of referrals whose PDS ended with no contact refers to those with no contact date recorded and a termination date recorded at any time after diagnosis, therefore this may include referrals with a termination date more than 12 months after diagnosis.
 "),

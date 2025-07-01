@@ -505,7 +505,7 @@ pds_exp_rates %>% select(geog, fy, exp_rate) %>%
 
 ```{r dropdown-met-ldp}
 pds_met_rates <-
-  pds_all %>% filter(age_grp_2 != "Unknown", ldp != "ongoing", fy %in% full_years) %>% 
+  pds_all %>% filter(ldp != "ongoing", fy %in% full_years) %>% 
   group_by(geog, fy, ldp) %>% 
   summarise(referrals = sum(referrals)) %>% pivot_wider(names_from = ldp, values_from = referrals, values_fill = 0) %>% 
   mutate(perc_met = round(100*(complete + exempt)/(complete + exempt + fail), 1))
@@ -540,7 +540,8 @@ bscols(widths = 12,
 
 pds_met_rates %>% select(geog, fy, perc_met) %>% 
             pivot_wider(names_from = fy, values_from = perc_met) %>%
-            mutate(across(where(is.numeric), ~paste0(.,"%"))) %>% 
+            mutate(across(where(is.numeric), ~paste0(.,"%"))) %>%
+            mutate(across(2:length(full_years), ~if_else(grepl("N",.),"NA",.))) %>%  
             rename(`Integration Authority Area/Health Board` = geog) %>%
             kable(align = c("l", rep("r", length(full_years)))) %>%
             kable_styling(full_width = TRUE) %>%
