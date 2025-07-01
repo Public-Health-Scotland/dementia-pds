@@ -153,7 +153,7 @@ bscols(widths = 12,
        div(style = css(width="97%", height="660px", margin="20px"),
 DT::datatable(median_ijb_table, rownames = FALSE, extensions = "FixedColumns",
                caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
+                       style = 'caption-side: bottom; text-align: left; color:black;',
                        "A dash (-) indicates that this measure could not be calculated due to data quality issues."),
               options = list(pageLength = 33,
                              scrollX = TRUE,
@@ -240,7 +240,7 @@ bscols(widths = 12,
        div(style = css(width="97%", height="660px", margin="20px"),
 DT::datatable(median_hb_table, rownames = FALSE, extensions = "FixedColumns",
               caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
+                       style = 'caption-side: bottom; text-align: left; color:black;',
                        "A dash (-) indicates that due to data quality issues this measure could not be calculated."),
               options = list(pageLength = 15,
                              scrollX = TRUE,
@@ -313,7 +313,7 @@ bscols(widths = 12,
        div(style = css(width="97%", height="615px", margin="20px"),
     DT::datatable(wait_data_trend_table, rownames = FALSE,  
                                        caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
+                       style = 'caption-side: bottom; text-align: left; color:black;',
                        "A dash (-) indicates that due to data quality issues this measure could not be calculated."),
                        options = list(pageLength = 46,
                              scrollX = FALSE,
@@ -385,7 +385,7 @@ bscols(widths = 12,
        div(style = css(width="97%", height="770px", margin="20px"),
     DT::datatable(wait_table_data_all, rownames = FALSE,  
                                        caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
+                       style = 'caption-side: bottom; text-align: left; color:black;',
                        "A dash (-) indicates that due to data quality issues this measure could not be calculated."),
                        options = list(pageLength = 46,
                              scrollX = FALSE,
@@ -533,8 +533,8 @@ bscols(widths = 12,
     DT::datatable(not_met_table_data, container = headers_notmet,
                          rownames = FALSE,
                           caption = htmltools::tags$caption(
-                          style = 'caption-side: bottom; text-align: left;',
-                          "PDS terminated without contact includes those with a termination date recorded at any time after diagnosis."),
+                          style = 'caption-side: bottom; text-align: left; color:black;',
+                          "PDS terminated without contact refers to those with no contact date recorded and a termination date recorded at any time after diagnosis, therefore this may include referrals with a termination date more than 12 months after diagnosis."),
                          options = list(pageLength = 46,
                                         scrollX = FALSE,
                                         scrollY = TRUE,
@@ -611,10 +611,6 @@ headers_ongoing <- htmltools::withTags(table(
 bscols(widths = 12,
        div(style = css(width="97%", height="605px", margin="20px"),
     DT::datatable(ongoing_table_data, container = headers_ongoing, rownames = FALSE,
-                                       # caption = htmltools::tags$caption(
-                      # style = 'caption-side: bottom; text-align: left;',
-                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
-                        #      year."),
                        options = list(pageLength = 46,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -673,10 +669,6 @@ exempt_table_data <- SharedData$new(exempt_data_totals)
 bscols(widths = 12,
        div(style = css(width="97%", height="620px", margin="20px"),
     DT::datatable(exempt_table_data, rownames = FALSE,
-                                       # caption = htmltools::tags$caption(
-                      # style = 'caption-side: bottom; text-align: left;',
-                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
-                        #      year."),
                        options = list(pageLength = 46,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -803,7 +795,7 @@ bscols(widths = 12,
        div(style = css(width="98%", height="650px", margin="15px"),
           DT::datatable(table_ijb_uptake, rownames = FALSE,
                         caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
+                       style = 'caption-side: bottom; text-align: left; color:black;',
                        "A dash (-) indicates that due to data quality issues this measure could not be calculated."),
               options = list(pageLength = 32,
                              scrollX = FALSE,
@@ -996,8 +988,10 @@ data_filter_year_no_contact_ijb, NULL)
 bscols(widths = 12,
        div(style = css(width="97%", height="750px", margin="20px"),
      DT::datatable(no_contact_table_data_ijb, rownames = FALSE, caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
-                       "A dash (-) indicates that this measure could not be calculated due to data quality issues. Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis, but does not include those with a termination date. Number of referrals whose PDS ended with no contact includes those with a termination date recorded at any time after diagnosis.
+                       style = 'caption-side: bottom; text-align: left; color:black;',
+                       "A dash (-) indicates that this measure could not be calculated due to data quality issues.", htmltools::tags$br(), 
+                       "Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis, but does not include those with a termination date.", htmltools::tags$br(), 
+                       "Number of referrals whose PDS ended with no contact refers to those with no contact date recorded and a termination date recorded at any time after diagnosis, therefore this may include referrals with a termination date more than 12 months after diagnosis.
 "),
               options = list(pageLength = 33,
                              scrollX = FALSE,
@@ -1068,8 +1062,10 @@ data_filter_year_no_contact_hb, NULL)
 bscols(widths = 12,
        div(style = css(width="97%", height="750px", margin="20px"),
      DT::datatable(no_contact_table_data_hb, rownames = FALSE, caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
-                       "A dash (-) indicates that this measure could not be calculated due to data quality issues. Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis, but does not include those with a termination date. Number of referrals whose PDS ended with no contact includes those with a termination date recorded at any time after diagnosis.
+                       style = 'caption-side: bottom; text-align: left; color:black;',
+                       "A dash (-) indicates that this measure could not be calculated due to data quality issues.", htmltools::tags$br(), 
+                       "Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis, but does not include those with a termination date.", htmltools::tags$br(), 
+                       "Number of referrals whose PDS ended with no contact refers to those with no contact date recorded and a termination date recorded at any time after diagnosis, therefore this may include referrals with a termination date more than 12 months after diagnosis.
 "),
               options = list(pageLength = 15,
                              scrollX = FALSE,
