@@ -16,7 +16,7 @@ plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL, co
                    text = paste0("Scotland", "<br>",
                                  fy, "<br>",
                                  measure_text, {{measure}}, "<br>",
-                                 paste0(perc_met, "%"))
+                                 paste0(scot_perc_met, "%"))
     )
     ) +
     
