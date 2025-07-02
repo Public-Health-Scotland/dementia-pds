@@ -93,13 +93,6 @@ output$ldp_ui <-  renderUI({
                                             linebreaks(1),
                                             #plot ----
                                             h3(strong(htmlOutput("perc_met_plot_title"))),
-                                            # fluidRow(column(
-                                            #   radioButtons("select_hb_ijb",
-                                            #                label = "In the chart and table below show Scotland and: ",
-                                            #                choices = c("Health Boards", "Integration Authority Areas"),
-                                            #                selected = "Health Boards",
-                                            #                inline = TRUE),
-                                            #   width = 12)),
                                             plotlyOutput("perc_met_plot"),
                                             # table ----
                                             h3(strong(htmlOutput("perc_met_table_title"))),
@@ -164,7 +157,7 @@ output$scot_exp_text <- renderUI({
   "<b>", prettyNum(vb_data()$diagnoses, big.mark = ","), "</b>", "the estimated number of people newly diagnosed with dementia."))})
 
 # percentage of those referred for post-diagnostic support received a minimum of 12 months of support
-output$scot_pds_perc <- renderText({paste0(vb_data()$rate, "%")})
+output$scot_pds_perc <- renderText({paste0(vb_data()$percent_met, "%")})
 
 vb_2_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_p1,
                                                    ldp != "fail") %>% select(-diagnoses, -exp_perc) %>% 
@@ -202,9 +195,7 @@ output$table_hb_exp <- DT::renderDataTable({
     group_by(health_board)%>%
     select(health_board, diagnoses, referrals)%>%
     mutate(exp_perc = paste0(round(referrals/diagnoses*100, 1), "%")) %>%  
-    mutate(health_board = if_else(health_board == "Scotland","AAA Scotland", health_board)) %>% 
     arrange(health_board) %>% 
-    mutate(health_board = if_else(health_board == "AAA Scotland","Scotland", health_board)) %>% 
     set_colnames(c("Health Board","Estimated Number of People Newly Diagnosed with Dementia", "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS"))
   make_table(table_hb_exp_data, right_align = 1:3, selected = 1, table_elements = "t") %>% formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
 })
@@ -221,7 +212,7 @@ output$perc_met_plot <- renderPlotly({
     percent_bar_chart(annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1, ldp == "total") %>% 
                         mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
                       category = ijb, 
-                      measure = rate,
+                      measure = percent_met,
                       fill = colour)
     
   }else{
@@ -229,7 +220,7 @@ output$perc_met_plot <- renderPlotly({
     percent_bar_chart(annual_table_data %>% filter(!grepl("NHS", ijb), fy == input$select_year_p1, ldp == "total") %>% 
                         mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
                       category = ijb, 
-                      measure = rate,
+                      measure = percent_met,
                       fill = colour)
   }
     
@@ -247,15 +238,12 @@ output$perc_met_plot <- renderPlotly({
         table_hb_data <- annual_table_data %>% 
           filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
           filter(fy == input$select_year_p1) %>%
-          select(health_board,ldp,referrals,rate)%>%
-          mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
-          mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
+          select(health_board,ldp,referrals,percent_met)%>%
+          mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+          mutate(percent_met = if_else(percent_met == "   NA", "-", paste0(percent_met, "%"))) %>% 
           pivot_wider(names_from=ldp,values_from=referrals) %>% 
-          select(health_board, total, complete, exempt, ongoing, fail, rate) %>% 
-          mutate(health_board = if_else(health_board == "Scotland","AAA Scotland", health_board)) %>% 
+          select(health_board, total, complete, exempt, ongoing, fail, percent_met) %>% 
           arrange(health_board) %>% 
-          mutate(health_board = if_else(health_board == "AAA Scotland","Scotland", health_board)) %>% 
-          mutate(rate = paste0(rate, "%")) %>% 
           set_colnames(c("NHS Board","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")) 
         make_table(table_hb_data, right_align = 1:6, selected = 1, table_elements = "t") 
         
@@ -267,11 +255,11 @@ output$perc_met_plot <- renderPlotly({
           filter(!grepl("NHS", ijb)) %>% 
           filter(fy == input$select_year_p1) %>%
           mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-          mutate(rate = if_else(is.na(rate), "-", paste0(rate, "%"))) %>% 
+          mutate(percent_met = if_else(percent_met == "   NA", "-", paste0(percent_met, "%"))) %>% 
           mutate(referrals = if_else(fy %in% c("2019/20", "2020/21") & ijb == "Aberdeen City" & ldp != "total", "-", as.character(referrals))) %>% 
-          select(ijb,ldp,referrals,rate) %>%
+          select(ijb,ldp,referrals,percent_met) %>%
           pivot_wider(names_from=ldp,values_from=referrals) %>% 
-          select(ijb, total, complete, exempt, ongoing, fail, rate) %>% 
+          select(ijb, total, complete, exempt, ongoing, fail, percent_met) %>% 
           arrange(ijb) %>% 
           set_colnames(c("Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
         make_table(table_ijb_data, right_align = 1:6, selected = 1, rows_to_display = 32, table_elements = "t")
@@ -308,7 +296,6 @@ output$table_hb_trend_part_1 <- DT::renderDataTable({
     mutate(exp_perc = paste0(exp_perc, "%")) %>% 
     distinct(health_board, fy, .keep_all = T) %>% 
     pivot_wider(names_from = fy, values_from = exp_perc) %>% 
-    #  slice(15,1:14) %>% 
     rename(" " = "health_board")  
   make_table(trend_hb_data_2, right_align = 1:length(included_years), selected = 1, table_elements = "t")
 })
@@ -331,7 +318,7 @@ trend_chart_data <- reactive({
 
 
 output$trend_plot_part_2 <- renderPlotly({
-  plot_trend_perc(trend_chart_data(), rate)
+  plot_trend_perc(trend_chart_data(), percent_met)
 })
 
 
@@ -348,12 +335,11 @@ output$table_hb_ijb_trend_part_2 <- DT::renderDataTable({
     
     trend_hb_data <- annual_table_data %>% 
       filter(fy %in% included_years) %>% 
-      select(health_board, fy, rate) %>%
-      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
-      mutate(rate = paste0(rate, "%")) %>% 
+      select(health_board, fy, percent_met) %>%
+      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+      mutate(percent_met = if_else(percent_met == "   NA", "-", paste0(percent_met, "%"))) %>% 
       distinct(health_board, fy, .keep_all = T) %>% 
-      pivot_wider(names_from = fy, values_from = rate) %>% 
-      # slice(15,1:14) %>% 
+      pivot_wider(names_from = fy, values_from = percent_met) %>% 
       rename(" " = "health_board") 
     make_table(trend_hb_data, right_align = 1:length(included_years), selected = 1, table_elements = "t")
     
@@ -362,10 +348,11 @@ output$table_hb_ijb_trend_part_2 <- DT::renderDataTable({
     trend_ijb_data <- annual_table_data %>% 
       filter(fy %in% included_years) %>% 
       filter(!grepl("NHS", ijb)) %>% 
-      select(ijb, fy, rate) %>%
-      mutate(rate = if_else(is.na(rate), "-", paste0(rate, "%"))) %>%
+      select(ijb, fy, percent_met) %>%
+      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
+      mutate(percent_met = if_else(percent_met == "   NA", "-", paste0(percent_met, "%"))) %>% 
       distinct(ijb, fy, .keep_all = T) %>% 
-      pivot_wider(names_from = fy, values_from = rate) %>% 
+      pivot_wider(names_from = fy, values_from = percent_met) %>% 
       rename(" " = "ijb") 
     make_table(trend_ijb_data, right_align = 1:length(included_years), selected = 1, rows_to_display = 32, table_elements = "t")
   }

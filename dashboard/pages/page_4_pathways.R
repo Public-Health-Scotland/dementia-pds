@@ -82,9 +82,7 @@
         filter(!grepl("NHS", ijb), simd == "All") %>% 
         select(ijb, fy, median_diagnosis_to_contact) %>% 
         mutate(median_diagnosis_to_contact = if_else(is.na(median_diagnosis_to_contact)| median_diagnosis_to_contact < 0, 0, median_diagnosis_to_contact)) %>% 
-        mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
         arrange(ijb) %>% 
-        mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
         mutate(median_diagnosis_to_contact = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), 0, median_diagnosis_to_contact))
       
       wait_times_ijb_chart_data <- left_join(median_data_ijb,
@@ -136,9 +134,7 @@ output$table_pathways <- DT::renderDataTable({
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
       mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
       mutate(median_diagnosis_to_contact = if_else(grepl("-",median_diagnosis_to_contact), "   -", median_diagnosis_to_contact)) %>% 
-      mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
       arrange(ijb) %>% 
-      mutate(ijb = if_else(ijb == "AAA", "Scotland", ijb)) %>% 
       mutate(median_diagnosis_to_contact = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "   -", median_diagnosis_to_contact)) %>% 
       mutate(perc_contacted = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), "   -", perc_contacted)) %>%
       select(-fy) %>% 
@@ -148,8 +144,6 @@ output$table_pathways <- DT::renderDataTable({
       rename(`Number of People Referred to PDS` = total_referrals, 
              `% of Referrals contacted by PDS practitioner` = perc_contacted,
              `Average (median) days from diagnosis to first contact` = median_diagnosis_to_contact) %>% 
-      #pivot_longer(!c(ijb,fy), names_to = "measure", values_to = "n") %>% 
-      # pivot_wider(names_from = ijb, values_from = n) %>% 
       rename("Integration Authority Area" = "ijb")
     make_table(median_ijb_table_data, right_align = 1:3, selected = 1, rows_to_display = 32, table_elements = "t")
     

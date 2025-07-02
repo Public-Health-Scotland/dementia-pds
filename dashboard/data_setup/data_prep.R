@@ -38,28 +38,28 @@ pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_o
 
 # 3 prepare data for plot_referrals() ----
 
-pds_plot_data_ijb <- pds %>%  
-  group_by(fy, month, health_board, ijb) %>%
-  summarise(referrals = sum(referrals), .groups = "drop") %>% 
-  arrange(ijb)
-
-pds_plot_data_boards <- 
-  pds %>%
-  mutate(ijb = health_board) %>%
-  group_by(fy, month, health_board, ijb) %>%
-  summarise(referrals = sum(referrals), .groups = "drop")
-
-pds_plot_data <-
-  bind_rows(pds_plot_data_boards, pds_plot_data_ijb) %>% 
-  ungroup() 
+# pds_plot_data_ijb <- pds %>%  
+#   group_by(fy, month, health_board, ijb) %>%
+#   summarise(referrals = sum(referrals), .groups = "drop") %>% 
+#   arrange(ijb)
+# 
+# pds_plot_data_boards <- 
+#   pds %>%
+#   mutate(ijb = health_board) %>%
+#   group_by(fy, month, health_board, ijb) %>%
+#   summarise(referrals = sum(referrals), .groups = "drop")
+# 
+# pds_plot_data <-
+#   bind_rows(pds_plot_data_boards, pds_plot_data_ijb) %>% 
+#   ungroup() 
 
 
 
  #%>%
  # mutate(ijb = forcats::fct_relevel(ijb, max(.$health_board)))
 
-pds_plot_data %>% 
-  write_rds("//conf/dementia/A&I/Outputs/dashboard/data/pds_plot_data.rds")
+# pds_plot_data %>% 
+#   write_rds("//conf/dementia/A&I/Outputs/dashboard/data/pds_plot_data.rds")
 
 
 # 4 Prepare data breakdowns for annual tables ----
@@ -95,7 +95,7 @@ prepare_data <- pds %>%
            fill = list(referrals = 0))
   
 
-# 5 calculate rates ----
+# 5 calculate percentage met standard ----
 num_ijb <- pds %>% 
   filter(ldp %in% c("complete", "exempt")) %>% 
   group_by(health_board, ijb, fy) %>% 
@@ -128,15 +128,14 @@ den_ijb <- pds %>%
               summarise(den = sum(referrals), .groups = "drop"))
 
 
-pds_rate_ijb <- full_join(num_ijb, den_ijb, by = c("health_board", "ijb", "fy")) %>%
-  mutate(rate = round(num/den*100, 1),
-       #  rate = replace_na(rate, 0)
+perc_met_ijb <- full_join(num_ijb, den_ijb, by = c("health_board", "ijb", "fy")) %>%
+  mutate(percent_met = round(num/den*100, 1)
          ) %>%
   select(-num, -den)
 
 
-# Join rate onto prepared data
-annual_table_data <- left_join(prepare_data, pds_rate_ijb, by = c("health_board", "ijb", "fy")) %>% 
+# Join percent_met onto prepared data
+annual_table_data <- left_join(prepare_data, perc_met_ijb, by = c("health_board", "ijb", "fy")) %>% 
   mutate(health_board = if_else(health_board == "Scotland", "AAA Scotland", health_board)) %>% 
   arrange(ijb, health_board) %>% 
   mutate(health_board = if_else(health_board == "AAA Scotland", "Scotland", health_board)) %>% 
@@ -160,8 +159,6 @@ write_rds("//conf/dementia/A&I/Outputs/dashboard/data/annual_table_data.rds")
 
 # 7 read in individual data ----
 ldp <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output)) %>% 
-  
-  filter(fy %in% included_years) %>% 
   
   mutate(ldp = word(ldp, 1)) %>% 
 
@@ -206,33 +203,33 @@ ldp %<>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Know
 source(here("dashboard/functions/summarise_functions_for_dashboard.R"))
 
 data_sex <- summarise_by_variable_gender_dashboard(sex)
-data_subtype <- summarise_by_variable_dashboard(subtype_of_dementia)
-data_stage <- summarise_by_variable_dashboard(clinical_impression_of_stage_of_illness)
-data_referral <- summarise_by_variable_dashboard(pds_referral_source)
-data_model <- summarise_by_variable_dashboard(model_of_care)
+#data_subtype <- summarise_by_variable_dashboard(subtype_of_dementia)
+#data_stage <- summarise_by_variable_dashboard(clinical_impression_of_stage_of_illness)
+#data_referral <- summarise_by_variable_dashboard(pds_referral_source)
+#data_model <- summarise_by_variable_dashboard(model_of_care)
 data_age <- summarise_by_variable_dashboard(age_grp)
 data_simd <- summarise_by_variable_simd_dashboard(simd)
-data_accom <- summarise_by_variable_dashboard(accommodation_type)
-data_uptake <- summarise_uptake_dashboard(ldp)
+#data_accom <- summarise_by_variable_dashboard(accommodation_type)
+#data_uptake <- summarise_uptake_dashboard(ldp)
 
 write_rds(data_sex, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_sex.rds")
-write_rds(data_model, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_model.rds")
-write_rds(data_subtype, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_subtype.rds")
-write_rds(data_stage, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_stage.rds")
-write_rds(data_referral, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_referral.rds")
+#write_rds(data_model, 
+#          "//conf/dementia/A&I/Outputs/dashboard/data/data_model.rds")
+#write_rds(data_subtype, 
+#          "//conf/dementia/A&I/Outputs/dashboard/data/data_subtype.rds")
+#write_rds(data_stage, 
+#          "//conf/dementia/A&I/Outputs/dashboard/data/data_stage.rds")
+#write_rds(data_referral, 
+#          "//conf/dementia/A&I/Outputs/dashboard/data/data_referral.rds")
 write_rds(data_age, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_age.rds")
 write_rds(data_simd, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_simd.rds")
-write_rds(data_accom, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_accom.rds")
-write_rds(data_uptake, 
-          "//conf/dementia/A&I/Outputs/dashboard/data/data_uptake.rds")
+#write_rds(data_accom, 
+#          "//conf/dementia/A&I/Outputs/dashboard/data/data_accom.rds")
+#write_rds(data_uptake, 
+#        "//conf/dementia/A&I/Outputs/dashboard/data/data_uptake.rds")
 
   
 
