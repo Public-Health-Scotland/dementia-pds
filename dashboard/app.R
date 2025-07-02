@@ -1,9 +1,9 @@
 ####
 # dementia pds
-# Original author(s): Original author(s)
+# Original author(s): Abram McCormick
 # Original date: 2024-09-24
-# Written/run on RStudio server 2022.7.2.576.12 and R 4.1.2
-# Description of content
+# Written/run on RStudio R 4.1.2
+# Description of content: Dementia PDS dashboard for annual publication
 ####
 
 
@@ -113,15 +113,36 @@ tabPanel(title = "Referrals & Rates",
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
-         # linebreaks(1),
-         fluidRow(column(
-           # radioGroupButtons("trend_tab", label = NULL, choices = trend_list,
-           #                   status = "tab",
-           #                   direction = "horizontal", 
-           #                   justified = T,
-           #                   size = "lg"), 
-           width = 12)
-         ), #fluidRow
+         # sidebarLayout(
+         #   sidebarPanel(
+         #     #linebreaks(1),
+         #     radioGroupButtons("ldp_sidebar", label = NULL, choices = ldp_sidebar_list,
+         #                       status = "secondary",
+         #                       direction = "vertical", 
+         #                       justified = T,
+         #                       size = "lg"
+         #     ),
+         #     linebreaks(1),
+         #     
+         #     conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
+         #                      
+         #                      selectInput("select_year_p1",
+         #                                  label = "Select Financial Year of Diagnosis:",
+         #                                  choices = included_years,
+         #                                  selected= provisional_year_sup),
+         #                      
+         #                      conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"',
+         #                                       
+         #                                       radioButtons("select_hb_ijb",
+         #                                                    label = "In the chart and table show:",
+         #                                                    choices = c("Health Boards", "Integration Authority Areas"),
+         #                                                    selected = "Health Boards",
+         #                                                    inline = FALSE)
+         #                      ) #cond panel ldp part 2
+         #     ), #cond panel outcomes
+         #     width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+         #   
+         #   mainPanel(width = 9,
          
          uiOutput("rates_ui")
          
