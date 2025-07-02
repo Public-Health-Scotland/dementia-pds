@@ -38,9 +38,11 @@ source(here("dashboard/data_setup/data_load_shiny.R"))
 
 # selections lists
 
-provisional_year_sup <- "2022/23" %p% supsc("P")
+revised_year_sup <- revised_year %p% supsc("R")
 
-included_years <- c(finalised_years, provisional_year_sup)
+provisional_year_sup <- provisional_year %p% supsc("P")
+
+included_years <- c(finalised_years[-length(finalised_years)], revised_year_sup, provisional_year_sup)
 
 #included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
 
