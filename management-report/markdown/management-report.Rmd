@@ -196,7 +196,7 @@ Row
 
 **NHS Orkney** – NHS Orkney had no referrals in *2022/23* (*Q3* and *Q4*) and *2023/24* (*Q1* and *Q2*) as they were unable to access a consultant psychiatrist.
 
-**NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed.
+**NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland for *2022/23* and *2023/24*.
 
 **NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected.
 
@@ -214,7 +214,7 @@ Row
 
 
 
-Methodology {.hidden}
+METHODOLOGY {.hidden}
 =================================================
 Sidebar - methodology {.sidebar}
 -----------------------------------------------------------------------
@@ -318,7 +318,7 @@ There is a Service Level Agreement between NHS Highland and NHS Greater Glasgow 
 If you have any queries regarding the above, please contact [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot).
 
 
-Glossary {.hidden}
+GLOSSARY {.hidden}
 =================================================
 Sidebar - glossary {.sidebar}
 -----------------------------------------------------------------------
@@ -420,16 +420,12 @@ Across the reported years there are `r simd_unknown` records where it was not po
 
 **Accommodation Type:** The type of accommodation of the service user’s main residence. 
 
-**Carer’s Support:** Indicates whether ongoing PDS work is carried out in conjunction with the family/carer even if the service user refuses/declines to work with the PDS Practitioner following diagnosis. The work with the carer is directly linked to the eligibility of the person with dementia for PDS.
-
-**Subtype of Dementia:** The subtype of dementia that a service user has been principally diagnosed with. This diagnosis must be made by a doctor or clinical practitioner with sufficient training and experience in the diagnosis of dementia. 
-
 **Clinical Impression of Stage of Illness:** Clinical Impression of Stage of Illness at referral is broadly used to outline the typical symptoms and degree of difficulties associated with dementia disease progression, and the impact on the person with dementia and their carers. 
 
 **Model of Care:** The model of care deemed most appropriate for the service user following their diagnosis. 
 
 
-Navigation Guide {.hidden}
+NAVIGATION GUIDE {.hidden}
 =================================================
 Sidebar - navigation guide {.sidebar}
 -----------------------------------------------------------------------
