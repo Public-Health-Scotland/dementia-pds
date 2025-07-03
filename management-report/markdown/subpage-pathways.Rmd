@@ -68,7 +68,7 @@ The Integration Authority Areas and Health Boards tabs include a chart and table
 
 The Trend tab includes a chart and table showing the trend of the median days between diagnosis and contact by financial year for Scotland, Integration Authority Areas and Health Boards. Multiple areas can be selected. 
 
-The Waiting Times Breakdown tab provides a table showing the number of referrals, percentage of referrals allocated and contacted by PDS practitioner, and the median number of days between each stage of the pathway. The figures presented here will be reflective of how local services and systems are set up, e.g. referral date and/or date of allocation to a PDS practitioner may be recorded at the same time as the diagnosis.  
+The Waiting Times Breakdown tab provides a table showing the number of referrals, percentage of referrals allocated and contacted by PDS practitioner, and the median number of days between each stage of the pathway. The figures presented here will be reflective of how local services and systems are set up, e.g. referral date and/or date of allocation to a PDS practitioner may be recorded at the same time as the diagnosis. Due to the quality of referral date recording in the three years 2016/17 to 2018/19, data for these three years is not presented in these tables. Recording quality improved for the years 2019/20 onwards with the introduction of updated data collection guidance.
 
 *The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
@@ -337,7 +337,7 @@ bscols(widths = 12,
 
 ```{r dropdown-wait}
 wait_data_all <- wait_data %>% 
-      filter(sex == "All", simd == "All") %>% 
+      filter(sex == "All", simd == "All", !fy %in% c("2016/17", "2017/18", "2018/19")) %>% 
   mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
   rename(geog = ijb) %>% 
       select(geog, fy, total_referrals, median_diagnosis_to_referral,
@@ -463,7 +463,7 @@ The PDS Ongoing tab includes a table showing the percentage of total referrals a
 
 The Exempt tab includes a table showing the percentage of total referrals and number of individuals who are exempt from the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year. 
 
-*As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 `r if(qt != 4) {HTML("<br>")}`
