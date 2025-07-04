@@ -118,8 +118,7 @@ inc_text <- glue(
   "In Scotland, {inc %>% filter(health_board == 'Scotland') %>% ",
   "pull(perc)} of those people estimated to be newly diagnosed ",
   "with dementia in {latest_fy} were referred for post-diagnostic ",
-  "support. The effects of measures relating to the COVID-19 pandemic ",
-  "are likely to have affected the figures for {latest_fy}. ",
+  "support. ",
   "{inc_top3$health_board[1]} had the highest percentage ",
   "of referrals compared to the estimated number of people newly ",
   "diagnosed with dementia ({inc_top3$perc[1]}), ",
@@ -165,10 +164,8 @@ inc_trend_text <- glue(
   "fluctuated slightly over the {english(length(fy_in_pub) - 1)} year period ",
   "{first(fy_in_pub)} to {last(fy_in_pub) [-1]}, ranging from ",
   "{first(inc_trend_comm$perc)} in {first(inc_trend_comm$fy)} to ",
-  "{last(inc_trend_comm$perc)} in {last(inc_trend_comm$fy) [-1]}. ", 
-  "The reduction to {first(inc_trend_comm$perc)} in {first(inc_trend_comm$fy)} ", 
-  "is likely to have been due to the effects of measures relating to the COVID-19 ",
-  "pandemic.")
+  "{last(inc_trend_comm$perc)} in {last(inc_trend_comm$fy) [-1]}." 
+ )
 ```
 
 ```{r 12-months-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
