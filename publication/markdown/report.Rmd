@@ -713,9 +713,7 @@ inc_trend_table %>%
   ft_dementia_style() %>%
     set_header_labels(
     values = c(health_board = "NHS Board")) %>% 
-  # check here the number of columns in the table for next year. 
-  # The 2:7 may need updating for the number of columns.
-  align(j = 2:8, align = "right", part = "body") %>%
+  align(j = 2:(length(fy_in_pub)+1), align = "right", part = "body") %>%
   set_table_properties(layout = "autofit") %>% 
   compose(
     j = ncol(inc_trend_table), part = "header",
