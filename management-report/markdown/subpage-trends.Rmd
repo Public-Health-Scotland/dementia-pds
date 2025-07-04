@@ -82,7 +82,7 @@ Row {.tabset data-height=1210}
 
 <br>
 <br>
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS, Scotland</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS; Scotland</h2>
 ```{r trend-plot}
 
 trends_plot <- plot_trend(pds_scot_totals, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", Scotland = TRUE)
@@ -129,7 +129,7 @@ data_filter_ijb, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS, Integration Authority Areas </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS; Integration Authority Areas </h2>
 ```{r trend-plot-ijb}
 
 trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", colours = phs_colours_31)
@@ -175,7 +175,7 @@ data_filter_hb, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS, Health Boards </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS; Health Boards </h2>
 ```{r trend-plot-hb}
 
 trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", colours = phs_colours_14)
@@ -279,7 +279,7 @@ data_filter_year_ijb,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+) by Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+); Integration Authority Areas</h2>
 ```{r plot-ijb-pop}
 
 ijb_rates_plot <- plot_bar_pop_rate(pds_ijb_pop_data)
@@ -326,7 +326,7 @@ data_filter_year_hb,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+) by Health Board</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+); Health Boards</h2>
 ```{r plot-hb-pop}
  
  hb_rates_plot <- plot_bar_pop_rate(pds_hb_pop_data)
@@ -450,12 +450,13 @@ The second tab shows the percentage of referrals that have received one year’s
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
 `r if(qt != 4) {HTML("<br>")}`
+**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates.
+
+
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
+
 **Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
-
-<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
-
 
 Row {.tabset data-height=1215}
 ----------------------------------------------------------------------
@@ -482,7 +483,7 @@ data_filter_exp_trend,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS</h2>
 ```{r trend-plot-exp}
 
  trends_exp_plot <- plot_trend_perc(pds_exp_rates_data, exp_rate, x ="Financial Year of Diagnosis", colours = phs_colours_15)

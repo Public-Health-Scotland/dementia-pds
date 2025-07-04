@@ -52,20 +52,15 @@ completeness_text <-
     str_sub(sel_fy, 1, 4) <= year(latest_final_year) ~
       paste0("Data for ", sel_fy, " are now final and will not change in ",
              "future versions of this report."),
-    str_sub(sel_fy, 1, 4) == year(latest_final_year + years(1)) ~
-      paste0("The figures shown for ", sel_fy, " are currently provisional and subject to ",
-             "change in future versions of this report."),
-    complete_year == FALSE ~ 
+      complete_year == FALSE ~ 
       paste0("The figures shown for ", sel_fy, " are currently provisional and subject to ",
              "change in future versions of this report. ",
              "LDP Standard performance figures are not provided ",
              "until data is available for the full financial year."),
     TRUE ~ 
       paste0("The figures shown for ", sel_fy, " are currently provisional and subject to ",
-             "change in future versions of this report." ,
-             "As PDS for some referrals is still ",
-             "ongoing, it is not known yet whether or not they ",
-             "will meet the LDP standard." )
+             "change in future versions of this report."
+              )
   )
 
 

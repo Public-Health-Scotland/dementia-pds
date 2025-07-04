@@ -76,6 +76,7 @@ The Waiting Times Breakdown tab provides a table showing the number of referrals
 `r if(qt != 4) {HTML("<br>")}`
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
+
 **Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. This will affect the pathway waiting times for NHS Shetland for 2022/23 and 2023/24. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
 Row {.tabset data-height=1220}
@@ -116,7 +117,7 @@ NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to first contact by PDS practitioner by Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to first contact by PDS practitioner; Integration Authority Areas</h2>
 ```{r plot-median-ijb}
 
 bscols(widths = 12,
@@ -207,7 +208,7 @@ NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to contact by PDS practitioner by Health Board</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to contact by PDS practitioner; Health Boards</h2>
 ```{r plot-median-hb}
 
 bscols(widths = 12,
@@ -457,7 +458,7 @@ Row
 
 This page includes further information for referrals relating to the LDP Standard. *See the [Methodology](#methodology) page for more details.* 
 
-The LDP Standard Not Met tab provides a table showing the percentage of total referrals and number of individuals who did not receive a minimum of one year’s PDS starting within 12 months of diagnosis, along with the percentage for each reason for not meeting the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year. 
+The Standard Not Met tab provides a table showing the percentage of total referrals and number of individuals who did not receive a minimum of one year’s PDS starting within 12 months of diagnosis, along with the percentage for each reason for not meeting the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year. 
 
 The PDS Ongoing tab includes a table showing the percentage of total referrals and number of individuals where the LDP Standard cannot yet be determined and is therefore classed as Ongoing. Data is only shown for the financial years where referrals could still be ongoing. *See the [Glossary](#glossary) for more details.* The table also shows what percentage of the ongoing referrals are yet to start PDS with less than 12 months since diagnosis, and the percentage still receiving PDS with less than 12 months since first contact. 
 
@@ -469,12 +470,13 @@ The Exempt tab includes a table showing the percentage of total referrals and nu
 `r if(qt != 4) {HTML("<br>")}`
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
+
 **Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
 Row {.tabset data-height=800}
 ----------------------------------------------------------------------
 
-### **LDP Standard Not Met**
+### **Standard Not Met**
 
 ```{r dropdown-not-met}
 not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_full) %>% 
