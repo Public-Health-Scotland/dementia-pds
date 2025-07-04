@@ -50,9 +50,9 @@ basefile <- read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_out
   # Add summary columns
   rowwise() %>%
   mutate(
-    referrals = complete + exempt + fail + ongoing,
+    referrals = complete + exempt + fail + ongoing + Aberdeen,
     numerator = complete + exempt,
-    denominator = referrals - ongoing
+    denominator = complete + exempt + fail
   ) %>%
   ungroup() %>%
 
