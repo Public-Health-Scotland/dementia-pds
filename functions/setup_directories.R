@@ -322,6 +322,8 @@ get_pub_figures_path <- function(type = c("c1",
                                           "c5",
                                           "c6",
                                           "c7",
+                                          "c8",
+                                          "c9",
                                           "summary"), 
                                  test_output = FALSE) {
   
@@ -334,6 +336,8 @@ get_pub_figures_path <- function(type = c("c1",
     "c5" ~ stringr::str_glue("{pub_date}_12-months-age.png"),
     "c6" ~ stringr::str_glue("{pub_date}_simd-dist.png"),
     "c7" ~ stringr::str_glue("{pub_date}_12-months-simd.png"),
+    "c8" ~ stringr::str_glue("{pub_date}_total_referrals_trend.png"),
+    "c9" ~ stringr::str_glue("{pub_date}_rate_trend.png"),
     "summary" ~ stringr::str_glue("{pub_date}_summary-chart.png"), 
     "twitter" ~ stringr::str_glue("{pub_date}_dementia-pds_twitter-chart.png")
   )

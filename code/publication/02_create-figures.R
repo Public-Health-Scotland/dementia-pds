@@ -451,5 +451,107 @@ ggsave(get_pub_figures_path(type = "c7", test_output = test_output),
   dpi = 600
 )
 
+# Chart 8 - Referrals trend
+
+trend_year <- paste0(as.numeric(substr(max(fy_in_pub),1,4)) + 1,
+                           "/", as.numeric(substr(max(fy_in_pub),6,7)) + 1)
+
+c8_data <-  read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_output = test_output)) %>% 
+  
+  # Select FY to be included in rest of pub plus extra year
+  filter(fy %in% c(fy_in_pub, trend_year)) %>%
+  
+  # Aggregate to year level (don't need month breakdown)
+  group_by(across(c(health_board:simd, -month))) %>%
+  summarise(referrals = sum(referrals),
+            .groups = "drop")  %>% 
+  # calculate total referrals by year
+  group_by(geog = "Scotland", fy) %>% summarise(annual_referrals = sum(referrals))
+
+c8 <-
+  c8_data %>%
+  ggplot(aes(x = fy, y = annual_referrals, group = geog)) +
+  geom_line(colour = "#3F3685", linewidth = 1.3) +
+ # geom_text(aes(label = format(annual_referrals, big.mark = ",")), 
+         #   vjust = 1.5,
+          #  size = 3) +
+  theme_dementia_pub() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, max(c8_data$annual_referrals)+300)) +
+  scale_x_discrete(labels = str_wrap(c8_data$fy, width = 8)) +
+  xlab("Financial Year of Diagnosis") +
+  ylab(str_wrap("Number of Referrals", width = 10)) #+
+  #theme(
+  #  axis.title.x = element_text(size = 14),  # Change x-axis label size
+   # axis.title.y = element_text(size = 14))  # Change y-axis label size
+
+c8
+
+
+# Save chart to output folder
+ggsave(get_pub_figures_path(type = "c8", test_output = test_output),
+       plot = c8,
+       width = 7,
+       height = 3,
+       device = "png",
+       dpi = 600
+)
+
+
+# Chart 9 - Rates trend
+
+trend_year <- paste0(as.numeric(substr(max(fy_in_pub),1,4)) + 1,
+                     "/", as.numeric(substr(max(fy_in_pub),6,7)) + 1)
+
+c9_data_pds <- read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_output = test_output)) %>% 
+  
+  # Select FY to be included in rest of pub plus extra year
+  filter(fy %in% c(fy_in_pub, trend_year)) %>%
+  
+  # Aggregate to year level (don't need month breakdown)
+  group_by(across(c(health_board:simd, -month))) %>%
+  summarise(referrals = sum(referrals),
+            .groups = "drop")  %>% 
+  # calculate total referrals by year
+  group_by(geog = "Scotland", fy) %>% summarise(annual_referrals = sum(referrals)) %>% 
+  # add year column to pds data to match pop data
+  mutate(year = as.numeric(substr(fy, 1, 4)))
+
+#read in pop_data
+pop_data_trends <- pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds") %>%
+  filter(geog == "Scotland", age_grp != "All", age_grp != "59 and Under", age_grp != "60 to 64", age_grp_2 == "All", sex == "All") %>% select(geog, year, pop_est) %>% 
+  group_by(geog, year) %>% summarise(pop_est = sum(pop_est)) %>% ungroup()
+
+c9_data <- left_join(c9_data_pds, pop_data_trends) %>% select(geog, fy, annual_referrals, pop_est) %>% 
+  mutate(pop_rate_10000 = round((annual_referrals/pop_est)*10000, 1)) %>%
+  select(geog, fy, pop_rate_10000) %>% 
+  ungroup()
+
+c9 <-
+  c9_data %>%
+  ggplot(aes(x = fy, y = pop_rate_10000, group = geog)) +
+  geom_line(colour = "#3F3685", linewidth = 1.3) +
+  # geom_text(aes(label = format(annual_referrals, big.mark = ",")), 
+  #   vjust = 1.5,
+  #  size = 3) +
+  theme_dementia_pub() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, max(c9_data$pop_rate_10000)+15)) +
+  scale_x_discrete(labels = str_wrap(c8_data$fy, width = 8)) +
+  xlab("Financial Year of Diagnosis") +
+  ylab(str_wrap("Number of Referrals", width = 10)) #+
+#theme(
+#  axis.title.x = element_text(size = 14),  # Change x-axis label size
+# axis.title.y = element_text(size = 14))  # Change y-axis label size
+
+c9
+
+
+# Save chart to output folder
+ggsave(get_pub_figures_path(type = "c9", test_output = test_output),
+       plot = c9,
+       width = 7,
+       height = 3,
+       device = "png",
+       dpi = 600
+)
 
 ### END OF SCRIPT ###
