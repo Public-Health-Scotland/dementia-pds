@@ -1507,12 +1507,7 @@ plot_ly(pds_pop_simd_data_ijb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hover
 
 ```{r table-ijb-simd-pop}
 
-ijb_pop_simd_table_data <- #bind_rows(
-  
-  # pds_all_simd_rates %>%
-  # filter(!grepl("NHS", geog)) %>%
-  # select(geog,fy,simd,pop_rate_10000) %>%
-  #  mutate(simd_group = simd, .before = simd),
+ijb_pop_simd_table_data <- 
 
   pds_all_simd_rates %>%
   filter(!grepl("NHS", geog)) %>%
@@ -1869,7 +1864,13 @@ plot_ly(ldp_simd_data_ijb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~si
 
 
 ```{r table-ijb-simd-ldp}
-ijb_ldp_simd_table_data <- ijb_table_ldp(ldp_all_simd, simd)
+simd_totals<-ldp_all_simd %>% group_by(geog,simd) %>% summarise(total_referrals = sum(complete+exempt+fail+ongoing, na.rm = T))
+#replaces nas with zeroes for areas that happen to have no referrals in a certain quintile for a financial year,
+#but nas remain for those that have zero population in a certain quintile
+ldp_all_simd_w_totals<-left_join(ldp_all_simd, ongoing) %>% 
+  mutate(across(complete:ongoing, ~if_else(total_referrals !=0 & is.na(perc_met) & is.na(ongoing), 0, .)))
+
+ijb_ldp_simd_table_data <- ijb_table_ldp(ldp_all_simd_w_totals, simd)
 
 ijb_simd_table_ldp <- SharedData$new(ijb_ldp_simd_table_data, key = ~key, group = "ijb_simd_ldp")
 
@@ -1950,7 +1951,7 @@ plot_ly(ldp_simd_data_hb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~sim
 
 
 ```{r table-hb-simd-ldp}
-hb_ldp_simd_table_data <- hb_table_ldp(ldp_all_simd, simd)
+hb_ldp_simd_table_data <- hb_table_ldp(ldp_all_simd_w_totals, simd)
 
 hb_simd_table_ldp <- SharedData$new(hb_ldp_simd_table_data, key = ~key, group = "hb_simd_ldp")
 
