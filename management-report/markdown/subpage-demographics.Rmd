@@ -1867,7 +1867,7 @@ plot_ly(ldp_simd_data_ijb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~si
 simd_totals<-ldp_all_simd %>% group_by(geog,simd) %>% summarise(total_referrals = sum(complete+exempt+fail+ongoing, na.rm = T))
 #replaces nas with zeroes for areas that happen to have no referrals in a certain quintile for a financial year,
 #but nas remain for those that have zero population in a certain quintile
-ldp_all_simd_w_totals<-left_join(ldp_all_simd, ongoing) %>% 
+ldp_all_simd_w_totals<-left_join(ldp_all_simd, simd_totals) %>% 
   mutate(across(complete:ongoing, ~if_else(total_referrals !=0 & is.na(perc_met) & is.na(ongoing), 0, .)))
 
 ijb_ldp_simd_table_data <- ijb_table_ldp(ldp_all_simd_w_totals, simd)
