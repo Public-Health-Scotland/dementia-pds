@@ -1,5 +1,16 @@
 #### plot functions #####
 
+theme_dementia_dashboard <- function(){
+  theme_gray() +
+    theme(panel.background = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.grid.major.x = element_blank(),
+          panel.grid.major.y = element_line(color = "#d9d9d9"),
+          axis.text = element_text(size = 10),
+          axis.line = element_line()
+    )
+}
+
 # yearly trend plot function for referrals and median wait times
 plot_trend <- function(data, measure, group = ijb, ytitle = ""){
   
@@ -26,6 +37,8 @@ plot_trend <- function(data, measure, group = ijb, ytitle = ""){
     
     phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
     
+    theme_dementia_dashboard() +
+    
     theme(legend.title = element_blank(),
     )
   
@@ -35,7 +48,7 @@ plot_trend <- function(data, measure, group = ijb, ytitle = ""){
            displaylogo = F, editable = F) %>%
     layout(legend = list(orientation = "h", x = 0.5 , y = -0.3,
                          xanchor = "center", yanchor = "bottom")) %>% 
-    layout(margin = list(b = 30, t = 10), # to avoid labels getting cut out
+    layout(margin = list(b = 30, t = 50), # to avoid labels getting cut out
            yaxis = yaxis_plots, xaxis = xaxis_plots)
   
   
@@ -65,6 +78,8 @@ plot_trend_perc <- function(data, measure, group = ijb){
                        labels=function(x) paste0(x,"%")) + 
     
     phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
+    
+    theme_dementia_dashboard() +
     
     theme(legend.title = element_blank(),
     )
@@ -96,10 +111,12 @@ percent_bar_chart <- function(data, category, measure, x_text_angle = 45, legend
                                              round({{measure}},1), "%"))) +
     geom_col(position=position_identity()) +
     
-    scale_y_continuous(limits = c(0, limit),
+    scale_y_continuous(expand = c(0, 0), limits = c(0, limit),
                        labels=function(x) paste0(x,"%")) +
     
     phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+    
+    theme_dementia_dashboard() +
     
     theme(legend.title = element_blank(),
           legend.position = legend,
@@ -145,10 +162,12 @@ plot_bar_median<- function(data){
         # y = "Median Wait (days)",
          color = NULL) +
     
-    scale_y_continuous(#expand = c(0, 0), 
+    scale_y_continuous(expand = c(0, 0), 
       limits = c(0, NA)
                       # breaks = c(0,100,200,300,400,500,600,700,800,900,1000)
                       ) +
+    
+    theme_dementia_dashboard() +
     
     theme(legend.title = element_blank(),
           axis.text.x = element_text(size = 10, angle = 45, vjust = 0.5, hjust = 0.5),
