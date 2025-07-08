@@ -13,7 +13,7 @@ pds_all_cal_year <- pds_all_totals %>%
 
 # join pds data with pop data and calculate rates
 pds_all_rates <- left_join(pds_all_cal_year, pop_data_trends) %>% select(geog, fy, total_referrals, pop_est) %>% 
-  mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 1)) %>%
+  mutate(pop_rate_10000 = round_half_up((total_referrals/pop_est)*10000, 1)) %>%
   select(geog, fy, pop_rate_10000) %>% 
   ungroup()
 
@@ -467,7 +467,7 @@ Row {.tabset data-height=1215}
 pds_exp_rates <- left_join(
 bind_rows(pds_scot_totals, pds_hb_totals) %>% filter(fy %in% full_years),
 exp %>% select(-health_board) %>% rename(geog = health_board_label)) %>% 
-  mutate(exp_rate = round(100*total_referrals/diagnoses,1))
+  mutate(exp_rate = round_half_up(100*total_referrals/diagnoses,1))
 
 pds_exp_rates$geog<- factor(pds_exp_rates$geog, levels = unique(pds_exp_rates$geog))
 
@@ -517,7 +517,7 @@ pds_met_rates <-
   pds_all %>% filter(ldp != "ongoing", fy %in% full_years) %>% 
   group_by(geog, fy, ldp) %>% 
   summarise(referrals = sum(referrals)) %>% pivot_wider(names_from = ldp, values_from = referrals, values_fill = 0) %>% 
-  mutate(perc_met = round(100*(complete + exempt)/(complete + exempt + fail), 1))
+  mutate(perc_met = round_half_up(100*(complete + exempt)/(complete + exempt + fail), 1))
 
 pds_met_rates$geog<- factor(pds_met_rates$geog, levels = unique(pds_met_rates$geog))
 
@@ -549,8 +549,7 @@ bscols(widths = 12,
 
 pds_met_rates %>% select(geog, fy, perc_met) %>% 
             pivot_wider(names_from = fy, values_from = perc_met) %>%
-            mutate(across(where(is.numeric), ~paste0(.,"%"))) %>%
-            mutate(across(2:length(full_years), ~if_else(grepl("N",.),"NA",.))) %>%  
+            mutate(across(where(is.numeric), ~if_else(is.na(.), "\\-", paste0(.,"%")))) %>%
             rename(`Integration Authority Area/Health Board` = geog) %>%
             kable(align = c("l", rep("r", length(full_years)))) %>%
             kable_styling(full_width = TRUE) %>%

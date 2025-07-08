@@ -23,7 +23,7 @@ ldp_table <- function(data,
     full_join(num_ijb, den_ijb, by = "ijb") %>%
     mutate(rate = (num / den) * 100) %>% 
     select(-num, -den) %>%
-    mutate(rate = if_else(!is.na(rate),paste0(format(round_half_up(rate, 1)), "%"), "NA")) %>%
+    mutate(rate = if_else(!is.na(rate),paste0(format(round_half_up(rate, 1)), "%"), "\\-")) %>%
     mutate(ldp = "% Met Standard/Exempt") %>%
     pivot_wider(names_from = ijb, values_from = rate)
   
