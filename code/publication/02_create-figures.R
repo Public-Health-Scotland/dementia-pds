@@ -5,6 +5,8 @@
 # Original Date - March 2021
 # Updated by - Jennifer Thom
 # Date - November 2023
+# Updated by - Abram McCormick
+# Date - July 2025
 #
 # Written/run on - R Posit
 # Version of R - 4.1.2
@@ -451,7 +453,7 @@ ggsave(get_pub_figures_path(type = "c7", test_output = test_output),
   dpi = 600
 )
 
-# Chart 8 - Referrals trend
+# Chart 8 - Referrals trend (Added July 2025)
 
 trend_year <- paste0(as.numeric(substr(max(fy_in_pub),1,4)) + 1,
                            "/", as.numeric(substr(max(fy_in_pub),6,7)) + 1)
@@ -484,9 +486,6 @@ c8 <-
   #  axis.title.x = element_text(size = 14),  # Change x-axis label size
    # axis.title.y = element_text(size = 14))  # Change y-axis label size
 
-c8
-
-
 # Save chart to output folder
 ggsave(get_pub_figures_path(type = "c8", test_output = test_output),
        plot = c8,
@@ -497,7 +496,7 @@ ggsave(get_pub_figures_path(type = "c8", test_output = test_output),
 )
 
 
-# Chart 9 - Rates trend
+# Chart 9 - Rates trend (Added July 2025)
 
 trend_year <- paste0(as.numeric(substr(max(fy_in_pub),1,4)) + 1,
                      "/", as.numeric(substr(max(fy_in_pub),6,7)) + 1)
@@ -542,14 +541,98 @@ c9 <-
 #  axis.title.x = element_text(size = 14),  # Change x-axis label size
 # axis.title.y = element_text(size = 14))  # Change y-axis label size
 
-c9
-
 
 # Save chart to output folder
 ggsave(get_pub_figures_path(type = "c9", test_output = test_output),
        plot = c9,
        width = 7,
        height = 3,
+       device = "png",
+       dpi = 600
+)
+
+
+
+# Chart 10 - Referrals by gender
+
+c10_data <-
+  basefile %>%
+  filter(fy == max(fy_in_pub) & referrals > 0) %>%
+  group_by(sex) %>%
+  summarise(across(c(referrals), sum),
+            .groups = "drop") %>%
+  
+  mutate(
+    perc = case_when(
+      referrals == 0 ~ 0,
+      TRUE ~ referrals / sum(referrals) * 100),
+    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
+  )
+
+c10_limit <- ceiling(max(c10_data$perc) / 10) * 10
+
+c10 <-
+  c10_data %>%
+  ggplot(aes(x = sex, y = perc, fill = 1)) +
+  geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
+  geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
+            vjust = -0.5,
+            size = 3) +
+  theme_dementia_pub() +
+    scale_y_continuous(
+    limits = c(0, c10_limit + 2),
+    breaks = seq(0, c10_limit, by = 5),
+    labels = paste0(seq(0, c10_limit, by = 5), "%"),
+    expand = c(0, 0)) +
+  scale_x_discrete(labels = str_wrap(c10_data$sex, width = 8)) +
+  xlab("Age Group") +
+  ylab(str_wrap("Percentage of total referrals", width = 10))
+
+
+# Save chart to output folder
+ggsave(get_pub_figures_path(type = "c10", test_output = test_output),
+       plot = c10,
+       width = 6.8,
+       height = 3.5,
+       device = "png",
+       dpi = 600
+)
+
+
+# Chart 11 - One year PDS by sex
+
+c11_data <-
+  basefile %>%
+  filter(fy == max(fy_in_pub) & referrals > 0) %>%
+  group_by(sex) %>%
+  summarise(across(referrals:denominator, sum),
+            .groups = "drop") %>%
+ 
+  mutate(
+    perc = case_when(
+      referrals == 0 ~ 0,
+      TRUE ~ numerator / denominator * 100),
+    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
+  )
+
+c11 <-
+  c11_data %>%
+  ggplot(aes(x = sex, y = perc, fill = 1)) +
+  geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
+  geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
+            vjust = -0.5,
+            size = 3) +
+  theme_dementia_pub() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
+  scale_x_discrete(labels = str_wrap(c11_data$sex, width = 8)) +
+  xlab("Age Group") +
+  ylab(str_wrap("Percentage of Referrals Achieved LDP Standard", width = 10))
+
+# Save chart to output folder
+ggsave(get_pub_figures_path(type = "c11", test_output = test_output),
+       plot = c11,
+       width = 6.8,
+       height = 3.5,
        device = "png",
        dpi = 600
 )
