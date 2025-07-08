@@ -9,7 +9,7 @@ ldp_all_age <- pds_all %>%
   group_by(geog, fy, age_grp_2, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
-  mutate(perc_met = round((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
+  mutate(perc_met = round_half_up((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
 complete(nesting(geog, fy), age_grp_2, fill = list(perc_met = NA))
 
 ldp_all_age <- left_join(ldp_all_age,
@@ -33,7 +33,7 @@ pds_all_age_cal_year <- pds_all_age %>%
   mutate(year = as.numeric(substr(fy, 1, 4)))
 
 pds_all_age_rates <- left_join(pds_all_age_cal_year, pop_data_age) %>% select(-year) %>%
-  mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 1)) %>% select(fy, geog, age_grp_2, pop_rate_10000)
+  mutate(pop_rate_10000 = round_half_up((total_referrals/pop_est)*10000, 1)) %>% select(fy, geog, age_grp_2, pop_rate_10000)
 
 pds_all_age_rates$geog<- factor(pds_all_age_rates$geog, levels = unique(pds_all_age_rates$geog)) 
 pds_all_age_rates$age_grp_2<- factor(pds_all_age_rates$age_grp_2, levels = c("79 and Under", "80 to 84", "85+"))
@@ -50,7 +50,7 @@ ldp_all_sex <- pds_all %>%
   group_by(geog, fy, sex, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
-  mutate(perc_met = round((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
+  mutate(perc_met = round_half_up((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
 complete(nesting(geog, fy), sex, fill = list(perc_met = NA))
 
 ldp_all_sex <- left_join(ldp_all_sex,
@@ -74,7 +74,7 @@ pds_all_sex_cal_year <- pds_all_sex %>%
   mutate(year = as.numeric(substr(fy, 1, 4)))
 
 pds_all_sex_rates <- left_join(pds_all_sex_cal_year, pop_data_sex) %>% select(-year) %>%
-  mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 1))
+  mutate(pop_rate_10000 = round_half_up((total_referrals/pop_est)*10000, 1))
 
 pds_all_sex_rates$geog <- factor(pds_all_sex_rates$geog, levels = unique(pds_all_sex_rates$geog))
 pds_all_sex_rates$sex <- as.factor(pds_all_sex_rates$sex)
@@ -93,7 +93,7 @@ ldp_all_simd <- pds_all %>%
   group_by(geog, fy, simd, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
-  mutate(perc_met = round((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
+  mutate(perc_met = round_half_up((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
 complete(nesting(geog, fy), simd, fill = list(perc_met = NA))
 
 ldp_all_simd <- left_join(ldp_all_simd,
@@ -115,7 +115,7 @@ pds_all_simd_cal_year <- pds_all_simd %>%
   mutate(year = as.numeric(substr(fy, 1, 4)))
 
 pds_all_simd_rates <- left_join(pds_all_simd_cal_year, pop_data_simd) %>% select(-year) %>%
-  mutate(pop_rate_10000 = round((total_referrals/pop)*10000, 1))
+  mutate(pop_rate_10000 = round_half_up((total_referrals/pop)*10000, 1))
 
 pds_all_simd_rates$geog <- factor(pds_all_simd_rates$geog, levels = unique(pds_all_simd_rates$geog))
 

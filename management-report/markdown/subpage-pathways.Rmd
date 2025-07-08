@@ -491,7 +491,7 @@ not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_ful
 
 not_met_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), not_met_data) %>% 
-    mutate(perc_of_total = paste0(round(100*total/total_referrals,1), "%"),
+    mutate(perc_of_total = paste0(round_half_up(100*total/total_referrals,1), "%"),
                                               .after = total_referrals) %>% 
   mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
@@ -572,7 +572,7 @@ ongoing_data <- pds_all %>% filter(ldp == "ongoing") %>% group_by(geog, fy, ldp_
 
 ongoing_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), ongoing_data) %>% 
-   mutate(`% of Total referrals PDS Ongoing` = paste0(round(100*total/total_referrals,1), "%"),
+   mutate(`% of Total referrals PDS Ongoing` = paste0(round_half_up(100*total/total_referrals,1), "%"),
                                               .after = total_referrals) %>% 
   filter(!fy %in% finalised_years) %>% 
   rename(`Integration Authority Area/Health Board` = geog, 
@@ -649,7 +649,7 @@ exempt_data <- pds_all %>% filter(ldp == "exempt") %>% group_by(geog, fy, ldp_fu
 
 exempt_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), exempt_data) %>% 
-   mutate(`% of Total referrals Exempt` = paste0(round(100*total/total_referrals,1), "%"),
+   mutate(`% of Total referrals Exempt` = paste0(round_half_up(100*total/total_referrals,1), "%"),
                                               .after = total_referrals) %>% 
   rename(`Integration Authority Area/Health Board` = geog, 
          `Total referrals` = total_referrals,
@@ -763,10 +763,10 @@ Row {.tabset data-height=820}
       mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% rename("geog" = "ijb")
   ) %>% 
        mutate(Known = total_referrals - `Not Known`) %>% 
-       mutate(perc_known = paste0(round(100*Known/total_referrals,1), "%")) %>%
+       mutate(perc_known = paste0(round_half_up(100*Known/total_referrals,1), "%")) %>%
       select(2,1,4,7,8,9,10,11,12) %>% 
-  mutate(perc_declined = if_else(Known == 0, "-", paste0(round(100*Declined/Known,1), "%"))) %>%
-  mutate(perc_accepted = if_else(Known == 0, "-", paste0(round((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
+  mutate(perc_declined = if_else(Known == 0, "-", paste0(round_half_up(100*Declined/Known,1), "%"))) %>%
+  mutate(perc_accepted = if_else(Known == 0, "-", paste0(round_half_up((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
           mutate(across(where(is.numeric), ~format(., big.mark = ","))
                     ) %>% 
   select(fy, geog, total_referrals, perc_known, perc_accepted, perc_declined) %>% 
@@ -830,10 +830,10 @@ bscols(widths = 12,
       mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% rename("geog" = "health_board")
   ) %>% 
        mutate(Known = total_referrals - `Not Known`) %>% 
-       mutate(perc_known = paste0(round(100*Known/total_referrals,1), "%")) %>%
+       mutate(perc_known = paste0(round_half_up(100*Known/total_referrals,1), "%")) %>%
       select(2,1,4,7,8,9,10,11,12) %>% 
-  mutate(perc_declined = if_else(Known == 0, "-", paste0(round(100*Declined/Known,1), "%"))) %>%
-  mutate(perc_accepted = if_else(Known == 0, "-", paste0(round((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
+  mutate(perc_declined = if_else(Known == 0, "-", paste0(round_half_up(100*Declined/Known,1), "%"))) %>%
+  mutate(perc_accepted = if_else(Known == 0, "-", paste0(round_half_up((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
           mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   select(fy, geog, total_referrals, perc_known, perc_accepted, perc_declined) %>% 
   rename("Number of People Referred to PDS" = "total_referrals",
@@ -951,8 +951,8 @@ no_contact_term_ijb <- pds_all %>% filter(!grepl("NHS", geog), ldp_full == "fail
 no_contact_ijb <- left_join(ijb_totals_12, no_contact_term_ijb) %>% 
   mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
     mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
-     mutate(perc_no_contact_term = paste0(round((referrals_no_contact_term/total_referrals)*100,1),"%")) %>% 
-   mutate(perc_no_contact_12 = paste0(round((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
+     mutate(perc_no_contact_term = paste0(round_half_up((referrals_no_contact_term/total_referrals)*100,1),"%")) %>% 
+   mutate(perc_no_contact_12 = paste0(round_half_up((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
   select(fy, ijb,
          total_referrals,
          perc_no_contact_12, referrals_no_contact_12,
@@ -1028,8 +1028,8 @@ no_contact_term_hb <- pds_all %>% filter(geog == "Scotland" | grepl("NHS", geog)
 no_contact_hb <- left_join(hb_totals_12, no_contact_term_hb) %>% 
   mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
     mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
-     mutate(perc_no_contact_term = paste0(round((referrals_no_contact_term/total_referrals)*100,1),"%")) %>% 
-   mutate(perc_no_contact_12 = paste0(round((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
+     mutate(perc_no_contact_term = paste0(round_half_up((referrals_no_contact_term/total_referrals)*100,1),"%")) %>% 
+   mutate(perc_no_contact_12 = paste0(round_half_up((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
   select(fy, health_board,
          total_referrals,
          perc_no_contact_12, referrals_no_contact_12,
