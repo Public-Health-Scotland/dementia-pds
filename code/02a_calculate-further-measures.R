@@ -202,13 +202,8 @@ data_uptake %>%
 
 ### 5 PATHWAYS: WAITING TIMES ----
 
-# combine not known and other seldom used responses into one category for accommodation type and referral source
-ldp_wait_times <- ldp_clean %>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Known", "Homeless", "No Fixed Address"),
-                                             "Not Known/Other", accommodation_type),
-                pds_referral_source = if_else(pds_referral_source %in% c("Not Known", "Local Authority", "Other", "Private Professional/Service/Organisation", "Self Referral"),
-                                              "Not Known/Other", pds_referral_source))
 #calculate days between each stage of pathway
-ldp_wait_times %<>% 
+ldp_wait_times <- ldp_clean %>% 
   mutate(n_referrals = 1,
          diagnosis_to_referral_days = time_length(interval(dementia_diagnosis_confirmed_date, date_pds_referral_received), "days"),
          referral_to_allocation_days = time_length(interval(date_pds_referral_received, initial_pds_practitioner_allocation_date), "days"),
