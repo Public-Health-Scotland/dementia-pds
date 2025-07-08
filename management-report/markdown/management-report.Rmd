@@ -370,7 +370,7 @@ NRS Mid-year population estimates can be found using the links below:
 
 e.g. the rate for SIMD 1 (the most deprived quintile) for a particular area is calculated by dividing the number of people referred from this quintile, for the specified area, by the total SIMD 1 population aged 65 and over in that area and multiplying by 10,000. 
 
-**Finalised Years and Partial Current Year:** As it can take up to two years for a person to receive 12 months of PDS, the data reported by financial year is deemed to be provisional for two years and PHS do not finalise the data until then. Therefore, the figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report. 
+**Finalised Years`r if(qt != 4) {paste0(" and Partial Current Year")}`:** As it can take up to two years for a person to receive 12 months of PDS, the data reported by financial year is deemed to be provisional for two years and PHS do not finalise the data until then. Therefore, the figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report. 
 
 `r if(qt != 4) {paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, ".")}`
 
@@ -561,6 +561,8 @@ Queries/Errors - Any queries/errors outstanding following the resubmission deadl
 Data Completion – The tables show, for three key mandatory fields, the percentage of records which are reported as NA/code 98/99 (Unknown)/Yet to be determined (YTBD). As these are fields of interest we would like to see a reduction in the number of records with these codes so that meaningful information can be produced from these data. The tables are designed to help areas monitor the number of cases they report as NA/98/99/YTBD.
 
 Number of Records Submitted – This table shows the number of records submitted for each area. Note these are the number of records, including duplicate records, therefore this is not the same as the number of people referred.
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
 Row
 -------------------------------------------------
