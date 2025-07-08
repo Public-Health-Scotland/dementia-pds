@@ -623,7 +623,7 @@ the data presented in this report.
 \newpage
 
 # Main Points
-<Div custom-style = "Bullet 1">There were `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`. The effects of measures relating to the COVID-19 pandemic are likely to have contributed to this reduction.</Div>
+<Div custom-style = "Bullet 1">There were `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.</Div>
 <Div custom-style = "Bullet 1">Of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year's support. In `r revised_fy`, the percentage was `r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`.</Div>
 <Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1^</Div>
 
@@ -640,7 +640,7 @@ include_graphics(get_pub_figures_path(type = "c2"))
 1. `r prov_footnote`
 </Div>
 
-<Div custom-style = "Bullet 1">In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`. The effects of measures relating to the COVID-19 pandemic are likely to have contributed to this reduction.</Div>
+<Div custom-style = "Bullet 1">In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.</Div>
 
 \newpage
 
@@ -695,6 +695,7 @@ Figure 1 presents the percentage of people referred for dementia post-diagnostic
 include_graphics(get_pub_figures_path(type = "c1"))
 
 ```
+</Div>
 
 <Div custom-style = "Footnote Text">
 1. `r source_footnote`
@@ -788,7 +789,7 @@ hb %>%
 include_graphics(get_pub_figures_path(type = "c2"))
 
 ```
-
+</Div>
 
 <Div custom-style = "Footnote Text">
 1. `r source_footnote`
@@ -883,6 +884,7 @@ ijb %>%
 include_graphics(get_pub_figures_path(type = "c3"))
 
 ```
+</Div>
 
 <Div custom-style = "Footnote Text">
 1. `r source_footnote`
@@ -941,6 +943,7 @@ Figure 4 presents the age distribution of those referred for dementia post-diagn
 # Figure 4 
 include_graphics(get_pub_figures_path(type = "c4"))
 ```
+</Div>
 
 <Div custom-style = "Footnote Text">
 1. `r source_footnote`
@@ -961,6 +964,7 @@ Figure 5 presents the percentage of those referred for dementia post-diagnostic 
 # Figure 5 
 include_graphics(get_pub_figures_path(type = "c5"))
 ```
+</Div>
 
 <Div custom-style = "Footnote Text">
 1. `r source_footnote`
@@ -986,6 +990,7 @@ Figure 6 presents the distribution of referrals for dementia post-diagnostic sup
 include_graphics(get_pub_figures_path(type = "c6"))
 
 ```
+</Div>
 
 <Div custom-style = "Footnote Text">
 1. `r source_footnote_simd`
@@ -1006,6 +1011,7 @@ Figure 7 presents the percentage of those referred for dementia post-diagnostic 
 # Figure 7 
 include_graphics(get_pub_figures_path(type = "c7"))
 ```
+</Div>
 
 <Div custom-style = "Footnote Text">
 1. `r source_footnote_simd`
@@ -1080,6 +1086,7 @@ This part of the LDP standard is calculated as:
 $$
 \text{LDP Standard Achieved (%)} = \frac{\text{LDP Standard met + Exempt from LDP Standard}}{\text{LDP Standard met + Exempt + LDP Standard not met}} \times \text{100}
 $$
+</Div>
 
 Service users for whom it is not yet known if they have met the standard as their PDS is ongoing are excluded from the calculation and therefore figures for the latest year are currently provisional subject to all service users completing their support.
 
