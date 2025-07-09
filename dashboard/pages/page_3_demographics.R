@@ -129,8 +129,8 @@ output$table_demo <- DT::renderDataTable({
       mutate(percent_met = round(((complete + exempt)/(complete + exempt + not_met))*100, 1)) 
   ) %>% 
     mutate(perc_prop = round(100*total_referrals/max(total_referrals),1), .after = total_referrals) %>% 
-    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
-    mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>% 
+    mutate(across(where(is.numeric), ~if_else(is.na(.), "-", format(., big.mark = ",")))) %>%
+    mutate(across(starts_with("perc"), ~ if_else(grepl("-", .), ., paste0(.,"%")))) %>% 
     set_colnames(c(" ","Number of People Referred to PDS", "Proportion of Total Referrals", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
   make_table(table_data_demo, right_align = 1:7, table_elements = "t", ordering = FALSE, selected = nrow(table_data_demo)) 
   
