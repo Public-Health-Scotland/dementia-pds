@@ -240,7 +240,7 @@ c4_data <-
 c4_limit <- ceiling(max(c4_data$perc) / 10) * 10
 
 c4 <-
-  c4_data %>%
+  c4_data %>% filter(age_grp != "Unknown") %>% 
   ggplot(aes(x = age_grp, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
@@ -269,7 +269,7 @@ ggsave(get_pub_figures_path(type = "c4", test_output = test_output),
 # Chart 5 - One year PDS by age
 
 c5_data <-
-  basefile %>%
+  basefile %>% 
   filter(fy == max(fy_in_pub) & referrals > 0) %>%
   group_by(age_grp) %>%
   summarise(across(referrals:denominator, sum),
@@ -314,7 +314,7 @@ c5_data <-
   )
 
 c5 <-
-  c5_data %>%
+  c5_data %>% filter(age_grp != "Unknown") %>% 
   ggplot(aes(x = age_grp, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
@@ -366,7 +366,7 @@ c6_data <-
 c6_limit <- ceiling(max(c6_data$perc) / 10) * 10
 
 c6 <-
-  c6_data %>%
+  c6_data %>% filter(simd != "Unknown") %>% 
   ggplot(aes(x = simd, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
@@ -432,7 +432,7 @@ c7_data <-
   )
 
 c7 <-
-  c7_data %>%
+  c7_data %>% filter(simd != "Unknown") %>% 
   ggplot(aes(x = simd, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
@@ -481,10 +481,7 @@ c8 <-
   scale_y_continuous(expand = c(0, 0), limits = c(0, max(c8_data$annual_referrals)+300)) +
   scale_x_discrete(labels = str_wrap(c8_data$fy, width = 8)) +
   xlab("Financial Year of Diagnosis") +
-  ylab(str_wrap("Number of Referrals", width = 10)) #+
-  #theme(
-  #  axis.title.x = element_text(size = 14),  # Change x-axis label size
-   # axis.title.y = element_text(size = 14))  # Change y-axis label size
+  ylab(str_wrap("Number of Referrals", width = 10)) 
 
 # Save chart to output folder
 ggsave(get_pub_figures_path(type = "c8", test_output = test_output),
@@ -533,14 +530,12 @@ c9 <-
   #   vjust = 1.5,
   #  size = 3) +
   theme_dementia_pub() +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, max(c9_data$pop_rate_10000)+15)) +
-  scale_x_discrete(labels = str_wrap(c8_data$fy, width = 8)) +
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(0, max(c9_data$pop_rate_10000)+5),
+                     breaks = seq(0, max(c9_data$pop_rate_10000)+5, by = 15)) +
+  scale_x_discrete(labels = str_wrap(c9_data$fy, width = 8)) +
   xlab("Financial Year of Diagnosis") +
-  ylab(str_wrap("Number of Referrals", width = 10)) #+
-#theme(
-#  axis.title.x = element_text(size = 14),  # Change x-axis label size
-# axis.title.y = element_text(size = 14))  # Change y-axis label size
-
+  ylab(str_wrap("Number of Referrals per 10k Population", width = 10)) 
 
 # Save chart to output folder
 ggsave(get_pub_figures_path(type = "c9", test_output = test_output),
@@ -572,7 +567,7 @@ c10_data <-
 c10_limit <- ceiling(max(c10_data$perc) / 10) * 10
 
 c10 <-
-  c10_data %>%
+  c10_data %>% filter(sex!= "Unknown") %>% 
   ggplot(aes(x = sex, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
@@ -581,8 +576,8 @@ c10 <-
   theme_dementia_pub() +
     scale_y_continuous(
     limits = c(0, c10_limit + 2),
-    breaks = seq(0, c10_limit, by = 5),
-    labels = paste0(seq(0, c10_limit, by = 5), "%"),
+    breaks = seq(0, c10_limit, by = 10),
+    labels = paste0(seq(0, c10_limit, by = 10), "%"),
     expand = c(0, 0)) +
   scale_x_discrete(labels = str_wrap(c10_data$sex, width = 8)) +
   xlab("Age Group") +
@@ -616,7 +611,7 @@ c11_data <-
   )
 
 c11 <-
-  c11_data %>%
+  c11_data %>% filter(sex!= "Unknown") %>%
   ggplot(aes(x = sex, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
