@@ -118,21 +118,21 @@ tabPanel(title = "Referrals & Rates",
          #     #linebreaks(1),
          #     radioGroupButtons("ldp_sidebar", label = NULL, choices = ldp_sidebar_list,
          #                       status = "secondary",
-         #                       direction = "vertical", 
+         #                       direction = "vertical",
          #                       justified = T,
          #                       size = "lg"
          #     ),
          #     linebreaks(1),
-         #     
+         # 
          #     conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
-         #                      
+         # 
          #                      selectInput("select_year_p1",
          #                                  label = "Select Financial Year of Diagnosis:",
          #                                  choices = included_years,
          #                                  selected= provisional_year_sup),
-         #                      
+         # 
          #                      conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"',
-         #                                       
+         # 
          #                                       radioButtons("select_hb_ijb",
          #                                                    label = "In the chart and table show:",
          #                                                    choices = c("Health Boards", "Integration Authority Areas"),
@@ -141,10 +141,12 @@ tabPanel(title = "Referrals & Rates",
          #                      ) #cond panel ldp part 2
          #     ), #cond panel outcomes
          #     width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
-         #   
+         # 
          #   mainPanel(width = 9,
          
          uiOutput("rates_ui")
+           #)#main panel
+        # )#sidebar layout
          
 ), # tabpanel
 
