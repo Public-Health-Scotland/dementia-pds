@@ -247,19 +247,6 @@ tabPanel(title = "Methodology",
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
-         # fluidRow(
-         #   box("This page includes more detail regarding the methodology used to arrive at the figures in this report. It is hoped that by sharing this, the reports will be easier to understand and local reporting will be more consistent.",
-         #       background = "blue",
-         #       width = 12
-         #   )),
-         # linebreaks(1),
-         fluidRow(column(
-           
-           radioGroupButtons("method_tab", label = NULL, choices = method_list,
-                             status = "tab",
-                             direction = "horizontal", 
-                             justified = T,
-                             size = "lg"), width = 12)),
          uiOutput("method_ui")
       
 ), # tabPanel
@@ -283,15 +270,14 @@ server <- function(input, output, session) {
     }
   })
   
-  
-    # Get content for individual pages
+      # Get content for individual pages
     source(file.path(here("dashboard/pages/intro_page.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_1_ldp_standard.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_2_rates.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_3_demographics.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_4_pathways.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_5_methodology.R")), local = TRUE)$value
-   # source(file.path(here("dashboard/pages/page_7.R")), local = TRUE)$value
+
 
 }
 
