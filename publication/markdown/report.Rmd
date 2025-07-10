@@ -48,25 +48,6 @@ err <-
   select(fy, perc) %>%
   mutate(text = glue("for {fy} was {perc}"))
 
-# percentage over 65
-over_65_and_total <- left_join(
-
-scot_65_plus_total <- pds %>% filter(age_grp != "59 and Under", age_grp != "60 to 64") %>% 
-  group_by(geog = "Scotland") %>% summarise(over_65_referrals = sum(referrals)),
-
-
-scot_overall_total <- pds %>% group_by(geog = "Scotland") %>% summarise(total_referrals = sum(referrals))
-
-)
-
-perc_65_plus<-round(over_65_and_total[2]/over_65_and_total[3]*100,1)
-
-#number of unknown simds in provisional year
-
-simd_unknown_provisional_year <- pds %>% filter(fy == latest_fy, simd == "Unknown")
-
-simd_unknown <- sum(simd_unknown_provisional_year$referrals)
-
 
 #aberdeen city note
 a_city_statement <-
@@ -583,6 +564,35 @@ interpret_footnote <-
         "with dementia being referred to post-diagnostic support",
         "(see [section 1](#section1)).")
 
+# percentage over 65
+over_65_and_total <- left_join(
+
+scot_65_plus_total <- pds %>% filter(age_grp != "59 and Under", age_grp != "60 to 64") %>% 
+  group_by(geog = "Scotland") %>% summarise(over_65_referrals = sum(referrals)),
+
+
+scot_overall_total <- pds %>% group_by(geog = "Scotland") %>% summarise(total_referrals = sum(referrals))
+
+)
+
+perc_65_plus<-round(over_65_and_total[2]/over_65_and_total[3]*100,1)
+
+#number of unknown simds in provisional year
+
+simd_unknown_provisional_year <- pds %>% filter(fy == latest_fy, simd == "Unknown")
+
+simd_unknown <- sum(simd_unknown_provisional_year$referrals)
+
+simd_footnote_unknowns <- glue(
+  "Deprivation is calculated by matching postcodes to the ",
+  "Scottish Index of Multiple Deprivation (SIMD) quintiles. There are a ", 
+  "small number of records ({simd_unknown}) where it was not possible to assign ", 
+  "deprivation category based on the postcode information available.")
+
+simd_footnote <- paste0(
+  "Deprivation is calculated by matching postcodes to the ",
+  "Scottish Index of Multiple Deprivation (SIMD) quintiles.")
+
 age_unknown <- 
   pds %>% filter(fy == latest_fy) %>% count(age_grp)
 
@@ -592,22 +602,12 @@ age_footnote <- glue(
   "incomplete date of birth and therefore the age is unknown.', '')}"
 )
 
-simd_unknown <-
-  pds %>% filter(fy == latest_fy) %>% count(simd)
-
-simd_footnote <- glue(
-  "Deprivation is calculated by matching postcodes to the ",
-  "Scottish Index of Multiple Deprivation (SIMD) quintiles. There are a ", 
-  "small number of records ({simd_unknown}) where it was not possible to assign ", 
-  "deprivation category based on the postcode information available.")
-
 source_footnote_simd <- 
   paste0("Source: Public Health Scotland quarterly dementia post-diagnostic ",
         "support dataset. Data submissions from NHS Boards as at ", 
         format(end_date, "%d %B %Y"), ".",
         " Scottish Index of Multiple Deprivation (SIMD) 2020v2.")
 
-#interpretation_text <- glue("**---Manual adjustment required here---**")
 ```
 
 # Introduction
@@ -651,6 +651,7 @@ the data presented in this report.
 
 # Main Points
 <Div custom-style = "Bullet 1">There were `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.</Div>
+<Div custom-style = "Bullet 1">In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.</Div>
 <Div custom-style = "Bullet 1">Of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year's support. In `r revised_fy`, the percentage was `r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`.</Div>
 <Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1,2^</Div>
 
@@ -667,8 +668,6 @@ include_graphics(get_pub_figures_path(type = "c2"))
 1. `r prov_footnote`
 2. `r shet_footnote`
 </Div>
-
-<Div custom-style = "Bullet 1">In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.</Div>
 
 \newpage
 
@@ -806,8 +805,6 @@ hb %>%
 5. `r shet_footnote`
 </Div>
 
-<!-- `r interpretation_text` -->
-
 `r text_hb`
 
 <Div custom-style = "Table or chart caption">Figure 2: Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1,2,3,4,5^</Div>
@@ -861,8 +858,6 @@ hb_trend_table  %>%
 6. `r a_city_footnote_hb`
 </Div>
 
-<!-- `r interpretation_text` -->
-
 `r scot_trend_text`
 
 `r hb_trend_text`
@@ -901,8 +896,6 @@ ijb %>%
 4. `r interpret_footnote`
 5. `r shet_footnote`
 </Div>
-
-<!-- `r interpretation_text` -->
 
 `r text_ijb`
 
@@ -984,8 +977,6 @@ include_graphics(get_pub_figures_path(type = "c4"))
 3. `r age_footnote`
 </Div>
 
-<!-- `r interpretation_text` -->
-
 `r age_referrals_text`
 
 Figure 5 presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by age group for `r latest_fy`. 
@@ -1005,8 +996,6 @@ include_graphics(get_pub_figures_path(type = "c5"))
 3. `r age_footnote`
 </Div>
 
-<!-- `r interpretation_text` -->
-
 `r age_ldp_text` 
 
 \newpage
@@ -1015,7 +1004,7 @@ include_graphics(get_pub_figures_path(type = "c5"))
 
 Figure 6 presents the distribution of referrals for dementia post-diagnostic support by deprivation quintile for `r latest_fy`. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived) to 5 (least deprived). At Scotland level, approximately one fifth of the general population are within each deprivation quintile.
 
-<Div custom-style = "Table or chart caption">Figure 6: Distribution of referrals to dementia post-diagnostic support by deprivation quintile; `r latest_fy`^1,2`r if(simd_unknown != 0){paste(",3")`^</Div>
+<Div custom-style = "Table or chart caption">Figure 6: Distribution of referrals to dementia post-diagnostic support by deprivation quintile; `r latest_fy`^1,2,3^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-6, echo=FALSE, fig.cap= `f6_alt_text`, out.width = 600}
@@ -1028,10 +1017,8 @@ include_graphics(get_pub_figures_path(type = "c6"))
 <Div custom-style = "Footnote Text">
 1. `r source_footnote_simd`
 2. `r prov_footnote`
-`r if(simd_unknown != 0){paste("3.",simd_footnote)}`
+3. `r if_else(simd_unknown > 0, simd_footnote_unknowns, simd_footnote)`
 </Div>
-
-<!-- `r interpretation_text` -->
 
 `r simd_referrals_text`
 
@@ -1049,10 +1036,8 @@ include_graphics(get_pub_figures_path(type = "c7"))
 <Div custom-style = "Footnote Text">
 1. `r source_footnote_simd`
 2. `r prov_footnote`
-3. `r simd_footnote`
+3. `r if_else(simd_unknown > 0, simd_footnote_unknowns, simd_footnote)`
 </Div>
-
-<!-- `r interpretation_text` -->
 
 `r simd_ldp_text`
 
