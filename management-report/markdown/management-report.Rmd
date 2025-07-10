@@ -106,11 +106,32 @@ if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years
 comp_data <- read_rds(get_mi_data_path("comp_data", ext = "rds", test_output = test_output))
 
 #glossary calculations
-glossary_figures <- read_rds(get_mi_data_path("glossary_figures", ext = "rds", test_output = test_output))
-perc_65_plus <- glossary_figures[1]
-age_unknown <- glossary_figures[2]
-sex_unknown <- glossary_figures[3]
-simd_unknown <- glossary_figures[4]
+over_65_and_total <- left_join(
+
+scot_65_plus_total <- pds_scot %>% filter(age_grp != "59 and Under", age_grp != "60 to 64") %>% 
+  group_by(geog) %>% summarise(over_65_referrals = sum(referrals)),
+
+
+scot_overall_total <- pds_scot %>% group_by(geog) %>% summarise(total_referrals = sum(referrals))
+
+)
+
+perc_65_plus<-round(over_65_and_total[2]/over_65_and_total[3]*100,1)
+
+
+age_unknown_all_years <- pds_scot %>% filter(age_grp == "Unknown")
+
+age_unknown <- sum(age_unknown_all_years$referrals)
+
+sex_unknown_all_years <- pds_scot %>% filter(sex != "01 Male", sex != "02 Female")
+
+sex_unknown <- sum(sex_unknown_all_years$referrals)
+
+simd_unknown_all_years <- pds_scot %>% filter(simd == "Unknown")
+
+simd_unknown <- sum(simd_unknown_all_years$referrals)
+
+
 ```
 
 

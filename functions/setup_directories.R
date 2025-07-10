@@ -99,7 +99,6 @@ get_mi_data_path <- function(type = c("error_data",
                                       "ldp_data",
                                       "final_data",
                                       "wait_data",
-                                      "glossary_figures",
                                       "uptake_data",
                                       "comp_data"),
                              ext = c("rds", "csv"), 
@@ -122,8 +121,7 @@ get_mi_data_path <- function(type = c("error_data",
       "stage_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_stage-data"),
       "model_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_model-data"),
       "uptake_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_uptake-data"),
-      "carer_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_carer-data"),
-      "glossary_figures" ~ stringr::str_glue("{previous_fy}-{previous_qt}_glossary_figures"),
+      "carer_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_carer-data")
       )
       
   } else if(previous_year_to_qt){
@@ -141,8 +139,7 @@ get_mi_data_path <- function(type = c("error_data",
       "stage_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_stage-data"),
       "model_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_model-data"),
       "uptake_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_uptake-data"),
-      "carer_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_carer-data"),
-      "glossary_figures" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_glossary_figures"),
+      "carer_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_carer-data")
     )   
       
   } else {
@@ -161,8 +158,7 @@ get_mi_data_path <- function(type = c("error_data",
     "stage_data" ~ stringr::str_glue("{fy}-{qt}_stage-data"),
     "model_data" ~ stringr::str_glue("{fy}-{qt}_model-data"),
     "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data"),
-    "carer_data" ~ stringr::str_glue("{fy}-{qt}_carer-data"),
-    "glossary_figures" ~ stringr::str_glue("{fy}-{qt}_glossary_figures")
+    "carer_data" ~ stringr::str_glue("{fy}-{qt}_carer-data")
     )
   }
   
