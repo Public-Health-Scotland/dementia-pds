@@ -513,14 +513,14 @@ a_city_footnote_hb <-
         "affected by a change in service provision of PDS during 2019 that ",
         "has resulted in data quality issues. This will impact on the figures ",
         "for NHS Grampian and Scotland.",
-        "See [Appendix 1 - Background Information](#reporting) for further information.")
+        "See [Appendix 1](#reporting) for further information.")
 
 a_city_footnote_ijb <-
   paste("Aberdeen City figures for 2019/20 and 2020/21 are not available. Although ",
         "the total number of people referred to PDS in Aberdeen City is known, due to ",
         "data quality issues it is not possible to calculate the percentage of people that ",
         "received a minimum of one year’s support. ",
-        "See [Appendix 1 - Background information](#reporting) for further information.")
+        "See [Appendix 1](#reporting) for further information.")
 
 # 
 # a_city_footnote_general <-
@@ -528,6 +528,12 @@ a_city_footnote_ijb <-
 #         "See [Appendix 1](#reporting) for further information.")
 
 ##
+
+shet_footnote <- paste0("NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. ",
+                        "As a result not all people referred to PDS could be allocated or contacted by a PDS ",
+                        "worker within 12 months of diagnosis, hence they have been recorded as not having ",
+                        "met the standard. ",
+                        "See [Appendix 1](#reporting) for further information.")
 
 incidence_footnote <-
   paste0("The estimated number of people newly diagnosed with dementia ",
@@ -548,7 +554,7 @@ incidence_footnote_trend <-
 method_footnote <-
   paste("For detailed information on how the percentage of LDP standard",
         "achieved is calculated, ",
-        "please see the [Background section](#background) of this report.")
+        "please see [Appendix 1](#reporting) of this report.")
 
 interpret_footnote <-
   paste("When interpreting this information consideration should also be",
@@ -580,7 +586,7 @@ source_footnote_simd <-
         format(end_date, "%d %B %Y"), ".",
         " Scottish Index of Multiple Deprivation (SIMD) 2020v2.")
 
- interpretation_text <- glue("**---Manual adjustment required here---**")
+#interpretation_text <- glue("**---Manual adjustment required here---**")
 ```
 
 # Introduction
@@ -625,7 +631,7 @@ the data presented in this report.
 # Main Points
 <Div custom-style = "Bullet 1">There were `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.</Div>
 <Div custom-style = "Bullet 1">Of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year's support. In `r revised_fy`, the percentage was `r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`.</Div>
-<Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1^</Div>
+<Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1,2^</Div>
 
 
 <Div custom-style = "Figure_Style">
@@ -638,6 +644,7 @@ include_graphics(get_pub_figures_path(type = "c2"))
 
 <Div custom-style = "Footnote Text">
 1. `r prov_footnote`
+2. `r shet_footnote`
 </Div>
 
 <Div custom-style = "Bullet 1">In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.</Div>
@@ -745,7 +752,7 @@ The criteria used to define this part of the LDP standard is detailed in [Append
 
 Table 3 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by NHS board for `r latest_fy`. The percentage by NHS Board is also shown in Figure 2.
 
-<Div custom-style = "Table or chart caption">Table 3: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board; `r latest_fy`^1,2,3,4^</Div>
+<Div custom-style = "Table or chart caption">Table 3: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board; `r latest_fy`^1,2,3,4,5^</Div>
 
 ```{r table-3, echo = FALSE, ft.align = "center"}
 # Table 3 
@@ -754,7 +761,7 @@ names(hb_headers) <-  names(hb %>%
          ongoing, fail, perc))
 
 hb %>%
-  mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
+ # mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>% 
   ft_dementia_style() %>%
   set_header_labels(values = hb_headers) %>% 
@@ -775,13 +782,14 @@ hb %>%
 2. `r prov_footnote`
 3. `r method_footnote`
 4. `r interpret_footnote`
+5. `r shet_footnote`
 </Div>
 
 <!-- `r interpretation_text` -->
 
 `r text_hb`
 
-<Div custom-style = "Table or chart caption">Figure 2: Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1,2,3,4^</Div>
+<Div custom-style = "Table or chart caption">Figure 2: Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1,2,3,4,5^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-2, echo=FALSE, fig.cap= `f2_alt_text`, out.width = 600}
@@ -796,11 +804,12 @@ include_graphics(get_pub_figures_path(type = "c2"))
 2. `r prov_footnote`
 3. `r method_footnote`
 4. `r interpret_footnote`
+5. `r shet_footnote`
 </Div>
 
 Table 4 presents the trend in the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.
 
-<Div custom-style = "Table or chart caption">Table 4: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board ^1,2,3,4,5^ </Div>
+<Div custom-style = "Table or chart caption">Table 4: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board ^1,2,3,4,5,6^ </Div>
 
 ```{r table-4, echo = FALSE, ft.align = "center"}
 # Table 4 
@@ -827,7 +836,8 @@ hb_trend_table  %>%
 2. `r prov_revised_footnote`
 3. `r method_footnote`
 4. `r interpret_footnote`
-5. `r a_city_footnote_hb`
+5. `r shet_footnote`
+6. `r a_city_footnote_hb`
 </Div>
 
 <!-- `r interpretation_text` -->
@@ -840,14 +850,14 @@ hb_trend_table  %>%
 
 Table 5 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Authority area. The percentage by Integration Authority area is also shown in Figure 3.
 
-<Div custom-style = "Table or chart caption">Table 5: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Authority area; `r latest_fy`^1,2,3,4^</Div>
+<Div custom-style = "Table or chart caption">Table 5: Number and percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Authority area; `r latest_fy`^1,2,3,4,5^</Div>
 
 ```{r table-5, echo = FALSE, ft.align = "center"}
 #Table 5 
 names(ijb_headers) <- names(ijb)
 
 ijb %>%
-  mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
+  #mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>% 
   ft_dementia_style() %>% 
   set_header_labels(values = ijb_headers) %>% 
@@ -868,6 +878,7 @@ ijb %>%
 2. `r prov_footnote`
 3. `r method_footnote`
 4. `r interpret_footnote`
+5. `r shet_footnote`
 </Div>
 
 <!-- `r interpretation_text` -->
@@ -898,7 +909,7 @@ Table 6 presents the trend in the percentage of people referred for post-diagnos
 
 \newpage
 
-<Div custom-style = "Table or chart caption">Table 6: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Authority area ^1,2,3,4,5^</Div>
+<Div custom-style = "Table or chart caption">Table 6: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Authority area ^1,2,3,4,5,6^</Div>
 
 ```{r table-6, echo = FALSE, ft.align = "center"}
 # Table 6
@@ -923,7 +934,8 @@ ijb_trend_table %>%
 2. `r prov_revised_footnote`
 3. `r method_footnote`
 4. `r interpret_footnote`
-5. `r a_city_footnote_ijb`
+5. `r shet_footnote`
+6. `r a_city_footnote_hb`
 </Div>
 
 \newpage
