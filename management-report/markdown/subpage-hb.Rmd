@@ -208,10 +208,7 @@ Sidebar {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -260,6 +257,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 `r covid_text`
 

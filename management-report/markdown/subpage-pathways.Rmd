@@ -30,10 +30,7 @@ Sidebar - waiting times {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -61,6 +58,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page provides information on the pathways from dementia diagnosis to first contact by PDS practitioner. *See the [Glossary](#glossary) for more details.* 
 
@@ -423,10 +422,7 @@ Sidebar - outcomes{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -455,6 +451,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes further information for referrals relating to the LDP Standard. *See the [Methodology](#methodology) page for more details.* 
 
@@ -704,10 +702,7 @@ Sidebar - uptake{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span></font>
 
 ***
 
@@ -735,6 +730,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes a table showing the percentage of total referrals where ‘PDS uptake decision’ has been recorded along with the percentage which have been recorded as ‘Accepted’ or ‘Accepted but initially declined’ for Integration Authority Areas and Health Boards with comparison to Scotland for each financial year. 
 
@@ -890,10 +887,7 @@ Sidebar - no contact{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -920,6 +914,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page provides tables for Scotland, Integration Authority Areas and Health Boards for the selected financial year, showing: 
 

@@ -38,10 +38,7 @@ Sidebar - trend {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -68,6 +65,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes a chart and table showing the trend for number of people referred to PDS by financial year for Scotland, Integration Authority Areas and Health Boards. Multiple areas can be selected in the Integration Authority and Health Board tabs. 
 
@@ -215,10 +214,7 @@ Sidebar - rates {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span></font>
 
 ***
 <ul>
@@ -244,6 +240,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over). *See the [Glossary](#glossary) for more details.*
 
@@ -408,10 +406,7 @@ Sidebar - outcomes {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 <ul>
@@ -439,6 +434,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes charts and tables showing, for the selected areas, the trend by financial year for information relating to the LDP Standard.  
 

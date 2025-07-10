@@ -143,6 +143,14 @@ Sidebar - about this report {.sidebar}
 <br>
 
 ### About This Report
+
+***
+
+<font size="2"> 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
+
+***
+
 #### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
@@ -164,10 +172,9 @@ Row
 -------------------------------------------------
 
 ### <!-- No Title -->
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This report has been produced by Public Health Scotland (PHS) and contains analysis of performance against the [Scottish Government's LDP Standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP){target="_blank"} on provision of Dementia Post Diagnostic Support (PDS).
-
-<span style="color:red"> **The information contained in this report is for management information only and should not be distributed widely.** </span>
 
 These reports reflect the revised [Dementia PDS dataset](https://publichealthscotland.scot/media/20921/2023-12-14-dementia-pds-definitions-and-recording-guidance-v14.pdf){target="_blank"} effective 01 April 2019 and contain data for individuals diagnosed with dementia between **`r format(dmy(01042016), "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`** who were referred for post diagnostic support.
 
@@ -242,7 +249,15 @@ Sidebar - methodology {.sidebar}
 
 <br>
 
-### Methodology
+### About This Report
+
+***
+
+<font size="2"> 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
+
+***
+
 #### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
@@ -346,7 +361,15 @@ Sidebar - glossary {.sidebar}
 
 <br>
 
-### Glossary
+### About This Report
+
+***
+
+<font size="2"> 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
+
+***
+
 #### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
@@ -453,7 +476,15 @@ Sidebar - navigation guide {.sidebar}
 
 <br>
 
-### Navigation Guide
+### About This Report
+
+***
+
+<font size="2"> 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
+
+***
+
 #### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
@@ -539,15 +570,12 @@ Sidebar-queries/errors {.sidebar}
 
 <br>
 
-### Queries/Errors
+### Number of Records Submitted
 
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>  </font>
 
 ***
 
@@ -573,7 +601,9 @@ Please get in touch with any comments, suggestions and feedback: [phs.dementiapd
 Row
 -------------------------------------------------
 
-### <!-- No Title -->
+### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes information about data quality. 
 
@@ -637,10 +667,7 @@ Sidebar-completion {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -667,7 +694,9 @@ Please get in touch with any comments, suggestions and feedback: [phs.dementiapd
 Row
 -------------------------------------------------
 
-### <!-- No Title -->
+### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes information about data quality. 
 
@@ -943,10 +972,7 @@ Sidebar-records {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>  </font>
 
 ***
 
@@ -972,7 +998,9 @@ Please get in touch with any comments, suggestions and feedback: [phs.dementiapd
 Row
 -------------------------------------------------
 
-### <!-- No Title -->
+### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes information about data quality. 
 

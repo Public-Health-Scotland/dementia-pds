@@ -173,10 +173,7 @@ Sidebar - age rates {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -203,6 +200,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for given age groups. *See the [Glossary](#glossary) for more details.*
 
@@ -511,10 +510,7 @@ Sidebar - age outcomes{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -543,6 +539,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for given age groups.  
 
@@ -811,10 +809,7 @@ Sidebar - gender rates {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -841,6 +836,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for males and females. *See the [Glossary](#glossary) for more details.* 
 
@@ -1101,10 +1098,7 @@ Sidebar - gender outcomes{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -1132,6 +1126,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for males and females.  
 
@@ -1390,10 +1386,7 @@ Sidebar -simd rates{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -1419,6 +1412,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for deprivation (Scottish Index of Multiple Deprivation (SIMD)) quintiles. *See the [Glossary](#glossary) for more details.*
 
@@ -1751,10 +1746,7 @@ Sidebar- simd outcomes {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -1781,6 +1773,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for deprivation (Scottish Index of Multiple Deprivation (SIMD)) quintiles.  
 
