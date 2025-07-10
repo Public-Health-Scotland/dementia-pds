@@ -48,6 +48,27 @@ err <-
   select(fy, perc) %>%
   mutate(text = glue("for {fy} was {perc}"))
 
+# percentage over 65
+over_65_and_total <- left_join(
+
+scot_65_plus_total <- pds %>% filter(age_grp != "59 and Under", age_grp != "60 to 64") %>% 
+  group_by(geog = "Scotland") %>% summarise(over_65_referrals = sum(referrals)),
+
+
+scot_overall_total <- pds %>% group_by(geog = "Scotland") %>% summarise(total_referrals = sum(referrals))
+
+)
+
+perc_65_plus<-round(over_65_and_total[2]/over_65_and_total[3]*100,1)
+
+#number of unknown simds in provisional year
+
+simd_unknown_provisional_year <- pds %>% filter(fy == latest_fy, simd == "Unknown")
+
+simd_unknown <- sum(simd_unknown_provisional_year$referrals)
+
+
+#aberdeen city note
 a_city_statement <-
   paste("Aberdeen City Health & Social Care Partnership ceased its contract ", 
         "with Alzheimer Scotland during 2019 and introduced an in-house ", 
@@ -577,7 +598,7 @@ simd_unknown <-
 simd_footnote <- glue(
   "Deprivation is calculated by matching postcodes to the ",
   "Scottish Index of Multiple Deprivation (SIMD) quintiles. There are a ", 
-  "small number of records (16) where it was not possible to assign ", 
+  "small number of records ({simd_unknown}) where it was not possible to assign ", 
   "deprivation category based on the postcode information available.")
 
 source_footnote_simd <- 
@@ -665,7 +686,7 @@ Table 1 presents the number and percentage of people referred for dementia post-
 
 ```{r table-1, echo = FALSE, ft.align = "center"}
 inc %>%
-  mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
+ # mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
   flextable() %>%
   ft_dementia_style() %>%
     set_header_labels(
@@ -994,7 +1015,7 @@ include_graphics(get_pub_figures_path(type = "c5"))
 
 Figure 6 presents the distribution of referrals for dementia post-diagnostic support by deprivation quintile for `r latest_fy`. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived) to 5 (least deprived). At Scotland level, approximately one fifth of the general population are within each deprivation quintile.
 
-<Div custom-style = "Table or chart caption">Figure 6: Distribution of referrals to dementia post-diagnostic support by deprivation quintile; `r latest_fy`^1,2,3^</Div>
+<Div custom-style = "Table or chart caption">Figure 6: Distribution of referrals to dementia post-diagnostic support by deprivation quintile; `r latest_fy`^1,2`r if(simd_unknown != 0){paste(",3")`^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-6, echo=FALSE, fig.cap= `f6_alt_text`, out.width = 600}
@@ -1007,7 +1028,7 @@ include_graphics(get_pub_figures_path(type = "c6"))
 <Div custom-style = "Footnote Text">
 1. `r source_footnote_simd`
 2. `r prov_footnote`
-3. `r simd_footnote`
+`r if(simd_unknown != 0){paste("3.",simd_footnote)}`
 </Div>
 
 <!-- `r interpretation_text` -->
