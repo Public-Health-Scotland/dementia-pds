@@ -778,7 +778,7 @@ ldp_age_table_data <- trend_table_ldp(ldp_all_age, age_grp_2) %>%
 ldp_age_table <- SharedData$new(ldp_age_table_data, key = ~geog, group = "ldp_age")
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="275px", margin="20px"),
+       div(style = css(width="97%", height="360px", margin="20px"),
 DT::datatable(ldp_age_table, rownames = FALSE, selection = 'none',
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -1356,7 +1356,7 @@ ldp_sex_table_data <- trend_table_ldp(ldp_all_sex, sex) %>%
 ldp_sex_table <- SharedData$new(ldp_sex_table_data, key = ~geog, group = "ldp_sex")
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="195px", margin="20px"),
+       div(style = css(width="97%", height="240px", margin="20px"),
 DT::datatable(ldp_sex_table, rownames = FALSE, selection = 'none',
               options = list(pageLength = 10,
                              scrollX = TRUE,
