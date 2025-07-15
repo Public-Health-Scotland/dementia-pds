@@ -482,7 +482,7 @@ get_excel_template_path <- function() {
   file_name <- stringr::str_glue("excel-template.xlsx")
   
   excel_template_file_path <- get_file_path(
-    directory = get_ref_files_dir(),
+    directory = fs::path("/", "conf", "dementia", "A&I", "Outputs", "publication", "templates"),
     file_name = file_name
   )
   
