@@ -11,6 +11,19 @@ theme_dementia_dashboard <- function(){
     )
 }
 
+
+phs_colours_core_no_rust <- c(
+  "#3F3685",
+  "#9B4393",
+  "#0078D4",
+  "#83BB26",
+  "#948DA3",
+  "#1E7F84",
+  "#6B5C85",
+  "#CDA1C9"
+)
+
+
 # yearly trend plot function for referrals and median wait times
 plot_trend <- function(data, measure, group = ijb, ytitle = ""){
   
@@ -35,12 +48,15 @@ plot_trend <- function(data, measure, group = ijb, ytitle = ""){
     scale_y_continuous(limits = c(0, NA)
                     ) + 
     
-    phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
+   # phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
     
-    theme_dementia_dashboard() +
+    scale_colour_manual(values = c("#9B4393","#3F3685")) +
     
-    theme(legend.title = element_blank(),
-    )
+    labs(colour = NULL) +
+    
+    theme_dementia_dashboard() 
+    
+   # theme(legend.title = element_blank())
   
   ggplotly(plot, tooltip = "text") %>%
     
@@ -48,7 +64,7 @@ plot_trend <- function(data, measure, group = ijb, ytitle = ""){
            displaylogo = F, editable = F) %>%
     layout(legend = list(orientation = "h", x = 0.5 , y = -0.3,
                          xanchor = "center", yanchor = "bottom")) %>% 
-    layout(margin = list(b = 30, t = 50), # to avoid labels getting cut out
+    layout(margin = list(b = 30, t = 10), # to avoid labels getting cut out
            yaxis = yaxis_plots, xaxis = xaxis_plots)
   
   
@@ -77,12 +93,15 @@ plot_trend_perc <- function(data, measure, group = ijb){
     scale_y_continuous(limits = c(0, 100),
                        labels=function(x) paste0(x,"%")) + 
     
-    phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
+   # phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
     
-    theme_dementia_dashboard() +
+    scale_colour_manual(values = c("#9B4393","#3F3685")) +
     
-    theme(legend.title = element_blank(),
-    )
+    labs(colour = NULL) +
+    
+    theme_dementia_dashboard()
+    
+   # theme(legend.title = element_blank())
   
   ggplotly(plot, tooltip = "text") %>%
     
@@ -114,7 +133,7 @@ percent_bar_chart <- function(data, category, measure, x_text_angle = 45, legend
     scale_y_continuous(expand = c(0, 0), limits = c(0, limit),
                        labels=function(x) paste0(x,"%")) +
     
-    phsstyles::scale_fill_discrete_phs(palette = "all", name = NULL) +
+    scale_fill_manual(values = phs_colours_core_no_rust) +
     
     theme_dementia_dashboard() +
     
@@ -157,10 +176,7 @@ plot_bar_median<- function(data){
     
     scale_color_manual(values = "#C73918") +
     
-    labs(#title = "",
-       #  x = "",
-        # y = "Median Wait (days)",
-         color = NULL) +
+    labs(color = NULL) +
     
     scale_y_continuous(expand = c(0, 0), 
       limits = c(0, NA)
