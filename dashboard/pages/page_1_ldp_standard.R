@@ -18,7 +18,7 @@ output$ldp_ui <-  renderUI({
                      conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
                                       fluidRow(
                                         column(
-                                          h2(strong(htmlOutput("title_part_1"))),
+                                          h3(strong(htmlOutput("title_part_1"))),
                                           linebreaks(1),          
                                           # value box ----
                                           fluidRow(
@@ -35,15 +35,28 @@ output$ldp_ui <-  renderUI({
                                           fluidRow(
                                             linebreaks(1),
                                             #plot ----
-                                            h3(strong(htmlOutput("hb_exp_plot_title"))),
+                                            h4(strong(htmlOutput("hb_exp_plot_title"))),
                                             plotlyOutput("hb_exp_plot"),
                                             #  table ----
-                                            h3(strong(htmlOutput("hb_exp_table_title"))),
+                                            h4(strong(htmlOutput("hb_exp_table_title"))),
                                             DT::dataTableOutput("table_hb_exp"),
                                             linebreaks(1)
                                           ), # fluid Row
+                                          p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
+                                                   format(end_date, "%d %B %Y"), "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021 population estimates.")),
+                                          h4(strong("Notes:")),
+                                          p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
+                                          p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
+                                          p("The estimated number of people newly diagnosed with dementia is subject to the limitations detailed within the paper below published by the Scottish Government in 2016: ", 
+                                            br(),
+                                            a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/'),
+                                            br(),
+                                             "Estimates are used as follows: calendar year 2016 estimates for 2016/17, calendar year 2017 estimates for 2017/18, calendar year 2018 estimates for 2018/19, calendar year 2019 estimates for 2019/20 and calendar year 2020 estimates for 2020/21.",
+                                            br(),
+                                            "For 2021/22 and 2022/23, the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the paper above and the National Records of Scotland (NRS) mid-2021 population estimates. See Notes on Home page for further information."),					
+                                          p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Notes on Home page for further information."),
                                           width = 12,
-                                          style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"),
+                                          style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available")
                                       ) #fluidRow
                      ), #cond panel outcomes
                      #TRENDS ----
@@ -51,16 +64,16 @@ output$ldp_ui <-  renderUI({
                                      fluidRow(
                                         column(
                                           # plot ----
-                                          h3(strong(htmlOutput("chart_title_trend_part_1"))),
+                                          h4(strong(htmlOutput("chart_title_trend_part_1"))),
                                           fluidRow(
                                             column(
                                               selectInput("select_hb_trend_part_1",
                                                           label = "Select Health Board to show in chart:",
                                                           choices = c("", boards), width = "100%"), width = 5)),
-                                          plotlyOutput("trend_plot_part_1"),
+                                          plotlyOutput("trend_plot_part_1", height = "350px"),
                                           #linebreaks(1),
                                           # table ----
-                                          h3(strong(htmlOutput("table_title_hb_trend_part_1"))),
+                                          h4(strong(htmlOutput("table_title_hb_trend_part_1"))),
                                           DT::dataTableOutput("table_hb_trend_part_1"),
                                           linebreaks(1),
                                           width = 12,
@@ -75,7 +88,7 @@ output$ldp_ui <-  renderUI({
                      conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
                                       fluidRow(
                                         column(
-                                          h2(strong(htmlOutput("title_part_2"))),
+                                          h3(strong(htmlOutput("title_part_2"))),
                                           linebreaks(1),
                                           # value box ----
                                           fluidRow(
@@ -92,10 +105,10 @@ output$ldp_ui <-  renderUI({
                                           fluidRow(
                                             linebreaks(1),
                                             #plot ----
-                                            h3(strong(htmlOutput("perc_met_plot_title"))),
+                                            h4(strong(htmlOutput("perc_met_plot_title"))),
                                             plotlyOutput("perc_met_plot"),
                                             # table ----
-                                            h3(strong(htmlOutput("perc_met_table_title"))),
+                                            h4(strong(htmlOutput("perc_met_table_title"))),
                                             DT::dataTableOutput("perc_met_table"),
                                             linebreaks(1),
                                           ), # fluid Row
@@ -108,16 +121,16 @@ output$ldp_ui <-  renderUI({
                                fluidRow(
                                  column(
                                    #plot----
-                                   h3(strong(htmlOutput("chart_title_trend_part_2"))),
+                                   h4(strong(htmlOutput("chart_title_trend_part_2"))),
                                    fluidRow(
                                      column(
                                        selectInput("select_hb_ijb_trend_part_2",
                                                    label = "Select Health Board/Integration Authority to show in chart:",
                                                    choices = c("", boards, ijb_list), width = "100%"), width = 5)),
-                                   plotlyOutput("trend_plot_part_2"),
+                                   plotlyOutput("trend_plot_part_2", height = "350px"),
                                    #linebreaks(1),
                                    #table----
-                                   h3(strong(htmlOutput("table_trend_part_2_title"))),
+                                   h4(strong(htmlOutput("table_trend_part_2_title"))),
                                    radioButtons("select_table_trend_part_2",
                                                 label = "In the table below show:",
                                                 choices = c("Health Boards", "Integration Authority Areas"),
@@ -197,7 +210,8 @@ output$table_hb_exp <- DT::renderDataTable({
     mutate(exp_perc = paste0(round(referrals/diagnoses*100, 1), "%")) %>%  
     arrange(health_board) %>% 
     set_colnames(c("Health Board","Estimated Number of People Newly Diagnosed with Dementia", "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS"))
-  make_table(table_hb_exp_data, right_align = 1:3, selected = 1, table_elements = "t") %>% formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
+  make_table(table_hb_exp_data, right_align = 1:3, selected = 1, filename = paste0("pds_perc_of_expected_diagnoses_", input$select_year_p1)) %>%
+               formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
 })
 
 #plot ldp part 2 ----
@@ -245,7 +259,7 @@ output$perc_met_plot <- renderPlotly({
           select(health_board, total, complete, exempt, ongoing, fail, percent_met) %>% 
           arrange(health_board) %>% 
           set_colnames(c("NHS Board","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")) 
-        make_table(table_hb_data, right_align = 1:6, selected = 1, table_elements = "t") 
+        make_table(table_hb_data, right_align = 1:6, selected = 1, filename = paste0("pds_perc_standard_met_exempt_hb_", input$select_year_p1)) 
         
         
       }else{
@@ -262,7 +276,7 @@ output$perc_met_plot <- renderPlotly({
           select(ijb, total, complete, exempt, ongoing, fail, percent_met) %>% 
           arrange(ijb) %>% 
           set_colnames(c("Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
-        make_table(table_ijb_data, right_align = 1:6, selected = 1, rows_to_display = 32, table_elements = "t")
+        make_table(table_ijb_data, right_align = 1:6, selected = 1, rows_to_display = 32, , filename = paste0("pds_perc_standard_met_exempt_iaa_", input$select_year_p1))
         
       }
     })
@@ -277,7 +291,7 @@ output$perc_met_plot <- renderPlotly({
     
     trend_chart_data_part_1 <- reactive({
       annual_table_data %>%
-        filter(fy %in% included_years, ldp == "total") %>% 
+        filter(fy %in% included_years_sup, ldp == "total") %>% 
         filter(ijb == input$select_hb_trend_part_1 | ijb == "Scotland")
     })
     
@@ -291,13 +305,13 @@ output$table_title_hb_trend_part_1 <- renderUI({HTML(paste0("Percentage of peopl
 
 output$table_hb_trend_part_1 <- DT::renderDataTable({
   trend_hb_data_2 <- annual_table_data %>% 
-    filter(fy %in% included_years, ldp == "total") %>% 
+    filter(fy %in% included_years_sup, ldp == "total") %>% 
     select(health_board, fy, exp_perc) %>%
     mutate(exp_perc = paste0(exp_perc, "%")) %>% 
     distinct(health_board, fy, .keep_all = T) %>% 
     pivot_wider(names_from = fy, values_from = exp_perc) %>% 
     rename(" " = "health_board")  
-  make_table(trend_hb_data_2, right_align = 1:length(included_years), selected = 1, table_elements = "t")
+  make_table(trend_hb_data_2, right_align = 1:length(included_years_sup), selected = 1, filename = paste0("pds_perc_of_expected_diagnoses_trend"))
 })
 
 
@@ -313,7 +327,7 @@ output$chart_title_trend_part_2 <- renderUI({HTML(paste("Percentage of people re
 
 trend_chart_data <- reactive({
   annual_table_data %>%
-    filter(fy %in% included_years, ldp == "total") %>% 
+    filter(fy %in% included_years_sup, ldp == "total") %>% 
     filter(ijb == input$select_hb_ijb_trend_part_2 | ijb == "Scotland")})
 
 
@@ -334,19 +348,19 @@ output$table_hb_ijb_trend_part_2 <- DT::renderDataTable({
   if(input$select_table_trend_part_2 == "Health Boards"){  
     
     trend_hb_data <- annual_table_data %>% 
-      filter(fy %in% included_years) %>% 
+      filter(fy %in% included_years_sup) %>% 
       select(health_board, fy, percent_met) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
       mutate(percent_met = if_else(percent_met == "   NA", "-", paste0(percent_met, "%"))) %>% 
       distinct(health_board, fy, .keep_all = T) %>% 
       pivot_wider(names_from = fy, values_from = percent_met) %>% 
       rename(" " = "health_board") 
-    make_table(trend_hb_data, right_align = 1:length(included_years), selected = 1, table_elements = "t")
+    make_table(trend_hb_data, right_align = 1:length(included_years_sup), selected = 1, filename = paste0("pds_perc_met_standard_exempt_hb_trend"))
     
   }else{
     
     trend_ijb_data <- annual_table_data %>% 
-      filter(fy %in% included_years) %>% 
+      filter(fy %in% included_years_sup) %>% 
       filter(!grepl("NHS", ijb)) %>% 
       select(ijb, fy, percent_met) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
@@ -354,7 +368,7 @@ output$table_hb_ijb_trend_part_2 <- DT::renderDataTable({
       distinct(ijb, fy, .keep_all = T) %>% 
       pivot_wider(names_from = fy, values_from = percent_met) %>% 
       rename(" " = "ijb") 
-    make_table(trend_ijb_data, right_align = 1:length(included_years), selected = 1, rows_to_display = 32, table_elements = "t")
+    make_table(trend_ijb_data, right_align = 1:length(included_years_sup), selected = 1, rows_to_display = 32, filename = paste0("pds_perc_met_standard_exempt_iaa_trend"))
   }
 })
 
