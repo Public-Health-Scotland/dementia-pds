@@ -498,6 +498,9 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
     border-width: 2px;
 }
 
+/*page headers*/
+.box-body.header {padding: 0px; margin-top: -10px}
+
 /*intro page ldp description box intro page*/
 .box.box-solid.bg-blue { background-color: var(--phs-blue-10) ; padding: 4px; border: 2px solid var(--phs-blue-50)} 
 
@@ -510,7 +513,7 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 .box.box-primary {background-color: #FFFFFF; padding: 0px; margin-bottom: 0px; margin-left: 0px} 
 .box-header {background-color: var(--phs-blue-10); padding: 0px}
 .box-title {margin-top: 0px; margin-bottom: -5px; padding-left: 6px; padding-top: 12px; padding-bottom: 1px}
-.box-body {padding: 6px;}
+.box-body {padding: 6px; margin-top: 10px}
 .col-sm-5 {padding-right: 4px; padding-left: 4px}
 .col-sm-7 {padding-right: 4px; padding-left: 4px}
 
@@ -528,3 +531,25 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
   text-align: left !important; 
   font-size: 14px;
   }
+  
+/* download buttons */
+.btn.btn-default {
+  background-color: #C5C3DA;
+  color: black;
+  
+}
+  
+/* force nav bar to fit width of screen*/
+.navbar.navbar-default.navbar-static-top{
+  margin-right: -30px;
+  margin-left: -55px;
+}  
+
+.nav>li>a{padding: 15px 14px;}
+  
+/*adds margin to checkbox selction in data download page */ 
+#select_year_dl{
+    margin-top: 15px;
+    margin-left: 3px;
+}
+  
