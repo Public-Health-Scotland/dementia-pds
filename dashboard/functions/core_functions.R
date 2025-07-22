@@ -13,9 +13,12 @@ make_table <- function(input_data_table,
                        rows_to_display = 20,
                        filter = "none",
                        ordering = TRUE,
+                       scrollX = FALSE,
                        right_align = NULL,
                        selected = NULL,
-                       table_elements = "tip"
+                       table_elements = "Bt",
+                       filename = NULL,
+                       button_name = " Download table data as..."
 ){
 
   # Take out underscores in column names for display purposes
@@ -27,12 +30,27 @@ make_table <- function(input_data_table,
                       filter=filter,
                       colnames = table_colnames,
                       selection = list(selected = selected),
-                      options = list(pageLength = rows_to_display,
-                                     scrollX = FALSE,
+                      extensions = 'Buttons',
+                      options = list(
+                          buttons = list(
+                            list(
+                              extend = "collection", 
+                               buttons = list(
+                                      list(
+                                        extend = 'csv', 
+                                        filename = filename,
+                                        text = ".csv" ),
+                                      list(
+                                        extend = 'excel', 
+                                        filename = filename,
+                                        text = ".xlsx")
+                                  ), text = paste0(icon_no_warning_fn("download"), button_name))),
+                        pageLength = rows_to_display,
+                                     scrollX = scrollX,
                                      scrollY = FALSE,
                                      dom = table_elements,
                                      ordering = ordering,
-                                     autoWidth = TRUE,
+                                     autoWidth = FALSE,
                                      columnDefs = list(list(className = 'dt-right', targets = right_align)),
                                      # style header
                                      initComplete = htmlwidgets::JS(
