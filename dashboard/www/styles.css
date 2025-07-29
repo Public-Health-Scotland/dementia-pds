@@ -69,7 +69,7 @@ h1, .h1 {
 /* Body styles */
 body {
     font-family: Arial;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.5;
     color: var(--black);
     background-color: var(--white);
@@ -408,6 +408,12 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
   margin-top: -10px;
 }
 
+
+/*add text wrapping to sidebar buttons*/
+.btn.radiobtn.btn{
+  text-wrap: auto;
+}
+
 /* intro page side bar buttons */
 .btn.radiobtn.btn-primary {
   border-radius: 0px; 
@@ -430,7 +436,7 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 }
 
 
-/* demographics and additional analysis side bar buttons */
+/* demographics side bar buttons */
 .btn.radiobtn.btn-secondary {
   border-radius: 0px; 
   color: #FFFFFF;
@@ -529,7 +535,7 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 /* left align formula */
 .MathJax_Display {
   text-align: left !important; 
-  font-size: 14px;
+  font-size: 13px;
   }
   
 /* download buttons */
@@ -546,10 +552,15 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 }  
 
 .nav>li>a{padding: 15px 14px;}
+
+/* moves tabs up to align with sidebar buttons */
+#ldp_tab, #rates_tab{
+  margin-top: -18px;
+}
   
 /*adds margin to checkbox selction in data download page */ 
 #select_year_dl{
-    margin-top: 15px;
+    margin-top: 20px;
     margin-left: 3px;
 }
   
