@@ -96,7 +96,7 @@ est_date4 <- dmy(01042024)
              "This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*"),
               TRUE ~ paste0(""))
   
-    # Data quality notes - Perth & Kinross
+     # Data quality notes - Perth & Kinross
   tay_date1 <- dmy(01042018)
   tay_date2 <- dmy(01042019)
   tay_date3 <- dmy(01042023)
@@ -171,8 +171,8 @@ est_date4 <- dmy(01042024)
               "showing as having met the standard. PHS have queried the ", 
               "dates with the Health Boards and are expecting these to be rectified in future submissions.*"), 
             TRUE ~ paste0(""))
-   
- 
+
+
 ```
 
 

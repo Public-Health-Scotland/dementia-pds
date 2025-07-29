@@ -58,7 +58,7 @@ get_mi_year_dir <- function(folder = c("data", "output", "tests"),
     year <- stringr::str_glue("{previous_fy}-{substr(as.numeric(previous_fy)+1, 3, 4)}")
     qtr <- stringr::str_glue("Q{previous_qt}")
     test <- "test"
-    
+
   } else if(previous_year_to_qt){
       year <- stringr::str_glue("{as.numeric(fy)-1}-{substr(as.numeric(fy), 3, 4)}")
       qtr <- stringr::str_glue("Q{qt}")
@@ -69,15 +69,15 @@ get_mi_year_dir <- function(folder = c("data", "output", "tests"),
   qtr <- stringr::str_glue("Q{qt}")
   test <- "test"
   }
-    
+
   if ((test_output)){
-  year_dir <- fs::path(get_mi_dir(), {{ folder }}, year, qtr, test)
+    year_dir <- fs::path(get_mi_dir(), {{ folder }}, year, qtr, test)
   }else{
-  year_dir <- fs::path(get_mi_dir(), {{ folder }}, year, qtr)
+    year_dir <- fs::path(get_mi_dir(), {{ folder }}, year, qtr)
   }
   
   path <- get_dir_path(directory = year_dir, 
-                           check_mode = "write")
+                       check_mode = "write")
   
   return(path)
 }
@@ -107,7 +107,7 @@ get_mi_data_path <- function(type = c("error_data",
                              previous_year_to_qt = FALSE) {
   
   if (previous_data){
-      file_name <- dplyr::case_match(
+    file_name <- dplyr::case_match(
       type,
       "error_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_error-summary"),
       "dupe_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_dupes"),
@@ -190,7 +190,7 @@ get_mi_output_path <- function(test_output = FALSE,
   }else if(previous_year_to_qt){
     file_name <- stringr::str_glue("{end_date - years(1)}_management-report.html")    
   }else{
-  file_name <- stringr::str_glue("{end_date}_management-report.html")
+    file_name <- stringr::str_glue("{end_date}_management-report.html")
   }
   
   mi_output_path <- get_file_path(
@@ -235,11 +235,11 @@ get_pub_date_dir <- function(folder = c("data", "output"), test_output = FALSE) 
   test <- "test"
   
   if ((test_output)){
-  pub_date_dir <- fs::path("/","conf","dementia","A&I","Outputs","publication", 
-                           {folder}, {pub_date}, test)
+    pub_date_dir <- fs::path("/","conf","dementia","A&I","Outputs","publication", 
+                             {folder}, {pub_date}, test)
   }else{
-  pub_date_dir <- fs::path("/","conf","dementia","A&I","Outputs","publication", 
-                           {folder}, {pub_date})  
+    pub_date_dir <- fs::path("/","conf","dementia","A&I","Outputs","publication", 
+                             {folder}, {pub_date})  
   }
   
   path <- get_dir_path(directory = pub_date_dir, 

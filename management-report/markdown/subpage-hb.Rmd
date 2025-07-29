@@ -170,7 +170,7 @@ est_date4 <- dmy(01042024)
               "for 2024/25 that shows inconsistent dates. The reported dates resulted in this record ",
               "showing as having met the standard. PHS have queried the ", 
               "dates with the Health Board and expecting these to be rectified in future submissions.*"),  TRUE ~ paste0(""))
-  
+
      # Data quality notes - borders
   bord_date <- dmy(01042024)
 

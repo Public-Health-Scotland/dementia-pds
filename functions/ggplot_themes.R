@@ -79,7 +79,6 @@ phs_colours_core <- c(
 )
 
 
-
 integer_breaks <- function(n = 5, ...) {
   fxn <- function(x) {
     breaks <- floor(pretty(x, n, ...))
@@ -110,3 +109,4 @@ theme_dementia <- function(xangle = 0){
 }
 
 
+### END OF SCRIPT ###

@@ -78,7 +78,7 @@ plot_referrals <- function(data,
     
     scale_y_continuous(limits = c(0, NA), breaks = integer_breaks()
                        ) +
-    
+
     scale_colour_manual(values = phs_colours_core) +
     
     # Custom labels on x tick marks
@@ -89,12 +89,12 @@ plot_referrals <- function(data,
          y = "Number Referred",
          colour = NULL) +
     
-    theme_dementia(xangle = 45) +
+theme_dementia(xangle = 45) +
     
    theme(legend.title = element_blank(),
           legend.position = ifelse(ijb_group == FALSE, "none", "bottom")
           )
-  
+
    ggplotly(plot, tooltip = "text") %>%
      
      config(displayModeBar = TRUE,
@@ -109,5 +109,5 @@ plot_referrals <- function(data,
                           xanchor = "center", yanchor = "bottom")) #%>% 
      #layout(margin = list(l = -10, b = 30, t = 30) # to avoid labels getting cut out
     # )
-  
+
 }
