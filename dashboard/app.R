@@ -280,8 +280,18 @@ tabPanel(title = "Download Data",
 
 server <- function(input, output, session) {
   
+  ##link to methodology page----
+  observeEvent(input$method_link, {
+    updateTabsetPanel(session, "intabset", selected = "method")
+  })
+  
+  ###link to home page----
+  observeEvent(input$home_link, {
+    updateTabsetPanel(session, "intabset", selected = "intro")
+  })
+  
 
-      # Get content for individual pages
+## Get content for individual pages----
     source(file.path(here("dashboard/pages/intro_page.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_1_ldp_standard.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_2_rates.R")), local = TRUE)$value

@@ -49,18 +49,29 @@ output$ldp_ui <-  renderUI({
                                             width = 12)
                                           ), # fluid Row
                                           p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
-                                                   format(end_date, "%d %B %Y"), "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021 population estimates.")),
+                                                   format(end_date, "%d %B %Y"), "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates.")),
+                                          #### notes----
                                           h4(strong("Notes:")),
                                           p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
                                           p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
                                           p("The estimated number of people newly diagnosed with dementia is subject to the limitations detailed within the paper below published by the Scottish Government in 2016: ", 
                                             br(),
-                                            a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/'),
+                                            a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
                                             br(),
                                              "Estimates are used as follows: calendar year 2016 estimates for 2016/17, calendar year 2017 estimates for 2017/18, calendar year 2018 estimates for 2018/19, calendar year 2019 estimates for 2019/20 and calendar year 2020 estimates for 2020/21.",
                                             br(),
-                                            "For 2021/22 and 2022/23, the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the paper above and the National Records of Scotland (NRS) mid-2021 population estimates. See Notes on Home page for further information."),					
-                                          p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Notes on Home page for further information."),
+                                            "For 2021/22 and 2022/23, the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the paper above and the National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates. See Note 2 on the",
+                                            a(
+                                              href = "#",
+                                              "Home",
+                                              onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+                                              "page for further information."),					
+                                          p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+                                            a(
+                                              href = "#",
+                                              "Home",
+                                              onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+                                              "page for further information."),
                                           width = 12,
                                           style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available")
                                       ) #fluidRow
@@ -86,6 +97,30 @@ output$ldp_ui <-  renderUI({
                                                          "Download table data"),
                                           DT::dataTableOutput("table_hb_trend_part_1"),
                                           linebreaks(1),
+                                          p(paste0("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
+                                                   format(end_date, "%d %B %Y"))),
+                                          ### notes----
+                                          h4(strong("Notes:")),
+                                          p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
+                                          p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
+                                          p("The estimated number of people newly diagnosed with dementia is subject to the limitations detailed within the paper below published by the Scottish Government in 2016: ", 
+                                            br(),
+                                            a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
+                                            br(),
+                                            "Estimates are used as follows: calendar year 2016 estimates for 2016/17, calendar year 2017 estimates for 2017/18, calendar year 2018 estimates for 2018/19, calendar year 2019 estimates for 2019/20 and calendar year 2020 estimates for 2020/21.",
+                                            br(),
+                                            "For 2021/22 and 2022/23, the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the paper above and the National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates. See Note 2 on the",
+                                              a(
+                                              href = "#",
+                                              "Home",
+                                              onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+                                            "page for further information."),					
+                                          p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+                                              a(
+                                              href = "#",
+                                              "Home",
+                                              onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+                                            "page for further information."),
                                           width = 12,
                                           style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
                                           ), # column
