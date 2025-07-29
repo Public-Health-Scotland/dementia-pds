@@ -6,7 +6,9 @@ output$download_ui <-  renderUI({
     fluidRow(column(
       p("This page allows you to download data from the report."),
       p("Use the dropdown menu to select data for Scotland, Health Boards or Integration Authority Areas. 
-        You can use the additional selection options to further refine the data."),
+        You can use the additional selection options to further refine the data. 
+        Note that gender, age group, and deprivation quintile are only available at Scotland level. 
+        LDP standard part 2 is only available at Scotland and Health Board level. "),
       p("Use the download button to download the selected data as a csv file.
         A preview of the data (first 10 rows) is shown at the bottom of this page."),width = 12),
       column(selectInput("download", "Show data for:", choices = download_list), width = 3)
@@ -18,21 +20,21 @@ output$download_ui <-  renderUI({
                  actionButton(style = "width: 49%; margin-right: -2.5px", "selectall", label = "Select All"),
                  actionButton(style = "width: 49%; margin-left: -2px", "deselectall", label = "Deselect All"),
                  checkboxGroupInput("select_year_dl", NULL,
-                                    choices = included_years_no_sup, selected = included_years_no_sup),
+                                    choices = included_years, selected = included_years),
                ),
              # dropdown filters for measure, gender, age group and simd if Scotland data is chosen----
              conditionalPanel(condition = 'input.download == "download_data_scotland"',
                               box(width = 9, height = "335px",
                                   background = "blue",
                                   pickerInput("select_gender_dl", "Select genders:", width = "100%",
-                                              choices = unique(download_data_scotland$gender), selected = unique(download_data_scotland$gender),
+                                              choices = unique(download_data_scotland$gender), selected = "All",
                                               options = pickerOptions(
                                                 actionsBox = TRUE,
                                                 size = 10),
                                               multiple = TRUE),
                                   
                                   pickerInput("select_age_dl", "Select age groups:", width = "100%",
-                                              choices = unique(download_data_scotland$age_group), selected = unique(download_data_scotland$age_group),
+                                              choices = unique(download_data_scotland$age_group), selected = "All",
                                               options = pickerOptions(
                                                 actionsBox = TRUE,
                                                 size = 10),
@@ -40,7 +42,7 @@ output$download_ui <-  renderUI({
                                   ),
                                   
                                   pickerInput("select_simd_dl", "Select deprivation quintiles:", width = "100%",
-                                              choices = unique(download_data_scotland$deprivation_quintile), selected = unique(download_data_scotland$deprivation_quintile),
+                                              choices = unique(download_data_scotland$deprivation_quintile), selected = "All",
                                               options = pickerOptions(
                                                 actionsBox = TRUE,
                                                 size = 10),
@@ -51,7 +53,7 @@ output$download_ui <-  renderUI({
                                               options = pickerOptions(
                                                 actionsBox = TRUE,
                                                 size = 10,
-                                                selectedTextFormat = "count > 5"),
+                                                selectedTextFormat = "count > 3"),
                                               multiple = TRUE)
                               )#box
              ),#condPanel
@@ -72,7 +74,7 @@ output$download_ui <-  renderUI({
                                               options = pickerOptions(
                                                 actionsBox = TRUE,
                                                 size = 10,
-                                                selectedTextFormat = "count > 5"),
+                                                selectedTextFormat = "count > 3"),
                                               multiple = TRUE)
                               )#box
              ),# cond panel hb
@@ -93,7 +95,7 @@ output$download_ui <-  renderUI({
                                               options = pickerOptions(
                                                 actionsBox = TRUE,
                                                 size = 10,
-                                                selectedTextFormat = "count > 5"),
+                                                selectedTextFormat = "count > 3"),
                                               multiple = TRUE)
                               )#box
              )# cond panel ijb
@@ -125,14 +127,16 @@ download_data_filtered <- reactive({
     download_data() %>% filter(financial_year %in% input$select_year_dl, 
                                gender %in% input$select_gender_dl,
                                age_group %in% input$select_age_dl,
-                               deprivation_quintile %in% input$select_simd_dl)
+                               deprivation_quintile %in% input$select_simd_dl,
+                               measure %in% input$select_measure_dl_scot)
   }else if(input$download == "download_data_hb"){
     download_data() %>% filter(financial_year %in% input$select_year_dl,
-                               geography %in% input$select_hb_dl)
-    
+                               geography %in% input$select_hb_dl,
+                               measure %in% input$select_measure_dl_hb)
   }else{
       download_data() %>% filter(financial_year %in% input$select_year_dl,
-                                 geography %in% input$select_ijb_dl)
+                                 geography %in% input$select_ijb_dl,
+                                 measure %in% input$select_measure_dl_ijb)
   }
 })
 
@@ -143,7 +147,7 @@ observe({
   else if (input$selectall > 0)
   {
     updateCheckboxGroupInput(session,"select_year_dl", NULL,
-                             choices = included_years_no_sup, selected = included_years_no_sup)
+                             choices = included_years, selected = included_years)
   }
 })
 
@@ -152,7 +156,7 @@ observe({
   else if (input$deselectall > 0)
   {
     updateCheckboxGroupInput(session,"select_year_dl", NULL,
-                             choices = included_years_no_sup)
+                             choices = included_years)
   }
 })
 
@@ -161,7 +165,7 @@ observe({
 #displays preview of selected data
 output$table_download <- DT::renderDataTable({
   make_table(download_data_filtered(), rows_to_display = 10,
-             table_elements = "ti", scrollX = TRUE)
+             table_elements = "ti", scrollY = FALSE)
   
 }
 )
@@ -170,7 +174,11 @@ output$table_download <- DT::renderDataTable({
 output$downloadData <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
-    write.csv(download_data_filtered(), file, row.names = FALSE)
+    write.csv(download_data_filtered() %>%
+                mutate(financial_year = case_when(
+                  financial_year == provisional_year_sup ~paste0(provisional_year,"P"),
+                                                    TRUE ~financial_year)),
+               file, row.names = FALSE)
   }
 )
 
