@@ -19,20 +19,6 @@ library(phsstyles)
 source(here("dashboard/functions/core_functions.R"))
 source(here("dashboard/functions/plot_functions.R"))
 
-## Plotting ----
-# Style of x and y axis
-xaxis_plots <- list(title = FALSE, tickfont = list(size=14), titlefont = list(size=14),
-                    showline = TRUE, fixedrange=TRUE)
-
-yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE, size = 4,
-                    tickfont = list(size=14), titlefont = list(size=14))
-
-# Buttons to remove from plotly plots
-bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 
-                     'zoomOut2d', 'autoScale2d', 
-                     'toggleSpikelines', 
-                     'hoverCompareCartesian', 
-                     'hoverClosestCartesian', 'toImage')
 # LOAD IN DATA ----
 
 source(here("dashboard/data_setup/data_load_shiny.R"))

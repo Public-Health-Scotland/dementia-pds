@@ -1,12 +1,25 @@
-#### plot functions #####
+#### Style of x and y axis----
+xaxis_plots <- list(title = FALSE, tickfont = list(size=12), titlefont = list(size=12),
+                    showline = TRUE, fixedrange=TRUE)
 
+yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE, size = 4,
+                    tickfont = list(size=12), titlefont = list(size=12))
+
+# Buttons to remove from plotly plots
+bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 
+                     'zoomOut2d', 'autoScale2d', 
+                     'toggleSpikelines', 
+                     'hoverCompareCartesian', 
+                     'hoverClosestCartesian', 'toImage')
+
+#### plot functions #####
 theme_dementia_dashboard <- function(){
   theme_gray() +
     theme(panel.background = element_blank(),
           panel.grid.minor = element_blank(),
-          panel.grid.major.x = element_blank(),
+          panel.grid.major.x = element_line(color = "#d9d9d9"),
           panel.grid.major.y = element_line(color = "#d9d9d9"),
-          axis.text = element_text(size = 10),
+          #axis.text = element_text(size = 2),
           axis.line = element_line()
     )
 }
@@ -45,7 +58,7 @@ plot_trend <- function(data, measure, group = ijb, ytitle = ""){
     
     geom_line() + 
     
-    scale_y_continuous(limits = c(0, NA)
+    scale_y_continuous(expand = c(0,0), limits = c(0, NA)
                     ) + 
     
    # phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
@@ -62,7 +75,7 @@ plot_trend <- function(data, measure, group = ijb, ytitle = ""){
     
     config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
            displaylogo = F, editable = F) %>%
-    layout(legend = list(orientation = "h", x = 0.5 , y = -0.3,
+    layout(legend = list(orientation = "h", x = 0.5 , y = -0.4,
                          xanchor = "center", yanchor = "bottom")) %>% 
     layout(margin = list(b = 30, t = 10), # to avoid labels getting cut out
            yaxis = yaxis_plots, xaxis = xaxis_plots)
@@ -90,7 +103,7 @@ plot_trend_perc <- function(data, measure, group = ijb){
     
     geom_line() + 
     
-    scale_y_continuous(limits = c(0, 100),
+    scale_y_continuous(expand = c(0,0), limits = c(0, 100),
                        labels=function(x) paste0(x,"%")) + 
     
    # phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
@@ -107,7 +120,7 @@ plot_trend_perc <- function(data, measure, group = ijb){
     
     config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
            displaylogo = F, editable = F) %>%
-    layout(legend = list(orientation = "h", x = 0.5 , y = -0.3,
+    layout(legend = list(orientation = "h", x = 0.5 , y = -0.4,
                          xanchor = "center", yanchor = "bottom")) %>% 
     layout(margin = list(b = 30, t = 10), # to avoid labels getting cut out
            yaxis = yaxis_plots, xaxis = xaxis_plots)
@@ -186,7 +199,7 @@ plot_bar_median<- function(data){
     theme_dementia_dashboard() +
     
     theme(legend.title = element_blank(),
-          axis.text.x = element_text(size = 10, angle = 45, vjust = 0.5, hjust = 0.5),
+          axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5),
           panel.grid.minor = element_blank(),
           panel.grid.major.x = element_blank())
   
