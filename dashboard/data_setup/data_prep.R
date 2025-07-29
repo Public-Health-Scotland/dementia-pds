@@ -349,19 +349,21 @@ download_data_scotland <- left_join(scotland_ldp_exp,
                                     test<-data_wait %>% filter(health_board == "Scotland", sex == "All", simd == "All") %>% 
                                       mutate(age_grp = "All") %>% 
                                       select(geog = health_board, fy, sex, age_grp, simd, perc_contacted, median_diagnosis_to_contact)) %>% 
+  relocate(c(diagnoses, exp_perc), .after = referrals) %>% 
+  
   rename(geography = geog,
          financial_year = fy,
          gender = sex,
          age_group = age_grp,
          deprivation_quintile = simd,
          `number of people referred to PDS` = referrals,
-         `standard met` = complete,
-         `exempt from standard` = exempt,
-         `PDS ongoing` = ongoing,
-         `standard not met` = fail,
-         `percentage of LDP standard achieved` = percent_met,
-         `estimated number of people newly diagnosed with dementia` = diagnoses,
-         `percentage of estimated number of people diagnosed with dementia referred to pds` = exp_perc,
+         `LDP standard part 1 - estimated number of people newly diagnosed with dementia` = diagnoses,
+         `LDP standard part 1 - percentage of estimated number of people diagnosed with dementia referred to pds` = exp_perc,
+         `LDP standard part 2 - number of people where standard was met` = complete,
+         `LDP standard part 2 - number of people exempt from standard` = exempt,
+         `LDP standard part 2 - number of people where PDS is ongoing` = ongoing,
+         `LDP standard part 2 - number of people where standard was not met` = fail,
+         `LDP standard part 2 - percentage of LDP standard achieved` = percent_met,
          `percentage of referrals contacted by PDS practitioner` = perc_contacted,
          `average (median) days from diagnoses to first contact` = median_diagnosis_to_contact)
 
@@ -370,7 +372,7 @@ download_data_scotland %<>% pivot_longer(cols = c(`number of people referred to 
 write_rds(download_data_scotland, 
           "//conf/dementia/A&I/Outputs/dashboard/data/download_data_scotland.rds")
 
-#### healthboards----
+### healthboards----
 hb_ldp <- 
   # all referrals
   download_data %>% 
@@ -406,16 +408,18 @@ download_data_hb <- left_join(hb_ldp_exp,
                                       select(health_board, fy, perc_contacted, median_diagnosis_to_contact)) %>% 
   mutate(median_diagnosis_to_contact = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), NA, median_diagnosis_to_contact)) %>% 
   mutate(perc_contacted = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), NA, perc_contacted)) %>% 
+  relocate(c(diagnoses, exp_perc), .after = referrals) %>% 
+  
   rename(geography = health_board,
          financial_year = fy,
          `number of people referred to PDS` = referrals,
-         `standard met` = complete,
-         `exempt from standard` = exempt,
-         `PDS ongoing` = ongoing,
-         `standard not met` = fail,
-         `percentage of LDP standard achieved` = percent_met,
-         `estimated number of people newly diagnosed with dementia` = diagnoses,
-         `percentage of estimated number of people diagnosed with dementia referred to pds` = exp_perc,
+         `LDP standard part 1 - estimated number of people newly diagnosed with dementia` = diagnoses,
+         `LDP standard part 1 - percentage of estimated number of people diagnosed with dementia referred to pds` = exp_perc,
+         `LDP standard part 2 - number of people where standard was met` = complete,
+         `LDP standard part 2 - number of people exempt from standard` = exempt,
+         `LDP standard part 2 - number of people where PDS is ongoing` = ongoing,
+         `LDP standard part 2 - number of people where standard was not met` = fail,
+         `LDP standard part 2 - percentage of LDP standard achieved` = percent_met,
          `percentage of referrals contacted by PDS practitioner` = perc_contacted,
          `average (median) days from diagnoses to first contact` = median_diagnosis_to_contact)
 
@@ -424,7 +428,7 @@ download_data_hb %<>% pivot_longer(cols = c(`number of people referred to PDS`:`
 write_rds(download_data_hb, 
           "//conf/dementia/A&I/Outputs/dashboard/data/download_data_hb.rds")
 
-#### integration authority areas----
+### integration authority areas----
 ijb_ldp <- 
   # all referrals
   download_data %>% 
@@ -459,11 +463,11 @@ download_data_ijb <- left_join(ijb_ldp,
   rename(geography = ijb,
          financial_year = fy,
          `number of people referred to PDS` = referrals,
-         `standard met` = complete,
-         `exempt from standard` = exempt,
-         `PDS ongoing` = ongoing,
-         `standard not met` = fail,
-         `percentage of LDP standard achieved` = percent_met,
+         `LDP standard part 2 - number of people where standard was met` = complete,
+         `LDP standard part 2 - number of people exempt from standard` = exempt,
+         `LDP standard part 2 - number of people where PDS is ongoing` = ongoing,
+         `LDP standard part 2 - number of people where standard was not met` = fail,
+         `LDP standard part 2 - percentage of LDP standard achieved` = percent_met,
          `percentage of referrals contacted by PDS practitioner` = perc_contacted,
          `average (median) days from diagnoses to first contact` = median_diagnosis_to_contact)
 
