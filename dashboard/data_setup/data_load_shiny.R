@@ -35,11 +35,13 @@ download_data_ijb <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/downlo
 # 2 convert data types ----
 
 #download_data ----
-# download_data_scotland$geog<- as.factor(download_data_scotland$geog)
-# download_data_scotland$fy <- as.factor(download_data_scotland$fy)
-# download_data_scotland$sex<- as.factor(download_data_scotland$sex)
-# download_data_scotland$age_grp<- as.factor(download_data_scotland$age_grp)
-# download_data_scotland$simd<- as.factor(download_data_scotland$simd)
+download_data_scotland<-download_data_scotland %>% mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                                                            TRUE ~financial_year))
+download_data_hb<-download_data_hb %>% mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                                                                     TRUE ~financial_year))
+download_data_ijb<-download_data_ijb %>% mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                                                                     TRUE ~financial_year))
+
 
 # annual_table_data <- annual_table_data %>% mutate(fy = case_when(fy == provisional_year ~provisional_year %p% supsc("P"),
 #                                                                  fy == revised_year ~revised_year %p% supsc("R"),
