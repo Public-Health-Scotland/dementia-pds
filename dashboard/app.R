@@ -75,10 +75,10 @@ tabPanel(title = "LDP Standard",
                                      justified = T,
                                      size = "lg"
       ),
-      linebreaks(1),
+      
       
       conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
-     
+                       linebreaks(1),
           selectInput("select_year_p1",
                       label = "Select Financial Year of Diagnosis:",
                       choices = included_years_sup,
@@ -93,7 +93,8 @@ tabPanel(title = "LDP Standard",
                        inline = FALSE)
             ) #cond panel ldp part 2
           ), #cond panel outcomes
-    width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+    width = 3#, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"
+    ),
       
       mainPanel(width = 9,
                 
@@ -180,7 +181,8 @@ tabPanel(title = "Demographics",
                                            choices = included_years_sup,
                                            selected = provisional_year_sup),
                                
-                    width = 2, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+                    width = 2#, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"
+                    ),
            
            mainPanel(width = 10,
                    
@@ -213,10 +215,9 @@ tabPanel(title = "Pathways",
                                justified = T,
                                size = "lg"
              ),
-             linebreaks(1),
-             
+            
              conditionalPanel(condition = 'input.pathways_sidebar == "wait"',
-                              
+                              linebreaks(1),
                                 selectInput("select_year_pathways",
                                             label = "Select Financial Year of Diagnosis:",
                                             choices = included_years,
@@ -228,7 +229,8 @@ tabPanel(title = "Pathways",
                                              selected = "Health Boards",
                                              inline = FALSE)
                               ), #conditionalPanel
-                         width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+                         width = 3#, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"
+             ),
            
            mainPanel(width = 9,
          uiOutput("pathways_ui")
@@ -278,16 +280,7 @@ tabPanel(title = "Download Data",
 
 server <- function(input, output, session) {
   
-  #for linking to methodology tab
-  observe({
-    query <- parseQueryString(session$clientData$url_search)
-    query1 <- paste(names(query), query, sep = "=", collapse=", ")
-    print(query1)
-    if(query1 == "a=b"){
-      updateTabItems(session, inputId = "intabset", selected = "method")
-    }
-  })
-  
+
       # Get content for individual pages
     source(file.path(here("dashboard/pages/intro_page.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_1_ldp_standard.R")), local = TRUE)$value
