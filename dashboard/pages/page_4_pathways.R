@@ -186,7 +186,7 @@ output$plot_title_pathways_trend <- renderUI({HTML(paste0("Average (median) days
 
 trend_pathways_chart_data <- reactive({
   data_wait %>%
-    filter(fy %in% included_years) %>% 
+    filter(fy %in% included_years_sup) %>% # CHANGE to included_years from 2026 onwards
     #coding Aberdeen City and NHS Grampian medians as -999 so they do not appear on chart
     mutate(median_diagnosis_to_contact = 
              if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), -999, median_diagnosis_to_contact)) %>% 
@@ -211,7 +211,7 @@ median_table_trend_data <- reactive({
   if(input$select_pathways_trend_table == "Health Boards"){
     
     median_hb_trend_table_data <- data_wait %>%
-      filter(fy %in% included_years) %>% 
+      filter(fy %in% included_years_sup) %>% # CHANGE to included_years from 2026 onwards
       filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
       #coding NHS Grampian medians as -999 so they do not appear on chart
       mutate(median_diagnosis_to_contact = 
@@ -229,7 +229,7 @@ median_table_trend_data <- reactive({
   }else{
     
     median_ijb_trend_table_data <- data_wait %>%
-      filter(fy %in% included_years) %>% 
+      filter(fy %in% included_years_sup) %>% # CHANGE to included_years from 2026 onwards 
       filter(!grepl("NHS", ijb)) %>% 
       arrange(ijb) %>% 
       #coding Aberdeen City medians as -999 so they do not appear on chart

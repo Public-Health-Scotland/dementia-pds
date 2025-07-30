@@ -81,7 +81,7 @@ tabPanel(title = "LDP Standard",
                        linebreaks(1),
           selectInput("select_year_p1",
                       label = "Select Financial Year of Diagnosis:",
-                      choices = included_years_sup,
+                      choices = included_years,
                       selected= provisional_year_sup),
           
           conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"',
@@ -131,7 +131,7 @@ tabPanel(title = "Referrals & Rates",
          # 
          #                      selectInput("select_year_p1",
          #                                  label = "Select Financial Year of Diagnosis:",
-         #                                  choices = included_years_sup,
+         #                                  choices = included_years,
          #                                  selected= provisional_year_sup),
          # 
          #                      conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"',
@@ -171,24 +171,24 @@ tabPanel(title = "Demographics",
          sidebarLayout(
            sidebarPanel(radioGroupButtons("select_data_demo", label = NULL, choices = demographics_list,
                                           status = "secondary",
-                                          direction = "vertical", 
+                                          direction = "vertical",
                                           justified = T,
                                           size = "normal"
                                           ),
                         linebreaks(1),
                         selectInput("select_year_demo",
                                            label = "Select Financial Year of Diagnosis:",
-                                           choices = included_years_sup,
+                                           choices = included_years,
                                            selected = provisional_year_sup),
-                               
+
                     width = 2#, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"
                     ),
-           
+
            mainPanel(width = 10,
                    
            uiOutput("demo_ui") 
-           ) #main panel
-        ) #sidebar layout
+         ) #main panel
+       ) #sidebar layout
 
       ), # tabpanel
 
@@ -220,7 +220,7 @@ tabPanel(title = "Pathways",
                               linebreaks(1),
                                 selectInput("select_year_pathways",
                                             label = "Select Financial Year of Diagnosis:",
-                                            choices = included_years,
+                                            choices = included_years_sup,#change to included_years from 2026 onwards
                                             selected= provisional_year_sup),
                                                            
                                 radioButtons("select_hb_ijb_pathways",
@@ -285,7 +285,7 @@ server <- function(input, output, session) {
     updateTabsetPanel(session, "intabset", selected = "method")
   })
   
-  ###link to home page----
+  ##link to home page----
   observeEvent(input$home_link, {
     updateTabsetPanel(session, "intabset", selected = "intro")
   })

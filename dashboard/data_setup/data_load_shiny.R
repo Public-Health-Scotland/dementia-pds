@@ -9,16 +9,9 @@
 # Description - script 2 of 2 to prepare PDS data for use in R shiny. 
 ################################################################################
 
-# un-comment the two lines below when testing this script
+# un-comment below when testing this script
 # source(here::here("code", "publication", "00_setup-pub-environment.R"))
-# library(reporter)
 
-provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
-                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
-
-
-revised_year <- paste0(as.numeric(substr(last(finalised_years),1,4)),
-                           "/", as.numeric(substr(last(finalised_years),6,7)))
 
 # 1 read in data from data_prep.R ----
 
@@ -34,18 +27,34 @@ download_data_ijb <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/downlo
 
 # 2 convert data types ----
 
+provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
+                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
+
+
+revised_year <- paste0(as.numeric(substr(last(finalised_years),1,4)),
+                       "/", as.numeric(substr(last(finalised_years),6,7)))
+
+
+extra_referrals_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 2,
+                               "/", as.numeric(substr(last(finalised_years),6,7)) + 2)
+
 #download_data ----
-download_data_scotland<-download_data_scotland %>% mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
-                                                                            TRUE ~financial_year))
-download_data_hb<-download_data_hb %>% mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
-                                                                                     TRUE ~financial_year))
-download_data_ijb<-download_data_ijb %>% mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
-                                                                                     TRUE ~financial_year))
-
-
-# annual_table_data <- annual_table_data %>% mutate(fy = case_when(fy == provisional_year ~provisional_year %p% supsc("P"),
-#                                                                  fy == revised_year ~revised_year %p% supsc("R"),
-#                                                                  TRUE ~fy))
+#add superscripts
+download_data_scotland<-download_data_scotland %>% 
+  mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                    financial_year == revised_year ~paste0(revised_year,"ᴿ"),
+                                    financial_year == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
+                                    TRUE ~financial_year))
+download_data_hb<-download_data_hb %>% 
+  mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                    financial_year == revised_year ~paste0(revised_year,"ᴿ"),
+                                    financial_year == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
+                                    TRUE ~financial_year))
+download_data_ijb<-download_data_ijb %>% 
+  mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                    financial_year == revised_year ~paste0(revised_year,"ᴿ"),
+                                    financial_year == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
+                                    TRUE ~financial_year))
 
 #annual_table_data----
 #add superscripts
@@ -63,6 +72,8 @@ annual_table_data$fy <- as.factor(annual_table_data$fy)
 #filter simd and sex to All and add superscripts
 data_wait <- data_wait %>% filter(simd == "All", sex == "All") %>% 
   mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                        #UNCOMMENT line below in 2026----
+                        # fy == revised_year ~paste0(revised_year,"ᴿ"),
                         TRUE ~fy))
 
 data_wait$health_board <- factor(data_wait$health_board, levels=unique(data_wait$health_board))
@@ -83,7 +94,8 @@ data_age$fy <- as.factor(data_age$fy)
 #data_sex----
 #filter simd to All and add superscripts
 data_sex <- data_sex %>% mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
-                                               fy == revised_year ~paste0(revised_year,"ᴿ"),
+                                               #UNCOMMENT line below in 2026----
+                                               # fy == revised_year ~paste0(revised_year,"ᴿ"),
                                                TRUE ~fy))  %>% 
   filter(simd == "All")
 

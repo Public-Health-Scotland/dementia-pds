@@ -1,9 +1,9 @@
 #### Style of x and y axis----
-xaxis_plots <- list(title = FALSE, tickfont = list(size=12), titlefont = list(size=12),
+xaxis_plots <- list(title = FALSE, tickfont = list(size=13), titlefont = list(size=13),
                     showline = TRUE, fixedrange=TRUE)
 
 yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE, size = 4,
-                    tickfont = list(size=12), titlefont = list(size=12))
+                    tickfont = list(size=13), titlefont = list(size=13))
 
 # Buttons to remove from plotly plots
 bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 

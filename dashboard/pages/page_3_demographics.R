@@ -28,6 +28,41 @@ output$demo_ui <-  renderUI({
                                      "Download table data"),
                           DT::dataTableOutput("table_demo"),
       linebreaks(1),
+      if(input$select_data_demo == "data_simd"){
+         p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
+               format(end_date, "%d %B %Y"),"; Scottish Government Scottish Index of Multiple Deprivation (SIMD) 2020."))
+        }else{
+         p(paste0("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
+                  format(end_date, "%d %B %Y")))
+        },
+      ## notes----
+      h4(strong("Notes:")),
+      p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
+      if(input$select_data_demo != "data_sex"){
+      p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."))
+        },
+      p("For detailed information on how the % LDP standard achieved is calculated, and how 'standard met', 'exempt from standard', 'PDS ongoing' and 'standard not met' are defined, please see the",
+        a(
+          href = "#",
+          "Methodology",
+          onclick = "Shiny.setInputValue('method_link', Math.random()); return false;"),
+        "page."),	
+      if (input$select_data_demo == "data_age"){
+        p("Age is calculated as at the dementia diagnosis date. There are a small number of records with an incomplete date of birth and therefore the age group is unknown.")
+      } else if(input$select_data_demo == "data_simd"){
+        p("Deprivation is calculated by matching postcode to the Scottish Index of Multiple Deprivation (SIMD) quintiles. Each quintile consists of approximately 20% of the general population living in Scotland, 
+          with deprivation quintile 1 indicating the 20% of the population living in the most deprived areas and deprivation quintile 5 indicating the 20% of the population living in the least deprived areas.
+          There are a small number of records where it was not possible to assign a deprivation category. Possible reasons for not being able to assign a deprivation category are that no postcode was provided 
+          or the postcode provided is invalid, not in Scotland, or is a newly added postcode.")
+      } else if(input$select_data_demo == "data_sex"){
+        p("Gender is based on the sex recorded for each referral. There are a small number of records where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’).")
+      },
+      p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+        a(
+          href = "#",
+          "Home",
+          onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+        "page for further information."),
                           
                           width = 12,
                           style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white") 
@@ -151,7 +186,7 @@ table_data_demo <- reactive({
 
 output$table_demo <- DT::renderDataTable({
   
-  make_table(table_data_demo(), right_align = 1:7, ordering = FALSE, 
+  make_table(table_data_demo(), right_align = 1:7, ordering = FALSE, scrollY = FALSE, 
              selected = nrow(table_data_demo()))                                                                                                  
   
   
@@ -172,5 +207,36 @@ output$downloadData_demo <- downloadHandler(
               file, row.names = FALSE)
   }
 )
+
+# the following dynamically updates the selection list to reflect that gender data from 2021/22
+# has not been revised as it was not included in 2024 publication
+# REMOVE this section from 2026 onwards----
+
+observe({
+  if(input$select_data_demo != "data_sex" & input$select_year_demo == "2021/22")
+   {
+    updateSelectInput(session,"select_year_demo",
+                      label = "Select Financial Year of Diagnosis:",
+                      choices = included_years,
+                      selected = "2021/22ᴿ")
+  }else if(input$select_data_demo != "data_sex" & input$select_year_demo != "2021/22"){
+    updateSelectInput(session,"select_year_demo",
+                      label = "Select Financial Year of Diagnosis:",
+                      choices = included_years,
+                      selected = input$select_year_demo)
+  }else if(input$select_data_demo == "data_sex" & input$select_year_demo == "2021/22ᴿ"){
+    updateSelectInput(session,"select_year_demo",
+                      label = "Select Financial Year of Diagnosis:",
+                      choices = included_years_sup,
+                      selected = "2021/22")
+  }else if(input$select_data_demo == "data_sex" & input$select_year_demo != "2021/22ᴿ"){
+    updateSelectInput(session,"select_year_demo",
+                      label = "Select Financial Year of Diagnosis:",
+                      choices = included_years_sup,
+                      selected = input$select_year_demo)
+  }
+})
+
+
 
 ### END OF SCRIPT ###

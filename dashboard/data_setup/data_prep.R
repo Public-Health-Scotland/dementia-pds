@@ -346,7 +346,7 @@ scotland_ldp_exp <- left_join(scotland_ldp,
   mutate(exp_perc = if_else(!is.na(diagnoses), round(referrals/diagnoses*100, 1), NA))
 
 download_data_scotland <- left_join(scotland_ldp_exp, 
-                                    test<-data_wait %>% filter(health_board == "Scotland", sex == "All", simd == "All") %>% 
+                                    data_wait %>% filter(health_board == "Scotland", sex == "All", simd == "All") %>% 
                                       mutate(age_grp = "All") %>% 
                                       select(geog = health_board, fy, sex, age_grp, simd, perc_contacted, median_diagnosis_to_contact)) %>% 
   relocate(c(diagnoses, exp_perc), .after = referrals) %>% 

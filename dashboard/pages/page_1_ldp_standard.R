@@ -14,10 +14,10 @@ output$ldp_ui <-  renderUI({
     ), #fluidRow
     ##LDP PART 1----
         conditionalPanel(condition = 'input.ldp_tab == "ldp_part_1"',
+                    column(
                     # ## OUTCOMES BY YEAR----
                      conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
                                       fluidRow(
-                                        column(
                                           h3(strong(htmlOutput("title_part_1"))),
                                           linebreaks(1),          
                                           ### value box ----
@@ -48,38 +48,11 @@ output$ldp_ui <-  renderUI({
                                             linebreaks(1),
                                             width = 12)
                                           ), # fluid Row
-                                          p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
-                                                   format(end_date, "%d %B %Y"), "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates.")),
-                                          #### notes----
-                                          h4(strong("Notes:")),
-                                          p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
-                                          p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
-                                          p("The estimated number of people newly diagnosed with dementia is subject to the limitations detailed within the paper below published by the Scottish Government in 2016: ", 
-                                            br(),
-                                            a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
-                                            br(),
-                                             "Estimates are used as follows: calendar year 2016 estimates for 2016/17, calendar year 2017 estimates for 2017/18, calendar year 2018 estimates for 2018/19, calendar year 2019 estimates for 2019/20 and calendar year 2020 estimates for 2020/21.",
-                                            br(),
-                                            "For 2021/22 and 2022/23, the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the paper above and the National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates. See Note 2 on the",
-                                            a(
-                                              href = "#",
-                                              "Home",
-                                              onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
-                                              "page for further information."),					
-                                          p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
-                                            a(
-                                              href = "#",
-                                              "Home",
-                                              onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
-                                              "page for further information."),
-                                          width = 12,
-                                          style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available")
-                                      ) #fluidRow
+                                       ) #fluidRow
                      ), #cond panel outcomes
                      ##TRENDS ----
                      conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
                                      fluidRow(
-                                        column(
                                           ### plot ----
                                           h4(strong(htmlOutput("chart_title_trend_part_1"))),
                                           fluidRow(column(
@@ -97,42 +70,42 @@ output$ldp_ui <-  renderUI({
                                                          "Download table data"),
                                           DT::dataTableOutput("table_hb_trend_part_1"),
                                           linebreaks(1),
-                                          p(paste0("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
-                                                   format(end_date, "%d %B %Y"))),
-                                          ### notes----
-                                          h4(strong("Notes:")),
-                                          p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
-                                          p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
-                                          p("The estimated number of people newly diagnosed with dementia is subject to the limitations detailed within the paper below published by the Scottish Government in 2016: ", 
-                                            br(),
-                                            a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
-                                            br(),
-                                            "Estimates are used as follows: calendar year 2016 estimates for 2016/17, calendar year 2017 estimates for 2017/18, calendar year 2018 estimates for 2018/19, calendar year 2019 estimates for 2019/20 and calendar year 2020 estimates for 2020/21.",
-                                            br(),
-                                            "For 2021/22 and 2022/23, the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the paper above and the National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates. See Note 2 on the",
-                                              a(
-                                              href = "#",
-                                              "Home",
-                                              onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
-                                            "page for further information."),					
-                                          p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
-                                              a(
-                                              href = "#",
-                                              "Home",
-                                              onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
-                                            "page for further information."),
-                                          width = 12,
-                                          style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
-                                          ), # column
                                       ) # fluidRow
-                           ) #cond panel trends
+                           ), #cond panel trends
+                    p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
+                             format(end_date, "%d %B %Y"), "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates.")),
+                    ## notes----
+                    h4(strong("Notes:")),
+                    p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
+                    p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
+                    p("The estimated number of people newly diagnosed with dementia is subject to the limitations detailed within the paper below published by the Scottish Government in 2016: ", 
+                      br(),
+                      a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
+                      br(),
+                      "Estimates are used as follows: calendar year 2016 estimates for 2016/17, calendar year 2017 estimates for 2017/18, calendar year 2018 estimates for 2018/19, calendar year 2019 estimates for 2019/20 and calendar year 2020 estimates for 2020/21.",
+                      br(),
+                      "For 2021/22 and 2022/23, the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the paper above and the National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates. See Note 2 on the",
+                      a(
+                        href = "#",
+                        "Home",
+                        onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+                      "page for further information."),					
+                    p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+                      a(
+                        href = "#",
+                        "Home",
+                        onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+                      "page for further information."),
+                    width = 12,
+                    style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
+        )# column
     ), #cond panel part 1
     ## LDP PART 2 ----
     conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"',
-                  #OUTCOMES BY YEAR----
+                   column(
+                  ##OUTCOMES BY YEAR----
                      conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
                                       fluidRow(
-                                        column(
                                           h3(strong(htmlOutput("title_part_2"))),
                                           linebreaks(1),
                                           ### value box ----
@@ -162,14 +135,11 @@ output$ldp_ui <-  renderUI({
                                             linebreaks(1),
                                             width = 12)
                                           ), # fluid Row
-                                          width = 12,
-                                          style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"),
                                       ) #fluidRow
                      ), # cond panel outcomes
               ## TRENDS----
               conditionalPanel(condition = 'input.ldp_sidebar == "trends"', 
                                fluidRow(
-                                 column(
                                    ###plot----
                                    h4(strong(htmlOutput("chart_title_trend_part_2"))),
                                    fluidRow(column(
@@ -191,13 +161,31 @@ output$ldp_ui <-  renderUI({
                                                   "Download table data"),
                                    DT::dataTableOutput("table_hb_ijb_trend_part_2"),
                                    linebreaks(1),
-                                   width = 12,
-                                   style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
-                                   ), # column
                                ) # fluidRow
-              ) #cond panel trends
-    ) # cond panel part 2
-               )# div
+              ), #cond panel trends
+              p(paste0("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
+                       format(end_date, "%d %B %Y"))),
+              ## notes----
+              h4(strong("Notes:")),
+              p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
+              p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
+              p("For detailed information on how the % LDP standard achieved is calculated, and how 'standard met', 'exempt from standard', 'PDS ongoing' and 'standard not met' are defined, please see the",
+                a(
+                  href = "#",
+                  "Methodology",
+                  onclick = "Shiny.setInputValue('method_link', Math.random()); return false;"),
+                "page."),					
+              p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+                a(
+                  href = "#",
+                  "Home",
+                  onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+                "page for further information."),
+              width = 12,
+              style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
+             ), # column
+           ) # cond panel part 2
+       )# div
 }) # renderUI
 
 #SERVER ----
@@ -294,7 +282,7 @@ output$chart_title_trend_part_1 <- renderUI({HTML(paste0("Percentage of people e
 
 trend_chart_data_part_1 <- reactive({
   annual_table_data %>%
-    filter(fy %in% included_years_sup, ldp == "total") %>% 
+    filter(fy %in% included_years, ldp == "total") %>% 
     filter(ijb == input$select_hb_trend_part_1 | ijb == "Scotland")
 })
 
@@ -308,7 +296,7 @@ output$table_title_hb_trend_part_1 <- renderUI({HTML(paste0("Percentage of peopl
 
 table_hb_trend_part_1_data <- reactive({
   annual_table_data %>% 
-    filter(fy %in% included_years_sup, ldp == "total") %>% 
+    filter(fy %in% included_years, ldp == "total") %>% 
     select(health_board, fy, exp_perc) %>%
     mutate(exp_perc = paste0(exp_perc, "%")) %>% 
     distinct(health_board, fy, .keep_all = T) %>% 
@@ -318,7 +306,7 @@ table_hb_trend_part_1_data <- reactive({
 output$table_hb_trend_part_1 <- DT::renderDataTable({
   make_table(table_hb_trend_part_1_data() %>% 
                pivot_wider(names_from = fy, values_from = exp_perc),
-             right_align = 1:length(included_years_sup), selected = 1, filename = paste0("pds_perc_of_expected_diagnoses_trend"))
+             right_align = 1:length(included_years), selected = 1, filename = paste0("pds_perc_of_expected_diagnoses_trend"))
 })
 
 
@@ -438,7 +426,7 @@ output$chart_title_trend_part_2 <- renderUI({HTML(paste("Percentage of people re
 
 trend_chart_data <- reactive({
   annual_table_data %>%
-    filter(fy %in% included_years_sup, ldp == "total") %>% 
+    filter(fy %in% included_years, ldp == "total") %>% 
     filter(ijb == input$select_hb_ijb_trend_part_2 | ijb == "Scotland")})
 
 
@@ -460,7 +448,7 @@ table_trend_part_2_data <- reactive({
   if(input$select_table_trend_part_2 == "Health Boards"){  
     
     trend_hb_data <- annual_table_data %>% 
-      filter(fy %in% included_years_sup) %>% 
+      filter(fy %in% included_years) %>% 
       select(health_board, fy, percent_met) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
       mutate(percent_met = if_else(percent_met == "   NA", "-", paste0(percent_met, "%"))) %>% 
@@ -470,7 +458,7 @@ table_trend_part_2_data <- reactive({
   }else{
     
     trend_ijb_data <- annual_table_data %>% 
-      filter(fy %in% included_years_sup) %>% 
+      filter(fy %in% included_years) %>% 
       filter(!grepl("NHS", ijb)) %>% 
       select(ijb, fy, percent_met) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
@@ -486,7 +474,7 @@ output$table_hb_ijb_trend_part_2 <- DT::renderDataTable({
  
     make_table(table_trend_part_2_data() %>% 
                  pivot_wider(names_from = fy, values_from = percent_met),
-               right_align = 1:length(included_years_sup), selected = 1, rows_to_display = 32, filename = paste0("pds_perc_met_standard_exempt_iaa_trend"))
+               right_align = 1:length(included_years), selected = 1, rows_to_display = 32, filename = paste0("pds_perc_met_standard_exempt_iaa_trend"))
   
 })
 

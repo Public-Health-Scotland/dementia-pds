@@ -9,8 +9,6 @@ library(shinydashboard)
 library(shinycssloaders)
 library(bslib)
 library(DT)
-#library(reactable)
-#library(reporter)
 
 # PHS styling packages ----
 library(phsstyles)
@@ -27,15 +25,19 @@ source(here("dashboard/data_setup/data_load_shiny.R"))
 
 revised_year_sup <- paste0(revised_year,"ᴿ")
 
-# revised_year_sup <- revised_year %p% supsc("R")
-
 provisional_year_sup <- paste0(provisional_year,"ᴾ")
 
-included_years_no_sup <- c(finalised_years, provisional_year)
+extra_referrals_year_sup <- paste0(extra_referrals_year,"ᴾ")
 
-included_years <- c(finalised_years, provisional_year_sup)
+#included_years_no_sup <- c(finalised_years, provisional_year)
 
-included_years_sup <- c(finalised_years[-length(finalised_years)], revised_year_sup, provisional_year_sup)
+included_years_sup <- c(finalised_years, provisional_year_sup) #can be removed from 2026 onwards
+
+included_years <- c(finalised_years[-length(finalised_years)],
+                        revised_year_sup,
+                        provisional_year_sup)
+
+included_years_extra_referrals <- c(finalised_years[-length(finalised_years)], revised_year_sup, provisional_year_sup, extra_referrals_year_sup)
 
 #included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
 

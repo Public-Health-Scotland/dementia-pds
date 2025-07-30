@@ -20,7 +20,7 @@ output$download_ui <-  renderUI({
                  actionButton(style = "width: 49%; margin-right: -2.5px", "selectall", label = "Select All"),
                  actionButton(style = "width: 49%; margin-left: -2px", "deselectall", label = "Deselect All"),
                  checkboxGroupInput("select_year_dl", NULL,
-                                    choices = included_years, selected = included_years),
+                                    choices = included_years_extra_referrals, selected = included_years_extra_referrals),
                ),
              # dropdown filters for measure, gender, age group and simd if Scotland data is chosen----
              conditionalPanel(condition = 'input.download == "download_data_scotland"',
@@ -123,18 +123,32 @@ download_data <- reactive({
 
 #filters selected data depending on dropdown selections
 download_data_filtered <- reactive({
+
+  
   if(input$download == "download_data_scotland"){
-    download_data() %>% filter(financial_year %in% input$select_year_dl, 
+    download_data() %>% filter((financial_year == extra_referrals_year_sup &
+                                  measure == "number of people referred to PDS" &
+                                  gender == "All" &
+                                  age_group == "All" &
+                                  deprivation_quintile == "All") |
+                                 financial_year %in% included_years) %>%
+      filter(financial_year %in% input$select_year_dl, 
                                gender %in% input$select_gender_dl,
                                age_group %in% input$select_age_dl,
                                deprivation_quintile %in% input$select_simd_dl,
                                measure %in% input$select_measure_dl_scot)
   }else if(input$download == "download_data_hb"){
-    download_data() %>% filter(financial_year %in% input$select_year_dl,
+    download_data() %>% filter((financial_year == extra_referrals_year_sup &
+                  measure == "number of people referred to PDS") |
+                 financial_year %in% included_years) %>%
+      filter(financial_year %in% input$select_year_dl,
                                geography %in% input$select_hb_dl,
                                measure %in% input$select_measure_dl_hb)
   }else{
-      download_data() %>% filter(financial_year %in% input$select_year_dl,
+      download_data() %>% filter((financial_year == extra_referrals_year_sup &
+                  measure == "number of people referred to PDS") |
+                 financial_year %in% included_years) %>% 
+      filter(financial_year %in% input$select_year_dl,
                                  geography %in% input$select_ijb_dl,
                                  measure %in% input$select_measure_dl_ijb)
   }
@@ -147,7 +161,7 @@ observe({
   else if (input$selectall > 0)
   {
     updateCheckboxGroupInput(session,"select_year_dl", NULL,
-                             choices = included_years, selected = included_years)
+                             choices = included_years_extra_referrals, selected = included_years_extra_referrals)
   }
 })
 
@@ -156,7 +170,7 @@ observe({
   else if (input$deselectall > 0)
   {
     updateCheckboxGroupInput(session,"select_year_dl", NULL,
-                             choices = included_years)
+                             choices = included_years_extra_referrals)
   }
 })
 
@@ -177,6 +191,8 @@ output$downloadData <- downloadHandler(
     write.csv(download_data_filtered() %>%
                 mutate(financial_year = case_when(
                   financial_year == provisional_year_sup ~paste0(provisional_year,"P"),
+                  financial_year == revised_year_sup ~paste0(revised_year,"R"),
+                  financial_year == extra_referrals_year_sup ~paste0(extra_referrals_year,"P"),
                                                     TRUE ~financial_year)),
                file, row.names = FALSE)
   }
