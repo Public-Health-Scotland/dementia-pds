@@ -167,25 +167,30 @@ percent_bar_chart <- function(data, category, measure, x_text_angle = 45, legend
 
 
 
-#bar chart for pathways
-plot_bar_median<- function(data){
+#bar chart for pathways and referrals
+plot_bar <- function(data, ytitle = "Median Wait (days)",
+                           measure_text = "Average (median) days from diagnosis to first contact: ", 
+                           measure = median_diagnosis_to_contact,
+                           scot_measure = scot_median_diagnosis_to_contact,
+                           scot_measure_text = "Average (median) days from diagnosis to first contact: "){
   
-  yaxis_plots[["title"]] <- "Median Wait (days)"
+  yaxis_plots[["title"]] <- ytitle
   xaxis_plots[["title"]] <- ""
   
   plot <-  data %>%  ggplot() +
     
-    geom_col(aes(x = geog, y = median_diagnosis_to_contact,
+    geom_col(aes(x = geog, y = {{measure}},
                  text = paste0(geog, "<br>",
                                fy, "<br>",
-                               "Average (median) days from diagnosis to first contact: ", median_diagnosis_to_contact)),
+                               measure_text, {{measure}})
+                 ),
              #position = position_dodge(),
              fill = "#0078D4") +
     
-    geom_hline(aes(yintercept = scot_median_diagnosis_to_contact, 
+    geom_hline(aes(yintercept = {{scot_measure}}, 
                    text = paste0("Scotland", "<br>",
                                  fy, "<br>",
-                                 "Average (median) days from diagnosis to first contact: ", scot_median_diagnosis_to_contact), color = "Scotland"), linetype = 2) +
+                                 scot_measure_text, {{scot_measure}}), color = "Scotland"), linetype = 2) +
     
     scale_color_manual(values = "#C73918") +
     

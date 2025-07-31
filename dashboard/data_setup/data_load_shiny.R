@@ -70,7 +70,7 @@ annual_table_data$fy <- as.factor(annual_table_data$fy)
 
 #data_wait----
 #filter simd and sex to All and add superscripts
-data_wait <- data_wait %>% filter(simd == "All", sex == "All") %>% 
+data_wait <- data_wait %>% 
   mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
                         #UNCOMMENT line below in 2026----
                         # fy == revised_year ~paste0(revised_year,"ᴿ"),
@@ -84,8 +84,7 @@ data_wait$fy <- as.factor(data_wait$fy)
 #filter sex to All and add superscripts
 data_age <- data_age %>% mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
                                                fy == revised_year ~paste0(revised_year,"ᴿ"),
-                                               TRUE ~fy)) %>% 
-  filter(sex == "All")
+                                               TRUE ~fy)) 
 
 data_age$health_board <- factor(data_age$health_board, levels=unique(data_age$health_board))
 data_age$type <- as.factor(data_age$type)
@@ -96,8 +95,7 @@ data_age$fy <- as.factor(data_age$fy)
 data_sex <- data_sex %>% mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
                                                #UNCOMMENT line below in 2026----
                                                # fy == revised_year ~paste0(revised_year,"ᴿ"),
-                                               TRUE ~fy))  %>% 
-  filter(simd == "All")
+                                               TRUE ~fy))  
 
 data_sex$health_board <- factor(data_sex$health_board, levels=unique(data_sex$health_board))
 data_sex$type <- factor(data_sex$type, levels = c("Male", "Female", "Not Specified", "Unknown"))
@@ -108,8 +106,7 @@ data_sex$fy <- as.factor(data_sex$fy)
 #filter sex to All and add superscripts
 data_simd <- data_simd %>% mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
                                                  fy == revised_year ~paste0(revised_year,"ᴿ"),
-                                                 TRUE ~fy)) %>% 
-  filter(sex == "All")
+                                                 TRUE ~fy))
 
 data_simd$health_board <- factor(data_simd$health_board, levels=unique(data_simd$health_board))
 data_simd$type <- as.factor(data_simd$type)
