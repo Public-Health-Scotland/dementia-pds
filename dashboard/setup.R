@@ -65,6 +65,13 @@ ldp_tab_list <- c("LDP Standard Part 1" = "ldp_part_1",
 ldp_sidebar_list <- c("Outcomes by Financial Year" = "outcomes",
                       "Trends" = "trends"
                       )
+RandR_tab_list <- c("Total Referrals" = "RandR_part_1",
+                    "Rates per 10,000 population" = "RandR_part_2"
+)
+
+RandR_sidebar_list <- c("Referrals by Financial Year" = "RandRreferrals",
+                        "Trends" = "RandRtrends"
+)
 
 demographics_list <- c("Gender" = "data_sex",
                        "Age" = "data_age",
