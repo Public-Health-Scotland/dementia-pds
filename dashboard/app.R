@@ -37,8 +37,10 @@ tabPanel(title = "Home",
     icon = icon_no_warning_fn("circle-info"),
     value = "intro",
     
-    h1("Dementia Post-Diagnostic Support (PDS)"),
-    linebreaks(1),
+    box(class = "header", h2("Dementia Post-Diagnostic Support"),
+        width = 12,
+        collapsible = FALSE, collapsed = FALSE),
+        # linebreaks(1),
     sidebarLayout(
       sidebarPanel(radioGroupButtons("home_select", label = NULL, choices = home_list,
                                      status = "primary",
@@ -60,7 +62,7 @@ tabPanel(title = "LDP Standard",
     icon = icon_no_warning_fn("clipboard-list"),
     value = "ldp-standard",
     
-    box(h1("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard"),
+    box(class = "header", h2("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard"),
         width = 12,
         collapsible = TRUE, collapsed = FALSE),
     
@@ -73,10 +75,10 @@ tabPanel(title = "LDP Standard",
                                      justified = T,
                                      size = "lg"
       ),
-      linebreaks(1),
+      
       
       conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
-     
+                       linebreaks(1),
           selectInput("select_year_p1",
                       label = "Select Financial Year of Diagnosis:",
                       choices = included_years,
@@ -91,7 +93,8 @@ tabPanel(title = "LDP Standard",
                        inline = FALSE)
             ) #cond panel ldp part 2
           ), #cond panel outcomes
-    width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+    width = 3#, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"
+    ),
       
       mainPanel(width = 9,
                 
@@ -109,7 +112,7 @@ tabPanel(title = "Referrals & Rates",
          icon = icon_no_warning_fn("braille"),
          value = "rates",
          
-         box(h1("Dementia Post-Diagnostic Support; Referrals to PDS"),
+         box(class = "header", h2("Dementia Post-Diagnostic Support; Referrals to PDS"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
@@ -159,7 +162,7 @@ tabPanel(title = "Demographics",
          icon = icon_no_warning_fn("id-card"),
          value = "demo",
          
-         box(h1("Dementia Post-Diagnostic Support; Demographics"),
+         box(class = "header", h2("Dementia Post-Diagnostic Support; Demographics"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
       
@@ -168,7 +171,7 @@ tabPanel(title = "Demographics",
          sidebarLayout(
            sidebarPanel(radioGroupButtons("select_data_demo", label = NULL, choices = demographics_list,
                                           status = "secondary",
-                                          direction = "vertical", 
+                                          direction = "vertical",
                                           justified = T,
                                           size = "normal"
                                           ),
@@ -177,14 +180,15 @@ tabPanel(title = "Demographics",
                                            label = "Select Financial Year of Diagnosis:",
                                            choices = included_years,
                                            selected = provisional_year_sup),
-                               
-                    width = 2, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
-           
+
+                    width = 2#, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"
+                    ),
+
            mainPanel(width = 10,
                    
            uiOutput("demo_ui") 
-           ) #main panel
-        ) #sidebar layout
+         ) #main panel
+       ) #sidebar layout
 
       ), # tabpanel
 
@@ -198,7 +202,7 @@ tabPanel(title = "Pathways",
          icon = icon_no_warning_fn("arrows-turn-to-dots"),
          value = "pathways",
          
-         box(h1("Dementia Post-Diagnostic Support; Pathways"),
+         box(class = "header", h2("Dementia Post-Diagnostic Support; Pathways"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
@@ -211,13 +215,12 @@ tabPanel(title = "Pathways",
                                justified = T,
                                size = "lg"
              ),
-             linebreaks(1),
-             
+            
              conditionalPanel(condition = 'input.pathways_sidebar == "wait"',
-                              
+                              linebreaks(1),
                                 selectInput("select_year_pathways",
                                             label = "Select Financial Year of Diagnosis:",
-                                            choices = included_years,
+                                            choices = included_years_sup,#change to included_years from 2026 onwards
                                             selected= provisional_year_sup),
                                                            
                                 radioButtons("select_hb_ijb_pathways",
@@ -226,7 +229,8 @@ tabPanel(title = "Pathways",
                                              selected = "Health Boards",
                                              inline = FALSE)
                               ), #conditionalPanel
-                         width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+                         width = 3#, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"
+             ),
            
            mainPanel(width = 9,
          uiOutput("pathways_ui")
@@ -243,12 +247,28 @@ tabPanel(title = "Methodology",
          icon = icon_no_warning_fn("signs-post"),
          value = "method",
          
-         box(h1("Dementia Post-Diagnostic Support; Methodology"),
+         box(class = "header", h2("Dementia Post-Diagnostic Support; Methodology"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
          uiOutput("method_ui")
       
+), # tabPanel
+
+##############################################.
+# PAGE 6: Download Data ----
+##############################################.
+tabPanel(title = "Download Data",
+         # Look at https://fontawesome.com/search?m=free for icons
+         icon = icon_no_warning_fn("download"),
+         value = "dl",
+         
+         box(class = "header", h2("Dementia Post-Diagnostic Support; Download Data"),
+             width = 12,
+             collapsible = TRUE, collapsed = FALSE),
+         
+         uiOutput("download_ui")
+         
 ), # tabPanel
 
     collapsible = TRUE) # navbar
@@ -260,23 +280,25 @@ tabPanel(title = "Methodology",
 
 server <- function(input, output, session) {
   
-  #for linking to methodology tab
-  observe({
-    query <- parseQueryString(session$clientData$url_search)
-    query1 <- paste(names(query), query, sep = "=", collapse=", ")
-    print(query1)
-    if(query1 == "a=b"){
-      updateTabItems(session, inputId = "intabset", selected = "method")
-    }
+  ##link to methodology page----
+  observeEvent(input$method_link, {
+    updateTabsetPanel(session, "intabset", selected = "method")
   })
   
-      # Get content for individual pages
+  ##link to home page----
+  observeEvent(input$home_link, {
+    updateTabsetPanel(session, "intabset", selected = "intro")
+  })
+  
+
+## Get content for individual pages----
     source(file.path(here("dashboard/pages/intro_page.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_1_ldp_standard.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_2_rates.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_3_demographics.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_4_pathways.R")), local = TRUE)$value
     source(file.path(here("dashboard/pages/page_5_methodology.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/page_6_download.R")), local = TRUE)$value
 
 
 }

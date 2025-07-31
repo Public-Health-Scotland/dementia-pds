@@ -10,6 +10,7 @@ output$method_ui <-  renderUI({
                         direction = "horizontal",
                         justified = T,
                         size = "lg"), width = 12)),
+    ##LDP classification ----
     conditionalPanel(
       condition= 'input.method_tab == "ldp_class"',
       
@@ -49,28 +50,32 @@ output$method_ui <-  renderUI({
         
         p("This part of the LDP standard is calculated as:"),
         
-        withMathJax("$$\\text{LDP Standard Achieved (%)}=\\frac{\\text{LDP Standard met + Exempt from LDP Standard}}{\\text{LDP Standard met + Exempt + LDP Standard not met}}\\times\\text{100}$$"),
+        p(style = "font-size: 12pt", withMathJax("$$\\text{LDP Standard Achieved (%)}=\\frac{\\text{LDP Standard met + Exempt from LDP Standard}}{\\text{LDP Standard met + Exempt + LDP Standard not met}}\\times\\text{100}$$")),
         
         p("Service users for whom it is not yet known if they have met the standard as their PDS is ongoing are excluded from the percentage figures."),
         linebreaks(1),
-        width = 12)),
+        width = 12,
+        style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white")),
       
     ), #cond panel 1
-    
+ 
+# expected diagnoses ----       
 conditionalPanel(
   condition = 'input.method_tab == "exp_diag"',
   
   fluidRow(column(
     p("In December 2016, the Scottish Government published a report:",
-             a("Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020.", href="https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/"),
+             a("Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020.", href="https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/", target="_blank"),
              "Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by Integration Authority Area or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report."),
            p("For financial years ",
              em("2021/22 and 2022/23"),
-             " the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates."),
+             " the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 and Mid-2022 Population Estimates to obtain the incidence estimates."),
            p("Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018."),
-    width = 12)) #fluid Row
+    width = 12,
+    style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white")) #fluid Row
 ), #cond panel 2
-    
+
+# duplicate records ----    
     conditionalPanel(
       condition = 'input.method_tab == "duplicates"',
       
@@ -82,9 +87,11 @@ conditionalPanel(
                )
                ), 
                p("There is a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IAA. The support provided to these service users has been apportioned to NHS Highland in this report."),
-               p("If you have any queries regarding the above, please contact ", a("phs.dementiapds@phs.scot", href="mailto:phs.dementiapds@phs.scot")),
+               p("If you have any queries regarding the above, please contact ", 
+                 a("phs.dementiapds@phs.scot", href="mailto:phs.dementiapds@phs.scot")),
                
-      width = 12)) #fluid Row
+      width = 12,
+      style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white")) #fluid Row
     ) #cond panel 3
  
   ) # div

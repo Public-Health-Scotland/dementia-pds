@@ -69,7 +69,7 @@ h1, .h1 {
 /* Body styles */
 body {
     font-family: Arial;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.5;
     color: var(--black);
     background-color: var(--white);
@@ -408,6 +408,12 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
   margin-top: -10px;
 }
 
+
+/*add text wrapping to sidebar buttons*/
+.btn.radiobtn.btn{
+  text-wrap: auto;
+}
+
 /* intro page side bar buttons */
 .btn.radiobtn.btn-primary {
   border-radius: 0px; 
@@ -430,7 +436,7 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 }
 
 
-/* demographics and additional analysis side bar buttons */
+/* demographics side bar buttons */
 .btn.radiobtn.btn-secondary {
   border-radius: 0px; 
   color: #FFFFFF;
@@ -498,6 +504,9 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
     border-width: 2px;
 }
 
+/*page headers*/
+.box-body.header {padding: 0px; margin-top: -10px}
+
 /*intro page ldp description box intro page*/
 .box.box-solid.bg-blue { background-color: var(--phs-blue-10) ; padding: 4px; border: 2px solid var(--phs-blue-50)} 
 
@@ -510,7 +519,7 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 .box.box-primary {background-color: #FFFFFF; padding: 0px; margin-bottom: 0px; margin-left: 0px} 
 .box-header {background-color: var(--phs-blue-10); padding: 0px}
 .box-title {margin-top: 0px; margin-bottom: -5px; padding-left: 6px; padding-top: 12px; padding-bottom: 1px}
-.box-body {padding: 6px;}
+.box-body {padding: 6px; margin-top: 10px}
 .col-sm-5 {padding-right: 4px; padding-left: 4px}
 .col-sm-7 {padding-right: 4px; padding-left: 4px}
 
@@ -526,5 +535,32 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 /* left align formula */
 .MathJax_Display {
   text-align: left !important; 
-  font-size: 14px;
+  font-size: 13px;
   }
+  
+/* download buttons */
+.btn.btn-default {
+  background-color: #C5C3DA;
+  color: black;
+  
+}
+  
+/* force nav bar to fit width of screen*/
+.navbar.navbar-default.navbar-static-top{
+  margin-right: -30px;
+  margin-left: -55px;
+}  
+
+.nav>li>a{padding: 15px 14px;}
+
+/* moves tabs up to align with sidebar buttons */
+#ldp_tab, #rates_tab{
+  margin-top: -18px;
+}
+  
+/*adds margin to checkbox selction in data download page */ 
+#select_year_dl{
+    margin-top: 20px;
+    margin-left: 3px;
+}
+  
