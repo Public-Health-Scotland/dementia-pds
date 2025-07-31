@@ -53,10 +53,10 @@ output$rates_ui <-  renderUI({
                                         h3(strong(htmlOutput("chart_title_trend_part_1"))),
                                         fluidRow(
                                           column(
-                                            selectInput("select_hb_trend_part_1",
-                                                        label = "Select Health Board to show in chart:",
+                                            selectInput("select_randr_hb_trend_part_1",
+                                                        label = "Select Health Board/IJB to show in chart:",
                                                         choices = c("", boards), width = "100%"), width = 5)),
-                                        plotlyOutput("trend_plot_part_1"),
+                                        plotlyOutput("hb_RandR_trend_plot"),
                                         #linebreaks(1),
                                         # table ----
                                         h3(strong(htmlOutput("table_title_hb_trend_part_1"))),
@@ -137,16 +137,16 @@ output$rates_ui <-  renderUI({
 
 #part 1 title ----
 output$title_part_1 <- renderUI({HTML(paste("Percentage of estimated diagnoses referred for PDS; Scotland, ", 
-                                            input$select_year_p1))
+                                            input$select_year_p1_randr))
 })
 
 #part 2 title ----
 output$title_part_2 <- renderUI({HTML(paste("Percentage of referrals for PDS who received one year's support; Scotland, ", 
-                                            input$select_year_p1))
+                                            input$select_year_p1_randr))
 })
 
 #value boxes data ----
-vb_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_p1, ldp == "total")}) 
+vb_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_p1_randr, ldp == "total")}) 
 
 # percentage of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support
 output$scot_exp_perc <- renderText({paste0(vb_data()$exp_perc, "%")})
@@ -158,7 +158,7 @@ output$scot_exp_text <- renderUI({
 # percentage of those referred for post-diagnostic support received a minimum of 12 months of support
 output$scot_pds_perc <- renderText({paste0(vb_data()$percent_met, "%")})
 
-vb_2_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_p1,
+vb_2_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_p1_randr,
                                                    ldp != "fail") %>% select(-diagnoses, -exp_perc) %>% 
     pivot_wider(values_from = referrals, names_from = ldp)})
 
@@ -169,27 +169,25 @@ output$scot_pds_text <- renderUI({
 
 # plot RandR part 1 ----
 output$hb_RandR_plot_title <- renderUI({HTML(paste0("Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; ", 
-                                                    input$select_year_p1, ", Scotland and Health Boards"))
+                                                    input$select_year_p1_randr, ", Scotland and Health Boards"))
 })
 
 output$hb_RandR_plot <- renderPlotly({
-  plot_trend (annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1, ldp == "total", referrals) %>% 
-                mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
-              category = ijb, 
-              measure = referrals,
-              fill = colour)
+  plot_trend (annual_table_data %>% filter(ijb == input$select_randr_hb_trend_part_1 | ijb == "Scotland", fy == input$select_year_p1_randr, ldp == "total"), 
+                measure = referrals
+  )
 })
 
 
 
 # data table ldp part 1 ----
 output$hb_exp_table_title <- renderUI({HTML(paste0("Number and percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; ", 
-                                                   input$select_year_p1, ", Scotland and Health Boards"))
+                                                   input$select_year_p1_randr, ", Scotland and Health Boards"))
 })
 
 output$table_hb_exp <- DT::renderDataTable({
   table_hb_exp_data <- annual_table_data %>% 
-    filter(fy == input$select_year_p1) %>%
+    filter(fy == input$select_year_p1_randr) %>%
     filter(grepl("NHS", ijb) | ijb == "Scotland", !is.na(diagnoses)) %>% 
     group_by(health_board)%>%
     select(health_board, diagnoses, referrals)%>%
@@ -201,14 +199,14 @@ output$table_hb_exp <- DT::renderDataTable({
 
 #plot ldp part 2 ----
 output$perc_met_plot_title <- renderUI({HTML(paste0("Percentage of people referred for PDS who received a minimum of one year’s support within 12 month's of diagnosis; ", 
-                                                    input$select_year_p1, ", Scotland and ", input$select_hb_ijb))
+                                                    input$select_year_p1_randr, ", Scotland and ", input$select_hb_ijb))
 })
 
 output$perc_met_plot <- renderPlotly({
   
   if(input$select_hb_ijb == "Health Boards"){
     
-    percent_bar_chart(annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1, ldp == "total") %>% 
+    percent_bar_chart(annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1_randr, ldp == "total") %>% 
                         mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
                       category = ijb, 
                       measure = percent_met,
@@ -216,7 +214,7 @@ output$perc_met_plot <- renderPlotly({
     
   }else{
     
-    percent_bar_chart(annual_table_data %>% filter(!grepl("NHS", ijb), fy == input$select_year_p1, ldp == "total") %>% 
+    percent_bar_chart(annual_table_data %>% filter(!grepl("NHS", ijb), fy == input$select_year_p1_randr, ldp == "total") %>% 
                         mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
                       category = ijb, 
                       measure = percent_met,
@@ -227,7 +225,7 @@ output$perc_met_plot <- renderPlotly({
 
 # data table lpd part 2 ----
 output$perc_met_table_title <- renderUI({HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support within 12 month's of diagnosis; ", 
-                                                     input$select_year_p1, ", Scotland and ", input$select_hb_ijb))
+                                                     input$select_year_p1_randr, ", Scotland and ", input$select_hb_ijb))
 })
 
 output$perc_met_table <- DT::renderDataTable({
@@ -236,7 +234,7 @@ output$perc_met_table <- DT::renderDataTable({
     
     table_hb_data <- annual_table_data %>% 
       filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
-      filter(fy == input$select_year_p1) %>%
+      filter(fy == input$select_year_p1_randr) %>%
       select(health_board,ldp,referrals,percent_met)%>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
       mutate(percent_met = if_else(percent_met == "   NA", "-", paste0(percent_met, "%"))) %>% 
@@ -252,7 +250,7 @@ output$perc_met_table <- DT::renderDataTable({
     
     table_ijb_data <- annual_table_data %>%
       filter(!grepl("NHS", ijb)) %>% 
-      filter(fy == input$select_year_p1) %>%
+      filter(fy == input$select_year_p1_randr) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
       mutate(percent_met = if_else(percent_met == "   NA", "-", paste0(percent_met, "%"))) %>% 
       mutate(referrals = if_else(fy %in% c("2019/20", "2020/21") & ijb == "Aberdeen City" & ldp != "total", "-", as.character(referrals))) %>% 
@@ -274,14 +272,10 @@ output$chart_title_trend_part_1 <- renderUI({HTML(paste0("Percentage of people e
                                                     paste0("and ", input$select_hb_trend_part_1)})
 })
 
-trend_chart_data_part_1 <- reactive({
-  annual_table_data %>%
-    filter(fy %in% included_years, ldp == "total") %>% 
-    filter(ijb == input$select_hb_trend_part_1 | ijb == "Scotland")
-})
-
-output$trend_plot_part_1 <- renderPlotly({
-  plot_trend_perc(trend_chart_data_part_1(), exp_perc)
+output$hb_RandR_trend_plot <- renderPlotly({
+  plot_trend (annual_table_data %>% filter(ijb == input$select_randr_hb_trend_part_1 | ijb == "Scotland", fy %in% included_years_extra_referrals, ldp == "total"), 
+              measure = referrals
+  )
 })
 
 # data table trends part 1----     
@@ -356,7 +350,5 @@ output$table_hb_ijb_trend_part_2 <- DT::renderDataTable({
     make_table(trend_ijb_data, right_align = 1:length(included_years), selected = 1, rows_to_display = 32, table_elements = "t")
   }
 })
-
-
 
 
