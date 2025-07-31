@@ -65,6 +65,7 @@ output$demo_ui <-  renderUI({
         "page for further information."),
                           
                           width = 12,
+                          #fix panel so sidebar and navigation bar do not scroll with content
                           style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white") 
                      ), # fluid row
            ) # div

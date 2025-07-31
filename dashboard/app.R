@@ -75,25 +75,40 @@ tabPanel(title = "LDP Standard",
                                      justified = T,
                                      size = "lg"
       ),
-      
-      
       conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
-                       linebreaks(1),
-          selectInput("select_year_p1",
-                      label = "Select Financial Year of Diagnosis:",
-                      choices = included_years,
-                      selected= provisional_year_sup),
-          
-          conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"',
-                           
-                radioButtons("select_hb_ijb",
-                       label = "In the chart and table show:",
-                       choices = c("Health Boards", "Integration Authority Areas"),
-                       selected = "Health Boards",
-                       inline = FALSE)
-            ) #cond panel ldp part 2
-          ), #cond panel outcomes
-    width = 3#, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"
+                          linebreaks(1),
+                          selectInput("select_year_p1",
+                          label = "Select Financial Year of Diagnosis:",
+                          choices = included_years,
+                          selected= provisional_year_sup)  
+               ), #cond panel outcomes
+      conditionalPanel(condition = 'input.ldp_tab == "ldp_part_1"',
+          conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
+                           linebreaks(1),   
+                           selectInput("select_hb_trend_part_1",
+                                       label = "Select Health Board to show in chart:",
+                                       choices = c("", boards))
+              ), #cond panel trends
+           ),#cond panel ldp part 1
+      conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"', 
+            conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',  
+                             radioButtons("select_hb_ijb",
+                              label = "In the chart and table show:",
+                              choices = c("Health Boards", "Integration Authority Areas"),
+                              selected = "Health Boards")
+                   ),#cond panel outcomes
+            conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
+                             linebreaks(1), 
+                                 selectInput("select_hb_ijb_trend_part_2",
+                                  label = "Select Health Board/Integration Authority to show in chart:",
+                                choices = c("", boards, ijb_list)),
+                             radioButtons("select_table_trend_part_2",
+                                          label = "In the table show:",
+                                          choices = c("Health Boards", "Integration Authority Areas"),
+                                          selected = "Health Boards"),
+                    )#cond panel trends
+            ), #cond panel ldp part 2
+    width = 3
     ),
       
       mainPanel(width = 9,
@@ -143,7 +158,7 @@ tabPanel(title = "Referrals & Rates",
          #                                                    inline = FALSE)
          #                      ) #cond panel ldp part 2
          #     ), #cond panel outcomes
-         #     width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+         #     width = 3, 
          # 
          #   mainPanel(width = 9,
          
@@ -181,7 +196,7 @@ tabPanel(title = "Demographics",
                                            choices = included_years,
                                            selected = provisional_year_sup),
 
-                    width = 2#, style = "position:fixed; width: 16%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"
+                    width = 2
                     ),
 
            mainPanel(width = 10,
@@ -222,16 +237,23 @@ tabPanel(title = "Pathways",
                                             label = "Select Financial Year of Diagnosis:",
                                             choices = included_years_sup,#change to included_years from 2026 onwards
                                             selected= provisional_year_sup),
-                                                           
                                 radioButtons("select_hb_ijb_pathways",
                                              label = "In the chart and table show:",
                                              choices = c("Health Boards", "Integration Authority Areas"),
-                                             selected = "Health Boards",
-                                             inline = FALSE)
-                              ), #conditionalPanel
-                         width = 3#, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"
-             ),
-           
+                                             selected = "Health Boards")
+                              ), #conditionalPanel wait
+             conditionalPanel(condition = 'input.pathways_sidebar == "trends"',  
+                              linebreaks(1),
+                                  selectInput("select_hb_ijb_pathways_trend",
+                                              label = "Select Health Board/Integration Authority to show in chart:",
+                                              choices = c("", boards, ijb_list)),
+                                radioButtons("select_pathways_trend_table",
+                                  label = "In the table show:",
+                                  choices = c("Health Boards", "Integration Authority Areas"),
+                                  selected = "Health Boards")
+             ), #conditionalPanel trends
+                 width = 3
+             ),#sidebarPanel
            mainPanel(width = 9,
          uiOutput("pathways_ui")
            ) # mainPanel

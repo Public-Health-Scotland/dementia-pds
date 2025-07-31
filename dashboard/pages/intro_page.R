@@ -95,6 +95,7 @@ output$intro_page_ui <-  renderUI({
                       ),#fluidRow
                      linebreaks(1),
                      width = 12,
+                     #fix panel so sidebar and navigation bar do not scroll with content
                      style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white"
                     ) #column
                   
@@ -132,7 +133,8 @@ output$intro_page_ui <-  renderUI({
                        a("Equality Advisory and Support Service (EASS).", href = "https://www.equalityadvisoryservice.com/", target="_blank")),
                       linebreaks(1),
                         width = 12,
-                       style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white"
+                      #fix panel so sidebar and navigation bar do not scroll with content
+                      style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white"
                        )
                    ) #fluidrow
               ), #cond panel accessability

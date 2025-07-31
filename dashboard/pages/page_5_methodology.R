@@ -55,6 +55,7 @@ output$method_ui <-  renderUI({
         p("Service users for whom it is not yet known if they have met the standard as their PDS is ongoing are excluded from the percentage figures."),
         linebreaks(1),
         width = 12,
+        #fix panel so sidebar and navigation bar do not scroll with content
         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white")),
       
     ), #cond panel 1
@@ -72,6 +73,7 @@ conditionalPanel(
              " the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 and Mid-2022 Population Estimates to obtain the incidence estimates."),
            p("Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018."),
     width = 12,
+    #fix panel so sidebar and navigation bar do not scroll with content
     style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white")) #fluid Row
 ), #cond panel 2
 
@@ -91,6 +93,7 @@ conditionalPanel(
                  a("phs.dementiapds@phs.scot", href="mailto:phs.dementiapds@phs.scot")),
                
       width = 12,
+      #fix panel so sidebar and navigation bar do not scroll with content
       style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white")) #fluid Row
     ) #cond panel 3
  

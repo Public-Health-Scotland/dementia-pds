@@ -15,12 +15,12 @@ output$ldp_ui <-  renderUI({
     ##LDP PART 1----
         conditionalPanel(condition = 'input.ldp_tab == "ldp_part_1"',
                     column(
-                    # ## OUTCOMES BY YEAR----
+                     ### OUTCOMES BY YEAR----
                      conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
                                       fluidRow(
                                           h3(strong(htmlOutput("title_part_1"))),
                                           linebreaks(1),          
-                                          ### value box ----
+                                          #### value boxes ----
                                           fluidRow(
                                             column(
                                             shinydashboard::valueBox(
@@ -55,12 +55,6 @@ output$ldp_ui <-  renderUI({
                                      fluidRow(
                                           ### plot ----
                                           h4(strong(htmlOutput("chart_title_trend_part_1"))),
-                                          fluidRow(column(
-                                            column(
-                                              selectInput("select_hb_trend_part_1",
-                                                          label = "Select Health Board to show in chart:",
-                                                          choices = c("", boards), width = "100%"), width = 5),width = 12),
-                                            ),
                                           plotlyOutput("trend_plot_part_1", height = "310px"),
                                           #linebreaks(1),
                                           ### table ----
@@ -74,7 +68,7 @@ output$ldp_ui <-  renderUI({
                            ), #cond panel trends
                     p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                              format(end_date, "%d %B %Y"), "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates.")),
-                    ## notes----
+                    ### notes----
                     h4(strong("Notes:")),
                     p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
                     p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
@@ -97,18 +91,19 @@ output$ldp_ui <-  renderUI({
                         onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
                       "page for further information."),
                     width = 12,
+                    #fix panel so sidebar and navigation bar do not scroll with content
                     style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
         )# column
     ), #cond panel part 1
     ## LDP PART 2 ----
     conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"',
                    column(
-                  ##OUTCOMES BY YEAR----
+                  ###OUTCOMES BY YEAR----
                      conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
                                       fluidRow(
                                           h3(strong(htmlOutput("title_part_2"))),
                                           linebreaks(1),
-                                          ### value box ----
+                                          ####value boxes ----
                                           fluidRow(column(
                                             shinydashboard::valueBox(
                                               value = textOutput("scot_pds_perc"),
@@ -123,10 +118,10 @@ output$ldp_ui <-  renderUI({
                                           ), #fluidRow
                                           fluidRow(column(
                                             linebreaks(1),
-                                            ###plot ----
+                                            ####plot ----
                                             h4(strong(htmlOutput("perc_met_plot_title"))),
                                             plotlyOutput("perc_met_plot"),
-                                            ### table ----
+                                            #### table ----
                                             h4(strong(htmlOutput("perc_met_table_title"))),
                                             #####download button ldp2----
                                             downloadButton("downloadData_ldp2", 
@@ -137,25 +132,15 @@ output$ldp_ui <-  renderUI({
                                           ), # fluid Row
                                       ) #fluidRow
                      ), # cond panel outcomes
-              ## TRENDS----
+              ### TRENDS----
               conditionalPanel(condition = 'input.ldp_sidebar == "trends"', 
                                fluidRow(
-                                   ###plot----
+                                   ####plot----
                                    h4(strong(htmlOutput("chart_title_trend_part_2"))),
-                                   fluidRow(column(
-                                              column(
-                                       selectInput("select_hb_ijb_trend_part_2",
-                                                   label = "Select Health Board/Integration Authority to show in chart:",
-                                                   choices = c("", boards, ijb_list), width = "100%"), width = 5), width = 12)),
                                    plotlyOutput("trend_plot_part_2", height = "310px"),
                                    #linebreaks(1),
-                                   ###table----
+                                   ####table----
                                    h4(strong(htmlOutput("table_trend_part_2_title"))),
-                                   radioButtons("select_table_trend_part_2",
-                                                label = "In the table below show:",
-                                                choices = c("Health Boards", "Integration Authority Areas"),
-                                                selected = "Health Boards",
-                                                inline = TRUE),
                                    #####download button ldp2 trend----
                                    downloadButton("downloadData_ldp2_trend", 
                                                   "Download table data"),
@@ -165,7 +150,7 @@ output$ldp_ui <-  renderUI({
               ), #cond panel trends
               p(paste0("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                        format(end_date, "%d %B %Y"))),
-              ## notes----
+              #### notes----
               h4(strong("Notes:")),
               p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
               p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
@@ -182,6 +167,7 @@ output$ldp_ui <-  renderUI({
                   onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
                 "page for further information."),
               width = 12,
+              #fix panel so sidebar and navigation bar do not scroll with content
               style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
              ), # column
            ) # cond panel part 2
@@ -189,18 +175,15 @@ output$ldp_ui <-  renderUI({
 }) # renderUI
 
 #SERVER ----
-
+##LDP PART 1----
+## OUTCOMES BY YEAR----
 ##part 1 title ----
 output$title_part_1 <- renderUI({HTML(paste("Percentage of estimated diagnoses referred for PDS; Scotland, ", 
                                             input$select_year_p1))
 })
 
-##part 2 title ----
-output$title_part_2 <- renderUI({HTML(paste("Percentage of referrals for PDS who received one year's support; Scotland, ", 
-                                            input$select_year_p1))
-})
 
-##value boxes data ----
+##value boxes----
 vb_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_p1, ldp == "total")}) 
 
 ## percentage of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support
@@ -209,17 +192,6 @@ output$scot_exp_perc <- renderText({paste0(vb_data()$exp_perc, "%")})
 output$scot_exp_text <- renderUI({
   HTML(paste("A total of", "<b>",  prettyNum(vb_data()$referrals, big.mark = ","), "</b>", "referrals were made to post-diagnostic support. This is divided by",
   "<b>", prettyNum(vb_data()$diagnoses, big.mark = ","), "</b>", "the estimated number of people newly diagnosed with dementia."))})
-
-## percentage of those referred for post-diagnostic support received a minimum of 12 months of support
-output$scot_pds_perc <- renderText({paste0(vb_data()$percent_met, "%")})
-
-vb_2_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_p1,
-                                                   ldp != "fail") %>% select(-diagnoses, -exp_perc) %>% 
-                                            pivot_wider(values_from = referrals, names_from = ldp)})
-
-output$scot_pds_text <- renderUI({
-  HTML(paste("<b>", prettyNum(vb_2_data()$complete + vb_2_data()$exempt, big.mark = ","), "</b>", "referrals either met or were exempt from the LDP standard. This is divided by",
-             "<b>", prettyNum(vb_2_data()$total - vb_2_data()$ongoing, big.mark = ","), "</b>", "the total number of referrals (excluding those whose support is ongoing)."))})
 
 
 ## plot ldp part 1 ----
@@ -271,7 +243,7 @@ output$downloadData_ldp1 <- downloadHandler(
               file, row.names = FALSE)
   }
 )
-
+ ##TRENDS ----
 ##plot trends part 1----
 
 output$chart_title_trend_part_1 <- renderUI({HTML(paste0("Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; Trend, Scotland "),
@@ -326,7 +298,24 @@ output$downloadData_ldp1_trend <- downloadHandler(
   }
 )
 
+## LDP PART 2 ----
+##OUTCOMES BY YEAR----
+##part 2 title ----
+output$title_part_2 <- renderUI({HTML(paste("Percentage of referrals for PDS who received one year's support; Scotland, ", 
+                                            input$select_year_p1))
+})
 
+##value boxes----
+## percentage of those referred for post-diagnostic support received a minimum of 12 months of support
+output$scot_pds_perc <- renderText({paste0(vb_data()$percent_met, "%")})
+
+vb_2_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_p1,
+                                                   ldp != "fail") %>% select(-diagnoses, -exp_perc) %>% 
+    pivot_wider(values_from = referrals, names_from = ldp)})
+
+output$scot_pds_text <- renderUI({
+  HTML(paste("<b>", prettyNum(vb_2_data()$complete + vb_2_data()$exempt, big.mark = ","), "</b>", "referrals either met or were exempt from the LDP standard. This is divided by",
+             "<b>", prettyNum(vb_2_data()$total - vb_2_data()$ongoing, big.mark = ","), "</b>", "the total number of referrals (excluding those whose support is ongoing)."))})
 
 ##plot ldp part 2 ----
 output$perc_met_plot_title <- renderUI({HTML(paste0("Percentage of people referred for PDS who received a minimum of one year’s support within 12 month's of diagnosis; ", 
@@ -415,7 +404,7 @@ table_ldp2_data <- reactive({
     )
     
 
-
+    ##TRENDS ----
 ##plot trends part 2 ----
 
 output$chart_title_trend_part_2 <- renderUI({HTML(paste("Percentage of people referred for PDS who received a minimum of one year’s support within 12 months of diagnosis; Trend, Scotland "),

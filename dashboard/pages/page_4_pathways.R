@@ -17,6 +17,7 @@
                                    "Download table data"),
                     DT::dataTableOutput("table_pathways"), 
                     width = 12,
+                    #fix panel so sidebar and navigation bar do not scroll with content
                     style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available",
    linebreaks(1))#column
              ) #fluidRow
@@ -27,27 +28,17 @@
                       column(
                         ###plot----
                         h4(strong(htmlOutput("plot_title_pathways_trend"))),
-                        fluidRow(column(
-                          column(
-                            selectInput("select_hb_ijb_pathways_trend",
-                                        label = "Select Health Board/Integration Authority to show in chart:",
-                                        choices = c("", boards, ijb_list), width = "100%"), width = 5), width = 12)
-                          ),
                         plotlyOutput("plot_pathways_trend", height = "310px"),
                        # linebreaks(1),
                         ###table----
                         h4(strong(htmlOutput("table_title_pathways_trend"))),
-                        radioButtons("select_pathways_trend_table",
-                                     label = "In the table below show:",
-                                     choices = c("Health Boards", "Integration Authority Areas"),
-                                     selected = "Health Boards",
-                                     inline = TRUE),
                         #####download button trend----
                         downloadButton("downloadData_pathways_trend", 
                                       "Download table data"),
                         DT::dataTableOutput("table_pathways_trend"),
                         linebreaks(1),
                         width = 12,
+                       #fix panel so sidebar and navigation bar do not scroll with content
                         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
                       ), # column
                     ) # fluidRow
@@ -81,7 +72,7 @@
         mutate(median_diagnosis_to_contact = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), 0, median_diagnosis_to_contact)) %>% 
         rename(geog = health_board)
       
-      plot_bar_median(wait_times_hb_chart_data %>% filter(fy == input$select_year_pathways))
+      plot_bar(wait_times_hb_chart_data %>% filter(fy == input$select_year_pathways))
       
     }else{
       
@@ -98,7 +89,7 @@
         filter(ijb != "Scotland") %>% 
         rename(geog = ijb)
       
-      plot_bar_median(wait_times_ijb_chart_data %>% filter(fy == input$select_year_pathways))}  
+      plot_bar(wait_times_ijb_chart_data %>% filter(fy == input$select_year_pathways))}  
   })
 
  ##wait times table by geography ----    
