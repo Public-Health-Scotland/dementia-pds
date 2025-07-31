@@ -127,47 +127,46 @@ tabPanel(title = "Referrals & Rates",
          icon = icon_no_warning_fn("braille"),
          value = "rates",
          
-         box(class = "header", h2("Dementia Post-Diagnostic Support; Referrals to PDS"),
+         box(h1("Dementia Post-Diagnostic Support; Referrals to PDS"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
-         # sidebarLayout(
-         #   sidebarPanel(
-         #     #linebreaks(1),
-         #     radioGroupButtons("ldp_sidebar", label = NULL, choices = ldp_sidebar_list,
-         #                       status = "secondary",
-         #                       direction = "vertical",
-         #                       justified = T,
-         #                       size = "lg"
-         #     ),
-         #     linebreaks(1),
-         # 
-         #     conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
-         # 
-         #                      selectInput("select_year_p1",
-         #                                  label = "Select Financial Year of Diagnosis:",
-         #                                  choices = included_years,
-         #                                  selected= provisional_year_sup),
-         # 
-         #                      conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"',
-         # 
-         #                                       radioButtons("select_hb_ijb",
-         #                                                    label = "In the chart and table show:",
-         #                                                    choices = c("Health Boards", "Integration Authority Areas"),
-         #                                                    selected = "Health Boards",
-         #                                                    inline = FALSE)
-         #                      ) #cond panel ldp part 2
-         #     ), #cond panel outcomes
-         #     width = 3, 
-         # 
-         #   mainPanel(width = 9,
-         
-         uiOutput("rates_ui")
-           #)#main panel
-        # )#sidebar layout
+         sidebarLayout(
+           sidebarPanel(
+             #linebreaks(1),
+             radioGroupButtons("RandR_sidebar", label = NULL, choices = RandR_sidebar_list,
+                               status = "secondary",
+                               direction = "vertical",
+                               justified = T,
+                               size = "lg"
+             ),
+             linebreaks(1),
+             
+             conditionalPanel(condition = 'input.RandR_sidebar == "RandRreferrals"',
+                              
+                              selectInput("select_year_p1",
+                                          label = "Select Financial Year of Diagnosis:",
+                                          choices = included_years,
+                                          selected= provisional_year_sup),
+                              
+                              conditionalPanel(condition = 'input.RandR_tab == "RandR_part_2"',
+                                               
+                                               radioButtons("select_hb_ijb",
+                                                            label = "In the chart and table show:",
+                                                            choices = c("Health Boards", "Integration Authority Areas"),
+                                                            selected = "Health Boards",
+                                                            inline = FALSE)
+                              ) #cond panel ldp part 2
+             ), #cond panel outcomes
+             width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
+           
+           mainPanel(width = 9,
+                     
+                     uiOutput("rates_ui")
+           )#main panel
+         )#sidebar layout
          
 ), # tabpanel
-
 
 ##############################################.
 # PAGE 3: Demographics ----
