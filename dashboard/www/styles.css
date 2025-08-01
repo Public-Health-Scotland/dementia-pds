@@ -513,6 +513,13 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 /*value box for page 1 and 2 */
 .small-box.bg-blue {background-color: var(--phs-blue); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
 
+/* Hack to get the colours we want on shinydashboard varBox */
+.small-box.bg-green { background-color:var(--phs-green); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+.small-box.bg-purple { background-color:var(--phs-purple); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+.small-box.bg-fuchsia { background-color:var(--phs-magenta); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+.small-box.bg-olive { background-color:var(--phs-magenta-80); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+.small-box.bg-teal { background-color:var(--phs-teal); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+.small-box.bg-red { background-color:var(--phs-rust); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px }
 
 
 /* description box for page 1 and 2 */
@@ -522,15 +529,6 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 .box-body {padding: 6px; margin-top: 10px}
 .col-sm-5 {padding-right: 4px; padding-left: 4px}
 .col-sm-7 {padding-right: 4px; padding-left: 4px}
-
-
-/* Hack to get the colours we want on shinydashboard varBox */
-.small-box.bg-green { background-color:var(--phs-green) !important; color:#000000 !important; }
-.small-box.bg-purple { background-color:var(--phs-purple) !important; color:#000000 !important; }
-.small-box.bg-fuchsia { background-color:var(--phs-magenta) !important; color:#000000 !important; }
-.small-box.bg-olive { background-color:var(--phs-graphite) !important; color:#000000 !important; }
-.small-box.bg-teal { background-color:var(--phs-teal) !important; color:#000000 !important; }
-.small-box.bg-red { background-color:var(--phs-rust) !important; color:#000000 !important; }
 
 /* left align formula */
 .MathJax_Display {

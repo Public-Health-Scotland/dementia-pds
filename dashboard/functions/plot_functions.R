@@ -108,7 +108,7 @@ plot_trend_perc <- function(data, measure, group = ijb){
     
    # phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
     
-    scale_colour_manual(values = c("#9B4393","#3F3685")) +
+    scale_colour_manual(values = c("#9B4393","#0078D4")) +
     
     labs(colour = NULL) +
     
@@ -165,6 +165,57 @@ plot_bar_perc <- function(data, category, measure, x_text_angle = 45, legend = "
   
 }
 
+# bar chart for ldp percentage and proportions
+
+plot_bar_perc_line <- function(data, category = ijb,
+                               measure, scot_measure,
+                               x_text_angle = 45, legend = "none", fill = NULL, limit = 100){
+  
+  yaxis_plots[["title"]] <- ""
+  xaxis_plots[["title"]] <- ""
+  
+  data %<>% filter({{category}} != "Unknown", {{category}} != "Not Specified") 
+  
+  plot <-  data %>% ggplot() +
+    
+    geom_col((aes(x = {{category}}, y = {{measure}},
+                               text = paste0({{category}}, "<br>",
+                                             round({{measure}},1), "%"))),
+  #  position=position_identity(),
+    fill = "#0078D4") +
+    
+    
+    geom_hline(aes(yintercept = {{scot_measure}}, 
+                   text = paste0("Scotland", "<br>",
+                                 fy, "<br>",
+                                 round({{scot_measure}},1), "%"), color = "Scotland"), linetype = 2) +
+    
+    scale_color_manual(values = "#9B4393") +
+    
+    labs(color = NULL) +
+    
+    scale_y_continuous(expand = c(0, 0), limits = c(0, limit),
+                       labels=function(x) paste0(x,"%")) +
+    
+    theme_dementia_dashboard() +
+    
+    theme(legend.title = element_blank(),
+          legend.position = legend,
+          axis.text.x = element_text(angle=x_text_angle),
+          panel.grid.minor = element_blank(),
+          panel.grid.major.x = element_blank())
+  
+  ggplotly(plot, tooltip = "text") %>%
+    
+    config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
+           displaylogo = F, editable = F) %>%
+    layout(legend = list(orientation = "h", x = 0.5 , y = -0.8,
+                          xanchor = "center", yanchor = "bottom"),
+           margin = list(b = 30, t = 30), # to avoid labels getting cut out
+           yaxis = yaxis_plots, xaxis = xaxis_plots)
+  
+}
+
 
 
 #bar chart for pathways and referrals
@@ -192,7 +243,7 @@ plot_bar <- function(data, ytitle = "Median Wait (days)",
                                  fy, "<br>",
                                  scot_measure_text, {{scot_measure}}), color = "Scotland"), linetype = 2) +
     
-    scale_color_manual(values = "#C73918") +
+    scale_color_manual(values = "#9B4393") +
     
     labs(color = NULL) +
     
