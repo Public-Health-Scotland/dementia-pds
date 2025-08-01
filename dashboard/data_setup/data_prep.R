@@ -218,12 +218,15 @@ data_wait <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = t
 write_rds(data_wait, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_wait.rds")
 
-# 9 pop data
-data_pop <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds") %>% 
-  # age and gender breakdowns are not included in dashboard
-  filter(age_grp_2 == "All", age_grp == "All", sex == "All") %>% 
-  select(geog, year, pop_est)
-
+# 9 pop data----
+pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
+#calculate pop estimate of 65 and over age group
+data_pop_65 <- pop_data %>% 
+ filter(age_grp != "All", age_grp != "59 and Under", age_grp != "60 to 64", age_grp_2 == "All", sex == "All") %>% select(geog, year, age_grp, pop_est) %>% 
+  group_by(geog, year) %>% summarise(pop_est = sum(pop_est)) %>% ungroup() %>% mutate(age_grp_2 = "65+", .before = pop_est)
+#include population for 18+ age group for reference
+data_pop <- bind_rows(pop_data %>% filter(age_grp_2 == "All", age_grp == "All", sex == "All") %>% select(geog, year, age_grp_2, pop_est),
+                      data_pop_65)
 write_rds(data_pop, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_pop.rds")
 
@@ -351,11 +354,20 @@ scotland_ldp_exp <- left_join(scotland_ldp,
                      mutate(exp_perc = if_else(!is.na(diagnoses), round(referrals/diagnoses*100, 1), NA)
         )
 
-download_data_scotland <- left_join(scotland_ldp_exp, 
+scotland_ldp_exp_pop <- left_join(scotland_ldp_exp,
+                   #use 65+ as denominator for rate
+                    data_pop %>% filter(geog == "Scotland", age_grp_2 == "65+") %>% 
+                    mutate(sex = "All", age_grp = "All", simd = "All") %>% 
+                    mutate(fy = paste0(year, "/", as.numeric(substr(year,3,4)) + 1)) %>% 
+                    select(geog, fy, sex, age_grp, simd, pop_est)) %>% 
+  mutate(pop_rate_10000 = round(10000*referrals/pop_est,1), .after = referrals) %>% select(-pop_est)
+                 
+
+download_data_scotland <- left_join(scotland_ldp_exp_pop, 
                                     data_wait %>% filter(health_board == "Scotland") %>% 
                                       mutate(age_grp = "All", sex = "All", simd = "All") %>% 
                                       select(geog = health_board, fy, sex, age_grp, simd, perc_contacted, median_diagnosis_to_contact)) %>% 
-                         relocate(c(diagnoses, exp_perc), .after = referrals) %>% 
+                         relocate(c(diagnoses, exp_perc), .after = pop_rate_10000) %>% 
   
                rename(geography = geog,
                 financial_year = fy,
@@ -363,6 +375,7 @@ download_data_scotland <- left_join(scotland_ldp_exp,
                 age_group = age_grp,
                 deprivation_quintile = simd,
                 `number of people referred to PDS` = referrals,
+                `number of people referred to PDS per 10,000 population (65+)` = pop_rate_10000,
                 `LDP standard part 1 - estimated number of people newly diagnosed with dementia` = diagnoses,
                 `LDP standard part 1 - percentage of estimated number of people diagnosed with dementia referred to pds` = exp_perc,
                 `LDP standard part 2 - number of people where standard was met` = complete,
@@ -372,6 +385,7 @@ download_data_scotland <- left_join(scotland_ldp_exp,
                 `LDP standard part 2 - percentage of LDP standard achieved` = percent_met,
                 `percentage of referrals contacted by PDS practitioner` = perc_contacted,
                 `average (median) days from diagnoses to first contact` = median_diagnosis_to_contact
+                
   )
 
 download_data_scotland %<>% pivot_longer(cols = c(`number of people referred to PDS`:`average (median) days from diagnoses to first contact`), names_to = "measure")
