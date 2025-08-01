@@ -2,7 +2,7 @@ summarise_by_variable_dashboard <- function(variable){
   bind_rows(
     
     ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -10,7 +10,7 @@ summarise_by_variable_dashboard <- function(variable){
                 .groups = "drop"),
     
     ldp %>% group_by(health_board, ijb, fy, sex = "All", {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -18,7 +18,7 @@ summarise_by_variable_dashboard <- function(variable){
                 .groups = "drop"),
     
     ldp %>% group_by(health_board, ijb = "All", fy, sex = "All", {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -26,7 +26,7 @@ summarise_by_variable_dashboard <- function(variable){
                 .groups = "drop"),
     
     ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -34,7 +34,7 @@ summarise_by_variable_dashboard <- function(variable){
                 .groups = "drop"),
     
     ldp %>% group_by(health_board, ijb, fy, sex, {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -42,7 +42,7 @@ summarise_by_variable_dashboard <- function(variable){
                 .groups = "drop"),
     
     ldp %>% group_by(health_board, ijb = "All", fy, sex, {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -61,7 +61,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
   bind_rows(
     
     ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, simd = "All", {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -69,7 +69,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
                 .groups = "drop"),
    
     ldp %>% group_by(health_board, ijb, fy, simd = "All", {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -77,7 +77,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
                 .groups = "drop"),
     
     ldp %>% group_by(health_board, ijb = "All", fy, simd = "All", {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -85,7 +85,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
                 .groups = "drop"),
     
     ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, simd, {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -93,7 +93,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
                 .groups = "drop"),
     
     ldp %>% group_by(health_board, ijb, fy, simd, {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -102,7 +102,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
     
     
     ldp %>% group_by(health_board, ijb = "All", fy, simd, {{variable}}) %>% 
-      summarise(total_referrals = sum(n_referrals),
+      summarise(referrals = sum(n_referrals),
                 complete = sum(ldp == "complete"),
                 exempt = sum(ldp == "exempt"),
                 ongoing = sum(ldp == "ongoing"),
@@ -127,7 +127,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop"),
@@ -138,7 +138,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop"),
@@ -149,7 +149,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop"),
@@ -160,7 +160,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop"),
@@ -171,7 +171,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop"),
@@ -182,7 +182,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop"),
@@ -193,7 +193,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop"),
@@ -204,7 +204,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop"),
@@ -215,7 +215,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop"),
@@ -226,7 +226,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop"),
@@ -237,7 +237,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop"),
@@ -248,7 +248,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #               median_allocation_to_contact = median(allocation_to_contact_days, na.rm = T),
 #               median_referral_to_contact = median(referral_to_contact_days, na.rm = T),
 #               median_diagnosis_to_contact = median(diagnosis_to_contact_days, na.rm = T),
-#               total_referrals = sum(n_referrals),
+#               referrals = sum(n_referrals),
 #               referrals_allocated = sum(!is.na(initial_pds_practitioner_allocation_date)),
 #               referrals_contacted = sum(!is.na(date_of_initial_first_contact)),
 #               .groups = "drop")
@@ -467,7 +467,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #   bind_rows(
 #     
 #     ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, sex = "All", {{variable}}) %>% 
-#       summarise(total_referrals = sum(n_referrals),
+#       summarise(referrals = sum(n_referrals),
 #                 complete = sum(ldp == "complete"),
 #                 exempt = sum(ldp == "exempt"),
 #                 ongoing = sum(ldp == "ongoing"),
@@ -475,7 +475,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #                 .groups = "drop"),
 #     
 #     ldp %>% group_by(health_board, ijb, fy, sex = "All", {{variable}}) %>% 
-#       summarise(total_referrals = sum(n_referrals),
+#       summarise(referrals = sum(n_referrals),
 #                 complete = sum(ldp == "complete"),
 #                 exempt = sum(ldp == "exempt"),
 #                 ongoing = sum(ldp == "ongoing"),
@@ -483,7 +483,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #                 .groups = "drop"),
 #     
 #     ldp %>% group_by(health_board, ijb = "All", fy, sex = "All", {{variable}}) %>% 
-#       summarise(total_referrals = sum(n_referrals),
+#       summarise(referrals = sum(n_referrals),
 #                 complete = sum(ldp == "complete"),
 #                 exempt = sum(ldp == "exempt"),
 #                 ongoing = sum(ldp == "ongoing"),
@@ -491,7 +491,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #                 .groups = "drop"),
 #     
 #     ldp %>% group_by(health_board = "Scotland", ijb = "All", fy, sex, {{variable}}) %>% 
-#       summarise(total_referrals = sum(n_referrals),
+#       summarise(referrals = sum(n_referrals),
 #                 complete = sum(ldp == "complete"),
 #                 exempt = sum(ldp == "exempt"),
 #                 ongoing = sum(ldp == "ongoing"),
@@ -499,7 +499,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #                 .groups = "drop"),
 #     
 #     ldp %>% group_by(health_board, ijb, fy, sex, {{variable}}) %>% 
-#       summarise(total_referrals = sum(n_referrals),
+#       summarise(referrals = sum(n_referrals),
 #                 complete = sum(ldp == "complete"),
 #                 exempt = sum(ldp == "exempt"),
 #                 ongoing = sum(ldp == "ongoing"),
@@ -507,7 +507,7 @@ summarise_by_variable_gender_dashboard <- function(variable){
 #                 .groups = "drop"),
 #     
 #     ldp %>% group_by(health_board, ijb = "All", fy, sex, {{variable}}) %>% 
-#       summarise(total_referrals = sum(n_referrals),
+#       summarise(referrals = sum(n_referrals),
 #                 complete = sum(ldp == "complete"),
 #                 exempt = sum(ldp == "exempt"),
 #                 ongoing = sum(ldp == "ongoing"),

@@ -211,13 +211,18 @@ write_rds(data_simd,
 
 data_wait <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output)) %>% 
    mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
-    filter(simd == "All", sex == "All") %>% select(health_board, ijb, fy, total_referrals, median_diagnosis_to_contact, perc_contacted)
+  # simd and gender breakdowns are not included in dashboard
+    filter(simd == "All", sex == "All") %>% 
+  select(health_board, ijb, fy, total_referrals, median_diagnosis_to_contact, perc_contacted)
 
 write_rds(data_wait, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_wait.rds")
 
 # 9 pop data
-data_pop <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
+data_pop <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds") %>% 
+  # age and gender breakdowns are not included in dashboard
+  filter(age_grp_2 == "All", age_grp == "All", sex == "All") %>% 
+  select(geog, year, pop_est)
 
 write_rds(data_pop, 
           "//conf/dementia/A&I/Outputs/dashboard/data/data_pop.rds")
