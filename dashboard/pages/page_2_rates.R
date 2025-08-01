@@ -34,12 +34,19 @@ output$rates_ui <-  renderUI({
                                         ), #fluidRow
                                         fluidRow(
                                           linebreaks(1),
-                                          #plot ----
+                                          #plot hb----
                                           h3(strong(htmlOutput("hb_RandR_plot_title"))),
                                           plotlyOutput("hb_RandR_plot"),
+                                          #plot ijb ----
+                                          h3(strong(htmlOutput("ijb_RandR_plot_title"))),
+                                          plotlyOutput("ijb_RandR_plot"),
                                           #  table ----
                                           h3(strong(htmlOutput("hb_randr_table_title"))),
                                           DT::dataTableOutput("table_hb_randr"),
+                                          linebreaks(1),
+                                          #  table ----
+                                          h3(strong(htmlOutput("ijb_randr_table_title"))),
+                                          DT::dataTableOutput("table_ijb_randr"),
                                           linebreaks(1)
                                         ), # fluid Row
                                         width = 12,
@@ -168,7 +175,7 @@ output$scot_referrals_text <- renderUI({
              "<b>", prettyNum(vb_2_data()$total - vb_2_data()$ongoing, big.mark = ","), "</b>", "the total number of referrals (excluding those whose support is ongoing)."))})
 
 
-# plot RandR part 1 ----
+# plot RandR HB part 1 ----
 output$hb_RandR_plot_title <- renderUI({HTML(paste0("Total number of people estimated to be newly diagnosed with dementia who were referred for PDS; ", 
                                                     input$select_year_p1_randr, ", Scotland and Health Boards"))
 })
@@ -181,7 +188,18 @@ output$hb_RandR_plot <- renderPlotly({
   )
 })
 
+# plot RandR IJB part 1 ----
+output$ijb_RandR_plot_title <- renderUI({HTML(paste0("Total number of people estimated to be newly diagnosed with dementia who were referred for PDS; ", 
+                                                    input$select_year_p1_randr, ", Scotland and IJB"))
+})
 
+output$ijb_RandR_plot <- renderPlotly({
+  plot_bar_no_line(annual_table_data %>% filter((!grepl(("NHS|Scotland"), annual_table_data$ijb)),fy == input$select_year_p1_randr, ldp == "total") %>% 
+                     rename(geog = ijb),
+                   ytitle = "Referrals",
+                   measure = referrals, measure_text = "Number of referrals to PDS"
+  )
+})
 
 # data table referrals part 1 ----
 output$hb_randr_table_title <- renderUI({HTML(paste0("Number and percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; ", 
@@ -199,6 +217,24 @@ output$table_hb_randr <- DT::renderDataTable({
     set_colnames(c("Health Board","Estimated Number of People Newly Diagnosed with Dementia", "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS"))
   make_table(table_hb_randr_data, right_align = 1:3, selected = 1, table_elements = "t") %>% formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
 })
+
+# data table ijb referrals part 1 ----
+output$ijb_randr_table_title <- renderUI({HTML(paste0("Number and percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; ", 
+                                                     input$select_year_p1_randr, ", Scotland and Health Boards"))
+})
+
+output$table_ijb_randr <- DT::renderDataTable({
+  table_ijb_randr_data <- annual_table_data %>% 
+    filter(fy == input$select_year_p1_randr) %>%
+    filter(!grepl(("NHS|Scotland"), annual_table_data$ijb), !is.na(diagnoses)) %>% 
+    group_by(ijb)%>%
+    select(ijb, diagnoses, referrals)%>%
+    mutate(exp_perc = paste0(round(referrals/diagnoses*100, 1), "%")) %>%  
+    arrange(ijb) %>% 
+    set_colnames(c("IJB","Estimated Number of People Newly Diagnosed with Dementia", "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS"))
+  make_table(table_ijb_randr_data, right_align = 1:3, selected = 1, table_elements = "t") %>% formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
+})
+
 
 #plot referrals part 2 ----
 output$referrals_plot_title <- renderUI({HTML(paste0("Percentage of people referred for PDS who received a minimum of one year’s support within 12 month's of diagnosis; ", 
