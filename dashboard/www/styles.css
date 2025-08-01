@@ -468,7 +468,7 @@ Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/Adm
 }
 
 /* ldp and methodology tab buttons */
-#ldp_tab, #method_tab {
+#ldp_tab, #method_tab, #RandR_tab {
   border-bottom: solid; 
   border-color: var(--phs-purple-50);
   border-width: medium
