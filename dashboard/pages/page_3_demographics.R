@@ -101,7 +101,7 @@ output$chart_title_demo_referrals <- renderUI({HTML(paste0("Proportion of total 
 
 #plot proportion
 output$plot_demo_referrals <- renderPlotly({
-  percent_bar_chart(data_demo(), category = type, measure = total_referrals/sum(total_referrals)*100,
+  plot_bar_perc(data_demo(), category = type, measure = referrals/sum(referrals)*100,
                        x_text_angle = if_else(input$select_data_demo == "data_age", 45, 0), fill = type, limit = NA
                       )
 })
@@ -125,7 +125,7 @@ if (input$select_data_demo == "data_age"){
 
 #plot outcomes
 output$plot_demo_ldp <- renderPlotly({
-  percent_bar_chart(data_demo(), category = type, measure = percent_met,
+  plot_bar_perc(data_demo(), category = type, measure = percent_met,
                         x_text_angle = if_else(input$select_data_demo == "data_age", 45, 0),
                         fill = type)
 })
@@ -154,19 +154,19 @@ table_data_demo <- reactive({
     bind_rows(
     # breakdown of selected demographic
     data_demo() %>% 
-      select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met) %>% 
+      select(type, referrals, complete, exempt, ongoing, not_met, percent_met) %>% 
       arrange(type),
     #totals for final row
     data_demo() %>% 
       summarise(type = "Total",
-                total_referrals = sum(total_referrals),
+                referrals = sum(referrals),
                 complete = sum(complete),
                 exempt = sum(exempt),
                 ongoing = sum(ongoing),
                 not_met = sum(not_met)) %>%
       mutate(percent_met = round(((complete + exempt)/(complete + exempt + not_met))*100, 1)) 
   ) %>% 
-    mutate(perc_prop = round(100*total_referrals/max(total_referrals),1), .after = total_referrals) %>% 
+    mutate(perc_prop = round(100*referrals/max(referrals),1), .after = referrals) %>% 
     mutate(across(where(is.numeric), ~if_else(is.na(.), "-", format(., big.mark = ",")))) %>%
     mutate(across(starts_with("perc"), ~ if_else(grepl("-", .), ., paste0(.,"%")))) %>% 
     set_colnames(c(if(input$select_data_demo == "data_sex"){

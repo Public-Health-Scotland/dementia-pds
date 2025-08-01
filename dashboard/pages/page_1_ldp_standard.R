@@ -200,7 +200,7 @@ output$hb_exp_plot_title <- renderUI({HTML(paste0("Percentage of people estimate
 })
 
 output$hb_exp_plot <- renderPlotly({
-  percent_bar_chart(annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1, ldp == "total") %>% 
+  plot_bar_perc(annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1, ldp == "total") %>% 
                           mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
                         category = ijb, 
                         measure = exp_perc,
@@ -326,7 +326,7 @@ output$perc_met_plot <- renderPlotly({
   
   if(input$select_hb_ijb == "Health Boards"){
     
-    percent_bar_chart(annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1, ldp == "total") %>% 
+    plot_bar_perc(annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1, ldp == "total") %>% 
                         mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
                       category = ijb, 
                       measure = percent_met,
@@ -334,7 +334,7 @@ output$perc_met_plot <- renderPlotly({
     
   }else{
     
-    percent_bar_chart(annual_table_data %>% filter(!grepl("NHS", ijb), fy == input$select_year_p1, ldp == "total") %>% 
+    plot_bar_perc(annual_table_data %>% filter(!grepl("NHS", ijb), fy == input$select_year_p1, ldp == "total") %>% 
                         mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
                       category = ijb, 
                       measure = percent_met,
