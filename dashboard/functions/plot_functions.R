@@ -131,7 +131,7 @@ plot_trend_perc <- function(data, measure, group = ijb){
 
 # bar chart for ldp percentage and proportions
 
-percent_bar_chart <- function(data, category, measure, x_text_angle = 45, legend = "none", fill = NULL, limit = 100){
+plot_bar_perc <- function(data, category, measure, x_text_angle = 45, legend = "none", fill = NULL, limit = 100){
   
   yaxis_plots[["title"]] <- ""
   xaxis_plots[["title"]] <- ""
@@ -221,6 +221,53 @@ plot_bar <- function(data, ytitle = "Median Wait (days)",
            yaxis = yaxis_plots, xaxis = xaxis_plots
     ) #%>% 
     #layout(yaxis = list(autorange = TRUE))
+  
+}
+
+#bar chart for pathways and referrals
+plot_bar_no_line <- function(data, ytitle,
+                     measure, 
+                     measure_text
+                     ){
+  
+  yaxis_plots[["title"]] <- ytitle
+  xaxis_plots[["title"]] <- ""
+  
+  plot <-  data %>%  ggplot() +
+    
+    geom_col(aes(x = geog, y = {{measure}},
+                 text = paste0(geog, "<br>",
+                               fy, "<br>",
+                               measure_text, {{measure}})
+    ),
+    #position = position_dodge(),
+    fill = "#0078D4") +
+    
+    scale_y_continuous(expand = c(0, 0), 
+                       limits = c(0, NA)
+                       # breaks = c(0,100,200,300,400,500,600,700,800,900,1000)
+    ) +
+    
+    theme_dementia_dashboard() +
+    
+    theme(legend.title = element_blank(),
+          axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5),
+          panel.grid.minor = element_blank(),
+          panel.grid.major.x = element_blank())
+  
+  ggplotly(plot, tooltip = "text") %>%
+    
+    config(displayModeBar = TRUE, #doubleClick = F,
+           modeBarButtonsToRemove = bttn_remove, 
+           displaylogo = F, editable = F) %>%
+    layout(#clickmode = 'none', 
+      legend = list(orientation = "h", x = 0.5 , y = -0.8,
+                    xanchor = "center", yanchor = "bottom")) %>% 
+    layout(margin = list(#l = -10,
+      b = 30, t = 30),  # to avoid labels getting cut out
+      yaxis = yaxis_plots, xaxis = xaxis_plots
+    ) #%>% 
+  #layout(yaxis = list(autorange = TRUE))
   
 }
 

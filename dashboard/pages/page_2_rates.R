@@ -173,8 +173,10 @@ output$hb_RandR_plot_title <- renderUI({HTML(paste0("Percentage of people estima
 })
 
 output$hb_RandR_plot <- renderPlotly({
-  plot_trend (annual_table_data %>% filter(ijb == input$select_randr_hb_trend_part_1 | ijb == "Scotland", fy == input$select_year_p1_randr, ldp == "total"), 
-                measure = referrals
+  plot_bar_no_line(annual_table_data %>% filter(grepl("NHS", ijb), fy == input$select_year_p1_randr, ldp == "total") %>% 
+                     rename(geog = health_board),
+                   ytitle = "Referrals",
+                measure = referrals, measure_text = "Number of referrals to PDS"
   )
 })
 
@@ -206,7 +208,7 @@ output$perc_met_plot <- renderPlotly({
   
   if(input$select_hb_ijb == "Health Boards"){
     
-    percent_bar_chart(annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1_randr, ldp == "total") %>% 
+    plot_bar(annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1_randr, ldp == "total") %>% 
                         mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
                       category = ijb, 
                       measure = percent_met,
@@ -214,7 +216,7 @@ output$perc_met_plot <- renderPlotly({
     
   }else{
     
-    percent_bar_chart(annual_table_data %>% filter(!grepl("NHS", ijb), fy == input$select_year_p1_randr, ldp == "total") %>% 
+    plot_bar(annual_table_data %>% filter(!grepl("NHS", ijb), fy == input$select_year_p1_randr, ldp == "total") %>% 
                         mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
                       category = ijb, 
                       measure = percent_met,
@@ -273,7 +275,7 @@ output$chart_title_trend_part_1 <- renderUI({HTML(paste0("Percentage of people e
 })
 
 output$hb_RandR_trend_plot <- renderPlotly({
-  plot_trend (annual_table_data %>% filter(ijb == input$select_randr_hb_trend_part_1 | ijb == "Scotland", fy %in% included_years_extra_referrals, ldp == "total"), 
+  plot_trend(annual_table_data %>% filter(ijb == input$select_randr_hb_trend_part_1 | ijb == "Scotland", fy %in% included_years_extra_referrals, ldp == "total"), 
               measure = referrals
   )
 })
@@ -311,7 +313,7 @@ trend_chart_data <- reactive({
 
 
 output$trend_plot_part_2 <- renderPlotly({
-  plot_trend_perc(trend_chart_data(), percent_met)
+  plot_trend(trend_chart_data(), percent_met)
 })
 
 

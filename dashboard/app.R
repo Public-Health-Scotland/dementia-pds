@@ -141,16 +141,16 @@ tabPanel(title = "Referrals & Rates",
                                size = "lg"
              ),
              linebreaks(1),
-             
+
              conditionalPanel(condition = 'input.RandR_sidebar == "RandRreferrals"',
-                              
-                              selectInput("select_year_p1",
+
+                              selectInput("select_year_p1_randr",
                                           label = "Select Financial Year of Diagnosis:",
                                           choices = included_years,
                                           selected= provisional_year_sup),
-                              
+
                               conditionalPanel(condition = 'input.RandR_tab == "RandR_part_2"',
-                                               
+
                                                radioButtons("select_hb_ijb",
                                                             label = "In the chart and table show:",
                                                             choices = c("Health Boards", "Integration Authority Areas"),
@@ -159,9 +159,9 @@ tabPanel(title = "Referrals & Rates",
                               ) #cond panel ldp part 2
              ), #cond panel outcomes
              width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
-           
+
            mainPanel(width = 9,
-                     
+
                      uiOutput("rates_ui")
            )#main panel
          )#sidebar layout
