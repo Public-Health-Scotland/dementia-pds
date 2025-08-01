@@ -80,8 +80,7 @@ data_selected <-reactive({
 
 data_demo <- reactive({
   data_selected() %>%
-    mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
-    filter(ijb == "Scotland", fy == input$select_year_demo)
+   filter(fy == input$select_year_demo)
 })
 
 ## create plots for age, simd, gender----
@@ -152,17 +151,13 @@ output$table_title_demo <- renderUI({HTML(paste0("Number and percentage of peopl
 #filter data
 table_data_demo <- reactive({
   
-  #table_data_demo <-
     bind_rows(
-    
+    # breakdown of selected demographic
     data_demo() %>% 
       select(type, total_referrals, complete, exempt, ongoing, not_met, percent_met) %>% 
       arrange(type),
-    
+    #totals for final row
     data_demo() %>% 
-      filter(ijb == "Scotland",
-             fy == input$select_year_demo
-      ) %>% 
       summarise(type = "Total",
                 total_referrals = sum(total_referrals),
                 complete = sum(complete),

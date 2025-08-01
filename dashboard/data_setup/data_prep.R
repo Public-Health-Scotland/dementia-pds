@@ -167,16 +167,22 @@ ldp %<>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Know
                 pds_referral_source = if_else(pds_referral_source %in% c("Not Known", "Local Authority", "Other", "Private Professional/Service/Organisation", "Self Referral"),
                                               "Not Known/Other", pds_referral_source))
 
-# 7 variable analysis tables ----
+# 7 gender, age, simd ----
 source(here("dashboard/functions/summarise_functions_for_dashboard.R"))
 
-data_sex <- summarise_by_variable_gender_dashboard(sex) %>% filter(simd == "All") %>% select(-simd)
+data_sex <- summarise_by_variable_gender_dashboard(sex) %>% 
+  mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+  filter(ijb == "Scotland", simd == "All") %>% select(-simd)
 #data_subtype <- summarise_by_variable_dashboard(subtype_of_dementia)
 #data_stage <- summarise_by_variable_dashboard(clinical_impression_of_stage_of_illness)
 #data_referral <- summarise_by_variable_dashboard(pds_referral_source)
 #data_model <- summarise_by_variable_dashboard(model_of_care)
-data_age <- summarise_by_variable_dashboard(age_grp) %>% filter(sex == "All") %>% select(-sex)
-data_simd <- summarise_by_variable_dashboard(simd)  %>% filter(sex == "All") %>% select(-sex)
+data_age <- summarise_by_variable_dashboard(age_grp) %>% 
+  mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+  filter(ijb == "Scotland", sex == "All") %>% select(-sex)
+data_simd <- summarise_by_variable_dashboard(simd) %>% 
+  mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>%
+  filter(ijb == "Scotland", sex == "All") %>% select(-sex)
 #data_accom <- summarise_by_variable_dashboard(accommodation_type)
 #data_uptake <- summarise_uptake_dashboard(ldp)
 
