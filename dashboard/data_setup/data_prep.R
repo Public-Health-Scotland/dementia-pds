@@ -425,16 +425,25 @@ hb_ldp_exp <- left_join(hb_ldp,
                             exp %>% select(health_board, fy, diagnoses)) %>% 
   mutate(exp_perc = if_else(!is.na(diagnoses), round(referrals/diagnoses*100, 1), NA))
 
-download_data_hb <- left_join(hb_ldp_exp, 
+hb_ldp_exp_pop <- left_join(hb_ldp_exp,
+#use 65+ as denominator for rate
+data_pop %>% filter(age_grp_2 == "65+") %>% 
+  mutate(fy = paste0(year, "/", as.numeric(substr(year,3,4)) + 1)) %>% 
+  select(health_board = geog, fy, pop_est)) %>% 
+  mutate(pop_rate_10000 = round(10000*referrals/pop_est,1), .after = referrals) %>% select(-pop_est)
+
+
+download_data_hb <- left_join(hb_ldp_exp_pop, 
                                    data_wait %>% filter(grepl("NHS",ijb)) %>% 
                                       select(health_board, fy, perc_contacted, median_diagnosis_to_contact)) %>% 
   mutate(median_diagnosis_to_contact = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), NA, median_diagnosis_to_contact)) %>% 
   mutate(perc_contacted = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), NA, perc_contacted)) %>% 
-  relocate(c(diagnoses, exp_perc), .after = referrals) %>% 
+  relocate(c(diagnoses, exp_perc), .after = pop_rate_10000) %>% 
   
   rename(geography = health_board,
          financial_year = fy,
          `number of people referred to PDS` = referrals,
+         `number of people referred to PDS per 10,000 population (65+)` = pop_rate_10000,
          `LDP standard part 1 - estimated number of people newly diagnosed with dementia` = diagnoses,
          `LDP standard part 1 - percentage of estimated number of people diagnosed with dementia referred to pds` = exp_perc,
          `LDP standard part 2 - number of people where standard was met` = complete,
@@ -477,7 +486,14 @@ ijb_ldp <-
   mutate(percent_met = round_half_up(100*numerator/denominator, 1)) %>% 
   select(ijb, fy, referrals, complete, exempt, ongoing, fail, percent_met)
 
-download_data_ijb <- left_join(ijb_ldp, 
+ijb_ldp_pop <- left_join(ijb_ldp,
+                            #use 65+ as denominator for rate
+                            data_pop %>% filter(age_grp_2 == "65+") %>% 
+                              mutate(fy = paste0(year, "/", as.numeric(substr(year,3,4)) + 1)) %>% 
+                              select(ijb = geog, fy, pop_est)) %>% 
+  mutate(pop_rate_10000 = round(10000*referrals/pop_est,1), .after = referrals) %>% select(-pop_est)
+
+download_data_ijb <- left_join(ijb_ldp_pop,
                               data_wait %>% 
                                 select(ijb, fy, perc_contacted, median_diagnosis_to_contact)) %>% 
   mutate(median_diagnosis_to_contact = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), NA, median_diagnosis_to_contact)) %>% 
@@ -485,6 +501,7 @@ download_data_ijb <- left_join(ijb_ldp,
   rename(geography = ijb,
          financial_year = fy,
          `number of people referred to PDS` = referrals,
+         `number of people referred to PDS per 10,000 population (65+)` = pop_rate_10000,
          `LDP standard part 2 - number of people where standard was met` = complete,
          `LDP standard part 2 - number of people exempt from standard` = exempt,
          `LDP standard part 2 - number of people where PDS is ongoing` = ongoing,

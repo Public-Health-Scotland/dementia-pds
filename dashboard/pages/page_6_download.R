@@ -127,7 +127,7 @@ download_data_filtered <- reactive({
   
   if(input$download == "download_data_scotland"){
     download_data() %>% filter((financial_year == extra_referrals_year_sup &
-                                  measure == "number of people referred to PDS" &
+                                  (measure == "number of people referred to PDS"| measure == "number of people referred to PDS per 10,000 population (65+)") &
                                   gender == "All" &
                                   age_group == "All" &
                                   deprivation_quintile == "All") |
@@ -139,15 +139,15 @@ download_data_filtered <- reactive({
                                measure %in% input$select_measure_dl_scot)
   }else if(input$download == "download_data_hb"){
     download_data() %>% filter((financial_year == extra_referrals_year_sup &
-                  measure == "number of people referred to PDS") |
+                                  (measure == "number of people referred to PDS"| measure == "number of people referred to PDS per 10,000 population (65+)"))|
                  financial_year %in% included_years) %>%
       filter(financial_year %in% input$select_year_dl,
                                geography %in% input$select_hb_dl,
                                measure %in% input$select_measure_dl_hb)
   }else{
       download_data() %>% filter((financial_year == extra_referrals_year_sup &
-                  measure == "number of people referred to PDS") |
-                 financial_year %in% included_years) %>% 
+                                    (measure == "number of people referred to PDS"| measure == "number of people referred to PDS per 10,000 population (65+)"))|
+                                   financial_year %in% included_years) %>% 
       filter(financial_year %in% input$select_year_dl,
                                  geography %in% input$select_ijb_dl,
                                  measure %in% input$select_measure_dl_ijb)
