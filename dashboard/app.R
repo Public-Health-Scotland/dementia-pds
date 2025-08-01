@@ -87,7 +87,7 @@ tabPanel(title = "LDP Standard",
                            linebreaks(1),   
                            selectInput("select_hb_trend_part_1",
                                        label = "Select Health Board to show in chart:",
-                                       choices = c("", boards))
+                                       choices = c("Scotland", boards))
               ), #cond panel trends
            ),#cond panel ldp part 1
       conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"', 
@@ -101,7 +101,7 @@ tabPanel(title = "LDP Standard",
                              linebreaks(1), 
                                  selectInput("select_hb_ijb_trend_part_2",
                                   label = "Select Health Board/Integration Authority to show in chart:",
-                                choices = c("", boards, ijb_list)),
+                                choices = c("Scotland", boards, ijb_list)),
                              radioButtons("select_table_trend_part_2",
                                           label = "In the table show:",
                                           choices = c("Health Boards", "Integration Authority Areas"),
@@ -127,7 +127,7 @@ tabPanel(title = "Referrals & Rates",
          icon = icon_no_warning_fn("braille"),
          value = "rates",
          
-         box(h1("Dementia Post-Diagnostic Support; Referrals to PDS"),
+         box(class = "header", h2("Dementia Post-Diagnostic Support; Referrals to PDS"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
@@ -158,8 +158,7 @@ tabPanel(title = "Referrals & Rates",
                                                             inline = FALSE)
                               ) #cond panel ldp part 2
              ), #cond panel outcomes
-             width = 3, style = "position:fixed; width: 23%; overflow-y: overlay; margin-left: -30px; height:-webkit-fill-available"),
-
+             width = 3),#sidebarpanel
            mainPanel(width = 9,
 
                      uiOutput("rates_ui")
@@ -245,7 +244,7 @@ tabPanel(title = "Pathways",
                               linebreaks(1),
                                   selectInput("select_hb_ijb_pathways_trend",
                                               label = "Select Health Board/Integration Authority to show in chart:",
-                                              choices = c("", boards, ijb_list)),
+                                              choices = c("Scotland", boards, ijb_list)),
                                 radioButtons("select_pathways_trend_table",
                                   label = "In the table show:",
                                   choices = c("Health Boards", "Integration Authority Areas"),
