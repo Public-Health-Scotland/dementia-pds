@@ -170,7 +170,7 @@ output$downloadData_pathways <- downloadHandler(
 
 ## trend plot for wait times ----
 output$plot_title_pathways_trend <- renderUI({HTML(paste0("Average (median) days from diagnosis to first contact by PDS practitioner; Trend, Scotland "),
-                                                   if(input$select_hb_ijb_pathways_trend == ""){""
+                                                   if(input$select_hb_ijb_pathways_trend == "Scotland"){""
                                                    }else{
                                                      paste0("and ", input$select_hb_ijb_pathways_trend)})
 })
