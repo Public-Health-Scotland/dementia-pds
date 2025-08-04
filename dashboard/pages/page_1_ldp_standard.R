@@ -25,7 +25,7 @@ output$ldp_ui <-  renderUI({
                                             column(
                                             shinydashboard::valueBox(
                                               value = textOutput("scot_exp_perc"),
-                                              subtitle = "of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support.",
+                                              subtitle = "of people estimated to be newly diagnosed with dementia in Scotland were referred for post-diagnostic support.",
                                               width = 7,
                                               color = "fuchsia"), #valueBox
                                             box(htmlOutput("scot_exp_text"),
@@ -107,7 +107,7 @@ output$ldp_ui <-  renderUI({
                                           fluidRow(column(
                                             shinydashboard::valueBox(
                                               value = textOutput("scot_pds_perc"),
-                                              subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
+                                              subtitle = "of those referred for post-diagnostic support in Scotland received a minimum of 12 months of support.",
                                               width = 7,
                                               color = "fuchsia"), #valueBox
                                             box(htmlOutput("scot_pds_text"),
@@ -256,7 +256,7 @@ output$downloadData_ldp1 <- downloadHandler(
 ##plot trends part 1----
 
 output$chart_title_trend_part_1 <- renderUI({HTML(paste0("Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; Trend, Scotland "),
-                                                  if(input$select_hb_trend_part_1 == ""){""
+                                                  if(input$select_hb_trend_part_1 == "Scotland"){""
                                                   }else{
                                                     paste0("and ", input$select_hb_trend_part_1)})
 })
@@ -430,7 +430,7 @@ table_ldp2_data <- reactive({
 ##plot trends part 2 ----
 
 output$chart_title_trend_part_2 <- renderUI({HTML(paste("Percentage of people referred for PDS who received a minimum of one year’s support within 12 months of diagnosis; Trend, Scotland "),
-                                                        if(input$select_hb_ijb_trend_part_2 == ""){""
+                                                        if(input$select_hb_ijb_trend_part_2 == "Scotland"){""
                                                         }else{
                                                           paste0("and ", input$select_hb_ijb_trend_part_2)})
 })
