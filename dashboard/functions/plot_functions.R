@@ -36,7 +36,9 @@ phs_colours_core_no_rust <- c(
 
 #### PLOT FUNCTIONS #####
 # yearly trend plot function for referrals and median wait times
-plot_trend <- function(data, measure, group = ijb, ytitle = ""){
+plot_trend <- function(data, measure,
+                       group = ijb, 
+                       ytitle = ""){
   
   yaxis_plots[["title"]] <- ytitle
   xaxis_plots[["title"]] <- "Financial Year of Diagnosis"
@@ -63,7 +65,7 @@ plot_trend <- function(data, measure, group = ijb, ytitle = ""){
     
     # phsstyles::scale_colour_discrete_phs(palette = "all", name = NULL) +
     
-    scale_colour_manual(values = c("#9B4393","#3F3685")) +
+    scale_colour_manual(values = c("#9B4393","#0078D4")) +
     
     labs(colour = NULL) +
     
