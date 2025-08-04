@@ -26,7 +26,7 @@ output$rates_ui <-  renderUI({
                                             value = textOutput("scot_randr"),
                                             subtitle = "of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support.",
                                             width = 7,
-                                            color = "blue"), #valueBox
+                                            color = "fuchsia"), #valueBox
                                           box(htmlOutput("scot_randr_text"),
                                               status = "primary", 
                                               title = (p(strong("How is this figure calculated?"))),
@@ -55,8 +55,8 @@ output$rates_ui <-  renderUI({
                                         fluidRow(
                                           column(
                                             selectInput("select_randr_hb_trend_part_1",
-                                                        label = "Select Health Board/IJB to show in chart:",
-                                                        choices = c("", boards), width = "100%"), width = 5)),
+                                                        label = "Select Health Board/Integration Authority to show in chart:",
+                                                        choices = c("Scotland", boards), width = "100%"), width = 5)),
                                         plotlyOutput("hb_RandR_trend_plot"),
                                         #linebreaks(1),
                                         # table ----
@@ -83,7 +83,7 @@ output$rates_ui <-  renderUI({
                                             value = textOutput("scot_pds_referrals"),
                                             subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
                                             width = 7,
-                                            color = "blue"), #valueBox
+                                            color = "fuchsia"), #valueBox
                                           box(htmlOutput("scot_referrals_text"),
                                               status = "primary",
                                               title = (p(strong("How is this figure calculated?"))),
@@ -113,7 +113,7 @@ output$rates_ui <-  renderUI({
                                           column(
                                             selectInput("randr_select_hb_ijb_trend_part_2",
                                                         label = "Select Health Board/Integration Authority to show in chart:",
-                                                        choices = c("", boards, ijb_list), width = "100%"), width = 5)),
+                                                        choices = c("Scotland", boards, ijb_list), width = "100%"), width = 5)),
                                         plotlyOutput("randr_trend_plot_part_2"),
                                         #linebreaks(1),
                                         #table----
@@ -169,15 +169,15 @@ output$scot_referrals_text <- renderUI({
 
 
 # plot RandR part 1 ----
-output$hb_RandR_plot_title <- renderUI({HTML(paste0("Total number of people estimated to be newly diagnosed with dementia who were referred for PDS; ", 
-                                                    input$select_year_p1_randr, ", Scotland and Health Boards"))
+output$hb_RandR_plot_title <- renderUI({HTML(paste0("Number of Individuals Diagnosed and Referred for PDS; ", 
+                                                    input$select_year_p1_randr, ", Health Boards"))
 })
 
 output$hb_RandR_plot <- renderPlotly({
   plot_bar_no_line(annual_table_data %>% filter(grepl("NHS", ijb), fy == input$select_year_p1_randr, ldp == "total") %>% 
                      rename(geog = health_board),
-                   ytitle = "Referrals",
-                   measure = referrals, measure_text = "Number of referrals to PDS"
+                   ytitle = "Number Referred",
+                   measure = referrals, measure_text = "Number of referrals to PDS: "
   )
 })
 
@@ -269,14 +269,12 @@ output$referrals_table <- DT::renderDataTable({
 
 #plot trends part 1----
 
-output$randr_chart_title_trend_part_1 <- renderUI({HTML(paste0("Total number of people estimated to be newly diagnosed with dementia who were referred for PDS; Trend, Scotland "),
-                                                        if(input$select_hb_trend_part_1 == ""){""
-                                                        }else{
-                                                          paste0("and ", input$select_hb_trend_part_1)})
+output$randr_chart_title_trend_part_1 <- renderUI({HTML(paste0("Number of Individuals Diagnosed and Referred for PDS; Trend, ",
+                                                        input$select_randr_hb_trend_part_1))
 })
 
 output$hb_RandR_trend_plot <- renderPlotly({
-  plot_trend(annual_table_data %>% filter(ijb == input$select_randr_hb_trend_part_1 | ijb == "Scotland", fy %in% included_years_extra_referrals, ldp == "total"), 
+  plot_trend(annual_table_data %>% filter(ijb == input$select_randr_hb_trend_part_1, fy %in% included_years_extra_referrals, ldp == "total"), 
              measure = referrals
   )
 })
@@ -301,7 +299,7 @@ output$randr_table_hb_trend_part_1 <- DT::renderDataTable({
 #plot trends part 2 ----
 
 output$randr_chart_title_trend_part_2 <- renderUI({HTML(paste("Percentage of people referred for PDS who received a minimum of one year’s support within 12 months of diagnosis; Trend, Scotland "),
-                                                        if(input$randr_select_hb_ijb_trend_part_2 == ""){""
+                                                        if(input$randr_select_hb_ijb_trend_part_2 == "Scotland"){""
                                                         }else{
                                                           paste0("and ", input$randr_select_hb_ijb_trend_part_2)})
 })
