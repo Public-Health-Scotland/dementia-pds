@@ -25,7 +25,7 @@ output$ldp_ui <-  renderUI({
                                             column(
                                             shinydashboard::valueBox(
                                               value = textOutput("scot_exp_perc"),
-                                              subtitle = "of people estimated to be newly diagnosed with dementia in Scotland were referred for post-diagnostic support.",
+                                              subtitle = "of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support.",
                                               width = 7,
                                               color = "fuchsia"), #valueBox
                                             box(htmlOutput("scot_exp_text"),
@@ -68,7 +68,7 @@ output$ldp_ui <-  renderUI({
                            ), #cond panel trends
                     p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                              format(end_date, "%d %B %Y"), "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates.")),
-                    ### notes----
+                    ### Notes----
                     h4(strong("Notes:")),
                     p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
                     p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
@@ -107,7 +107,7 @@ output$ldp_ui <-  renderUI({
                                           fluidRow(column(
                                             shinydashboard::valueBox(
                                               value = textOutput("scot_pds_perc"),
-                                              subtitle = "of those referred for post-diagnostic support in Scotland received a minimum of 12 months of support.",
+                                              subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
                                               width = 7,
                                               color = "fuchsia"), #valueBox
                                             box(htmlOutput("scot_pds_text"),
@@ -150,7 +150,7 @@ output$ldp_ui <-  renderUI({
               ), #cond panel trends
               p(paste0("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                        format(end_date, "%d %B %Y"))),
-              #### notes----
+              #### Notes----
               h4(strong("Notes:")),
               p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
               p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
@@ -160,7 +160,13 @@ output$ldp_ui <-  renderUI({
                   "Methodology",
                   onclick = "Shiny.setInputValue('method_link', Math.random()); return false;"),
                 "page."),					
-              p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+              p("Figures for 2018/19, 2019/20 and 2020/21 for Aberdeen City, NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+                a(
+                  href = "#",
+                  "Home",
+                  onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+                "page for further information."),
+              p("NHS Shetland / Shetland Islands did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. This will affect the figures for NHS Shetland / Shetland Islands for 2022/23. See Note 7 on the",
                 a(
                   href = "#",
                   "Home",

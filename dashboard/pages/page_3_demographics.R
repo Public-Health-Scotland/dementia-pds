@@ -57,7 +57,7 @@ output$demo_ui <-  renderUI({
       } else if(input$select_data_demo == "data_sex"){
         p("Gender is based on the sex recorded for each referral. There are a small number of records where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’).")
       },
-      p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+      p("Figures for 2018/19, 2019/20 and 2020/21 are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
         a(
           href = "#",
           "Home",

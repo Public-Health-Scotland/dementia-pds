@@ -82,9 +82,9 @@ output$intro_page_ui <-  renderUI({
                                   "Despite local work undertaken to uncover the missing data, it has not been possible to fill this gap. Subsequent measures put in place have successfully ",
                                   "allowed NHS Tayside to improve on data reporting from 2019 onwards.")
                                 ),
-                        tags$li(p("NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted ",
+                        tags$li(p("NHS Shetland / Shetland Islands did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted ",
                                   "by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the ",
-                                  "PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland /Shetland Islands for 2022/23.")
+                                  "PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland / Shetland Islands for 2022/23.")
                                 ),
                         tags$li(p("The COVID-19 pandemic and the infection control measures put in place are likely to have had an impact on the number of people being diagnosed and referred, particularly in 2020/21.")
                                 ),
