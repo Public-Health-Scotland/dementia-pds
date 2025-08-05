@@ -75,42 +75,35 @@ output$plot_title_pathways <- renderUI({HTML(paste0("Average (median) days from 
                                                     input$select_year_pathways, ", Scotland and ", input$select_hb_ijb_pathways))
 })
 
-
-
-output$plot_pathways <- renderPlotly({
+wait_times_chart_data <- reactive({
+  
+  median_data <- data_wait %>% filter(fy == input$select_year_pathways) %>% 
+    mutate(median_diagnosis_to_contact = if_else(is.na(median_diagnosis_to_contact)| median_diagnosis_to_contact < 0, 0, median_diagnosis_to_contact))
   
   if(input$select_hb_ijb_pathways == "Health Boards"){
-    
-    median_data_hb <- data_wait %>% 
-      filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
-      select(health_board, fy, median_diagnosis_to_contact) %>% 
-      mutate(median_diagnosis_to_contact = if_else(is.na(median_diagnosis_to_contact)| median_diagnosis_to_contact < 0, 0, median_diagnosis_to_contact))
-    
-    wait_times_hb_chart_data <- left_join(median_data_hb,
-                                          median_data_hb %>% filter(health_board == "Scotland") %>% select(fy, median_diagnosis_to_contact) %>%
-                                            rename(scot_median_diagnosis_to_contact = median_diagnosis_to_contact)) %>%
-      filter(health_board != "Scotland") %>% 
-      mutate(median_diagnosis_to_contact = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), 0, median_diagnosis_to_contact)) %>% 
-      rename(geog = health_board)
-    
-    plot_bar(wait_times_hb_chart_data %>% filter(fy == input$select_year_pathways))
-    
-  }else{
-    
-    median_data_ijb <- data_wait %>% 
-      filter(!grepl("NHS", ijb)) %>% 
-      select(ijb, fy, median_diagnosis_to_contact) %>% 
-      mutate(median_diagnosis_to_contact = if_else(is.na(median_diagnosis_to_contact)| median_diagnosis_to_contact < 0, 0, median_diagnosis_to_contact)) %>% 
-      arrange(ijb) %>% 
-      mutate(median_diagnosis_to_contact = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), 0, median_diagnosis_to_contact))
-    
-    wait_times_ijb_chart_data <- left_join(median_data_ijb,
-                                           median_data_ijb %>% filter(ijb == "Scotland") %>% select(fy, median_diagnosis_to_contact) %>% 
-                                             rename(scot_median_diagnosis_to_contact = median_diagnosis_to_contact)) %>% 
-      filter(ijb != "Scotland") %>% 
-      rename(geog = ijb)
-    
-    plot_bar(wait_times_ijb_chart_data %>% filter(fy == input$select_year_pathways))}  
+  
+left_join(median_data %>% filter(grepl("NHS", ijb)) %>% 
+            select(health_board, fy, median_diagnosis_to_contact),
+          median_data %>% filter(health_board == "Scotland") %>% select(fy, median_diagnosis_to_contact) %>%
+                      rename(scot_median_diagnosis_to_contact = median_diagnosis_to_contact)) %>%
+    mutate(median_diagnosis_to_contact = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), 0, median_diagnosis_to_contact)) %>% 
+    rename(geog = health_board)
+  
+}else{
+  
+left_join(median_data %>% 
+            filter(!grepl("NHS", ijb), ijb != "Scotland") %>% 
+            select(ijb, fy, median_diagnosis_to_contact),
+          median_data %>% filter(ijb == "Scotland") %>% select(fy, median_diagnosis_to_contact) %>% 
+                rename(scot_median_diagnosis_to_contact = median_diagnosis_to_contact)) %>% 
+    mutate(median_diagnosis_to_contact = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), 0, median_diagnosis_to_contact)) %>% 
+    rename(geog = ijb)
+}
+  
+})
+
+output$plot_pathways <- renderPlotly({
+      plot_bar(wait_times_chart_data())
 })
 
 ##wait times table by geography ----    

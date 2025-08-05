@@ -47,7 +47,7 @@ output$demo_ui <-  renderUI({
           "Methodology",
           onclick = "Shiny.setInputValue('method_link', Math.random()); return false;"),
         "page."),	
-      if (input$select_data_demo == "data_age"){
+      if(input$select_data_demo == "data_age"){
         p("Age is calculated as at the dementia diagnosis date. There are a small number of records with an incomplete date of birth and therefore the age group is unknown.")
       } else if(input$select_data_demo == "data_simd"){
         p("Deprivation is calculated by matching postcode to the Scottish Index of Multiple Deprivation (SIMD) quintiles. Each quintile consists of approximately 20% of the general population living in Scotland, 
