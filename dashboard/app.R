@@ -91,25 +91,20 @@ tabPanel(title = "LDP Standard",
               ), #cond panel trends
            ),#cond panel ldp part 1
       conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"', 
-            conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',  
+           # conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"', 
+           conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
+                            linebreaks(1), 
+                            selectInput("select_hb_ijb_trend_part_2",
+                                        label = "Select Health Board/Integration Authority to show in chart:",
+                                        choices = c("Scotland", boards, ijb_list))
+                       ), #cond panel trends
                              radioButtons("select_hb_ijb",
                               label = "In the chart and table show:",
                               choices = c("Health Boards", "Integration Authority Areas"),
                               selected = "Health Boards")
-                   ),#cond panel outcomes
-            conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
-                             linebreaks(1), 
-                                 selectInput("select_hb_ijb_trend_part_2",
-                                  label = "Select Health Board/Integration Authority to show in chart:",
-                                choices = c("Scotland", boards, ijb_list)),
-                             radioButtons("select_table_trend_part_2",
-                                          label = "In the table show:",
-                                          choices = c("Health Boards", "Integration Authority Areas"),
-                                          selected = "Health Boards"),
-                    )#cond panel trends
-            ), #cond panel ldp part 2
+                   ),#cond panel ldp part 2
     width = 3
-    ),
+    ), #sidebar panel
       
       mainPanel(width = 9,
                 
@@ -151,7 +146,7 @@ tabPanel(title = "Referrals & Rates",
 
                               conditionalPanel(condition = 'input.RandR_tab == "RandR_part_2"',
 
-                                               radioButtons("select_hb_ijb",
+                                               radioButtons("select_hb_ijb_randr",
                                                             label = "In the chart and table show:",
                                                             choices = c("Health Boards", "Integration Authority Areas"),
                                                             selected = "Health Boards",
@@ -228,32 +223,28 @@ tabPanel(title = "Pathways",
                                justified = T,
                                size = "lg"
              ),
-            
+             
              conditionalPanel(condition = 'input.pathways_sidebar == "wait"',
                               linebreaks(1),
-                                selectInput("select_year_pathways",
-                                            label = "Select Financial Year of Diagnosis:",
-                                            choices = included_years_sup,#change to included_years from 2026 onwards
-                                            selected= provisional_year_sup),
-                                radioButtons("select_hb_ijb_pathways",
-                                             label = "In the chart and table show:",
-                                             choices = c("Health Boards", "Integration Authority Areas"),
-                                             selected = "Health Boards")
-                              ), #conditionalPanel wait
+                              selectInput("select_year_pathways",
+                                          label = "Select Financial Year of Diagnosis:",
+                                          choices = included_years_sup,#change to included_years from 2026 onwards
+                                          selected= provisional_year_sup)
+             ), #conditionalPanel wait
              conditionalPanel(condition = 'input.pathways_sidebar == "trends"',  
                               linebreaks(1),
-                                  selectInput("select_hb_ijb_pathways_trend",
-                                              label = "Select Health Board/Integration Authority to show in chart:",
-                                              choices = c("Scotland", boards, ijb_list)),
-                                radioButtons("select_pathways_trend_table",
-                                  label = "In the table show:",
-                                  choices = c("Health Boards", "Integration Authority Areas"),
-                                  selected = "Health Boards")
-             ), #conditionalPanel trends
-                 width = 3
-             ),#sidebarPanel
+                              selectInput("select_hb_ijb_pathways_trend",
+                                          label = "Select Health Board/Integration Authority to show in chart:",
+                                          choices = c("Scotland", boards, ijb_list))
+             ), #cond panel trends
+             radioButtons("select_hb_ijb_pathways",
+                          label = "In the chart and table show:",
+                          choices = c("Health Boards", "Integration Authority Areas"),
+                          selected = "Health Boards"),
+             width = 3
+           ),#sidebarPanel
            mainPanel(width = 9,
-         uiOutput("pathways_ui")
+                     uiOutput("pathways_ui")
            ) # mainPanel
          ) #sidebarLayout
 ), # tabpanel
