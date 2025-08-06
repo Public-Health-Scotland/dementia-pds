@@ -62,7 +62,7 @@ output$intro_page_ui <-  renderUI({
                                    a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
                                    " published by the Scottish Government in December 2016. Note that these estimations are subject to the limitations detailed within the paper."),
                                 p("For financial years 2021/22 and 2022/23 the rates referenced in 'Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020' were used to create national, age ",
-                                 "specific rates of dementia incidence per 1,000 population which were then applied to the 2021 and 2022 population estimates to obtain the incidence estimates. Population estimates taken from ",
+                                 "specific rates of dementia incidence per 1,000 population which were then applied to the Mid-2021 and Mid-2022 population estimates to obtain the incidence estimates. Population estimates taken from ",
                                   "National Records of Scotland (NRS) Mid-2021 and Mid-2022 Population Estimates at NHS Board Level."),
                                 p("NRS Mid-year population estimates can be found at: ",
                                   a("Population, migration and households - National Records of Scotland (NRS)", href = "https://www.nrscotland.gov.uk/statistics-and-data/population-migration-and-households/#", target="_blank"))
