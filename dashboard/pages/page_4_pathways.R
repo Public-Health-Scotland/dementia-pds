@@ -171,12 +171,12 @@ output$table_pathways <- DT::renderDataTable({
 output$downloadData_pathways <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
-    write.csv(median_table_data() %>% mutate(financial_year = input$select_year_pathways, 
+    write.csv(median_table_data() %>% mutate(`Financial Year` = input$select_year_pathways, 
                                              .before = everything()) %>% 
-                mutate(financial_year = case_when(
-                  financial_year == provisional_year_sup ~paste0(provisional_year,"P"),
-                  financial_year == revised_year_sup ~paste0(revised_year,"R"),
-                  TRUE ~financial_year)),
+                mutate(`Financial Year` = case_when(
+                  `Financial Year` == provisional_year_sup ~paste0(provisional_year,"P"),
+                  `Financial Year` == revised_year_sup ~paste0(revised_year,"R"),
+                  TRUE ~`Financial Year`)),
               file, row.names = FALSE)
   }
 )
@@ -208,12 +208,12 @@ output$plot_pathways_trend <- renderPlotly({
 
 ##wait times table trend ----    
 
-output$table_title_pathways_trend <- renderUI({HTML(paste0("Average (median) days from diagnosis to first contact by PDS practitioner; Trend, Scotland and ", input$select_pathways_trend_table))
+output$table_title_pathways_trend <- renderUI({HTML(paste0("Average (median) days from diagnosis to first contact by PDS practitioner; Trend, Scotland and ", input$select_hb_ijb_pathways))
 })
 
 median_table_trend_data <- reactive({
   
-  if(input$select_pathways_trend_table == "Health Boards"){
+  if(input$select_hb_ijb_pathways == "Health Boards"){
     
     median_hb_trend_table_data <- data_wait %>%
       filter(fy %in% included_years_sup) %>% # CHANGE to included_years from 2026 onwards
@@ -274,10 +274,25 @@ output$downloadData_pathways_trend <- downloadHandler(
                   fy == revised_year_sup ~paste0(revised_year,"R"),
                   TRUE ~fy)) %>% 
                 pivot_wider(names_from = fy, values_from = median_diagnosis_to_contact) %>% 
-                mutate(measure = "Average (median) days from diagnosis to first contact", 
+                mutate(Measure = "Average (median) days from diagnosis to first contact", 
                        .before = everything()), 
               file, row.names = FALSE)
   }
 )
+
+# updates radio buttons label depending on selection
+observe(if(input$pathways_sidebar == "trends"){
+  updateRadioButtons(session, "select_hb_ijb_pathways",
+                     label = "In the table show:"
+  )
+}
+)
+observe(if(input$pathways_sidebar == "wait"){
+  updateRadioButtons(session, "select_hb_ijb_pathways",
+                     label = "In the chart and table show:"
+  )
+}
+)
+
 
 ### END OF SCRIPT ###

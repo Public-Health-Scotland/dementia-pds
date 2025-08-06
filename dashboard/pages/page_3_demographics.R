@@ -194,13 +194,13 @@ output$table_demo <- DT::renderDataTable({
 output$downloadData_demo <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
-    write.csv(table_data_demo() %>% mutate(financial_year = input$select_year_demo, 
-                                           geography = "Scotland",
+    write.csv(table_data_demo() %>% mutate(`Financial Year` = input$select_year_demo, 
+                                           Geography = "Scotland",
                                            .before = everything()) %>% 
-                mutate(financial_year = case_when(
-                  financial_year == provisional_year_sup ~paste0(provisional_year,"P"),
-                  financial_year == revised_year_sup ~paste0(revised_year,"R"),
-                  TRUE ~financial_year)),
+                mutate(`Financial Year` = case_when(
+                  `Financial Year` == provisional_year_sup ~paste0(provisional_year,"P"),
+                  `Financial Year` == revised_year_sup ~paste0(revised_year,"R"),
+                  TRUE ~`Financial Year`)),
               file, row.names = FALSE)
   }
 )
