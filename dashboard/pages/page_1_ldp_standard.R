@@ -68,10 +68,15 @@ output$ldp_ui <-  renderUI({
                            ), #cond panel trends
                     p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                              format(end_date, "%d %B %Y"), "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates.")),
-                    ### notes----
+                    ### Notes----
                     h4(strong("Notes:")),
                     p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
-                    p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
+                    p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."),
+                    em("Due to the discovery of previously unpublished data submitted by NHS Grampian, revisions have been 
+                    made in this publication for diagnoses in financial year 2020/21. The impact of this is that the Number of 
+                    People Referred to PDS has increased by 11 for NHS Grampian and Scotland. This results in a 0.5% increase in 
+                    the Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS
+                    for NHS Grampian and a 0.1% increase for Scotland.")),
                     p("The estimated number of people newly diagnosed with dementia is subject to the limitations detailed within the paper below published by the Scottish Government in 2016: ", 
                       br(),
                       a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
@@ -150,17 +155,26 @@ output$ldp_ui <-  renderUI({
               ), #cond panel trends
               p(paste0("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                        format(end_date, "%d %B %Y"))),
-              #### notes----
+              #### Notes----
               h4(strong("Notes:")),
               p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
-              p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
+              p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."),
+              em("Due to the discovery of previously unpublished data submitted by NHS Grampian, revisions have been 
+                    made in this publication for diagnoses in financial year 2020/21. The impact of this is that the Number of 
+                    People Referred to PDS has increased by 11 for Aberdeen City, NHS Grampian and Scotland.")),
               p("For detailed information on how the % LDP standard achieved is calculated, and how 'standard met', 'exempt from standard', 'PDS ongoing' and 'standard not met' are defined, please see the",
                 a(
                   href = "#",
                   "Methodology",
                   onclick = "Shiny.setInputValue('method_link', Math.random()); return false;"),
                 "page."),					
-              p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+              p("Figures for 2018/19, 2019/20 and 2020/21 for Aberdeen City, NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+                a(
+                  href = "#",
+                  "Home",
+                  onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+                "page for further information."),
+              p("NHS Shetland / Shetland Islands did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. This will affect the figures for NHS Shetland / Shetland Islands for 2022/23. See Note 7 on the",
                 a(
                   href = "#",
                   "Home",
@@ -199,20 +213,15 @@ output$hb_exp_plot_title <- renderUI({HTML(paste0("Percentage of people estimate
                                                       input$select_year_p1, ", Scotland and Health Boards"))
 })
 
-# output$hb_exp_plot <- renderPlotly({
-#   plot_bar_perc(annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1, ldp == "total") %>% 
-#                           mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
-#                         category = ijb, 
-#                         measure = exp_perc,
-#                        fill = colour)
-# })
-
+hb_exp_chart_data <- reactive({
+  left_join(
+    annual_table_data %>% filter(grepl("NHS", ijb), fy == input$select_year_p1, ldp == "total"),
+    annual_table_data %>% filter(ijb == "Scotland", ldp == "total") %>% select(fy, exp_perc) %>%
+      rename(scot_exp_perc = exp_perc))
+})
 
 output$hb_exp_plot <- renderPlotly({
-  plot_bar_perc_line(left_join(
-    annual_table_data %>% filter(grepl("NHS", ijb), fy == input$select_year_p1, ldp == "total"),
-    annual_table_data %>% filter(ijb == "Scotland", ldp == "total") %>% select(fy, exp_perc)%>%
-      rename(scot_exp_perc = exp_perc)),
+  plot_bar_perc_line(hb_exp_chart_data(),
                 measure = exp_perc, scot_measure = scot_exp_perc, legend = "bottom")
 })
 
@@ -223,19 +232,34 @@ output$hb_exp_table_title <- renderUI({HTML(paste0("Number and percentage of peo
                                                       input$select_year_p1, ", Scotland and Health Boards"))
 })
 
+
 table_hb_exp_data <- reactive({
-  annual_table_data %>% 
-    filter(fy == input$select_year_p1) %>%
-    filter(grepl("NHS", ijb) | ijb == "Scotland", !is.na(diagnoses)) %>% 
-    group_by(health_board)%>%
-    select(health_board, diagnoses, referrals)%>%
-    mutate(exp_perc = paste0(round(referrals/diagnoses*100, 1), "%")) %>%  
-    arrange(health_board) %>% 
-    set_colnames(c("Health Board","Estimated Number of People Newly Diagnosed with Dementia", "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS"))
-})
+ 
+    annual_table_data %>% 
+      filter(fy == input$select_year_p1) %>%
+      filter(grepl("NHS", ijb) | ijb == "Scotland", !is.na(diagnoses)) %>% 
+      group_by(health_board)%>%
+      select(health_board, diagnoses, referrals)%>%
+      mutate(exp_perc = paste0(round(referrals/diagnoses*100, 1), "%")) %>%  
+      arrange(health_board) %>% 
+    # adds superscript R for NHS Grampian revisions. 
+    #From 2026 onward REMOVE the if statement and keep the column names that are currently set as else
+      set_colnames(if(input$select_year_p1 == "2020/21"){
+        c("Health Board","Estimated Number of People Newly Diagnosed with Dementia",
+                     "Number of People Referred to PDSᴿ","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDSᴿ")
+      }else{c("Health Board","Estimated Number of People Newly Diagnosed with Dementia",
+              "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS")
+           }
+        )
+  })
+
+
+
+
+
 
 output$table_hb_exp <- DT::renderDataTable({
-  make_table(table_hb_exp_data(), right_align = 1:3, selected = 1, filename = paste0("pds_perc_of_expected_diagnoses_", input$select_year_p1)) %>%
+  make_table(table_hb_exp_data(), right_align = 1:3, selected = 1) %>%
                formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
 })
 
@@ -256,7 +280,7 @@ output$downloadData_ldp1 <- downloadHandler(
 ##plot trends part 1----
 
 output$chart_title_trend_part_1 <- renderUI({HTML(paste0("Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; Trend, Scotland "),
-                                                  if(input$select_hb_trend_part_1 == ""){""
+                                                  if(input$select_hb_trend_part_1 == "Scotland"){""
                                                   }else{
                                                     paste0("and ", input$select_hb_trend_part_1)})
 })
@@ -281,13 +305,15 @@ table_hb_trend_part_1_data <- reactive({
     select(health_board, fy, exp_perc) %>%
     mutate(exp_perc = paste0(exp_perc, "%")) %>% 
     distinct(health_board, fy, .keep_all = T) %>% 
+    #adds superscript R for revised NHS Grampian data
+    mutate(fy = if_else(fy == "2020/21", paste0("2020/21", "ᴿ"),fy)) %>% #REMOVE from 2026 onward
     rename("Health Board" = "health_board")  
 })
 
 output$table_hb_trend_part_1 <- DT::renderDataTable({
   make_table(table_hb_trend_part_1_data() %>% 
                pivot_wider(names_from = fy, values_from = exp_perc),
-             right_align = 1:length(included_years), selected = 1, filename = paste0("pds_perc_of_expected_diagnoses_trend"))
+             right_align = 1:length(included_years), selected = 1)
 })
 
 
@@ -331,38 +357,26 @@ output$perc_met_plot_title <- renderUI({HTML(paste0("Percentage of people referr
                                                     input$select_year_p1, ", Scotland and ", input$select_hb_ijb))
 })
 
+
+perc_met_chart_data <- reactive({
+  
+  filtered_annual_data <- annual_table_data %>% filter(fy == input$select_year_p1, ldp == "total")
+  
+  left_join(
+    if(input$select_hb_ijb == "Health Boards"){
+      filtered_annual_data %>% filter(grepl("NHS", ijb))
+    }else{
+      filtered_annual_data %>% filter(!grepl("NHS", ijb), ijb != "Scotland")   
+    },
+    filtered_annual_data %>% filter(ijb == "Scotland") %>% select(fy, percent_met)%>%
+      rename(scot_percent_met = percent_met))
+})
+
 output$perc_met_plot <- renderPlotly({
   
-  if(input$select_hb_ijb == "Health Boards"){
-    
-    # plot_bar_perc(annual_table_data %>% filter(grepl("NHS", ijb) | ijb == "Scotland", fy == input$select_year_p1, ldp == "total") %>% 
-    #                     mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
-    #                   category = ijb, 
-    #                   measure = percent_met,
-    #                   fill = colour)
-    
-    plot_bar_perc_line(left_join(
-      annual_table_data %>% filter(grepl("NHS", ijb), fy == input$select_year_p1, ldp == "total"),
-      annual_table_data %>% filter(ijb == "Scotland", ldp == "total") %>% select(fy, percent_met)%>%
-        rename(scot_percent_met = percent_met)),
+    plot_bar_perc_line(perc_met_chart_data(),
       measure = percent_met, scot_measure = scot_percent_met, legend = "bottom")
-    
-    
-  }else{
-    
-    # plot_bar_perc(annual_table_data %>% filter(!grepl("NHS", ijb), fy == input$select_year_p1, ldp == "total") %>% 
-    #                     mutate(colour = if_else(ijb == "Scotland", "B", "A")), 
-    #                   category = ijb, 
-    #                   measure = percent_met,
-    #                   fill = colour)
-    
-    plot_bar_perc_line(left_join(
-      annual_table_data %>% filter(!grepl("NHS", ijb), ijb != "Scotland", fy == input$select_year_p1, ldp == "total"),
-      annual_table_data %>% filter(ijb == "Scotland", ldp == "total") %>% select(fy, percent_met)%>%
-        rename(scot_percent_met = percent_met)),
-      measure = percent_met, scot_measure = scot_percent_met, legend = "bottom")
-  }
-    
+ 
   })
     
     ## data table lpd part 2 ----
@@ -383,10 +397,9 @@ table_ldp2_data <- reactive({
       mutate(percent_met = if_else(percent_met == "   NA", "-", paste0(percent_met, "%"))) %>% 
       pivot_wider(names_from=ldp,values_from=referrals) %>% 
       select(health_board, total, complete, exempt, ongoing, fail, percent_met) %>% 
-      arrange(health_board) %>% 
-      set_colnames(c("Health Board","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")) 
+      arrange(health_board) 
     
-  }else{
+    }else{
     
   annual_table_data %>%
       filter(!grepl("NHS", ijb)) %>% 
@@ -397,16 +410,24 @@ table_ldp2_data <- reactive({
       select(ijb,ldp,referrals,percent_met) %>%
       pivot_wider(names_from=ldp,values_from=referrals) %>% 
       select(ijb, total, complete, exempt, ongoing, fail, percent_met) %>% 
-      arrange(ijb) %>% 
-      set_colnames(c("Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
-  
+      arrange(ijb) 
   }
   
 })
     
     output$perc_met_table <- DT::renderDataTable({
       
-          make_table(table_ldp2_data(), right_align = 1:6, selected = 1, rows_to_display = 32, filename = paste0("pds_perc_standard_met_exempt_iaa_", input$select_year_p1))
+          make_table(table_ldp2_data() %>% 
+                       set_colnames(
+                         # adds superscript R for NHS Grampian revisions. 
+                         #From 2026 onward REMOVE the if statement and keep the column names that are currently set as else
+                         if(input$select_year_p1 == "2020/21"){
+                           c("Integration Authority Area","Number of People Referred to PDSᴿ", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
+                         }else{
+                           c("Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
+                         }
+                       ),
+                     right_align = 1:6, selected = 1, rows_to_display = 32)
         
           })
     
@@ -420,7 +441,17 @@ table_ldp2_data <- reactive({
                     mutate(financial_year = case_when(
                       financial_year == provisional_year_sup ~paste0(provisional_year,"P"),
                       financial_year == revised_year_sup ~paste0(revised_year,"R"),
-                      TRUE ~financial_year)),
+                      TRUE ~financial_year)) %>% 
+                    set_colnames(
+                      # adds superscript R for NHS Grampian revisions. 
+                      #From 2026 onward REMOVE the if statement and keep the column names that are currently set as else
+                      if(input$select_year_p1 == "2020/21"){
+                        c("Integration Authority Area","Number of People Referred to PDS(R)", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
+                      }else{
+                        c("Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
+                      }
+                    )
+                  ,
                   file, row.names = FALSE)
       }
     )
@@ -430,7 +461,7 @@ table_ldp2_data <- reactive({
 ##plot trends part 2 ----
 
 output$chart_title_trend_part_2 <- renderUI({HTML(paste("Percentage of people referred for PDS who received a minimum of one year’s support within 12 months of diagnosis; Trend, Scotland "),
-                                                        if(input$select_hb_ijb_trend_part_2 == ""){""
+                                                        if(input$select_hb_ijb_trend_part_2 == "Scotland"){""
                                                         }else{
                                                           paste0("and ", input$select_hb_ijb_trend_part_2)})
 })
@@ -458,7 +489,7 @@ table_trend_part_2_data <- reactive({
   
   if(input$select_table_trend_part_2 == "Health Boards"){  
     
-    trend_hb_data <- annual_table_data %>% 
+   annual_table_data %>% 
       filter(fy %in% included_years) %>% 
       select(health_board, fy, percent_met) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
@@ -468,7 +499,7 @@ table_trend_part_2_data <- reactive({
   
   }else{
     
-    trend_ijb_data <- annual_table_data %>% 
+    annual_table_data %>% 
       filter(fy %in% included_years) %>% 
       filter(!grepl("NHS", ijb)) %>% 
       select(ijb, fy, percent_met) %>%
@@ -484,8 +515,8 @@ table_trend_part_2_data <- reactive({
 output$table_hb_ijb_trend_part_2 <- DT::renderDataTable({
  
     make_table(table_trend_part_2_data() %>% 
-                 pivot_wider(names_from = fy, values_from = percent_met),
-               right_align = 1:length(included_years), selected = 1, rows_to_display = 32, filename = paste0("pds_perc_met_standard_exempt_iaa_trend"))
+                pivot_wider(names_from = fy, values_from = percent_met),
+               right_align = 1:length(included_years), selected = 1, rows_to_display = 32)
   
 })
 

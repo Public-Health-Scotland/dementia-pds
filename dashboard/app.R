@@ -146,8 +146,8 @@ tabPanel(title = "Referrals & Rates",
 
                               selectInput("select_year_p1_randr",
                                           label = "Select Financial Year of Diagnosis:",
-                                          choices = included_years,
-                                          selected= provisional_year_sup),
+                                          choices = included_years_extra_referrals,
+                                          selected= extra_referrals_year_sup),
 
                               conditionalPanel(condition = 'input.RandR_tab == "RandR_part_2"',
 

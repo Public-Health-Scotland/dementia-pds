@@ -47,7 +47,7 @@ output$demo_ui <-  renderUI({
           "Methodology",
           onclick = "Shiny.setInputValue('method_link', Math.random()); return false;"),
         "page."),	
-      if (input$select_data_demo == "data_age"){
+      if(input$select_data_demo == "data_age"){
         p("Age is calculated as at the dementia diagnosis date. There are a small number of records with an incomplete date of birth and therefore the age group is unknown.")
       } else if(input$select_data_demo == "data_simd"){
         p("Deprivation is calculated by matching postcode to the Scottish Index of Multiple Deprivation (SIMD) quintiles. Each quintile consists of approximately 20% of the general population living in Scotland, 
@@ -57,7 +57,7 @@ output$demo_ui <-  renderUI({
       } else if(input$select_data_demo == "data_sex"){
         p("Gender is based on the sex recorded for each referral. There are a small number of records where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’).")
       },
-      p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+      p("Figures for 2018/19, 2019/20 and 2020/21 are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
         a(
           href = "#",
           "Home",
@@ -102,7 +102,8 @@ output$chart_title_demo_referrals <- renderUI({HTML(paste0("Proportion of total 
 #plot proportion
 output$plot_demo_referrals <- renderPlotly({
   plot_bar_perc(data_demo(), category = type, measure = referrals/sum(referrals)*100,
-                       x_text_angle = if_else(input$select_data_demo == "data_age", 45, 0), fill = type, limit = NA
+                       x_text_angle = if_else(input$select_data_demo == "data_age", 45, 0), 
+                        fill = type, ylimit = max((data_demo()$referrals/sum(data_demo()$referrals)*100)+1)
                       )
 })
 

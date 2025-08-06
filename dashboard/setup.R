@@ -23,74 +23,80 @@ source(here("dashboard/data_setup/data_load_shiny.R"))
 
 # selections lists
 
+#adds a superscript r to indicate revisions added in 2025 publication due to Aberdeen City data issues
+#revised_201920_sup <- paste0("2019/20", "ʳ")  #REMOVE from 2026 onward
+
+#revised_202021_sup <- paste0("2020/21", "ʳ") #REMOVE from 2026 onward
+
+#adds superscript R to year which was provisional in previous publication
 revised_year_sup <- paste0(revised_year,"ᴿ")
 
+#adds superscript P to provisional data
 provisional_year_sup <- paste0(provisional_year,"ᴾ")
 
 extra_referrals_year_sup <- paste0(extra_referrals_year,"ᴾ")
 
-#included_years_no_sup <- c(finalised_years, provisional_year)
+# year list with no superscript R for data that was not included in 2024 publication
+included_years_sup <- c(finalised_years, provisional_year_sup) #REMOVE from 2026 onward
 
-included_years_sup <- c(finalised_years, provisional_year_sup) #can be removed from 2026 onwards
-
+#list of included years for ldp standard, demographics and pathways data
 included_years <- c(finalised_years[-length(finalised_years)],
                         revised_year_sup,
                         provisional_year_sup)
 
+#list of included years for referrals and rates page
 included_years_extra_referrals <- c(finalised_years[-length(finalised_years)], revised_year_sup, provisional_year_sup, extra_referrals_year_sup)
 
-#included_years <- c("2016/17", "2017/18", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24")
 
+#sidebar buttons for home page
 home_list <- c("About" = "about",
                "Using the Dashboard" = "use",
                "Further Information" = "info",
                #"Data Definitions" = "defs",
                "Accessibility" = "access")
 
-# trend_list <- c("Number of referrals" = "referrals_trend",
-#                 "Percentage receiving one year's support" = "pds_perc_trend",
-#                 "Percentage of estimated diagnoses referred" = "exp_perc_trend")
 
-# data_list <- c("Subtype of Dementia" = "data_subtype",
-#                "Stage of Dementia" = "data_stage",
-#                "PDS Referral Source" = "data_referral",
-#                "Model of Care" = "data_model",
-#                "PDS Uptake" = "uptake",
-#                "PDS Pathways" = "waiting_times"
-
+#tabs for ldp standard page
 ldp_tab_list <- c("LDP Standard Part 1" = "ldp_part_1",
               "LDP Standard Part 2" = "ldp_part_2"
                  )
 
+#sidebar buttons for ldp standard page
 ldp_sidebar_list <- c("Outcomes by Financial Year" = "outcomes",
                       "Trends" = "trends"
                       )
+
+#tabs for rates and referrals page
 RandR_tab_list <- c("Total Referrals" = "RandR_part_1",
                     "Rates per 10,000 population" = "RandR_part_2"
 )
 
+#sidebar buttons for rates and referrals page
 RandR_sidebar_list <- c("Referrals by Financial Year" = "RandRreferrals",
                         "Trends" = "RandRtrends"
 )
 
+#sidebar buttons for demographics page
 demographics_list <- c("Gender" = "data_sex",
                        "Age" = "data_age",
                        "Deprivation (SIMD)" = "data_simd")
-                      # "Accommodation" = "data_accom") 
 
+#sidebar buttons for pathways page
 pathways_list <- c("Waiting Times by Financial Year" = "wait",
                       "Trends" = "trends"
 )
 
+#tabs for methodology page
 method_list <- c("LDP Classification" = "ldp_class",
                        "Number of Expected Diagnoses" = "exp_diag",
                        "Removal of Duplicate Records" = "duplicates") 
 
+#dropdown selection for download page
 download_list <- c("Scotland" = "download_data_scotland",
                   "Health Boards" = "download_data_hb",
                   "Integration Authority Areas" = "download_data_ijb")
 
-
+#list of health boards and integration authority areas
 boards <- as.character(sort(unique(filter(annual_table_data, health_board != "Scotland")$health_board)))
 ijb_list <- as.character(sort(unique(filter(annual_table_data, ijb != "Scotland", !grepl("NHS", ijb))$ijb)))
 
