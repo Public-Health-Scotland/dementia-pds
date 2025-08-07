@@ -39,7 +39,7 @@ la_pop %<>%
            )) %>% 
    mutate(age_grp_2 = 
            case_when(
-             age %in% 65:79 ~ "79 and Under",
+             age %in% 65:79 ~ "79 and Under", #this is used for calculating rates where denominator is only 65 and over population
              age %in% 80:84 ~ "80 to 84",
              age >= 85     ~ "85+"
            )) %>%
@@ -134,7 +134,7 @@ hb_pop %<>%
            )) %>% 
   mutate(age_grp_2 = 
            case_when(
-             age %in% 65:79 ~ "79 and Under",
+             age %in% 65:79 ~ "79 and Under", #this is used for calculating rates where denominator is only 65 and over population
              age %in% 80:84 ~ "80 to 84",
              age >= 85     ~ "85+"
            )) %>%
@@ -263,7 +263,7 @@ simd_pop_data %<>% mutate(age_grp =
                             )) %>% 
   mutate(age_grp_2 = 
            case_when(
-             age %in% 65:79 ~ "79 and Under",
+             age %in% 65:79 ~ "79 and Under", #this is used for calculating rates where denominator is only 65 and over population
              age %in% 80:84 ~ "80 to 84",
              age >= 85     ~ "85+"
            )) %>%

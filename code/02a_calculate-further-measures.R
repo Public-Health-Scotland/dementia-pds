@@ -202,13 +202,8 @@ data_uptake %>%
 
 ### 5 PATHWAYS: WAITING TIMES ----
 
-# combine not known and other seldom used responses into one category for accommodation type and referral source
-ldp_wait_times <- ldp_clean %>% mutate(accommodation_type = if_else(accommodation_type %in% c("Not Known", "Homeless", "No Fixed Address"),
-                                             "Not Known/Other", accommodation_type),
-                pds_referral_source = if_else(pds_referral_source %in% c("Not Known", "Local Authority", "Other", "Private Professional/Service/Organisation", "Self Referral"),
-                                              "Not Known/Other", pds_referral_source))
 #calculate days between each stage of pathway
-ldp_wait_times %<>% 
+ldp_wait_times <- ldp_clean %>% 
   mutate(n_referrals = 1,
          diagnosis_to_referral_days = time_length(interval(dementia_diagnosis_confirmed_date, date_pds_referral_received), "days"),
          referral_to_allocation_days = time_length(interval(date_pds_referral_received, initial_pds_practitioner_allocation_date), "days"),
@@ -257,23 +252,6 @@ data_wait %>%
 # data_wait_3 %>% 
 #   write_file(path = get_mi_data_path("wait_data_3", ext = "rds", test_output = test_output))
 # 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-
-
-###6 GLOSSARY CALCULATIONS ---- 
-#calculate total number of referrals where age is known and percentage of those that are 65+
-total_age_known <- ldp %>% filter(age_grp != "Unknown") %>% nrow()
-age_65_plus <-ldp %>% filter(age >= 65) %>% nrow()
-perc_65_plus <- round(age_65_plus/total_age_known*100,1)
-  
-#calculate number of unknown records
-age_unknown <- ldp %>% filter(age_grp == "Unknown") %>% nrow()
-sex_unknown <- ldp %>% filter(sex %in% c("98 Not Specified", "99 Not Known")) %>% nrow()
-simd_unknown <- ldp %>% filter(simd == "Unknown") %>% nrow()
-  
-glossary_figures <- c(perc_65_plus, age_unknown, sex_unknown, simd_unknown)
-
-glossary_figures %>% 
-  write_file(path = get_mi_data_path("glossary_figures", ext = "rds", test_output = test_output))
   
 
 

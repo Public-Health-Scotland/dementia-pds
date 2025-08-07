@@ -13,7 +13,7 @@ pds_all_cal_year <- pds_all_totals %>%
 
 # join pds data with pop data and calculate rates
 pds_all_rates <- left_join(pds_all_cal_year, pop_data_trends) %>% select(geog, fy, total_referrals, pop_est) %>% 
-  mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 1)) %>%
+  mutate(pop_rate_10000 = round_half_up((total_referrals/pop_est)*10000, 1)) %>%
   select(geog, fy, pop_rate_10000) %>% 
   ungroup()
 
@@ -38,10 +38,7 @@ Sidebar - trend {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -69,7 +66,11 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page includes a chart and table showing the trend for number of people referred to PDS by financial year for Scotland, Integration Authority Areas and Health Boards. Multiple areas can be selected in the Integration Authority and Health Board tabs. 
+
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
@@ -80,7 +81,7 @@ Row {.tabset data-height=1210}
 
 <br>
 <br>
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS, Scotland</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS; Scotland</h2>
 ```{r trend-plot}
 
 trends_plot <- plot_trend(pds_scot_totals, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", Scotland = TRUE)
@@ -127,7 +128,7 @@ data_filter_ijb, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS, Integration Authority Areas </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS; Integration Authority Areas </h2>
 ```{r trend-plot-ijb}
 
 trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", colours = phs_colours_31)
@@ -140,7 +141,7 @@ trends_plot_ijb))
 
 ```{r trend-table-ijb}
 
-pds_all_totals %>% filter(geog == "Scotland" | !grepl("NHS", geog)) %>% 
+pds_all_totals %>% filter(!grepl("NHS", geog), geog != "Scotland") %>% 
             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
             pivot_wider(names_from = fy, values_from = total_referrals) %>% 
             rename(`Integration Authority Area` = geog) %>%
@@ -173,7 +174,7 @@ data_filter_hb, NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS, Health Boards </h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS; Health Boards </h2>
 ```{r trend-plot-hb}
 
 trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", colours = phs_colours_14)
@@ -186,7 +187,7 @@ trends_plot_hb))
 
 ```{r trend-table-hb}
 
-pds_all_totals %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
+pds_all_totals %>% filter(grepl("NHS", geog)) %>% 
             mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
             pivot_wider(names_from = fy, values_from = total_referrals) %>%
             rename(`Health Board` = geog) %>%
@@ -213,10 +214,7 @@ Sidebar - rates {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span></font>
 
 ***
 <ul>
@@ -243,11 +241,15 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over). *See the [Glossary](#glossary) for more details.*
 
 The Integration Authority Area and Health Board tabs include a chart and table showing the rate for each geographical area by financial year.  
 
 The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland, Integration Authority Areas and Health Boards. Multiple areas can be selected.  
+
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
@@ -275,7 +277,7 @@ data_filter_year_ijb,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+) by Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+); Integration Authority Areas</h2>
 ```{r plot-ijb-pop}
 
 ijb_rates_plot <- plot_bar_pop_rate(pds_ijb_pop_data)
@@ -322,7 +324,7 @@ data_filter_year_hb,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+) by Health Board</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+); Health Boards</h2>
 ```{r plot-hb-pop}
  
  hb_rates_plot <- plot_bar_pop_rate(pds_hb_pop_data)
@@ -404,10 +406,7 @@ Sidebar - outcomes {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 <ul>
@@ -436,18 +435,25 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page includes charts and tables showing, for the selected areas, the trend by financial year for information relating to the LDP Standard.  
 
 The first tab shows the percentage of the estimated number of people newly diagnosed with dementia that have been referred to PDS for Scotland and Health Boards (estimates are not available for Integration Authority Areas). 
 
 The second tab shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for Scotland, Integration Authority Areas and Health Boards. 
 
-*As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
+`r if(qt != 4) {HTML("<br>")}`
+**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates.
 
-<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
+
+
+**Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
 Row {.tabset data-height=1215}
 ----------------------------------------------------------------------
@@ -458,7 +464,7 @@ Row {.tabset data-height=1215}
 pds_exp_rates <- left_join(
 bind_rows(pds_scot_totals, pds_hb_totals) %>% filter(fy %in% full_years),
 exp %>% select(-health_board) %>% rename(geog = health_board_label)) %>% 
-  mutate(exp_rate = round(100*total_referrals/diagnoses,1))
+  mutate(exp_rate = round_half_up(100*total_referrals/diagnoses,1))
 
 pds_exp_rates$geog<- factor(pds_exp_rates$geog, levels = unique(pds_exp_rates$geog))
 
@@ -474,7 +480,7 @@ data_filter_exp_trend,NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS</h2>
 ```{r trend-plot-exp}
 
  trends_exp_plot <- plot_trend_perc(pds_exp_rates_data, exp_rate, x ="Financial Year of Diagnosis", colours = phs_colours_15)
@@ -505,10 +511,10 @@ pds_exp_rates %>% select(geog, fy, exp_rate) %>%
 
 ```{r dropdown-met-ldp}
 pds_met_rates <-
-  pds_all %>% filter(age_grp_2 != "Unknown", ldp != "ongoing", fy %in% full_years) %>% 
+  pds_all %>% filter(ldp != "ongoing", fy %in% full_years) %>% 
   group_by(geog, fy, ldp) %>% 
   summarise(referrals = sum(referrals)) %>% pivot_wider(names_from = ldp, values_from = referrals, values_fill = 0) %>% 
-  mutate(perc_met = round(100*(complete + exempt)/(complete + exempt + fail), 1))
+  mutate(perc_met = round_half_up(100*(complete + exempt)/(complete + exempt + fail), 1))
 
 pds_met_rates$geog<- factor(pds_met_rates$geog, levels = unique(pds_met_rates$geog))
 
@@ -540,7 +546,7 @@ bscols(widths = 12,
 
 pds_met_rates %>% select(geog, fy, perc_met) %>% 
             pivot_wider(names_from = fy, values_from = perc_met) %>%
-            mutate(across(where(is.numeric), ~paste0(.,"%"))) %>% 
+            mutate(across(where(is.numeric), ~if_else(is.na(.), "\\-", paste0(.,"%")))) %>%
             rename(`Integration Authority Area/Health Board` = geog) %>%
             kable(align = c("l", rep("r", length(full_years)))) %>%
             kable_styling(full_width = TRUE) %>%

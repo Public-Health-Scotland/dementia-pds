@@ -9,7 +9,7 @@ ldp_all_age <- pds_all %>%
   group_by(geog, fy, age_grp_2, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
-  mutate(perc_met = round((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
+  mutate(perc_met = round_half_up((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
 complete(nesting(geog, fy), age_grp_2, fill = list(perc_met = NA))
 
 ldp_all_age <- left_join(ldp_all_age,
@@ -33,7 +33,7 @@ pds_all_age_cal_year <- pds_all_age %>%
   mutate(year = as.numeric(substr(fy, 1, 4)))
 
 pds_all_age_rates <- left_join(pds_all_age_cal_year, pop_data_age) %>% select(-year) %>%
-  mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 1)) %>% select(fy, geog, age_grp_2, pop_rate_10000)
+  mutate(pop_rate_10000 = round_half_up((total_referrals/pop_est)*10000, 1)) %>% select(fy, geog, age_grp_2, pop_rate_10000)
 
 pds_all_age_rates$geog<- factor(pds_all_age_rates$geog, levels = unique(pds_all_age_rates$geog)) 
 pds_all_age_rates$age_grp_2<- factor(pds_all_age_rates$age_grp_2, levels = c("79 and Under", "80 to 84", "85+"))
@@ -50,7 +50,7 @@ ldp_all_sex <- pds_all %>%
   group_by(geog, fy, sex, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
-  mutate(perc_met = round((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
+  mutate(perc_met = round_half_up((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
 complete(nesting(geog, fy), sex, fill = list(perc_met = NA))
 
 ldp_all_sex <- left_join(ldp_all_sex,
@@ -74,7 +74,7 @@ pds_all_sex_cal_year <- pds_all_sex %>%
   mutate(year = as.numeric(substr(fy, 1, 4)))
 
 pds_all_sex_rates <- left_join(pds_all_sex_cal_year, pop_data_sex) %>% select(-year) %>%
-  mutate(pop_rate_10000 = round((total_referrals/pop_est)*10000, 1))
+  mutate(pop_rate_10000 = round_half_up((total_referrals/pop_est)*10000, 1))
 
 pds_all_sex_rates$geog <- factor(pds_all_sex_rates$geog, levels = unique(pds_all_sex_rates$geog))
 pds_all_sex_rates$sex <- as.factor(pds_all_sex_rates$sex)
@@ -93,7 +93,7 @@ ldp_all_simd <- pds_all %>%
   group_by(geog, fy, simd, ldp) %>%
   summarise(total_referrals = sum(referrals), .groups = "drop") %>% 
   pivot_wider(names_from = ldp, values_from = total_referrals, values_fill = 0) %>% 
-  mutate(perc_met = round((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
+  mutate(perc_met = round_half_up((complete + exempt)/(complete + exempt + fail)*100,1)) %>% 
 complete(nesting(geog, fy), simd, fill = list(perc_met = NA))
 
 ldp_all_simd <- left_join(ldp_all_simd,
@@ -115,7 +115,7 @@ pds_all_simd_cal_year <- pds_all_simd %>%
   mutate(year = as.numeric(substr(fy, 1, 4)))
 
 pds_all_simd_rates <- left_join(pds_all_simd_cal_year, pop_data_simd) %>% select(-year) %>%
-  mutate(pop_rate_10000 = round((total_referrals/pop)*10000, 1))
+  mutate(pop_rate_10000 = round_half_up((total_referrals/pop)*10000, 1))
 
 pds_all_simd_rates$geog <- factor(pds_all_simd_rates$geog, levels = unique(pds_all_simd_rates$geog))
 
@@ -173,10 +173,7 @@ Sidebar - age rates {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -204,11 +201,15 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for given age groups. *See the [Glossary](#glossary) for more details.*
 
 The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area for the selected financial year. For the Integration Authority tab use the dropdown menu to select areas to show in the charts and tables. 
 
 The Trend tab shows the trend of the rate by financial year for Scotland and the selected geographical area for each age group. The table below the chart shows the rates for the selected geographical area.
+
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
@@ -509,10 +510,7 @@ Sidebar - age outcomes{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -542,17 +540,22 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for given age groups.  
 
 The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area. For the Integration Authority tab use the dropdown menu to select areas to show in the charts and tables. 
 
 The Trend tab shows the trend of the percentage of referrals that have received one year’s support by financial year for Scotland and the selected geographical area for each age group. The table below the chart shows the figures for the selected geographical area. 
 
-*As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
 `r if(qt != 4) {HTML("<br>")}`
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
+
+
+**Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
 Row {.tabset data-height=1180}
 ----------------------------------------------------------------------
@@ -775,7 +778,7 @@ ldp_age_table_data <- trend_table_ldp(ldp_all_age, age_grp_2) %>%
 ldp_age_table <- SharedData$new(ldp_age_table_data, key = ~geog, group = "ldp_age")
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="275px", margin="20px"),
+       div(style = css(width="97%", height="360px", margin="20px"),
 DT::datatable(ldp_age_table, rownames = FALSE, selection = 'none',
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -806,10 +809,7 @@ Sidebar - gender rates {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -837,16 +837,17 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for males and females. *See the [Glossary](#glossary) for more details.* 
 
 The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area for the selected financial year.  
 
 The Trend tab shows the trend of the rate by financial year for Scotland and the selected geographical area for each gender. The table below the chart shows the rates for the selected geographical area. 
 
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
+
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
-
-
-<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
 
 
 Row {.tabset data-height=1180}
@@ -1097,10 +1098,7 @@ Sidebar - gender outcomes{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -1129,17 +1127,22 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for males and females.  
 
 The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area.  
 
 The Trend tab shows the trend of the percentage of referrals that have received one year’s support by financial year for Scotland and the selected geographical area for each gender. The table below the chart shows the figures for the selected geographical area. 
 
-*As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
 `r if(qt != 4) {HTML("<br>")}`
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
+
+
+**Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
 Row {.tabset data-height=1180}
 ----------------------------------------------------------------------
@@ -1353,7 +1356,7 @@ ldp_sex_table_data <- trend_table_ldp(ldp_all_sex, sex) %>%
 ldp_sex_table <- SharedData$new(ldp_sex_table_data, key = ~geog, group = "ldp_sex")
 
 bscols(widths = 12,
-       div(style = css(width="97%", height="195px", margin="20px"),
+       div(style = css(width="97%", height="240px", margin="20px"),
 DT::datatable(ldp_sex_table, rownames = FALSE, selection = 'none',
               options = list(pageLength = 10,
                              scrollX = TRUE,
@@ -1383,10 +1386,7 @@ Sidebar -simd rates{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -1413,11 +1413,15 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over) for deprivation (Scottish Index of Multiple Deprivation (SIMD)) quintiles. *See the [Glossary](#glossary) for more details.*
 
 The Integration Authority Area and Health Board tabs include a chart and table showing the rates for each geographical area for the selected financial year. For the Integration Authority tab use the dropdown menu to select areas to show in the charts and tables. 
 
 The Trend tab shows the trend of the rate by financial year for Scotland and the selected geographical area for each quintile. The table below the chart shows the rates for the selected geographical area. 
+
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
@@ -1498,12 +1502,7 @@ plot_ly(pds_pop_simd_data_ijb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hover
 
 ```{r table-ijb-simd-pop}
 
-ijb_pop_simd_table_data <- #bind_rows(
-  
-  # pds_all_simd_rates %>%
-  # filter(!grepl("NHS", geog)) %>%
-  # select(geog,fy,simd,pop_rate_10000) %>%
-  #  mutate(simd_group = simd, .before = simd),
+ijb_pop_simd_table_data <- 
 
   pds_all_simd_rates %>%
   filter(!grepl("NHS", geog)) %>%
@@ -1747,10 +1746,7 @@ Sidebar- simd outcomes {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -1778,17 +1774,22 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for deprivation (Scottish Index of Multiple Deprivation (SIMD)) quintiles.  
 
 The Integration Authority Area and Health Board tabs include a chart and table showing the percentages for each geographical area. For the Integration Authority tab use the dropdown menu to filter for selected areas to show in the charts and table. 
 
 The Trend tabs include a chart showing the trend of the percentage by financial year for the selected geographical area for each deprivation quintile. The table below the charts shows the figures for the selected geographical area. 
 
-*As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
 `r if(qt != 4) {HTML("<br>")}`
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
+
+
+**Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
 Row {.tabset data-height=1180}
 ----------------------------------------------------------------------
@@ -1857,7 +1858,13 @@ plot_ly(ldp_simd_data_ijb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~si
 
 
 ```{r table-ijb-simd-ldp}
-ijb_ldp_simd_table_data <- ijb_table_ldp(ldp_all_simd, simd)
+simd_totals<-ldp_all_simd %>% group_by(geog,simd) %>% summarise(total_referrals = sum(complete+exempt+fail+ongoing, na.rm = T))
+#replaces nas with zeroes for areas that happen to have no referrals in a certain quintile for a financial year,
+#but nas remain for those that have zero population in a certain quintile
+ldp_all_simd_w_totals<-left_join(ldp_all_simd, simd_totals) %>% 
+  mutate(across(complete:ongoing, ~if_else(total_referrals !=0 & is.na(perc_met) & is.na(ongoing), 0, .)))
+
+ijb_ldp_simd_table_data <- ijb_table_ldp(ldp_all_simd_w_totals, simd)
 
 ijb_simd_table_ldp <- SharedData$new(ijb_ldp_simd_table_data, key = ~key, group = "ijb_simd_ldp")
 
@@ -1938,7 +1945,7 @@ plot_ly(ldp_simd_data_hb, x = ~geog, y = ~perc_met, meta = ~fy, hovertext = ~sim
 
 
 ```{r table-hb-simd-ldp}
-hb_ldp_simd_table_data <- hb_table_ldp(ldp_all_simd, simd)
+hb_ldp_simd_table_data <- hb_table_ldp(ldp_all_simd_w_totals, simd)
 
 hb_simd_table_ldp <- SharedData$new(hb_ldp_simd_table_data, key = ~key, group = "hb_simd_ldp")
 

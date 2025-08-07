@@ -106,11 +106,32 @@ if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years
 comp_data <- read_rds(get_mi_data_path("comp_data", ext = "rds", test_output = test_output))
 
 #glossary calculations
-glossary_figures <- read_rds(get_mi_data_path("glossary_figures", ext = "rds", test_output = test_output))
-perc_65_plus <- glossary_figures[1]
-age_unknown <- glossary_figures[2]
-sex_unknown <- glossary_figures[3]
-simd_unknown <- glossary_figures[4]
+over_65_and_total <- left_join(
+
+scot_65_plus_total <- pds_scot %>% filter(age_grp != "59 and Under", age_grp != "60 to 64") %>% 
+  group_by(geog) %>% summarise(over_65_referrals = sum(referrals)),
+
+
+scot_overall_total <- pds_scot %>% group_by(geog) %>% summarise(total_referrals = sum(referrals))
+
+)
+
+perc_65_plus<-round(over_65_and_total[2]/over_65_and_total[3]*100,1)
+
+
+age_unknown_all_years <- pds_scot %>% filter(age_grp == "Unknown")
+
+age_unknown <- sum(age_unknown_all_years$referrals)
+
+sex_unknown_all_years <- pds_scot %>% filter(sex != "01 Male", sex != "02 Female")
+
+sex_unknown <- sum(sex_unknown_all_years$referrals)
+
+simd_unknown_all_years <- pds_scot %>% filter(simd == "Unknown")
+
+simd_unknown <- sum(simd_unknown_all_years$referrals)
+
+
 ```
 
 
@@ -122,6 +143,14 @@ Sidebar - about this report {.sidebar}
 <br>
 
 ### About This Report
+
+***
+
+<font size="2"> 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
+
+***
+
 #### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
@@ -143,14 +172,13 @@ Row
 -------------------------------------------------
 
 ### <!-- No Title -->
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This report has been produced by Public Health Scotland (PHS) and contains analysis of performance against the [Scottish Government's LDP Standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP){target="_blank"} on provision of Dementia Post Diagnostic Support (PDS).
 
-<span style="color:red"> **The information contained in this report is for management information only and should not be distributed widely.** </span>
-
 These reports reflect the revised [Dementia PDS dataset](https://publichealthscotland.scot/media/20921/2023-12-14-dementia-pds-definitions-and-recording-guidance-v14.pdf){target="_blank"} effective 01 April 2019 and contain data for individuals diagnosed with dementia between **`r format(dmy(01042016), "%d %B %Y")`** and **`r format(end_date, "%d %B %Y")`** who were referred for post diagnostic support.
 
-Data are submitted to PHS by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(ymd(paste0(substr(provisional_year, 1,4), "-04-01")), "%d %B %Y")` onwards. Therefore, data for diagnoses from this date onwards are refreshed in each management report and are based on the most recently submitted data. Data for diagnoses prior to `r format(ymd(paste0(substr(provisional_year, 1,4), "-04-01")), "%d %B %Y")` are now final and will not change in future versions of the report. 
+Data are submitted to PHS by health boards on a quarterly basis. Each health board provides updated information for all individuals referred for post diagnostic support with a diagnosis date from `r format(ymd(paste0(substr(provisional_year, 1,4), "-04-01")), "%d %B %Y")` onwards. Therefore, data for diagnoses from this date onwards are refreshed in each management report and are based on the most recently submitted data. **Data for diagnoses prior to `r format(ymd(paste0(substr(provisional_year, 1,4), "-04-01")), "%d %B %Y")` are now final and will not change in future versions of the report.** 
 
 Information is shown at Scotland, Health Board and Integration Authority Area level using the links and dropdown menus at the top of the page.
 
@@ -196,7 +224,7 @@ Row
 
 **NHS Orkney** – NHS Orkney had no referrals in *2022/23* (*Q3* and *Q4*) and *2023/24* (*Q1* and *Q2*) as they were unable to access a consultant psychiatrist.
 
-**NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed.
+**NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland for *2022/23* and *2023/24*.
 
 **NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected.
 
@@ -214,14 +242,22 @@ Row
 
 
 
-Methodology {.hidden}
+METHODOLOGY {.hidden}
 =================================================
 Sidebar - methodology {.sidebar}
 -----------------------------------------------------------------------
 
 <br>
 
-### Methodology
+### About This Report
+
+***
+
+<font size="2"> 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
+
+***
+
 #### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
@@ -318,14 +354,22 @@ There is a Service Level Agreement between NHS Highland and NHS Greater Glasgow 
 If you have any queries regarding the above, please contact [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot).
 
 
-Glossary {.hidden}
+GLOSSARY {.hidden}
 =================================================
 Sidebar - glossary {.sidebar}
 -----------------------------------------------------------------------
 
 <br>
 
-### Glossary
+### About This Report
+
+***
+
+<font size="2"> 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
+
+***
+
 #### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
@@ -370,7 +414,7 @@ NRS Mid-year population estimates can be found using the links below:
 
 e.g. the rate for SIMD 1 (the most deprived quintile) for a particular area is calculated by dividing the number of people referred from this quintile, for the specified area, by the total SIMD 1 population aged 65 and over in that area and multiplying by 10,000. 
 
-**Finalised Years and Partial Current Year:** As it can take up to two years for a person to receive 12 months of PDS, the data reported by financial year is deemed to be provisional for two years and PHS do not finalise the data until then. Therefore, the figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report. 
+**Finalised Years`r if(qt != 4) {paste0(" and Partial Current Year")}`:** As it can take up to two years for a person to receive 12 months of PDS, the data reported by financial year is deemed to be provisional for two years and PHS do not finalise the data until then. Therefore, the figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report. 
 
 `r if(qt != 4) {paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, ".")}`
 
@@ -420,23 +464,27 @@ Across the reported years there are `r simd_unknown` records where it was not po
 
 **Accommodation Type:** The type of accommodation of the service user’s main residence. 
 
-**Carer’s Support:** Indicates whether ongoing PDS work is carried out in conjunction with the family/carer even if the service user refuses/declines to work with the PDS Practitioner following diagnosis. The work with the carer is directly linked to the eligibility of the person with dementia for PDS.
-
-**Subtype of Dementia:** The subtype of dementia that a service user has been principally diagnosed with. This diagnosis must be made by a doctor or clinical practitioner with sufficient training and experience in the diagnosis of dementia. 
-
 **Clinical Impression of Stage of Illness:** Clinical Impression of Stage of Illness at referral is broadly used to outline the typical symptoms and degree of difficulties associated with dementia disease progression, and the impact on the person with dementia and their carers. 
 
 **Model of Care:** The model of care deemed most appropriate for the service user following their diagnosis. 
 
 
-Navigation Guide {.hidden}
+NAVIGATION GUIDE {.hidden}
 =================================================
 Sidebar - navigation guide {.sidebar}
 -----------------------------------------------------------------------
 
 <br>
 
-### Navigation Guide
+### About This Report
+
+***
+
+<font size="2"> 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
+
+***
+
 #### PDS Quarterly, `r paste0(current_fy, " Q", qt)`
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
@@ -522,15 +570,12 @@ Sidebar-queries/errors {.sidebar}
 
 <br>
 
-### Queries/Errors
+### Number of Records Submitted
 
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>  </font>
 
 ***
 
@@ -556,7 +601,9 @@ Please get in touch with any comments, suggestions and feedback: [phs.dementiapd
 Row
 -------------------------------------------------
 
-### <!-- No Title -->
+### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes information about data quality. 
 
@@ -565,6 +612,8 @@ Queries/Errors - Any queries/errors outstanding following the resubmission deadl
 Data Completion – The tables show, for three key mandatory fields, the percentage of records which are reported as NA/code 98/99 (Unknown)/Yet to be determined (YTBD). As these are fields of interest we would like to see a reduction in the number of records with these codes so that meaningful information can be produced from these data. The tables are designed to help areas monitor the number of cases they report as NA/98/99/YTBD.
 
 Number of Records Submitted – This table shows the number of records submitted for each area. Note these are the number of records, including duplicate records, therefore this is not the same as the number of people referred.
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
 Row
 -------------------------------------------------
@@ -618,10 +667,7 @@ Sidebar-completion {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -648,7 +694,9 @@ Please get in touch with any comments, suggestions and feedback: [phs.dementiapd
 Row
 -------------------------------------------------
 
-### <!-- No Title -->
+### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes information about data quality. 
 
@@ -924,10 +972,7 @@ Sidebar-records {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>  </font>
 
 ***
 
@@ -953,7 +998,9 @@ Please get in touch with any comments, suggestions and feedback: [phs.dementiapd
 Row
 -------------------------------------------------
 
-### <!-- No Title -->
+### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page includes information about data quality. 
 

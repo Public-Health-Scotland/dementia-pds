@@ -51,19 +51,16 @@ completeness_text <-
     str_sub(sel_fy, 1, 4) <= year(latest_final_year) ~
       paste0("Data for ", sel_fy, " are now final and will not change in ",
              "future versions of this report."),
-    complete_year == FALSE ~ 
-      paste0("LDP Standard performance figures are not provided ",
-             "until data is available for the full financial year. ",
-             "The figures shown are currently provisional and subject to ",
-             "change in future versions of this report."),
+      complete_year == FALSE ~ 
+      paste0("The figures shown for ", sel_fy, " are currently provisional and subject to ",
+             "change in future versions of this report. ",
+             "LDP Standard performance figures are not provided ",
+             "until data is available for the full financial year."),
     TRUE ~ 
-      paste0("As PDS for some referrals in ", sel_fy, " is still ",
-             "ongoing, it is not known yet whether or not they ",
-             "will meet the LDP standard. Therefore, the figures ",
-             "shown are currently provisional and subject to ",
-             "change in future versions of this report.")
+      paste0("The figures shown for ", sel_fy, " are currently provisional and subject to ",
+             "change in future versions of this report."
+              )
   )
-
 
 # Estimated dementia diagnosis dates note
 est_date1 <- dmy(01042021)
@@ -75,9 +72,8 @@ est_date4 <- dmy(01042024)
     case_when(sel_fy == extract_fin_year(est_date1) | sel_fy == extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == extract_fin_year(est_date4) ~
       paste0("",
              "**Please note:** ",
-             "In December 2016, the Scottish Government published a report: 2014-2020 ",
-             "Estimated and Projected Diagnosis Rates for Dementia in Scotland:",
-             "(https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/). ", 
+             "In December 2016, the Scottish Government published a report: ",
+             "[Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target='_blank'}. ", 
              "For financial years *2021/22*, *2022/23*, *2023/24*, and *2024/25* the rates referenced in ", 
              "the report were used to create national, age specific rates of dementia incidence ",
              "per 1,000 population which were then applied to the National Records of ",
@@ -100,7 +96,7 @@ est_date4 <- dmy(01042024)
              "This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*"),
               TRUE ~ paste0(""))
   
-    # Data quality notes - Perth & Kinross
+     # Data quality notes - Perth & Kinross
   tay_date1 <- dmy(01042018)
   tay_date2 <- dmy(01042019)
   tay_date3 <- dmy(01042023)
@@ -175,8 +171,8 @@ est_date4 <- dmy(01042024)
               "showing as having met the standard. PHS have queried the ", 
               "dates with the Health Boards and are expecting these to be rectified in future submissions.*"), 
             TRUE ~ paste0(""))
-   
- 
+
+
 ```
 
 
@@ -191,10 +187,7 @@ Sidebar {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span></font>
 
 ***
 
@@ -243,6 +236,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 `r covid_text`
 

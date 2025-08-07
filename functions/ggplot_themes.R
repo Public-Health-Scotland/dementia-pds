@@ -79,7 +79,6 @@ phs_colours_core <- c(
 )
 
 
-
 integer_breaks <- function(n = 5, ...) {
   fxn <- function(x) {
     breaks <- floor(pretty(x, n, ...))
@@ -109,7 +108,6 @@ theme_dementia <- function(xangle = 0){
   
 }
 
-
 theme_dementia_pub <- function(){
   theme_gray() +
     theme(panel.background = element_blank(),
@@ -136,3 +134,5 @@ phs_colours <- c(
   `liberty` = "#6B5C85",
   `rust` = "#C73918"
 )
+
+### END OF SCRIPT ###

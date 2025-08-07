@@ -168,7 +168,7 @@ pds %<>%
   mutate(simd = replace_na(simd, "Unknown")) 
 
 # Add Aberdeen City data for 2019/20 and 2020/21 and update simd
-### 3 read in Aberdeen data and append ----
+### read in Aberdeen data and append ----
 
 Ab_19_20 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2019-20_individuals-with-ldp_aberdeen-city.rds") %>%
   select(-simd) %>% 
@@ -184,7 +184,7 @@ Ab_20_21 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen 
 
 pds_Ab <- bind_rows(pds, Ab_19_20, Ab_20_21) 
 
-### 4 - Remove duplicate records ----
+###  Remove duplicate records ----
 
 pds_Ab_dupe_flag <- pds_Ab %>%
   

@@ -30,10 +30,7 @@ Sidebar - waiting times {.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -62,19 +59,24 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page provides information on the pathways from dementia diagnosis to first contact by PDS practitioner. *See the [Glossary](#glossary) for more details.* 
 
 The Integration Authority Areas and Health Boards tabs include a chart and table showing the median number of days between diagnosis and contact for each geographical area by financial year.  
 
 The Trend tab includes a chart and table showing the trend of the median days between diagnosis and contact by financial year for Scotland, Integration Authority Areas and Health Boards. Multiple areas can be selected. 
 
-The Waiting Times Breakdown tab provides a table showing the number of referrals, percentage of referrals allocated and contacted by PDS practitioner, and the median number of days between each stage of the pathway. The figures presented here will be reflective of how local services and systems are set up, e.g. referral date and/or date of allocation to a PDS practitioner may be recorded at the same time as the diagnosis.  
+The Waiting Times Breakdown tab provides a table showing the number of referrals, percentage of referrals allocated and contacted by PDS practitioner, and the median number of days between each stage of the pathway. The figures presented here will be reflective of how local services and systems are set up, e.g. referral date and/or date of allocation to a PDS practitioner may be recorded at the same time as the diagnosis. Due to the quality of referral date recording in the three years 2016/17 to 2018/19, data for these three years is not presented in these tables. Recording quality improved for the years 2019/20 onwards with the introduction of updated data collection guidance.
 
 *The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 `r if(qt != 4) {HTML("<br>")}`
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
+
+
+**Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. This will affect the pathway waiting times for NHS Shetland for 2022/23 and 2023/24. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
 Row {.tabset data-height=1220}
 ----------------------------------------------------------------------
@@ -114,7 +116,7 @@ NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to first contact by PDS practitioner by Integration Authority Area</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to first contact by PDS practitioner; Integration Authority Areas</h2>
 ```{r plot-median-ijb}
 
 bscols(widths = 12,
@@ -153,7 +155,7 @@ bscols(widths = 12,
        div(style = css(width="97%", height="660px", margin="20px"),
 DT::datatable(median_ijb_table, rownames = FALSE, extensions = "FixedColumns",
                caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
+                       style = 'caption-side: bottom; text-align: left; color:black;',
                        "A dash (-) indicates that this measure could not be calculated due to data quality issues."),
               options = list(pageLength = 33,
                              scrollX = TRUE,
@@ -205,7 +207,7 @@ NULL)
 
 ```
 
-<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to contact by PDS practitioner by Health Board</h2>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Average (median) days from diagnosis to contact by PDS practitioner; Health Boards</h2>
 ```{r plot-median-hb}
 
 bscols(widths = 12,
@@ -240,7 +242,7 @@ bscols(widths = 12,
        div(style = css(width="97%", height="660px", margin="20px"),
 DT::datatable(median_hb_table, rownames = FALSE, extensions = "FixedColumns",
               caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
+                       style = 'caption-side: bottom; text-align: left; color:black;',
                        "A dash (-) indicates that due to data quality issues this measure could not be calculated."),
               options = list(pageLength = 15,
                              scrollX = TRUE,
@@ -313,7 +315,7 @@ bscols(widths = 12,
        div(style = css(width="97%", height="615px", margin="20px"),
     DT::datatable(wait_data_trend_table, rownames = FALSE,  
                                        caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
+                       style = 'caption-side: bottom; text-align: left; color:black;',
                        "A dash (-) indicates that due to data quality issues this measure could not be calculated."),
                        options = list(pageLength = 46,
                              scrollX = FALSE,
@@ -335,7 +337,7 @@ bscols(widths = 12,
 
 ```{r dropdown-wait}
 wait_data_all <- wait_data %>% 
-      filter(sex == "All", simd == "All") %>% 
+      filter(sex == "All", simd == "All", !fy %in% c("2016/17", "2017/18", "2018/19")) %>% 
   mutate(ijb = if_else(ijb == "All", health_board, ijb)) %>% 
   rename(geog = ijb) %>% 
       select(geog, fy, total_referrals, median_diagnosis_to_referral,
@@ -385,7 +387,7 @@ bscols(widths = 12,
        div(style = css(width="97%", height="770px", margin="20px"),
     DT::datatable(wait_table_data_all, rownames = FALSE,  
                                        caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
+                       style = 'caption-side: bottom; text-align: left; color:black;',
                        "A dash (-) indicates that due to data quality issues this measure could not be calculated."),
                        options = list(pageLength = 46,
                              scrollX = FALSE,
@@ -420,10 +422,7 @@ Sidebar - outcomes{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -453,24 +452,29 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page includes further information for referrals relating to the LDP Standard. *See the [Methodology](#methodology) page for more details.* 
 
-The LDP Standard Not Met tab provides a table showing the percentage of total referrals and number of individuals who did not receive a minimum of one year’s PDS starting within 12 months of diagnosis, along with the percentage for each reason for not meeting the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year. 
+The Standard Not Met tab provides a table showing the percentage of total referrals and number of individuals who did not receive a minimum of one year’s PDS starting within 12 months of diagnosis, along with the percentage for each reason for not meeting the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year. 
 
 The PDS Ongoing tab includes a table showing the percentage of total referrals and number of individuals where the LDP Standard cannot yet be determined and is therefore classed as Ongoing. Data is only shown for the financial years where referrals could still be ongoing. *See the [Glossary](#glossary) for more details.* The table also shows what percentage of the ongoing referrals are yet to start PDS with less than 12 months since diagnosis, and the percentage still receiving PDS with less than 12 months since first contact. 
 
 The Exempt tab includes a table showing the percentage of total referrals and number of individuals who are exempt from the LDP Standard for Scotland, Integration Authority Areas and Health Boards by financial year. 
 
-*As PDS for some referrals in `r provisional_year` onwards is still ongoing, it is not known yet whether or not they will meet the LDP standard. Therefore, the figures shown for these years are currently provisional and subject to change in future versions of this report.*
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 `r if(qt != 4) {HTML("<br>")}`
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
+
+**Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
+
 Row {.tabset data-height=800}
 ----------------------------------------------------------------------
 
-### **LDP Standard Not Met**
+### **Standard Not Met**
 
 ```{r dropdown-not-met}
 not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_full) %>% 
@@ -485,7 +489,7 @@ not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_ful
 
 not_met_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), not_met_data) %>% 
-    mutate(perc_of_total = paste0(round(100*total/total_referrals,1), "%"),
+    mutate(perc_of_total = paste0(round_half_up(100*total/total_referrals,1), "%"),
                                               .after = total_referrals) %>% 
   mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
 
@@ -533,7 +537,7 @@ bscols(widths = 12,
     DT::datatable(not_met_table_data, container = headers_notmet,
                          rownames = FALSE,
                           caption = htmltools::tags$caption(
-                          style = 'caption-side: bottom; text-align: left;',
+                          style = 'caption-side: bottom; text-align: left; color:black;',
                           "PDS terminated without contact refers to those with no contact date recorded and a termination date recorded at any time after diagnosis, therefore this may include referrals with a termination date more than 12 months after diagnosis."),
                          options = list(pageLength = 46,
                                         scrollX = FALSE,
@@ -566,7 +570,7 @@ ongoing_data <- pds_all %>% filter(ldp == "ongoing") %>% group_by(geog, fy, ldp_
 
 ongoing_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), ongoing_data) %>% 
-   mutate(`% of Total referrals PDS Ongoing` = paste0(round(100*total/total_referrals,1), "%"),
+   mutate(`% of Total referrals PDS Ongoing` = paste0(round_half_up(100*total/total_referrals,1), "%"),
                                               .after = total_referrals) %>% 
   filter(!fy %in% finalised_years) %>% 
   rename(`Integration Authority Area/Health Board` = geog, 
@@ -611,10 +615,6 @@ headers_ongoing <- htmltools::withTags(table(
 bscols(widths = 12,
        div(style = css(width="97%", height="605px", margin="20px"),
     DT::datatable(ongoing_table_data, container = headers_ongoing, rownames = FALSE,
-                                       # caption = htmltools::tags$caption(
-                      # style = 'caption-side: bottom; text-align: left;',
-                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
-                        #      year."),
                        options = list(pageLength = 46,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -647,7 +647,7 @@ exempt_data <- pds_all %>% filter(ldp == "exempt") %>% group_by(geog, fy, ldp_fu
 
 exempt_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), exempt_data) %>% 
-   mutate(`% of Total referrals Exempt` = paste0(round(100*total/total_referrals,1), "%"),
+   mutate(`% of Total referrals Exempt` = paste0(round_half_up(100*total/total_referrals,1), "%"),
                                               .after = total_referrals) %>% 
   rename(`Integration Authority Area/Health Board` = geog, 
          `Total referrals` = total_referrals,
@@ -673,10 +673,6 @@ exempt_table_data <- SharedData$new(exempt_data_totals)
 bscols(widths = 12,
        div(style = css(width="97%", height="620px", margin="20px"),
     DT::datatable(exempt_table_data, rownames = FALSE,
-                                       # caption = htmltools::tags$caption(
-                      # style = 'caption-side: bottom; text-align: left;',
-                      # "A dash (-) indicates no dates of referral were submitted for diagnoses in this
-                        #      year."),
                        options = list(pageLength = 46,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -706,10 +702,7 @@ Sidebar - uptake{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span></font>
 
 ***
 
@@ -738,6 +731,8 @@ Row
 
 ### **Note**
 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
 This page includes a table showing the percentage of total referrals where ‘PDS uptake decision’ has been recorded along with the percentage which have been recorded as ‘Accepted’ or ‘Accepted but initially declined’ for Integration Authority Areas and Health Boards with comparison to Scotland for each financial year. 
 
 *The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
@@ -765,10 +760,10 @@ Row {.tabset data-height=820}
       mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% rename("geog" = "ijb")
   ) %>% 
        mutate(Known = total_referrals - `Not Known`) %>% 
-       mutate(perc_known = paste0(round(100*Known/total_referrals,1), "%")) %>%
+       mutate(perc_known = paste0(round_half_up(100*Known/total_referrals,1), "%")) %>%
       select(2,1,4,7,8,9,10,11,12) %>% 
-  mutate(perc_declined = if_else(Known == 0, "-", paste0(round(100*Declined/Known,1), "%"))) %>%
-  mutate(perc_accepted = if_else(Known == 0, "-", paste0(round((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
+  mutate(perc_declined = if_else(Known == 0, "-", paste0(round_half_up(100*Declined/Known,1), "%"))) %>%
+  mutate(perc_accepted = if_else(Known == 0, "-", paste0(round_half_up((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
           mutate(across(where(is.numeric), ~format(., big.mark = ","))
                     ) %>% 
   select(fy, geog, total_referrals, perc_known, perc_accepted, perc_declined) %>% 
@@ -802,9 +797,6 @@ bscols(widths = c(1,5,NA),
 bscols(widths = 12,
        div(style = css(width="98%", height="650px", margin="15px"),
           DT::datatable(table_ijb_uptake, rownames = FALSE,
-                        caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
-                       "A dash (-) indicates that due to data quality issues this measure could not be calculated."),
               options = list(pageLength = 32,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -835,10 +827,10 @@ bscols(widths = 12,
       mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% rename("geog" = "health_board")
   ) %>% 
        mutate(Known = total_referrals - `Not Known`) %>% 
-       mutate(perc_known = paste0(round(100*Known/total_referrals,1), "%")) %>%
+       mutate(perc_known = paste0(round_half_up(100*Known/total_referrals,1), "%")) %>%
       select(2,1,4,7,8,9,10,11,12) %>% 
-  mutate(perc_declined = if_else(Known == 0, "-", paste0(round(100*Declined/Known,1), "%"))) %>%
-  mutate(perc_accepted = if_else(Known == 0, "-", paste0(round((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
+  mutate(perc_declined = if_else(Known == 0, "-", paste0(round_half_up(100*Declined/Known,1), "%"))) %>%
+  mutate(perc_accepted = if_else(Known == 0, "-", paste0(round_half_up((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
           mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
   select(fy, geog, total_referrals, perc_known, perc_accepted, perc_declined) %>% 
   rename("Number of People Referred to PDS" = "total_referrals",
@@ -895,10 +887,7 @@ Sidebar - no contact{.sidebar}
 ***
 
 <font size="2"> 
-<span style="color:red"> 
-**MANAGEMENT INFORMATION ONLY:** <br>
-**NOT FOR ONWARD DISTRIBUTION**
-</span> </font>
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
 
 ***
 
@@ -925,6 +914,8 @@ Row
 ----------------------------------------------------------------------
 
 ### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
 
 This page provides tables for Scotland, Integration Authority Areas and Health Boards for the selected financial year, showing: 
 
@@ -956,8 +947,8 @@ no_contact_term_ijb <- pds_all %>% filter(!grepl("NHS", geog), ldp_full == "fail
 no_contact_ijb <- left_join(ijb_totals_12, no_contact_term_ijb) %>% 
   mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
     mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
-     mutate(perc_no_contact_term = paste0(round((referrals_no_contact_term/total_referrals)*100,1),"%")) %>% 
-   mutate(perc_no_contact_12 = paste0(round((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
+     mutate(perc_no_contact_term = paste0(round_half_up((referrals_no_contact_term/total_referrals)*100,1),"%")) %>% 
+   mutate(perc_no_contact_12 = paste0(round_half_up((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
   select(fy, ijb,
          total_referrals,
          perc_no_contact_12, referrals_no_contact_12,
@@ -996,8 +987,10 @@ data_filter_year_no_contact_ijb, NULL)
 bscols(widths = 12,
        div(style = css(width="97%", height="750px", margin="20px"),
      DT::datatable(no_contact_table_data_ijb, rownames = FALSE, caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
-                       "A dash (-) indicates that this measure could not be calculated due to data quality issues. Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis, but does not include those with a termination date. Number of referrals whose PDS ended with no contact refers to those with no contact date recorded and a termination date recorded at any time after diagnosis, therefore this may include referrals with a termination date more than 12 months after diagnosis."),
+                       style = 'caption-side: bottom; text-align: left; color:black;',
+                       "Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis, but does not include those with a termination date.", htmltools::tags$br(), 
+                       "Number of referrals whose PDS ended with no contact refers to those with no contact date recorded and a termination date recorded at any time after diagnosis, therefore this may include referrals with a termination date more than 12 months after diagnosis.
+"),
               options = list(pageLength = 33,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -1031,14 +1024,14 @@ no_contact_term_hb <- pds_all %>% filter(geog == "Scotland" | grepl("NHS", geog)
 no_contact_hb <- left_join(hb_totals_12, no_contact_term_hb) %>% 
   mutate(across(starts_with("referrals"), ~ replace(., is.na(.), 0))) %>%
     mutate(across(starts_with("median"), ~ replace(., is.na(.), "-"))) %>% 
-     mutate(perc_no_contact_term = paste0(round((referrals_no_contact_term/total_referrals)*100,1),"%")) %>% 
-   mutate(perc_no_contact_12 = paste0(round((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
+     mutate(perc_no_contact_term = paste0(round_half_up((referrals_no_contact_term/total_referrals)*100,1),"%")) %>% 
+   mutate(perc_no_contact_12 = paste0(round_half_up((referrals_no_contact_12/total_referrals)*100,1),"%")) %>% 
   select(fy, health_board,
          total_referrals,
          perc_no_contact_12, referrals_no_contact_12,
          perc_no_contact_term, referrals_no_contact_term) %>% 
      mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-   mutate(across(starts_with("%"),
+   mutate(across(starts_with("perc"),
                   ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>%
    mutate(across(starts_with("referrals"),
                   ~if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", .))) %>% 
@@ -1047,7 +1040,7 @@ no_contact_hb <- left_join(hb_totals_12, no_contact_term_hb) %>%
                    "Number of referrals not contacted within 12 months of diagnosis",
                    "% of total referrals whose PDS ended with no contact",
                    "Number of referrals whose PDS ended with no contact"))
-    
+
 no_contact_table_data_hb <- SharedData$new(no_contact_hb)
 
 data_filter_year_no_contact_hb <- filter_select(id = "no_contact_filter_year_hb",
@@ -1067,8 +1060,10 @@ data_filter_year_no_contact_hb, NULL)
 bscols(widths = 12,
        div(style = css(width="97%", height="750px", margin="20px"),
      DT::datatable(no_contact_table_data_hb, rownames = FALSE, caption = htmltools::tags$caption(
-                       style = 'caption-side: bottom; text-align: left;',
-                       "A dash (-) indicates that this measure could not be calculated due to data quality issues. Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis, but does not include those with a termination date. Number of referrals whose PDS ended with no contact refers to those with no contact date recorded and a termination date recorded at any time after diagnosis, therefore this may include referrals with a termination date more than 12 months after diagnosis."),
+                       style = 'caption-side: bottom; text-align: left; color:black;',
+                       "Referrals not contacted within 12 months of diagnosis includes records with no contact date and those with a contact date more than 12 months after diagnosis, but does not include those with a termination date.", htmltools::tags$br(), 
+                       "Number of referrals whose PDS ended with no contact refers to those with no contact date recorded and a termination date recorded at any time after diagnosis, therefore this may include referrals with a termination date more than 12 months after diagnosis.
+"),
               options = list(pageLength = 15,
                              scrollX = FALSE,
                              scrollY = TRUE,
