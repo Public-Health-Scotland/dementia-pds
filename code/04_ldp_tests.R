@@ -60,7 +60,7 @@ colnames(pds_previous_yr_to_qt_summary ) <- c("ijb",paste0(previous_fy_full, " a
 # join data and calculate Scotland totals
 quarter_comparison <- left_join(pds_current_yr_summary,pds_previous_yr_to_qt_summary) %>% 
   adorn_totals(name = "Scotland") %>% 
-  # calculate percentage of last year up to current quarter
+# calculate percentage of last year up to current quarter
   rowwise() %>% 
   mutate(perc_of_prev_qt = paste0(round(sum(c_across(2))/sum(c_across(3)),3))) %>%   
   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
@@ -110,6 +110,10 @@ ijb_comparison <- produce_test_comparison(calculate_measures(previous_data,
                                                              var = ijb)) %>% 
   arrange(fy, measure) %>%  
   write_tests_xlsx(sheet_name = "IJB_comparison")
+
+
+
+
 
 
 

@@ -58,18 +58,18 @@ get_mi_year_dir <- function(folder = c("data", "output", "tests"),
     year <- stringr::str_glue("{previous_fy}-{substr(as.numeric(previous_fy)+1, 3, 4)}")
     qtr <- stringr::str_glue("Q{previous_qt}")
     test <- "test"
-    
+
   } else if(previous_year_to_qt){
-    year <- stringr::str_glue("{as.numeric(fy)-1}-{substr(as.numeric(fy), 3, 4)}")
-    qtr <- stringr::str_glue("Q{qt}")
-    test <- "test"
+      year <- stringr::str_glue("{as.numeric(fy)-1}-{substr(as.numeric(fy), 3, 4)}")
+      qtr <- stringr::str_glue("Q{qt}")
+      test <- "test"
     
   } else {
-    year <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}")
-    qtr <- stringr::str_glue("Q{qt}")
-    test <- "test"
+  year <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}")
+  qtr <- stringr::str_glue("Q{qt}")
+  test <- "test"
   }
-  
+
   if ((test_output)){
     year_dir <- fs::path(get_mi_dir(), {{ folder }}, year, qtr, test)
   }else{
@@ -97,7 +97,10 @@ get_mi_data_path <- function(type = c("error_data",
                                       "dupe_data",
                                       "clean_data",
                                       "ldp_data",
-                                      "final_data"),
+                                      "final_data",
+                                      "wait_data",
+                                      "uptake_data",
+                                      "comp_data"),
                              ext = c("rds", "csv"), 
                              test_output = FALSE, 
                              previous_data = FALSE,
@@ -110,9 +113,17 @@ get_mi_data_path <- function(type = c("error_data",
       "dupe_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_dupes"),
       "clean_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_clean-data"),
       "ldp_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_individuals-with-ldp"),
-      "final_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_final-data")
-    )
-    
+      "final_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_final-data"),
+      "ldp_wait_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_ldp_wait-data"),
+      "wait_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data"),
+      "comp_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_comp-data"),
+      "subtype_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_subtype-data"),
+      "stage_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_stage-data"),
+      "model_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_model-data"),
+      "uptake_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_uptake-data"),
+      "carer_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_carer-data")
+      )
+      
   } else if(previous_year_to_qt){
     file_name <- dplyr::case_match(
       type,
@@ -120,17 +131,34 @@ get_mi_data_path <- function(type = c("error_data",
       "dupe_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_dupes"),
       "clean_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_clean-data"),
       "ldp_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_individuals-with-ldp"),
-      "final_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_final-data")
+      "final_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_final-data"),
+      "ldp_wait_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_ldp_wait-data"),
+      "wait_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_wait-data"),
+      "comp_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_comp-data"),
+      "subtype_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_subtype-data"),
+      "stage_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_stage-data"),
+      "model_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_model-data"),
+      "uptake_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_uptake-data"),
+      "carer_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_carer-data")
     )   
-    
+      
   } else {
     file_name <- dplyr::case_match(
-      type,
-      "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
-      "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"),
-      "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
-      "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
-      "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data")
+    type,
+    "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
+    "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"),
+    "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
+    "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
+    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data"),
+    "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data"),
+    "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data"),
+    "wait_data_2" ~ stringr::str_glue("{fy}-{qt}_wait-data-2"),
+    "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data"),
+    "subtype_data" ~ stringr::str_glue("{fy}-{qt}_subtype-data"),
+    "stage_data" ~ stringr::str_glue("{fy}-{qt}_stage-data"),
+    "model_data" ~ stringr::str_glue("{fy}-{qt}_model-data"),
+    "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data"),
+    "carer_data" ~ stringr::str_glue("{fy}-{qt}_carer-data")
     )
   }
   
@@ -158,7 +186,7 @@ get_mi_output_path <- function(test_output = FALSE,
                                previous_year_to_qt = FALSE) {
   
   if (previous_data){
-    file_name <- stringr::str_glue("{previous_end_date}_management-report.html")    
+  file_name <- stringr::str_glue("{previous_end_date}_management-report.html")    
   }else if(previous_year_to_qt){
     file_name <- stringr::str_glue("{end_date - years(1)}_management-report.html")    
   }else{

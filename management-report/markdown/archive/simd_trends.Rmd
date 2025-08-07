@@ -1,0 +1,229 @@
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### Deprivation - Trend
+***
+
+<font size="2"> 
+<span style="color:red"> 
+**MANAGEMENT INFORMATION ONLY:** <br>
+**NOT FOR ONWARD DISTRIBUTION**
+</span> </font>
+
+***
+
+<ul>
+  <li>[Trend](#deprivation-simd)</li>
+  <li>[Proportions](#simd-proportions)</li>
+  <li>[Rates per 10,000 population](#simd-rates)</li>
+  <li>[Outcomes](#simd-outcomes)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.**
+
+
+Row {.tabset data-height=900}
+----------------------------------------------------------------------
+
+### **Scotland**
+
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS by SIMD Quintile and Financial Year
+ </h2>
+```{r plot-trend-simd-legend}
+
+ bscols(widths = 12,
+ div(id="trendsimdlegend",plot_trend_simd_legend(pds_all_simd), style="margin-bottom:-353px"))
+
+```
+
+
+```{r plot-trend-simd}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px"),
+plot_trend_simd(pds_all_simd %>% filter(geog == "Scotland"), measure = total_referrals, y = "Number"))
+)
+
+```
+
+
+```{r table-trend-simd}
+
+trend_simd_table_data <- pds_all_simd %>% filter(geog == "Scotland") %>% 
+  select(geog,fy,simd,total_referrals) %>%
+  pivot_wider(names_from = fy, values_from = total_referrals) %>%
+             rename(`SIMD Quintile` = simd)
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="235px", margin="20px"),
+DT::datatable(trend_simd_table_data, rownames = FALSE,
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:9)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+### **Health Boards**
+
+```{r dropdown-trend-simd-hb}
+
+pds_hb_simd_data <- SharedData$new(pds_all_simd %>% filter(grepl("NHS", geog)), key = ~geog, group = "trend_simd_hb")
+
+data_filter_trend_simd_hb <- filter_select(id = "filter_trend_simd_hb",
+                                    label = "Select Health Board:",
+                                    group = ~geog,
+                                    sharedData = pds_hb_simd_data,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_trend_simd_hb,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS by SIMD Quintile and Financial Year
+ </h2>
+```{r plot-trend-simd-legend-hb}
+
+ bscols(widths = 12,
+ div(id="trendsimdlegend",plot_trend_simd_legend(pds_all_simd), style="margin-bottom:-353px"))
+
+```
+
+
+```{r plot-trend-simd-hb}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px"),
+plot_trend_simd(pds_hb_simd_data, measure = total_referrals, y = "Number"))
+)
+
+```
+
+
+```{r table-trend-simd-hb}
+
+trend_simd_table_data <- pds_all_simd %>%
+  select(geog,fy,simd,total_referrals) %>%
+  pivot_wider(names_from = fy, values_from = total_referrals) %>%
+             rename(`SIMD Quintile` = simd)
+
+
+trend_simd_table_hb <- SharedData$new(trend_simd_table_data %>% filter(grepl("NHS", geog)), key = ~geog, group = "trend_simd_hb")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="235px", margin="20px"),
+DT::datatable(trend_simd_table_hb, rownames = FALSE,
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:9)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+
+```
+
+### **Integration Authority Areas**
+
+```{r dropdown-trend-simd-ijb}
+
+pds_ijb_simd_data <- SharedData$new(pds_all_simd %>% filter(geog != "Scotland", !grepl("NHS", geog)), key = ~geog, group = "trend_simd_ijb")
+
+data_filter_trend_simd_ijb <- filter_select(id = "filter_trend_simd_ijb",
+                                    label = "Select Health Board:",
+                                    group = ~geog,
+                                    sharedData = pds_ijb_simd_data,
+                                    multiple = FALSE
+                                      )
+
+bscols(widths = c(1,5,NA),
+       NULL,
+       data_filter_trend_simd_ijb,
+       NULL)
+
+
+```
+
+<h2 style="margin-left: 50px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS by SIMD Quintile and Financial Year
+ </h2>
+```{r plot-trend-simd-legend-ijb}
+
+ bscols(widths = 12,
+ div(id="trendsimdlegend",plot_trend_simd_legend(pds_all_simd), style="margin-bottom:-353px"))
+
+```
+
+
+```{r plot-trend-simd-ijb}
+bscols(widths = 12,
+  div(style = css(width="98%", height="385px"),
+plot_trend_simd(pds_ijb_simd_data, measure = total_referrals, y = "Number"))
+)
+
+```
+
+
+```{r table-trend-simd-ijb}
+
+trend_simd_table_data <- pds_all_simd %>%
+  select(geog,fy,simd,total_referrals) %>%
+  pivot_wider(names_from = fy, values_from = total_referrals) %>%
+             rename(`SIMD Quintile` = simd)
+
+
+trend_simd_table_ijb <- SharedData$new(trend_simd_table_data %>% filter(geog != "Scotland", !grepl("NHS", geog)), key = ~geog, group = "trend_simd_ijb")
+
+
+bscols(widths = 12,
+       div(style = css(width="97%", height="235px", margin="20px"),
+DT::datatable(trend_simd_table_ijb, rownames = FALSE,
+              options = list(pageLength = 10,
+                             scrollX = TRUE,
+                             scrollY = FALSE,
+                             dom = "t",
+                             ordering = FALSE,
+                             columnDefs = list(list(visible = FALSE, targets = 0),
+                                               list(className = 'dt-right', targets = 2:9)
+                                               ))) %>%
+           DT::formatStyle(2, fontWeight = "bold"#, padding = "4px"
+                          )
+        )
+     )
+
+
+
+```

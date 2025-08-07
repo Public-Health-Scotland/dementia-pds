@@ -19,7 +19,7 @@
 
 # UPDATE - TRUE/FALSE for defining a test file path for saving test copies of 
 #           outputs. This is useful for when the DM give us a test run when boards
-#           are still submitting the data.
+#           are still submitting the data or when making changes to the code.
 #
 #           test_report = TRUE - returns the test file path
 #           test_report = FALSE - returns the finalised report for distribution
@@ -140,4 +140,3 @@ finalised_years <-
 
 
 ### END OF SCRIPT ###
-##

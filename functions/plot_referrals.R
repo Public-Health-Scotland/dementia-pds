@@ -77,22 +77,24 @@ plot_referrals <- function(data,
     geom_line() + 
     
     scale_y_continuous(limits = c(0, NA), breaks = integer_breaks()
-    ) + 
-    
-    scale_colour_discrete(name = NULL) +
-    #phsstyles::scale_colour_discrete_phs(name = NULL) +
+                       ) +
+
+    scale_colour_manual(values = phs_colours_core) +
     
     # Custom labels on x tick marks
     scale_x_discrete(labels = paste(levels(data$month_abbr),
                                     c(rep(min(data$year), 9), rep(max(data$year), 3)))) +
     
     labs(x = "Month of Diagnosis",
-         y = "Number") +
+         y = "Number Referred",
+         colour = NULL) +
     
-    theme(legend.title = element_blank(),
-          legend.position = ifelse(ijb_group == FALSE, "none", "bottom"),
-          axis.text.x = element_text(angle=45))
-  
+theme_dementia(xangle = 45) +
+    
+   theme(legend.title = element_blank(),
+          legend.position = ifelse(ijb_group == FALSE, "none", "bottom")
+          )
+
    ggplotly(plot, tooltip = "text") %>%
      
      config(displayModeBar = TRUE,
@@ -100,10 +102,12 @@ plot_referrals <- function(data,
                                           'zoomOut2d', 'autoScale2d', 
                                           'toggleSpikelines', 
                                           'hoverCompareCartesian', 
-                                          'hoverClosestCartesian'), 
+                                          'hoverClosestCartesian', 'toImage'), 
             displaylogo = F, editable = F) %>%
      
      layout(legend = list(orientation = "h", x = 0.5 , y = -0.6,
-                          xanchor = "center", yanchor = "bottom"))
-  
+                          xanchor = "center", yanchor = "bottom")) #%>% 
+     #layout(margin = list(l = -10, b = 30, t = 30) # to avoid labels getting cut out
+    # )
+
 }

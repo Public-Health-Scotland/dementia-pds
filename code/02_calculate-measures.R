@@ -5,6 +5,7 @@
 # Original Date - July 2019
 # Updated by - Jennifer Thom
 # Date - November 2023
+# Updated by Abram McCormick - January 2025
 #
 # Written/run on - R Posit
 # Version of R - 4.1.2
@@ -74,41 +75,53 @@ pds %<>%
     date_of_initial_first_contact < diag_12 & 
       end_date >= pds_12 &
       is.na(termination_or_transition_date)
-    ~ "complete - still receiving",
+    ~ "complete - Without termination date",
     
     # Started PDS within 12m of diagnosis AND PDS ended after 11m
     date_of_initial_first_contact < diag_12 &
       termination_or_transition_date >= pds_11
-    ~ "complete - ended",
+    ~ "complete - PDS ended",
     
     #### FAIL ####
     
     # PDS started more than 12m after diagnosis
     date_of_initial_first_contact >= diag_12
-    ~ "fail - started >12m after diag",
+    ~ "fail - PDS started more than 12 months after diagnosis",
     
     # More than 12m since diagnosis and PDS not started
     end_date >= diag_12 & 
       is.na(date_of_initial_first_contact) &
       is.na(termination_or_transition_date)
-    ~ "fail - not started and >12m since diagnosis",
+    ~ "fail - PDS not started and more than 12 months since diagnosis",
     
     # PDS terminated before 11 months from start date
     termination_or_transition_date < pds_11 &
       !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
-    ~ "fail - term <11m from first contact",
+    ~ "fail - PDS terminated less than 11 months after first contact",
     
     # PDS terminated before first contact made
     is.na(date_of_initial_first_contact) & 
       !is.na(termination_or_transition_date) & 
       !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
-    ~ "fail - term before first contact",
+    ~ "fail - PDS terminated before first contact",
     
     #### EXEMPT ####
     
-    # Exempt termination reason; died/moved to other HB/refused/can't engage
-    substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons
-    ~ "exempt",
+    # Exempt termination reason; died
+    substr(termination_or_transition_reason, 1, 2) == "03"
+    ~ "exempt - 03 Service user has died",
+    
+    # Exempt termination reason; moved to other HB
+    substr(termination_or_transition_reason, 1, 2) == "04"
+    ~ "exempt - 04 Service user has moved to a different Health Board area",
+    
+    # Exempt termination reason; refused
+    substr(termination_or_transition_reason, 1, 2) == "05"
+    ~ "exempt - 05 Service user has terminated PDS early/refused",
+    
+    # Exempt termination reason; can't engage
+    substr(termination_or_transition_reason, 1, 2) == "06"
+    ~ "exempt - 06 Service user no longer able to engage in PDS",
     
     #### ONGOING ####
     
@@ -116,13 +129,13 @@ pds %<>%
     end_date < diag_12 & 
       is.na(date_of_initial_first_contact) & 
       is.na(termination_or_transition_date)
-    ~ "ongoing - not started",
+    ~ "ongoing - PDS not started and less than 12 months since diagnosis",
     
     # PDS started within 12m of diagnosis but not yet ended
     date_of_initial_first_contact < diag_12 &
       end_date < pds_12 &
       is.na(termination_or_transition_date)
-    ~ "ongoing - still receiving"
+    ~ "ongoing - Still receiving PDS and less than 12 months since first contact"
     
   ))
 
@@ -152,17 +165,58 @@ pds %<>%
   
   mutate(postcode = format_postcode(postcode)) %>%
   left_join(simd(), by = c("postcode" = "pc7")) %>%
-  mutate(simd = replace_na(simd, "Unknown"))
-          
+  mutate(simd = replace_na(simd, "Unknown")) 
+
+# Add Aberdeen City data for 2019/20 and 2020/21 and update simd
+### read in Aberdeen data and append ----
+
+Ab_19_20 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2019-20_individuals-with-ldp_aberdeen-city.rds") %>%
+  select(-simd) %>% 
+  mutate(postcode = format_postcode(postcode)) %>%
+  left_join(simd(), by = c("postcode" = "pc7")) %>%
+  mutate(simd = replace_na(simd, "Unknown")) 
+
+Ab_20_21 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2020-21_individuals-with-ldp_aberdeen-city.rds") %>%
+  select(-simd) %>% 
+  mutate(postcode = format_postcode(postcode)) %>%
+  left_join(simd(), by = c("postcode" = "pc7")) %>%
+  mutate(simd = replace_na(simd, "Unknown")) 
+
+pds_Ab <- bind_rows(pds, Ab_19_20, Ab_20_21) 
+
+###  Remove duplicate records ----
+
+pds_Ab_dupe_flag <- pds_Ab %>%
+  
+  group_by(chi_number) %>%
+  
+  # Add duplicate flag
+  mutate(dupe = if_else(!is.na(chi_number) & n() > 1, 1, 0)) %>%
+  
+  ungroup()
+
+# records from Ab_19_20 and Ab_20_21 are marked as "Aberdeen City Exemption" in ldp column. 
+# This line removes those records if they are duplicated in the most up to date ldp file.
+pds <- pds_Ab_dupe_flag %>% filter(dupe == 1 & ldp != "Aberdeen City Exemption" | dupe != 1)
+
+pds %<>% # add broad age groups
+  mutate(age_grp_2 = 
+           case_when(
+             age <= 0 | is.na(age) ~ "Unknown",
+             age %in% 1:79 ~ "79 and Under",
+             age %in% 80:84 ~ "80 to 84",
+             age >= 85     ~ "85+"
+           ), .after = age_grp) 
+
 
 ### 7 - Save individual level file for checking ----
 pds %>% 
 write_file(path = get_mi_data_path("ldp_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file. Re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
              
 pds %>% 
 write_file(path = get_mi_data_path("ldp_data", ext = "csv", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file. Re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
 ### 8 - Create final output file ----
@@ -179,18 +233,22 @@ inc_months <-
 pds %<>%
   
   # Aggregate to create minimal tidy dataset
-  group_by(health_board, ijb, fy, month, ldp, age_grp, simd) %>%
+  group_by(health_board, ijb, fy, month, age_grp_2, age_grp, simd, sex, ldp) %>% #updated to include age groups, gender and simd
   summarise(referrals = n(), .groups = "drop") %>%
   
-  # Remove LDP reason detail
-  mutate(ldp = word(ldp, 1)) %>% 
-  
+
   # Add rows where no referrals were made
   # Doing this will make sure zeros are still shown in reports
   complete(nesting(health_board, ijb), fy, month, ldp,
            fill = list(referrals = 0,
                        age_grp = "Unknown",
-                       simd = "Unknown")) %>%
+                       simd = "Unknown",
+                       age_grp_2 = "Unknown",
+                       sex = "Unknown")) %>%
+  
+  # Remove LDP reason detail
+  rename(ldp_full = ldp) %>% 
+  mutate(ldp = word(ldp_full, 1), .after = ldp_full) %>% 
 
   # Remove completed rows for months in incomplete financial year
   # e.g. for Q1 reports, remove completed rows for July - March
@@ -201,7 +259,8 @@ pds %<>%
 # write final data
 pds %>% 
 write_file(path = get_mi_data_path("final_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file. Re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
 ### END OF SCRIPT ###
+

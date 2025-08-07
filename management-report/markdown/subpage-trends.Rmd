@@ -1,0 +1,562 @@
+All Referrals - Trends & Rates
+=================================================
+
+```{r data-setup-trends, include=FALSE}
+
+#prepare population rate data using 65+ population estimates as denominator
+pop_data_trends <- pop_data %>%  filter(age_grp != "All", age_grp != "59 and Under", age_grp != "60 to 64", age_grp_2 == "All", sex == "All") %>% select(geog, year, age_grp, pop_est) %>% 
+  group_by(geog, year) %>% summarise(pop_est = sum(pop_est)) %>% ungroup()
+
+# add year column to pds data to match pop data
+pds_all_cal_year <- pds_all_totals %>% 
+  mutate(year = as.numeric(substr(fy, 1, 4)))
+
+# join pds data with pop data and calculate rates
+pds_all_rates <- left_join(pds_all_cal_year, pop_data_trends) %>% select(geog, fy, total_referrals, pop_est) %>% 
+  mutate(pop_rate_10000 = round_half_up((total_referrals/pop_est)*10000, 1)) %>%
+  select(geog, fy, pop_rate_10000) %>% 
+  ungroup()
+
+#add column with scotland rates
+pds_all_rates <- left_join(pds_all_rates,
+pds_all_rates %>% filter(geog == "Scotland") %>% select(fy, pop_rate_10000) %>% rename(scot_pop_rate_10000 = pop_rate_10000))
+
+pds_all_rates$geog<- factor(pds_all_rates$geog, levels = unique(pds_all_rates$geog))
+
+pds_ijb_rates <- pds_all_rates %>% filter(geog != "Scotland", !grepl("NHS", geog))
+
+pds_hb_rates <- pds_all_rates %>% filter(geog != "Scotland", grepl("NHS", geog))
+ 
+```
+
+Sidebar - trend {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### All Referrals - Trend
+***
+
+<font size="2"> 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
+
+***
+
+<ul>
+  <li>[**All Referrals - Trend**](#all-referrals---trends-rates)</li>
+  <li>[All Referrals - Rates per 10,000 population](#pop-rates)</li>
+  <li>[All Referrals - Outcomes by Financial Year](#trend-outcomes)</li>
+</ul>
+
+***
+**FURTHER INFORMATION:**
+
+<ul style="list-style-type:square;">
+   <li >[Glossary](#glossary)</li>
+   <li >[Navigation Guide](#navigation-guide)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
+This page includes a chart and table showing the trend for number of people referred to PDS by financial year for Scotland, Integration Authority Areas and Health Boards. Multiple areas can be selected in the Integration Authority and Health Board tabs. 
+
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+
+Row {.tabset data-height=1210}
+----------------------------------------------------------------------
+
+### **Scotland**
+
+<br>
+<br>
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS; Scotland</h2>
+```{r trend-plot}
+
+trends_plot <- plot_trend(pds_scot_totals, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", Scotland = TRUE)
+
+bscols(widths = 12,
+        div(style = css(width="98%", height="360px"), 
+            trends_plot))
+
+```
+<br>
+<br>
+```{r trend-table}
+
+pds_all_totals %>%  
+            mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
+            pivot_wider(names_from = fy, values_from = total_referrals) %>% 
+            rename(`Integration Authority Area/Health Board` = geog) %>%
+            select(-age_grp_2) %>% 
+            kable(align = c("l", rep("r", length(all_years)))) %>% 
+            kable_styling(full_width = TRUE) %>%
+            column_spec(1, bold = TRUE) %>%
+  # Add header above table 
+            add_header_above(
+                       c(" " = 1,
+                         "Financial Year of Diagnosis" = length(all_years))) %>%
+            scroll_box(height = "685px")
+ 
+
+```
+
+### **Integration Authority Areas**
+
+```{r dropdown-ijb}
+pds_trends_data_ijb <- SharedData$new(pds_ijb_totals)
+
+data_filter_ijb <- filter_select(id = "trend_filter_ijb",
+                                    label = "Select Integration Authority Area(s):",
+                                    group = ~geog,
+                                    sharedData = pds_trends_data_ijb
+                                   )
+
+bscols(widths = c(1,10,NA), NULL,
+data_filter_ijb, NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS; Integration Authority Areas </h2>
+```{r trend-plot-ijb}
+
+trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", colours = phs_colours_31)
+
+bscols(widths = 12,
+        div(style = css(width="98%", height="360px"),
+trends_plot_ijb))
+
+```
+
+```{r trend-table-ijb}
+
+pds_all_totals %>% filter(!grepl("NHS", geog), geog != "Scotland") %>% 
+            mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
+            pivot_wider(names_from = fy, values_from = total_referrals) %>% 
+            rename(`Integration Authority Area` = geog) %>%
+            select(-age_grp_2) %>% 
+            kable(align = c("l", rep("r", length(all_years)))) %>% 
+            kable_styling(full_width = TRUE) %>%
+            column_spec(1, bold = TRUE) %>%
+  # Add header above table 
+            add_header_above(
+                       c(" " = 1,
+                         "Financial Year of Diagnosis" = length(all_years))) %>%
+            scroll_box(height = "660px")
+ 
+
+```
+
+### **Health Boards**
+
+```{r dropdown-hb}
+pds_trends_data_hb <- SharedData$new(pds_hb_totals)
+
+data_filter_hb <- filter_select(id = "trend_filter_hb",
+                                    label = "Select Health Board(s):",
+                                    group = ~geog,
+                                    sharedData = pds_trends_data_hb
+                                   )
+
+bscols(widths = c(1,10,NA), NULL,
+data_filter_hb, NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS; Health Boards </h2>
+```{r trend-plot-hb}
+
+trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", colours = phs_colours_14)
+
+bscols(widths = 12,
+        div(style = css(width="98%", height="390px"),
+trends_plot_hb))
+
+```
+
+```{r trend-table-hb}
+
+pds_all_totals %>% filter(grepl("NHS", geog)) %>% 
+            mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
+            pivot_wider(names_from = fy, values_from = total_referrals) %>%
+            rename(`Health Board` = geog) %>%
+            select(-age_grp_2) %>% 
+            kable(align = c("l", rep("r", length(all_years)))) %>%
+            kable_styling(full_width = TRUE) %>%
+            column_spec(1, bold = TRUE) %>%
+  # Add header above table 
+            add_header_above(
+                    c(" " = 1,
+                     "Financial Year of Diagnosis" = length(all_years)))
+
+```
+
+Pop Rates {.hidden}
+=====================================
+Sidebar - rates {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### All Referrals - Rates per 10,000 population 
+
+***
+
+<font size="2"> 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span></font>
+
+***
+<ul>
+  <li>[All Referrals - Trend](#all-referrals---trends-rates)</li>
+  <li>[**All Referrals - Rates per 10,000 population**](#pop-rates)</li>
+  <li>[All Referrals - Outcomes by Financial Year](#trend-outcomes)</li>
+</ul>
+
+***
+**FURTHER INFORMATION:**
+
+<ul style="list-style-type:square;">
+   <li >[Glossary](#glossary)</li>
+   <li >[Navigation Guide](#navigation-guide)</li>
+</ul>
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
+This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over). *See the [Glossary](#glossary) for more details.*
+
+The Integration Authority Area and Health Board tabs include a chart and table showing the rate for each geographical area by financial year.  
+
+The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland, Integration Authority Areas and Health Boards. Multiple areas can be selected.  
+
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+
+<!-- **Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS were affected by the COVID-19 pandemic.** -->
+
+
+Row {.tabset data-height=1260}
+----------------------------------------------------------------------
+
+### **Integration Authority Areas**
+
+```{r dropdown-pop-ijb}
+pds_ijb_pop_data <- SharedData$new(pds_ijb_rates,
+                                   key = ~fy, group = "groupijb")
+
+data_filter_year_ijb <- filter_select(id = "trend_filter_year_ijb",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = pds_ijb_pop_data,
+                                    multiple = FALSE
+                                   )
+
+bscols(widths = c(1,3,NA),NULL,
+data_filter_year_ijb,NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+); Integration Authority Areas</h2>
+```{r plot-ijb-pop}
+
+ijb_rates_plot <- plot_bar_pop_rate(pds_ijb_pop_data)
+
+bscols(widths = 12,
+        div(style = css(width="98%", height="410px"),
+ ijb_rates_plot))
+
+```
+
+```{r trend-table-ijb-pop}
+
+pds_all_rates %>% filter(geog == "Scotland" | !grepl("NHS", geog)) %>%
+            select(-scot_pop_rate_10000) %>% 
+            pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
+            rename(`Integration Authority Area` = geog) %>%
+            kable(align = c("l", rep("r", length(all_years)))) %>%
+            kable_styling(full_width = TRUE) %>%
+            column_spec(1, bold = TRUE) %>%
+  # Add header above table
+            add_header_above(
+                       c(" " = 1,
+                         "Financial Year of Diagnosis" = length(all_years))) %>%
+            scroll_box(height = "650px")
+
+
+```
+
+### **Health Boards**
+
+```{r dropdown-pop-hb}
+pds_hb_pop_data <- SharedData$new(pds_hb_rates ,
+                                  key = ~fy, group = "grouphb")
+
+data_filter_year_hb <- filter_select(id = "trend_filter_year_hb",
+                                    label = "Select Financial Year:",
+                                    group = ~fy,
+                                    sharedData = pds_hb_pop_data,
+                                    multiple = FALSE
+                                   )
+
+bscols(widths = c(1,3,NA),NULL,
+data_filter_year_hb,NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+); Health Boards</h2>
+```{r plot-hb-pop}
+ 
+ hb_rates_plot <- plot_bar_pop_rate(pds_hb_pop_data)
+
+ bscols(widths = 12,
+         div(style = css(width="98%", height="410px"),
+  hb_rates_plot))
+
+```
+
+```{r trend-table-hb-pop}
+
+pds_all_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%
+            select(-scot_pop_rate_10000) %>% 
+            pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
+            rename(`Health Board` = geog) %>%
+            kable(align = c("l", rep("r", length(all_years)))) %>%
+            kable_styling(full_width = TRUE) %>%
+            column_spec(1, bold = TRUE) %>%
+  # Add header above table
+            add_header_above(
+                    c(" " = 1,
+                     "Financial Year of Diagnosis" = length(all_years)))
+
+```
+
+### **Trend**
+
+```{r dropdown-pop}
+pds_trends_pop_data <- SharedData$new(pds_all_rates)
+
+data_filter_hb_ijb_pop <- filter_select(id = "trend_filter_pop",
+                                    label = "Select Integration Authority Area(s) or Health Board(s):",
+                                    group = ~geog,
+                                    sharedData = pds_trends_pop_data
+                                   )
+bscols(widths = c(1,10,NA),NULL,
+data_filter_hb_ijb_pop,NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+)</h2>
+```{r trend-plot-pop}
+
+ trends_pop_plot <- plot_trend(pds_trends_pop_data, pop_rate_10000, x ="Financial Year of Diagnosis", y = "Rate Per 10,000 Popuation", colours = phs_colours_46, measure_text = "Rate per 10,000 population: ")
+
+bscols(widths = 12,
+        div(style = css(width="98%", height="360px"),
+ trends_pop_plot)
+)
+```
+
+```{r trend-table-pop}
+
+pds_all_rates %>% 
+       select(-scot_pop_rate_10000) %>%
+            pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
+            rename(`Integration Authority Area/Health Board` = geog) %>%
+            kable(align = c("l", rep("r", length(all_years)))) %>%
+            kable_styling(full_width = TRUE) %>%
+            column_spec(1, bold = TRUE) %>%
+  # Add header above table
+            add_header_above(
+                    c(" " = 1,
+                     "Financial Year of Diagnosis" = length(all_years))) %>%
+            scroll_box(height = "700px")
+
+```
+
+Trend Outcomes {.hidden}
+=====================================
+Sidebar - outcomes {.sidebar}
+-----------------------------------------------------------------------
+
+<br>
+
+### All Referrals - Outcomes by Financial Year 
+
+***
+
+<font size="2"> 
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span> </font>
+
+***
+<ul>
+  <li>[All Referrals - Trend](#all-referrals---trends-rates)</li>
+  <li>[All Referrals - Rates per 10,000 population](#pop-rates)</li>
+  <li>[**All Referrals - Outcomes by Financial Year**](#trend-outcomes)</li>
+</ul>
+
+***
+**FURTHER INFORMATION:**
+
+<ul style="list-style-type:square;">
+   <li >[Methodology](#methodology)</li>
+   <li >[Glossary](#glossary)</li>
+   <li >[Navigation Guide](#navigation-guide)</li>
+</ul>
+
+
+***
+
+Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+
+
+Row
+----------------------------------------------------------------------
+
+### **Note**
+
+<span style="color:red"> **MANAGEMENT INFORMATION: FOR LIMITED INTERNAL DISTRIBUTION AND NOT FOR PUBLIC RELEASE.** </span>
+
+This page includes charts and tables showing, for the selected areas, the trend by financial year for information relating to the LDP Standard.  
+
+The first tab shows the percentage of the estimated number of people newly diagnosed with dementia that have been referred to PDS for Scotland and Health Boards (estimates are not available for Integration Authority Areas). 
+
+The second tab shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for Scotland, Integration Authority Areas and Health Boards. 
+
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
+`r if(qt != 4) {HTML("<br>")}`
+**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates.
+
+
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
+
+
+**Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
+
+Row {.tabset data-height=1215}
+----------------------------------------------------------------------
+
+### **Percentage of estimated diagnoses referred to PDS**
+
+```{r dropdown-exp}
+pds_exp_rates <- left_join(
+bind_rows(pds_scot_totals, pds_hb_totals) %>% filter(fy %in% full_years),
+exp %>% select(-health_board) %>% rename(geog = health_board_label)) %>% 
+  mutate(exp_rate = round_half_up(100*total_referrals/diagnoses,1))
+
+pds_exp_rates$geog<- factor(pds_exp_rates$geog, levels = unique(pds_exp_rates$geog))
+
+pds_exp_rates_data <- SharedData$new(pds_exp_rates)
+
+data_filter_exp_trend <- filter_select(id = "trend_filter_outcomes_exp",
+                                    label = "Select Health Board(s):",
+                                    group = ~geog,
+                                    sharedData = pds_exp_rates_data
+                                   )
+bscols(widths = c(1,10,NA),NULL,
+data_filter_exp_trend,NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS</h2>
+```{r trend-plot-exp}
+
+ trends_exp_plot <- plot_trend_perc(pds_exp_rates_data, exp_rate, x ="Financial Year of Diagnosis", colours = phs_colours_15)
+
+bscols(widths = 12,
+        div(style = css(width="98%", height="360px"),
+ trends_exp_plot)
+)
+```
+
+```{r trend-table-exp}
+
+pds_exp_rates %>% select(geog, fy, exp_rate) %>% 
+            pivot_wider(names_from = fy, values_from = exp_rate) %>%
+            mutate(across(where(is.numeric), ~paste0(.,"%"))) %>% 
+            rename(`Health Board` = geog) %>%
+            kable(align = c("l", rep("r", length(full_years)))) %>%
+            kable_styling(full_width = TRUE) %>%
+            column_spec(1, bold = TRUE) %>%
+  # Add header above table
+            add_header_above(
+                    c(" " = 1,
+                     "Financial Year of Diagnosis" = length(full_years)))
+
+```
+
+### **Percentage receiving one year's PDS support**
+
+```{r dropdown-met-ldp}
+pds_met_rates <-
+  pds_all %>% filter(ldp != "ongoing", fy %in% full_years) %>% 
+  group_by(geog, fy, ldp) %>% 
+  summarise(referrals = sum(referrals)) %>% pivot_wider(names_from = ldp, values_from = referrals, values_fill = 0) %>% 
+  mutate(perc_met = round_half_up(100*(complete + exempt)/(complete + exempt + fail), 1))
+
+pds_met_rates$geog<- factor(pds_met_rates$geog, levels = unique(pds_met_rates$geog))
+
+pds_met_rates_data <- SharedData$new(pds_met_rates)
+
+data_filter_met_trend <- filter_select(id = "trend_filter_outcomes_met",
+                                    label = "Select Integration Authority Area(s) or Health Board(s):",
+                                    group = ~geog,
+                                    sharedData = pds_met_rates_data
+                                   )
+bscols(widths = c(1,10,NA),NULL,
+data_filter_met_trend,NULL)
+
+```
+
+<h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS (Standard Met/Exempt)</h2>
+```{r plot-med-ldp}
+ trends_met_plot <- plot_trend_perc(pds_met_rates_data, perc_met, x ="Financial Year of Diagnosis", colours = phs_colours_46)
+
+bscols(widths = 12,
+        div(style = css(width="98%", height="360px"),
+ trends_met_plot)
+)
+
+```
+
+
+```{r trend-table-met}
+
+pds_met_rates %>% select(geog, fy, perc_met) %>% 
+            pivot_wider(names_from = fy, values_from = perc_met) %>%
+            mutate(across(where(is.numeric), ~if_else(is.na(.), "\\-", paste0(.,"%")))) %>%
+            rename(`Integration Authority Area/Health Board` = geog) %>%
+            kable(align = c("l", rep("r", length(full_years)))) %>%
+            kable_styling(full_width = TRUE) %>%
+            column_spec(1, bold = TRUE) %>%
+  # Add header above table
+            add_header_above(
+                    c(" " = 1,
+                     "Financial Year of Diagnosis" = length(full_years))) %>% 
+  scroll_box(height = "650px")
+
+```
+
+<!-- END OF SCRIPT -->
