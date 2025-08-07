@@ -5,6 +5,8 @@
 # Original Date - March 2021
 # Updated by - Jennifer Thom
 # Date - November 2023
+# Updated by - Abram McCormick
+# Date - July 2025
 #
 # Written/run on - R Posit
 # Version of R - 4.1.2
@@ -77,7 +79,7 @@ c1 <-
   geom_bar(stat = "identity", width = 0.8) +
   geom_text(aes(x = perc, y = health_board, label = perc_formatted),
             nudge_x = -5, colour = "white", size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_fill_manual(values = c("#3F3685", "#9B4393")) +
   theme(panel.grid.major.y = element_blank()) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 100)) +
@@ -92,7 +94,7 @@ c1 <-
 ggsave(get_pub_figures_path(type = "c1", test_output = test_output),
   plot = c1,
   height = 6,
-  width = 6,
+  width = 7,
   dpi = 600,
   device = "png"
 )
@@ -121,7 +123,7 @@ c2 <-
   geom_bar(stat = "identity", width = 0.8) +
   geom_text(aes(x = perc, y = health_board, label = perc_formatted),
             nudge_x = -5, colour = "white", size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_fill_manual(values = c("#3F3685", "#9B4393")) +
   theme(panel.grid.major.y = element_blank()) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 100)) +
@@ -131,7 +133,7 @@ c2 <-
 ggsave(get_pub_figures_path(type = "c2", test_output = test_output),
   plot = c2,
   height = 6,
-  width = 6,
+  width = 7,
   dpi = 600,
   device = "png"
 )
@@ -140,7 +142,7 @@ ggsave(get_pub_figures_path(type = "c2", test_output = test_output),
 ggsave(get_pub_figures_path(type = "twitter", test_output = test_output),
   plot = c2,
   height = 6,
-  width = 6,
+  width = 7,
   dpi = 600,
   device = "png"
 )
@@ -190,7 +192,7 @@ c3 <-
   geom_bar(stat = "identity", width = 0.8) +
   geom_text(aes(x = perc, y = ijb, label = perc_formatted),
             nudge_x = -5, colour = "white", size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_fill_manual(values = c("#3F3685", "#9B4393")) +
   theme(panel.grid.major.y = element_blank()) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 100)) +
@@ -200,7 +202,7 @@ c3 <-
 ggsave(get_pub_figures_path(type = "c3", test_output = test_output),
   plot = c3,
   height = 9,
-  width = 6,
+  width = 7,
   dpi = 600,
   device = "png"
 )
@@ -238,13 +240,13 @@ c4_data <-
 c4_limit <- ceiling(max(c4_data$perc) / 10) * 10
 
 c4 <-
-  c4_data %>%
+  c4_data %>% filter(age_grp != "Unknown") %>% 
   ggplot(aes(x = age_grp, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
             vjust = -0.5,
             size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_y_continuous(
     limits = c(0, c4_limit),
     breaks = seq(0, c4_limit, by = 5),
@@ -267,7 +269,7 @@ ggsave(get_pub_figures_path(type = "c4", test_output = test_output),
 # Chart 5 - One year PDS by age
 
 c5_data <-
-  basefile %>%
+  basefile %>% 
   filter(fy == max(fy_in_pub) & referrals > 0) %>%
   group_by(age_grp) %>%
   summarise(across(referrals:denominator, sum),
@@ -312,13 +314,13 @@ c5_data <-
   )
 
 c5 <-
-  c5_data %>%
+  c5_data %>% filter(age_grp != "Unknown") %>% 
   ggplot(aes(x = age_grp, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
             vjust = -0.5,
             size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
   scale_x_discrete(labels = str_wrap(c5_data$age_grp, width = 8)) +
   xlab("Age Group") +
@@ -364,13 +366,13 @@ c6_data <-
 c6_limit <- ceiling(max(c6_data$perc) / 10) * 10
 
 c6 <-
-  c6_data %>%
+  c6_data %>% filter(simd != "Unknown") %>% 
   ggplot(aes(x = simd, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
             vjust = -0.5,
             size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_y_continuous(
     limits = c(0, c6_limit),
     breaks = seq(0, c6_limit, by = 5),
@@ -430,13 +432,13 @@ c7_data <-
   )
 
 c7 <-
-  c7_data %>%
+  c7_data %>% filter(simd != "Unknown") %>% 
   ggplot(aes(x = simd, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
             vjust = -0.5,
             size = 3) +
-  theme_dementia() +
+  theme_dementia_pub() +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 110)) +
   scale_x_discrete(labels = str_wrap(c7_data$simd, width = 8)) +
   xlab("Deprivation Quintile") +
@@ -451,5 +453,183 @@ ggsave(get_pub_figures_path(type = "c7", test_output = test_output),
   dpi = 600
 )
 
+# Chart 8 - Referrals trend (Added July 2025)
+
+trend_year <- paste0(as.numeric(substr(max(fy_in_pub),1,4)) + 1,
+                           "/", as.numeric(substr(max(fy_in_pub),6,7)) + 1)
+
+c8_data <-  read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_output = test_output)) %>% 
+  
+  # Select FY to be included in rest of pub plus extra year
+  filter(fy %in% c(fy_in_pub, trend_year)) %>%
+  
+  # Aggregate to year level (don't need month breakdown)
+  group_by(across(c(health_board:simd, -month))) %>%
+  summarise(referrals = sum(referrals),
+            .groups = "drop")  %>% 
+  # calculate total referrals by year
+  group_by(geog = "Scotland", fy) %>% summarise(annual_referrals = sum(referrals))
+
+c8 <-
+  c8_data %>%
+  ggplot(aes(x = fy, y = annual_referrals, group = geog)) +
+  geom_line(colour = "#3F3685", linewidth = 1.3) +
+ # geom_text(aes(label = format(annual_referrals, big.mark = ",")), 
+         #   vjust = 1.5,
+          #  size = 3) +
+  theme_dementia_pub() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, max(c8_data$annual_referrals)+300)) +
+  scale_x_discrete(labels = str_wrap(c8_data$fy, width = 8)) +
+  xlab("Financial Year of Diagnosis") +
+  ylab(str_wrap("Number of Referrals", width = 10)) 
+
+# Save chart to output folder
+ggsave(get_pub_figures_path(type = "c8", test_output = test_output),
+       plot = c8,
+       width = 7,
+       height = 3,
+       device = "png",
+       dpi = 600
+)
+
+
+# Chart 9 - Rates trend (Added July 2025)
+
+trend_year <- paste0(as.numeric(substr(max(fy_in_pub),1,4)) + 1,
+                     "/", as.numeric(substr(max(fy_in_pub),6,7)) + 1)
+
+c9_data_pds <- read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_output = test_output)) %>% 
+  
+  # Select FY to be included in rest of pub plus extra year
+  filter(fy %in% c(fy_in_pub, trend_year)) %>%
+  
+  # Aggregate to year level (don't need month breakdown)
+  group_by(across(c(health_board:simd, -month))) %>%
+  summarise(referrals = sum(referrals),
+            .groups = "drop")  %>% 
+  # calculate total referrals by year
+  group_by(geog = "Scotland", fy) %>% summarise(annual_referrals = sum(referrals)) %>% 
+  # add year column to pds data to match pop data
+  mutate(year = as.numeric(substr(fy, 1, 4)))
+
+#read in pop_data
+pop_data_trends <- pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds") %>%
+  filter(geog == "Scotland", age_grp != "All", age_grp != "59 and Under", age_grp != "60 to 64", age_grp_2 == "All", sex == "All") %>% select(geog, year, pop_est) %>% 
+  group_by(geog, year) %>% summarise(pop_est = sum(pop_est)) %>% ungroup()
+
+c9_data <- left_join(c9_data_pds, pop_data_trends) %>% select(geog, fy, annual_referrals, pop_est) %>% 
+  mutate(pop_rate_10000 = round((annual_referrals/pop_est)*10000, 1)) %>%
+  select(geog, fy, pop_rate_10000) %>% 
+  ungroup()
+
+c9 <-
+  c9_data %>%
+  ggplot(aes(x = fy, y = pop_rate_10000, group = geog)) +
+  geom_line(colour = "#3F3685", linewidth = 1.3) +
+  # geom_text(aes(label = format(annual_referrals, big.mark = ",")), 
+  #   vjust = 1.5,
+  #  size = 3) +
+  theme_dementia_pub() +
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(0, max(c9_data$pop_rate_10000)+5),
+                     breaks = seq(0, max(c9_data$pop_rate_10000)+5, by = 15)) +
+  scale_x_discrete(labels = str_wrap(c9_data$fy, width = 8)) +
+  xlab("Financial Year of Diagnosis") +
+  ylab(str_wrap("Number of Referrals per 10k Population", width = 10)) 
+
+# Save chart to output folder
+ggsave(get_pub_figures_path(type = "c9", test_output = test_output),
+       plot = c9,
+       width = 7,
+       height = 3,
+       device = "png",
+       dpi = 600
+)
+
+
+
+# Chart 10 - Referrals by gender
+
+c10_data <-
+  basefile %>%
+  filter(fy == max(fy_in_pub) & referrals > 0) %>%
+  group_by(sex) %>%
+  summarise(across(c(referrals), sum),
+            .groups = "drop") %>%
+  
+  mutate(
+    perc = case_when(
+      referrals == 0 ~ 0,
+      TRUE ~ referrals / sum(referrals) * 100),
+    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
+  )
+
+c10_limit <- ceiling(max(c10_data$perc) / 10) * 10
+
+c10 <-
+  c10_data %>% filter(sex!= "Unknown") %>% 
+  ggplot(aes(x = sex, y = perc, fill = 1)) +
+  geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
+  geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
+            vjust = -0.5,
+            size = 3) +
+  theme_dementia_pub() +
+    scale_y_continuous(
+    limits = c(0, c10_limit + 2),
+    breaks = seq(0, c10_limit, by = 10),
+    labels = paste0(seq(0, c10_limit, by = 10), "%"),
+    expand = c(0, 0)) +
+  scale_x_discrete(labels = str_wrap(c10_data$sex, width = 8)) +
+  xlab("Age Group") +
+  ylab(str_wrap("Percentage of total referrals", width = 10))
+
+
+# Save chart to output folder
+ggsave(get_pub_figures_path(type = "c10", test_output = test_output),
+       plot = c10,
+       width = 6.8,
+       height = 3.5,
+       device = "png",
+       dpi = 600
+)
+
+
+# Chart 11 - One year PDS by sex
+
+c11_data <-
+  basefile %>%
+  filter(fy == max(fy_in_pub) & referrals > 0) %>%
+  group_by(sex) %>%
+  summarise(across(referrals:denominator, sum),
+            .groups = "drop") %>%
+ 
+  mutate(
+    perc = case_when(
+      referrals == 0 ~ 0,
+      TRUE ~ numerator / denominator * 100),
+    perc_formatted = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")
+  )
+
+c11 <-
+  c11_data %>% filter(sex!= "Unknown") %>%
+  ggplot(aes(x = sex, y = perc, fill = 1)) +
+  geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
+  geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
+            vjust = -0.5,
+            size = 3) +
+  theme_dementia_pub() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
+  scale_x_discrete(labels = str_wrap(c11_data$sex, width = 8)) +
+  xlab("Age Group") +
+  ylab(str_wrap("Percentage of Referrals Achieved LDP Standard", width = 10))
+
+# Save chart to output folder
+ggsave(get_pub_figures_path(type = "c11", test_output = test_output),
+       plot = c11,
+       width = 6.8,
+       height = 3.5,
+       device = "png",
+       dpi = 600
+)
 
 ### END OF SCRIPT ###

@@ -1,0 +1,102 @@
+####################### Page 5: methodology #######################
+# UI ----
+output$method_ui <-  renderUI({
+
+  div(
+    fluidRow(column(
+
+      radioGroupButtons("method_tab", label = NULL, choices = method_list,
+                        status = "tab",
+                        direction = "horizontal",
+                        justified = T,
+                        size = "lg"), width = 12)),
+    ##LDP classification ----
+    conditionalPanel(
+      condition= 'input.method_tab == "ldp_class"',
+      
+      fluidRow(column(
+        p("The following method is used to determine whether a service user has met the standard to receive at least 12 months of post-diagnostic support."),
+        
+        h3("LDP Standard Met"),
+        
+        p(tags$ul(tags$li("Started PDS within 12 months of diagnosis and support ongoing after 12 months."),
+                  tags$li("Started PDS within 12 months of diagnosis and PDS ended after at least 11 months.")
+        )
+        ),
+        h3("LDP Standard Not Met"),
+        
+        p(tags$ul(tags$li("PDS started more than 12 months after diagnosis."),
+                  tags$li("PDS not started and more than 12 months has passed since diagnosis."),
+                  tags$li("PDS terminated (for non-exempt reason) less than 11 months after first contact date."),
+                  tags$li("PDS terminated (for non-exempt reason) before first contact made.")
+        )
+        ),
+        h3("Exempt from LDP Standard"),
+        
+        p(tags$ul(tags$li("No first contact date or less than 12 months between diagnosis and first contact date and one of the following termination reasons:"),
+                  tags$ul(tags$li("03 Service user has died."),
+                          tags$li("04 Service user has moved to a different Health Board area."),
+                          tags$li("05 Service user has terminated PDS early/refused."),
+                          tags$li("06 Service user no longer able to engage in PDS.")
+                  )
+        )
+        ),
+        h3("PDS Ongoing"),
+        
+        p(tags$ul(tags$li("Less than 12 months since diagnosis and PDS not yet started."),
+                  tags$li("PDS started within 12 months and not yet ended.")
+        )
+        ),
+        
+        p("This part of the LDP standard is calculated as:"),
+        
+        p(style = "font-size: 12pt", withMathJax("$$\\text{LDP Standard Achieved (%)}=\\frac{\\text{LDP Standard met + Exempt from LDP Standard}}{\\text{LDP Standard met + Exempt + LDP Standard not met}}\\times\\text{100}$$")),
+        
+        p("Service users for whom it is not yet known if they have met the standard as their PDS is ongoing are excluded from the percentage figures."),
+        linebreaks(1),
+        width = 12,
+        #fix panel so sidebar and navigation bar do not scroll with content
+        style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white")),
+      
+    ), #cond panel 1
+ 
+# expected diagnoses ----       
+conditionalPanel(
+  condition = 'input.method_tab == "exp_diag"',
+  
+  fluidRow(column(
+    p("In December 2016, the Scottish Government published a report:",
+             a("Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020.", href="https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/", target="_blank"),
+             "Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by Integration Authority Area or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report."),
+           p("For financial years ",
+             em("2021/22 and 2022/23"),
+             " the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 and Mid-2022 Population Estimates to obtain the incidence estimates."),
+           p("Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018."),
+    width = 12,
+    #fix panel so sidebar and navigation bar do not scroll with content
+    style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white")) #fluid Row
+), #cond panel 2
+
+# duplicate records ----    
+    conditionalPanel(
+      condition = 'input.method_tab == "duplicates"',
+      
+      fluidRow(column(
+        p("For a relatively small number of individuals, multiple records have been submitted. To avoid counting these service users more than once, the following rules have been applied to select only one record per CHI Number:"),
+               p(tags$ol(tags$li("Keep record with earliest diagnosis date. If these are the same, then;"),
+                         tags$li("Keep record with termination reason 04 Service user has moved to a different Health Board area. If no record was terminated for this reason, then;"),
+                         tags$li("Keep record with earliest first contact date.")
+               )
+               ), 
+               p("There is a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IAA. The support provided to these service users has been apportioned to NHS Highland in this report."),
+               p("If you have any queries regarding the above, please contact ", 
+                 a("phs.dementiapds@phs.scot", href="mailto:phs.dementiapds@phs.scot")),
+               
+      width = 12,
+      #fix panel so sidebar and navigation bar do not scroll with content
+      style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white")) #fluid Row
+    ) #cond panel 3
+ 
+  ) # div
+}) # renderUI
+

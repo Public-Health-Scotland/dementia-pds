@@ -1,0 +1,564 @@
+/* to avoid red text error messages in the whole app, take out for testing  */
+.shiny-output-error { visibility: hidden; }
+.shiny-output-error:before { visibility: hidden; }
+
+/* Define colours */
+  :root{
+      --white: #FFFFFF;
+      --black: #000000;
+      --light-grey: #DDDDDD;
+      --darkblue: #004785;
+      --phs-purple: #3F3685;
+      --phs-magenta: #9B4393;
+      --phs-blue: #0078D4;
+      --phs-green: #83BB26;
+      --phs-graphite: #948DA3;
+      --phs-teal: #1E7F84;
+      --phs-liberty: #6B5C85;
+      --phs-rust: #C73918;
+      --phs-purple-80: #655E9D;
+      --phs-purple-50: #9F9BC2;
+      --phs-purple-30: #C5C3DA;
+      --phs-purple-10: #ECEBF3;
+      --phs-magenta-80: #AF69A9;
+      --phs-magenta-50: #CDA1C9;
+      --phs-magenta-30: #E1C7DF;
+      --phs-magenta-10: #F5ECF4;
+      --phs-blue-80: #3393DD;
+      --phs-blue-50: #80BCEA;
+      --phs-blue-30: #B3D7F2;
+      --phs-blue-10: #E6F2FB;
+      --phs-green-80: #9CC951;
+      --phs-green-50: #C1DD93;
+      --phs-green-30: #DAEBBE;
+      --phs-green-10: #F3F8E9;
+      --phs-graphite-80: #A9A4B5;
+      --phs-graphite-50: #CAC6D1;
+      --phs-graphite-30: #DFDDE3;
+      --phs-graphite-10: #F4F4F6;
+      --phs-teal-80: #4B999D;
+      --phs-teal-50: #8FBFC2;
+      --phs-teal-30: #BCD9DA;
+      --phs-teal-10: #E9F2F3;
+      --phs-liberty-80: #897D9D;
+      --phs-liberty-50: #B5AEC2;
+      --phs-liberty-30: #D3CEDA;
+      --phs-liberty-10: #F0EFF3;
+      --phs-rust-80: #D26146;
+      --phs-rust-50: #E39C8C;
+      --phs-rust-30: #EEC4BA;
+      --phs-rust-10: #F9EBE8;
+  }
+  
+/* color of selected row in data table */
+table.dataTable tr.active td, table.dataTable tr.active {
+    box-shadow: inset 0 0 0 9999px #3F3685;
+    font-weight: 600;
+}
+
+/* Setting header colour */
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
+    color: var(--phs-purple);
+  }
+  
+h1, .h1 {
+    margin-top: 0px;
+    margin-bottom: 20px;
+}
+
+/* Body styles */
+body {
+    font-family: Arial;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--black);
+    background-color: var(--white);
+  }
+
+/* Style external links */
+.externallink {
+  color: var(--phs-purple);
+  font-weight: bold;
+}
+.externallink:hover {
+  color: var(--phs-teal-50);
+
+}
+/* Style in-line hyperlinks (e.g., rmarkdowns using [text](link)) */
+a {
+  color: var(--phs-purple);
+  font-weight: bold;}
+a:hover {
+  color: var(--phs-teal-50);
+}
+
+/* Table of Contents */
+.tocify {
+    width: 20%;
+    max-height: 90%;
+    overflow: auto;
+    margin-left: 2%;
+    position: fixed;
+    border: 4px solid var(--phs-purple);
+    border-radius: 15px;
+}
+
+.tocify .tocify-item a, .tocify .list-group-item {
+    padding: 4px;
+}
+
+/* Table of Contents List Items */
+.list-group-item.active, .list-group-item.active:focus,
+  .list-group-item.active:hover {
+    z-index: 2;
+    color: var(--white);
+    background-color: var(--phs-purple-50);
+    border-color: var(--darkblue);
+}
+
+/* Button styles */
+
+/* Regular button styles */
+.btn{
+  background-color: var(--phs-purple);
+  color: var(--white);
+  background-image:none;
+  border: 2px solid var(--white);
+  border-radius: 0px;
+}
+
+/* Hover/active/focus, change text colour purple, background light purple*/
+.btn-default.active, .btn-default:active, .open>.dropdown-toggle.btn-default,
+  .btn-default.hover, .btn-default:hover, .btn-default.focus,
+  .btn-default:focus {
+    background-color: var(--phs-purple-10);
+    border-color: var(--phs-purple);
+}
+
+/* tabset panel update, pills style in phs colours */
+.nav-pills>li>a {
+    border-radius: 0px;
+    color: var(--phs-purple);
+    font-size: 20px;
+}
+
+/* When a tab is active/focus/hover, white text purple background*/
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+    color: var(--white);
+    background-color: var(--phs-purple);
+}
+
+/* Navtabs - the tab styles for tabset panels (default) */
+.nav-tabs {
+    float: left;
+    margin-bottom: -1px;
+    color: var(--phs-purple);
+    background-color: var(--phs-purple-10);
+    font-size: 20px;
+}
+
+/* Specific styles for the hyperlink within a tab */
+.nav-tabs>li>a {
+    margin-right: 2px;
+    line-height: 1.42857143;
+    border: 1px solid transparent;
+    border-radius: 4px 4px 0 0;
+    color: var(--phs-purple);
+}
+
+/* When the tab is either focused or active (selected) */
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+    color: var(--phs-purple);
+    cursor: default;
+    background-color: var(--white);
+    border: 1px solid var(--light-grey);
+    border-bottom-color: transparent;
+    font-weight: bold;
+}
+
+/* When the tab is being hovered over */
+/* Mostly adds an underline to be clear content can be clicked */
+.nav-tabs>li>a:hover {
+    text-decoration: underline;
+    color: var(--phs-purple);
+    cursor: default;
+    border-bottom-color: transparent;
+}
+
+
+/* CSS styles used in the shiny app */
+
+/* Style sidebars/well panels */
+  .well {background-color:var(--white); border: 0 solid var(--phs-blue);
+    padding: 5px; box-shadow: none; }
+
+/* Navigation bar following PHS colour scheme */
+  .navbar-default {color: var(--white); background-color: var(--phs-purple); }
+.navbar-default .navbar-brand, .navbar-default:hover .navbar-brand:hover, .navbar-brand {color: var(--phs-purple); background-color: var(--white)}
+.navbar-default .navbar-nav > li > a {color: var(--white);}
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > .active > a:hover {
+  color: var(--white);
+  background-color: var(--phs-purple-80);
+}
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+  color: var(--white);     background-color: var(--phs-purple-80);}
+  
+.navbar-nav {
+  float: none;
+}
+
+.nav {
+    padding-left: 115px;
+}
+   
+
+/* Border tables - th, td puts within the table as well */
+  .border-table{border:0px solid var(--phs-purple);}
+th, td {
+  border: 0px solid var(--phs-purple-30);
+  padding-right: 1px;
+}
+.container-fluid {
+  padding-right: 15px;
+  padding-left: 20px;
+  margin-right: 15px;
+  margin-left: 15px;
+}
+
+
+
+/* Title of selectize input boxes*/
+  label {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--phs-purple);
+  }
+
+.selectize-input, .selectize-control.single .selectize-input.input-active {
+    border-radius: 0px;   
+}
+  
+/* Links */
+  a {
+    color: var(--phs-purple);
+    text-decoration: none;
+  }
+
+/* Dropdown menu */
+  .dropdown-menu>.active>a, .dropdown-menu>.active>a:focus, .dropdown-menu>.active>a:hover {
+    color: var(--white);
+    text-decoration: none;
+    background-color: var(--phs-teal-50);
+    outline: 0;
+  }
+
+/* Data table page selectors */
+
+  .pagination > li > a
+{
+  background-color: var(--phs-liberty-10);
+  color: var(--phs-purple);
+  transition: background-color .3s;
+}
+
+.pagination > li > a:focus,
+.pagination > li > a:hover,
+.pagination > li > span:focus,
+.pagination > li > span:hover
+{
+  color:var(--phs-purple);
+  background-color: var(--phs-teal-50);
+  border-color: var(--phs-teal-80);
+  border-radius: 5px;
+}
+
+.pagination > .active > a
+{
+  color: var(--phs-purple);
+  background-color: var(--phs-teal-50) !Important;
+  border: solid 1px var(--phs-teal-50) !Important;
+}
+
+.pagination > .active > a:hover
+{
+  background-color: var(--phs-teal-50) !Important;
+  border: solid 1px var(--phs-teal-50);
+}
+
+/* data table */
+
+  .table > .tbody > tr.active th,
+.table > .tbody > tr.active td{
+  background-color: var(--phs-purple);
+  color: var(--white);
+}
+
+/*
+
+
+/* CSS styles from flexdashboard */
+
+/*
+Comes from https://github.com/rstudio/shinydashboard/blob/main/inst/AdminLTE/AdminLTE.css
+* Component: Small Box
+* --------------------
+*/
+.small-box {
+  border-radius: 10px;
+  position: relative;
+  display: block;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.small-box > .inner {
+  padding: 10px;
+  max-width: 100%;
+}
+.small-box > .small-box-footer {
+  position: relative;
+  text-align: center;
+  padding: 3px 0;
+  color: #fff;
+  color: rgba(255, 255, 255, 0.8);
+  display: block;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+}
+.small-box > .small-box-footer:hover {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.15);
+}
+.small-box h3 {
+  color: white;
+  font-size: 38px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  white-space: nowrap;
+  padding: 0;
+}
+.small-box p {
+  color: white;
+  font-size: 20px;
+}
+.small-box p > small {
+  display: block;
+  color: #f9f9f9;
+  font-size: 13px;
+  margin-top: 5px;
+}
+.small-box h3,
+.small-box p {
+  z-index: 5;
+}
+.small-box .icon {
+  -webkit-transition: all 0.3s linear;
+  -o-transition: all 0.3s linear;
+  transition: all 0.3s linear;
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  z-index: 0;
+  font-size: 90px;
+  color: rgba(0, 0, 0, 0.15);
+}
+.small-box:hover {
+  text-decoration: none;
+  color: #F9F9F9;
+}
+.small-box:hover .icon {
+  font-size: 95px;
+}
+@media (max-width: 767px) {
+  .small-box {
+    text-align: center;
+  }
+  .small-box .icon {
+    display: none;
+    color: white;
+  }
+  .small-box p {
+    font-size: 12px;
+  }
+}
+
+.small-box .icon-large {
+  position: absolute;
+  top: auto;
+  bottom: 5px;
+  right: 5px;
+  font-size: 70px;
+  color: white;
+  /*color: rgba(0, 0, 0, 0.15);*/
+}
+
+/*hide box buttons*/
+.btn.btn-box-tool {
+  padding: 0px 6px;
+}
+
+.btn.btn-box-tool.hover, .btn.btn-box-tool:hover,
+.btn.btn-box-tool.focus, .btn.btn-box-tool:focus{
+  color: var(--white);
+} 
+
+.tab-pane.active {
+  margin-top: -10px;
+}
+
+
+/*add text wrapping to sidebar buttons*/
+.btn.radiobtn.btn{
+  text-wrap: auto;
+}
+
+/* intro page side bar buttons */
+.btn.radiobtn.btn-primary {
+  border-radius: 0px; 
+  
+}
+
+.btn.radiobtn.btn-primary.active, .btn.radiobtn.btn-primary:active,
+.btn.radiobtn.btn-primary.focus, .btn.radiobtn.btn-primary:focus {
+  background-color: var(--phs-purple-80); 
+  border-radius: 0px;
+  font-weight: 600;
+  border-color: var(--phs-purple);
+  
+} 
+
+.btn.radiobtn.btn-primary.hover, .btn.radiobtn.btn-primary:hover {
+    background-color: var(--phs-purple-80);
+    border-radius: 0px;
+    border-color: var(--phs-purple-80);
+}
+
+
+/* demographics side bar buttons */
+.btn.radiobtn.btn-secondary {
+  border-radius: 0px; 
+  color: #FFFFFF;
+  width: 100%;
+  max-width: none;
+  font-size: 15px;
+  
+}
+
+.btn.radiobtn.btn-secondary.active, .btn.radiobtn.btn-secondary:active,
+.btn.radiobtn.btn-secondary.focus, .btn.radiobtn.btn-secondary:focus{
+  background-color: var(--phs-purple-50);
+    border-radius: 0px;
+    font-weight: 600;
+    color: var(--phs-purple);
+    border-color: var(--phs-purple-50);
+    border-right-width: 4px;
+    border-right-color: var(--phs-purple);
+    font-size: 16px;
+}
+
+
+.btn.radiobtn.btn-secondary.hover, .btn.radiobtn.btn-secondary:hover {
+    background-color: var(--phs-purple-80);
+    border-radius: 0px;
+    color: #FFFFFF;
+    border-color: var(--phs-purple-80);
+    font-size: 16px;
+}
+
+/* ldp and methodology tab buttons */
+#ldp_tab, #method_tab, #RandR_tab {
+  border-bottom: solid; 
+  border-color: var(--phs-purple-50);
+  border-width: medium
+}
+
+.btn.radiobtn.btn-tab {
+  border-radius: 0px; 
+  color: #FFFFFF;
+  font-size: 16px;
+  
+}
+
+.btn.radiobtn.btn-tab.active, .btn.radiobtn.btn-tab:active,
+.btn.radiobtn.btn-tab.focus, .btn.radiobtn.btn-tab:focus {
+  background-color: var(--phs-purple-50); 
+  border-radius: 0px;
+  font-weight: 600;
+  color: var(--phs-purple);
+  border-color: var(--phs-purple-50);
+  border-width: 2px;
+  font-size: 17px;
+  border-top-color: var(--phs-purple);
+  border-top-width: 3.5px;
+  
+} 
+
+.btn.radiobtn.btn-tab.hover, .btn.radiobtn.btn-tab:hover {
+    background-color: var(--phs-purple-80);
+    border-radius: 0px;
+    color: #FFFFFF;
+    border-color: var(--phs-purple-80);
+    font-size: 17px;
+    border-width: 2px;
+}
+
+/*page headers*/
+.box-body.header {padding: 0px; margin-top: -10px}
+
+/*intro page ldp description box intro page*/
+.box.box-solid.bg-blue { background-color: var(--phs-blue-10) ; padding: 4px; border: 2px solid var(--phs-blue-50)} 
+
+/*value box for page 1 and 2 */
+.small-box.bg-blue {background-color: var(--phs-blue); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+
+/* Hack to get the colours we want on shinydashboard varBox */
+.small-box.bg-green { background-color:var(--phs-green); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+.small-box.bg-purple { background-color:var(--phs-purple); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+.small-box.bg-fuchsia { background-color:var(--phs-magenta); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+.small-box.bg-olive { background-color:var(--phs-magenta-80); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+.small-box.bg-teal { background-color:var(--phs-teal); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px}
+.small-box.bg-red { background-color:var(--phs-rust); border-radius: 0px; padding: 4px; margin-bottom: 10px; margin-right: 0px }
+
+
+/* description box for page 1 and 2 */
+.box.box-primary {background-color: #FFFFFF; padding: 0px; margin-bottom: 0px; margin-left: 0px} 
+.box-header {background-color: var(--phs-blue-10); padding: 0px}
+.box-title {margin-top: 0px; margin-bottom: -5px; padding-left: 6px; padding-top: 12px; padding-bottom: 1px}
+.box-body {padding: 6px; margin-top: 10px}
+.col-sm-5 {padding-right: 4px; padding-left: 4px}
+.col-sm-7 {padding-right: 4px; padding-left: 4px}
+
+/* left align formula */
+.MathJax_Display {
+  text-align: left !important; 
+  font-size: 13px;
+  }
+  
+/* download buttons */
+.btn.btn-default {
+  background-color: #C5C3DA;
+  color: black;
+  
+}
+  
+/* force nav bar to fit width of screen*/
+.navbar.navbar-default.navbar-static-top{
+  margin-right: -30px;
+  margin-left: -55px;
+}  
+
+.nav>li>a{padding: 15px 14px;}
+
+/* moves tabs up to align with sidebar buttons */
+#ldp_tab, #rates_tab{
+  margin-top: -18px;
+}
+  
+/*adds margin to checkbox selction in data download page */ 
+#select_year_dl{
+    margin-top: 20px;
+    margin-left: 3px;
+}
+  

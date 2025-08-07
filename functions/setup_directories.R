@@ -318,6 +318,10 @@ get_pub_figures_path <- function(type = c("c1",
                                           "c5",
                                           "c6",
                                           "c7",
+                                          "c8",
+                                          "c9",
+                                          "c10",
+                                          "c11",
                                           "summary"), 
                                  test_output = FALSE) {
   
@@ -330,6 +334,10 @@ get_pub_figures_path <- function(type = c("c1",
     "c5" ~ stringr::str_glue("{pub_date}_12-months-age.png"),
     "c6" ~ stringr::str_glue("{pub_date}_simd-dist.png"),
     "c7" ~ stringr::str_glue("{pub_date}_12-months-simd.png"),
+    "c8" ~ stringr::str_glue("{pub_date}_total_referrals_trend.png"),
+    "c9" ~ stringr::str_glue("{pub_date}_rate_trend.png"),
+    "c10" ~ stringr::str_glue("{pub_date}_sex-dist.png"),
+    "c11" ~ stringr::str_glue("{pub_date}_12-months-sex.png"),
     "summary" ~ stringr::str_glue("{pub_date}_summary-chart.png"), 
     "twitter" ~ stringr::str_glue("{pub_date}_dementia-pds_twitter-chart.png")
   )
@@ -470,7 +478,7 @@ get_excel_template_path <- function() {
   file_name <- stringr::str_glue("excel-template.xlsx")
   
   excel_template_file_path <- get_file_path(
-    directory = get_ref_files_dir(),
+    directory = fs::path("/", "conf", "dementia", "A&I", "Outputs", "publication", "templates"),
     file_name = file_name
   )
   

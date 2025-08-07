@@ -71,7 +71,7 @@ la_pop_data <-
     la_pop %>%
       group_by(geog="Scotland", year, age_grp_2, age_grp = "All", sex = "All") %>%
       summarise(pop_est=sum(pop), .groups = "drop"), 
-      
+
     la_pop %>%
       group_by(geog=hscp2019name, year, age_grp_2 = "All", age_grp, sex) %>%
       summarise(pop_est=sum(pop), .groups ="drop"),
@@ -103,7 +103,6 @@ la_pop_data <-
     la_pop %>%
       group_by(geog="Scotland", year, age_grp_2 = "All", age_grp = "All", sex = "All") %>%
       summarise(pop_est=sum(pop), .groups = "drop")
-      
   )
 
 la_pop_data %<>% 
@@ -242,7 +241,7 @@ simd_pop_16_22 %<>% mutate(simd = case_when(
 
 simd_pop_data <- bind_rows(
   simd_pop_16_22 %>% group_by(year, geog, simd, sex, age) %>% 
-  summarise(pop = sum(pop), .groups = "drop"),
+   summarise(pop = sum(pop), .groups = "drop"),
   simd_pop_16_22 %>% group_by(year, geog, simd, sex = "All", age) %>% 
     summarise(pop = sum(pop), .groups = "drop"),
   simd_pop_16_22 %>% filter(grepl("NHS", geog)) %>% group_by(year, geog = "Scotland", simd, sex, age) %>% 
@@ -288,9 +287,7 @@ simd_pop_summary <- bind_rows(simd_pop_data,
   
   simd_pop_data %>% group_by(geog, year, age_grp_2 = "All", age_grp = "All", sex, simd) %>% 
     summarise(pop = sum(pop), .groups = "drop")
-  
-  )
-
+    )
 
 simd_pop_summary %<>% 
   mutate (geog =
@@ -314,7 +311,7 @@ simd_pop_summary %<>% mutate (geog =
 simd_pop_data_final <- 
   bind_rows(simd_pop_summary,
             
-    simd_pop_summary %>%
+   simd_pop_summary %>%
       filter(year == 2022) %>%
       mutate(year = 2023),
     
@@ -329,6 +326,5 @@ simd_pop_data_final %>%
   write_file(path = "//conf/dementia/A&I/Outputs/management-report/lookups/simd_pop_data.rds")
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
+
 ### END OF SCRIPT
-
-

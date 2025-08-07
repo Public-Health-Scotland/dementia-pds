@@ -14,6 +14,8 @@
 #               to be updated every time the process is run.
 #########################################################################
 
+### run MI set up ----
+source(here::here("code", "00_setup-environment.R"))
 
 ### 0 - Manual Variable(s) - TO UPDATE ----
 
@@ -21,7 +23,7 @@
 end_date <- lubridate::dmy(31032025) 
 
 # UPDATE - Date of publication (ddmmyyyy)
-pub_date <- lubridate::dmy(24062025)
+pub_date <- lubridate::dmy(29072025)
 
 # UPDATE - Date of last publication (ddmmyyyy)
 last_pub_date <- lubridate::dmy(28052024)
@@ -29,44 +31,22 @@ last_pub_date <- lubridate::dmy(28052024)
 
 ### 1 - Load packages ----
 
-library(dplyr)         # For data manipulation in the "tidy" way
-library(readr)         # For reading in csv files
-library(janitor)       # For 'cleaning' variable names
-library(magrittr)      # For %<>% operator
-library(lubridate)     # For dates
-library(tidyr)         # For data manipulation in the "tidy" way
-library(stringr)       # For string manipulation and matching
-library(here)          # For the here() function
-library(glue)          # For working with strings
-library(ggplot2)       # For plotting
-library(plotly)        # For interactive plots
-library(purrr)         # For functional programming
-library(forcats)       # For factor manipulation
-library(knitr)         # For creating kable tables
-library(phsmethods)    # For formatting postcode
-library(openxlsx)      # For working with Excel files
-library(flextable)     # For formatted tables in publication output
-library(usethis)       # For creating folder structure
-library(rmarkdown)     # For render function
-library(officer)       # For adding cover page and toc to report
 library(english)       # For converting number to text
 #library(captioner)
-library(fs)
 library(readxl)        # For reading xlsx workbooks
 
-
-### 2 - Define file paths dependent on whether running on server or desktop ----
-
-stats <- case_when(
-  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ "/conf",
-  TRUE ~ "//stats"
-)
-
-cl_out <- case_when(
-  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ 
-    "/conf/linkage/output",
-  TRUE ~ "//stats/cl-out"
-)
+# ### 2 - Define file paths dependent on whether running on server or desktop ----
+# 
+# stats <- case_when(
+#   sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ "/conf",
+#   TRUE ~ "//stats"
+# )
+# 
+# cl_out <- case_when(
+#   sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ 
+#     "/conf/linkage/output",
+#   TRUE ~ "//stats/cl-out"
+# )
 
 
 ### 3 - Extract dates ----

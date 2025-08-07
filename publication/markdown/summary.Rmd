@@ -83,44 +83,51 @@ This release by Public Health Scotland (PHS) reports on the Scottish Government�
 
 <Div custom-style = "Bullet 1">Of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year's support. In `r revised_fy`, the percentage was `r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`.</Div>
 
-<Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^P^</Div>
+<Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1^</Div>
 
 ```{r chart, fig.width=7.18, fig.height=3.31, fig.cap=fig_alttext}
-include_graphics(pub_figures_path(type = "summary"))
+include_graphics(get_pub_figures_path(type = "summary"))
 ```
 
 <Div custom-style = "Footnote Text">
 **Notes**
 
-1. Figures for `r latest_fy` are provisional (^P^) subject to all service users completing their support.
-
-2. Figures for NHS Grampian are affected by a change in service provision of PDS within Aberdeen City during 2019. See background for further information.
+1. Figures for `r latest_fy` are provisional subject to all service users completing their support.
 </div>
 
 <Div custom-style = "Bullet 1">In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.</Div>
 
 # Background
 
-The Scottish Government published their [third national dementia strategy](https://beta.gov.scot/publications/scotlands-national-dementia-strategy-2017-2020/) in 2017. This included the commitment to extend and embed dementia post-diagnostic support (PDS). In order to effectively monitor the delivery of PDS a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all people newly diagnosed with dementia to receive a minimum of one year’s PDS.
+The Scottish Government published their [new dementia strategy for Scotland: Everyone's Story](https://www.gov.scot/publications/new-dementia-strategy-scotland-everyones-story/) in May 2023. This strategy builds on previous strategies and continues to recognise the importance of dementia post-diagnostic support and the outcomes for people living with dementia.
+<!-- This included the commitment to extend and embed dementia post-diagnostic support (PDS). In order to effectively monitor the delivery of PDS a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all people newly diagnosed with dementia to receive a minimum of one year’s PDS.  -->
 
-NHS Boards provide quarterly data submissions to PHS, in line with data definitions effective 1 April 2019, on individuals diagnosed with dementia and referred for post-diagnostic support within their local areas. This dataset forms the basis of the LDP standard calculation. For this report, the Scotland level error rate `r glue_collapse(err$text, sep = ", ", last = " and ")`.
 
-The figures presented for 2019/20 and 2020/21 include the total number of people referred to 
-PDS across all partnership areas however due to data quality issues Aberdeen City data is not 
-included in the measurement figures for the LDP standard as it is not possible to accurately 
-measure these referrals against the standard.
+This release by Public Health Scotland (PHS) reports on the Scottish Government’s LocalvDelivery Plan (LDP) standard that everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link 
+Worker, including the building of a person-centred support plan. Data are presented by financial year of diagnosis 2016/17 to `r latest_fy`, on people diagnosed with dementia who were referred for dementia post diagnosis support and of these how many people received up to 12 months 
+support.
 
-Information presented in this publication is not comparable to information published for time periods prior to 2016/17. 
+Part of the LDP standard calculation requires the number of referrals for PDS to be compared against an estimated number of newly diagnosed dementia cases each year. Health Board level estimates of people newly diagnosed with dementia (incidence) used for this calculation are from the paper [‘Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020’](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) published by the Scottish Government in 2016. For financial year 2021/22 and 2022/23 the rates referenced in 
+this paper were used to create national, age specific rates of dementia incidence per 1,000 
+population which were then applied to the National Records of Scotland (NRS) Mid-2021 and Mid-2022
+Population Estimates to obtain the incidence estimates.
 
-Part of the LDP standard calculation requires the number of referrals for PDS to be compared against an estimated number of newly diagnosed dementia cases each year. Health Board level estimates of people newly diagnosed with dementia (incidence) used for this calculation are from the paper [‘Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020’](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) published by the Scottish Government in 2016.
+<!-- NHS Boards provide quarterly data submissions to PHS, in line with data definitions effective 1 April 2019, on individuals diagnosed with dementia and referred for post-diagnostic support within their local areas. This dataset forms the basis of the LDP standard calculation. For this report, the Scotland level error rate `r glue_collapse(err$text, sep = ", ", last = " and ")`. -->
+
+<!-- The figures presented for 2019/20 and 2020/21 include the total number of people referred to  -->
+<!-- PDS across all partnership areas however due to data quality issues Aberdeen City data is not  -->
+<!-- included in the measurement figures for the LDP standard as it is not possible to accurately  -->
+<!-- measure these referrals against the standard. -->
+
+<!-- Information presented in this publication is not comparable to information published for time periods prior to 2016/17.  -->
+
+
 
 # Contact
 
-Zeg Ashraf | Principal Information Analyst | 0131 314 1737 [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+Zeg Ashraf | Principal Information Analyst | [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
-Jennifer Noall | Senior Information Analyst | 0131 275 7220 | [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
-
-Jennifer Thom | Information Analyst | 0131 314 1754 | [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+Lee Truesdale | Senior Information Analyst | [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
 For all media enquires, please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 0131 275 6105.
 
@@ -135,6 +142,6 @@ The next release of this publication will be in `r format(pub_date + years(1), "
 
 Other formats of this publication are available on request by calling 0131 314 5300 or emailing phs.otherformats@phs.scot.
 
-# NHS Performs
-A selection of information from this publication is included in [NHS Performs](http://www.nhsperforms.scot). NHS Performs is a website that brings together a range of information on how hospitals and NHS Boards within NHSScotland are performing.
+<!-- # NHS Performs -->
+<!-- A selection of information from this publication is included in [NHS Performs](http://www.nhsperforms.scot). NHS Performs is a website that brings together a range of information on how hospitals and NHS Boards within NHSScotland are performing. -->
 

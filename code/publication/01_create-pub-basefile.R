@@ -35,8 +35,11 @@ basefile <- read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_out
   # Select only FY to be included in pub
   filter(fy %in% fy_in_pub) %>%
   
+  #remove code from gender
+  mutate(sex = if_else(sex == "Unknown", sex, substring(sex, 4))) %>% 
+  
   # Aggregate to year level (don't need month breakdown)
-  group_by(across(c(health_board:simd, -month))) %>%
+  group_by(across(c(health_board:sex, -month))) %>%
   summarise(referrals = sum(referrals),
             .groups = "drop") %>%
   
@@ -50,9 +53,9 @@ basefile <- read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_out
   # Add summary columns
   rowwise() %>%
   mutate(
-    referrals = complete + exempt + fail + ongoing,
+    referrals = complete + exempt + fail + ongoing + Aberdeen,
     numerator = complete + exempt,
-    denominator = referrals - ongoing
+    denominator = complete + exempt + fail
   ) %>%
   ungroup() %>%
 
