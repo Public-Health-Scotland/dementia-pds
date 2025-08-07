@@ -197,7 +197,11 @@ pop_data %<>%
     
     pop_data %>%
       filter(year == 2023) %>%
-      mutate(year = 2024)
+      mutate(year = 2024),
+    
+    pop_data %>%
+      filter(year == 2023) %>%
+      mutate(year = 2025)
   ) 
 
 #check
