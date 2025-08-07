@@ -143,6 +143,11 @@ tabPanel(title = "Referrals & Rates",
                                           label = "Select Financial Year of Diagnosis:",
                                           choices = included_years_extra_referrals,
                                           selected= extra_referrals_year_sup),
+                              radioButtons("select_hb_ijb_randr",
+                                           label = "In the chart and table show:",
+                                           choices = c("Health Boards", "Integration Authority Areas"),
+                                           selected = "Health Boards",
+                                           inline = FALSE),
 
                               conditionalPanel(condition = 'input.RandR_tab == "RandR_part_2"',
 
@@ -151,7 +156,8 @@ tabPanel(title = "Referrals & Rates",
                                                             choices = c("Health Boards", "Integration Authority Areas"),
                                                             selected = "Health Boards",
                                                             inline = FALSE)
-                              ) #cond panel ldp part 2
+                              ) #cond panel RandR part 2
+                              
              ), #cond panel outcomes
              width = 3),#sidebarpanel
            mainPanel(width = 9,
