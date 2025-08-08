@@ -321,7 +321,13 @@ simd_pop_data_final <-
     
     simd_pop_summary %>%
       filter(year == 2022) %>%
-      mutate(year = 2024)) %>% 
+      mutate(year = 2024),
+   
+   simd_pop_summary %>%
+     filter(year == 2022) %>%
+     mutate(year = 2025)
+   
+   ) %>% 
   complete(nesting(year, geog, age_grp, age_grp_2, sex), simd, fill = list(pop = 0)) 
 
 

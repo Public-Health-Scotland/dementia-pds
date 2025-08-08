@@ -115,7 +115,7 @@ pds_all_totals %>%
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb}
-pds_trends_data_ijb <- SharedData$new(pds_ijb_totals)
+pds_trends_data_ijb <- SharedData$new(pds_ijb_totals %>% filter(geog != "Unknown"))
 
 data_filter_ijb <- filter_select(id = "trend_filter_ijb",
                                     label = "Select Integration Authority Area(s):",
@@ -354,7 +354,7 @@ pds_all_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%
 ### **Trend**
 
 ```{r dropdown-pop}
-pds_trends_pop_data <- SharedData$new(pds_all_rates)
+pds_trends_pop_data <- SharedData$new(pds_all_rates %>% filter(geog != "Unknown"))
 
 data_filter_hb_ijb_pop <- filter_select(id = "trend_filter_pop",
                                     label = "Select Integration Authority Area(s) or Health Board(s):",
@@ -511,7 +511,7 @@ pds_exp_rates %>% select(geog, fy, exp_rate) %>%
 
 ```{r dropdown-met-ldp}
 pds_met_rates <-
-  pds_all %>% filter(ldp != "ongoing", fy %in% full_years) %>% 
+  pds_all %>% filter(ldp != "ongoing", fy %in% full_years) %>% filter(geog != "Unknown") %>% 
   group_by(geog, fy, ldp) %>% 
   summarise(referrals = sum(referrals)) %>% pivot_wider(names_from = ldp, values_from = referrals, values_fill = 0) %>% 
   mutate(perc_met = round_half_up(100*(complete + exempt)/(complete + exempt + fail), 1))
@@ -531,8 +531,8 @@ data_filter_met_trend,NULL)
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS (Standard Met/Exempt)</h2>
-```{r plot-med-ldp}
- trends_met_plot <- plot_trend_perc(pds_met_rates_data, perc_met, x ="Financial Year of Diagnosis", colours = phs_colours_46)
+```{r trend-plot-met-ldp}
+trends_met_plot <- plot_trend_perc(pds_met_rates_data, perc_met, x ="Financial Year of Diagnosis", colours = phs_colours_46)
 
 bscols(widths = 12,
         div(style = css(width="98%", height="360px"),
