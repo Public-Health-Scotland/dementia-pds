@@ -335,8 +335,8 @@ Service users for whom it is not yet known if they have met the standard as thei
 ### **Number of Expected Diagnoses**
 
 In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report.
-
-For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25* the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates. 
+<!-- Update the paragraph below on start of new financial year and when new population estimates are used -->
+For financial years *2021/22*, *2022/23*, *2023/24*, *2024/25* and *2025/26* the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021, Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates.
 
 Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018.
 
@@ -590,6 +590,7 @@ Sidebar-queries/errors {.sidebar}
 **FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
+   <li >[Methodology](#methodology)</li>
    <li >[Glossary](#glossary)</li>
    <li >[Navigation Guide](#navigation-guide)</li>
 </ul>
@@ -682,6 +683,7 @@ Sidebar-completion {.sidebar}
 **FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
+   <li >[Methodology](#methodology)</li>
    <li >[Glossary](#glossary)</li>
    <li >[Navigation Guide](#navigation-guide)</li>
 </ul>
@@ -995,6 +997,7 @@ Sidebar-records {.sidebar}
 **FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
+   <li >[Methodology](#methodology)</li>
    <li >[Glossary](#glossary)</li>
    <li >[Navigation Guide](#navigation-guide)</li>
 </ul>
@@ -1050,7 +1053,7 @@ err %>%
 # make Scotland row bold
     row_spec(length(unique(paste(err$health_board, err$ijb))), bold = TRUE) %>%
   collapse_rows(columns = 1, valign = "top") %>%
-  scroll_box(height = "570px")
+  scroll_box(height = "570px", width = "100%")
 ```
 
 <!-- converts R environment objects for use with js script below -->
