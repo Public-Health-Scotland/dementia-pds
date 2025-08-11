@@ -101,6 +101,7 @@ est_date4 <- dmy(01042024)
   tay_date2 <- dmy(01042019)
   tay_date3 <- dmy(01042023)
   tay_date4 <- dmy(01042024)
+  tay_date5 <- dmy(01042025)
   
   tay_text <-  
     case_when(sel_fy == extract_fin_year(tay_date1) |
@@ -113,11 +114,12 @@ est_date4 <- dmy(01042024)
            "possible to fill this gap. Subsequent measures put in place have successfully ", 
            "allowed NHS Tayside to improve on data reporting from 2019 onwards.*"),
               sel_fy == extract_fin_year(tay_date3)|
-              sel_fy == extract_fin_year(tay_date4)~
+              sel_fy == extract_fin_year(tay_date4)|
+              sel_fy == extract_fin_year(tay_date5)~
         paste0(" ", 
-            "**Please note:** ",
-              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24 ", 
-              "and 2024/25, which has resulted in some records showing as incorrectly having met the standard. ",
+           "**Please note:** ",
+              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ", 
+              "2024/25 and 2025/26, which has resulted in some records showing as incorrectly having met the standard. ",
               "NHS Tayside has informed PHS that these data issues will be rectified once they have completed the ", 
               "migration to a new IT system. This is likely to be completed by the end of the year.*"), 
     TRUE ~ paste0(""))
@@ -166,10 +168,10 @@ est_date4 <- dmy(01042024)
     case_when(sel_fy == extract_fin_year(fc_date) ~
               paste0(" ", 
               "**Please note:** ",
-              "*PHS have identified some records submitted by NHS Lanarkshire, NHS Borders and NHS Fife ", 
+              "*PHS have identified two records submitted by NHS Lanarkshire ", 
               "for 2024/25 that show inconsistent dates. The reported dates resulted in these records ",
               "showing as having met the standard. PHS have queried the ", 
-              "dates with the Health Boards and are expecting these to be rectified in future submissions.*"), 
+              "dates with the Health Board and are expecting these to be rectified in future submissions.*"), 
             TRUE ~ paste0(""))
 
 
