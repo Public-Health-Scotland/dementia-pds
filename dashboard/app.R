@@ -53,66 +53,6 @@ tabPanel(title = "Home",
     )
 
 ), # tabpanel
-##############################################.
-# PAGE 1: LDP Standard  ----
-##############################################.
-
-tabPanel(title = "LDP Standard",
-    # Look at https://fontawesome.com/search?m=free for icons
-    icon = icon_no_warning_fn("clipboard-list"),
-    value = "ldp-standard",
-    
-    box(class = "header", h2("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard"),
-        width = 12,
-        collapsible = TRUE, collapsed = FALSE),
-    
-    sidebarLayout(
-      sidebarPanel(
-        #linebreaks(1),
-        radioGroupButtons("ldp_sidebar", label = NULL, choices = ldp_sidebar_list,
-                                     status = "secondary",
-                                     direction = "vertical", 
-                                     justified = T,
-                                     size = "lg"
-      ),
-      conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
-                          linebreaks(1),
-                          selectInput("select_year_p1",
-                          label = "Select Financial Year of Diagnosis:",
-                          choices = included_years,
-                          selected= provisional_year_sup)  
-               ), #cond panel outcomes
-      conditionalPanel(condition = 'input.ldp_tab == "ldp_part_1"',
-          conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
-                           linebreaks(1),   
-                           selectInput("select_hb_trend_part_1",
-                                       label = "Select Health Board to show in chart:",
-                                       choices = c("Scotland", boards))
-              ), #cond panel trends
-           ),#cond panel ldp part 1
-      conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"', 
-           # conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"', 
-           conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
-                            linebreaks(1), 
-                            selectInput("select_hb_ijb_trend_part_2",
-                                        label = "Select Health Board/Integration Authority to show in chart:",
-                                        choices = c("Scotland", boards, ijb_list))
-                       ), #cond panel trends
-                             radioButtons("select_hb_ijb",
-                              label = "In the chart and table show:",
-                              choices = c("Health Boards", "Integration Authority Areas"),
-                              selected = "Health Boards")
-                   ),#cond panel ldp part 2
-    width = 3
-    ), #sidebar panel
-      
-      mainPanel(width = 9,
-                
-      uiOutput("ldp_ui")
-              )#mainPanel
-         )#sidebarLayout
-     ), # tabpanel
-
 
 ##############################################.
 # PAGE 2: Referrals and Rates ----
@@ -169,47 +109,67 @@ tabPanel(title = "Referrals & Rates",
 ), # tabpanel
 
 ##############################################.
-# PAGE 3: Demographics ----
+# PAGE 3: LDP Standard  ----
 ##############################################.
-tabPanel(title = "Demographics",
+
+tabPanel(title = "LDP Standard",
          # Look at https://fontawesome.com/search?m=free for icons
-         icon = icon_no_warning_fn("id-card"),
-         value = "demo",
+         icon = icon_no_warning_fn("clipboard-list"),
+         value = "ldp-standard",
          
-         box(class = "header", h2("Dementia Post-Diagnostic Support; Demographics"),
+         box(class = "header", h2("Dementia Post-Diagnostic Support; Local Delivery Plan (LDP) Standard"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
-      
-         linebreaks(1),
-
+         
          sidebarLayout(
-           sidebarPanel(radioGroupButtons("select_data_demo", label = NULL, choices = demographics_list,
-                                          status = "secondary",
-                                          direction = "vertical",
-                                          justified = T,
-                                          size = "normal"
-                                          ),
-                        linebreaks(1),
-                        selectInput("select_year_demo",
-                                           label = "Select Financial Year of Diagnosis:",
-                                           choices = included_years,
-                                           selected = provisional_year_sup),
-
-                    width = 2
-                    ),
-
-           mainPanel(width = 10,
-                   
-           uiOutput("demo_ui") 
-         ) #main panel
-       ) #sidebar layout
-
-      ), # tabpanel
-
-
+           sidebarPanel(
+             #linebreaks(1),
+             radioGroupButtons("ldp_sidebar", label = NULL, choices = ldp_sidebar_list,
+                               status = "secondary",
+                               direction = "vertical", 
+                               justified = T,
+                               size = "lg"
+             ),
+             conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
+                              linebreaks(1),
+                              selectInput("select_year_ldp",
+                                          label = "Select Financial Year of Diagnosis:",
+                                          choices = included_years,
+                                          selected= provisional_year_sup)  
+             ), #cond panel outcomes
+             conditionalPanel(condition = 'input.ldp_tab == "ldp_part_1"',
+                              conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
+                                               linebreaks(1),   
+                                               selectInput("select_hb_trend_part_1",
+                                                           label = "Select Health Board to show in chart:",
+                                                           choices = c("Scotland", boards))
+                              ), #cond panel trends
+             ),#cond panel ldp part 1
+             conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"', 
+                              # conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"', 
+                              conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
+                                               linebreaks(1), 
+                                               selectInput("select_hb_ijb_trend_part_2",
+                                                           label = "Select Health Board/Integration Authority to show in chart:",
+                                                           choices = c("Scotland", boards, ijb_list))
+                              ), #cond panel trends
+                              radioButtons("select_hb_ijb",
+                                           label = "In the chart and table show:",
+                                           choices = c("Health Boards", "Integration Authority Areas"),
+                                           selected = "Health Boards")
+             ),#cond panel ldp part 2
+             width = 3
+           ), #sidebar panel
+           
+           mainPanel(width = 9,
+                     
+                     uiOutput("ldp_ui")
+           )#mainPanel
+         )#sidebarLayout
+), # tabpanel
 
 ##############################################.
-# PAGE 4: Pathways ----
+# PAGE 3: Pathways ----
 ##############################################.
 tabPanel(title = "Pathways",
          # Look at https://fontawesome.com/search?m=free for icons
@@ -254,6 +214,45 @@ tabPanel(title = "Pathways",
            ) # mainPanel
          ) #sidebarLayout
 ), # tabpanel
+
+
+##############################################.
+# PAGE 4: Demographics ----
+##############################################.
+tabPanel(title = "Demographics",
+         # Look at https://fontawesome.com/search?m=free for icons
+         icon = icon_no_warning_fn("id-card"),
+         value = "demo",
+         
+         box(class = "header", h2("Dementia Post-Diagnostic Support; Demographics"),
+             width = 12,
+             collapsible = TRUE, collapsed = FALSE),
+      
+         linebreaks(1),
+
+         sidebarLayout(
+           sidebarPanel(radioGroupButtons("select_data_demo", label = NULL, choices = demographics_list,
+                                          status = "secondary",
+                                          direction = "vertical",
+                                          justified = T,
+                                          size = "normal"
+                                          ),
+                        linebreaks(1),
+                        selectInput("select_year_demo",
+                                           label = "Select Financial Year of Diagnosis:",
+                                           choices = included_years,
+                                           selected = provisional_year_sup),
+
+                    width = 2
+                    ),
+
+           mainPanel(width = 10,
+                   
+           uiOutput("demo_ui") 
+         ) #main panel
+       ) #sidebar layout
+
+      ), # tabpanel
 
 
 ##############################################.
@@ -310,12 +309,12 @@ server <- function(input, output, session) {
 
 ## Get content for individual pages----
     source(file.path(here("dashboard/pages/intro_page.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_1_ldp_standard.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_2_rates.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_3_demographics.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_4_pathways.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_5_methodology.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/page_6_download.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/ldp_standard.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/rates.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/demographics.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/pathways.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/methodology.R")), local = TRUE)$value
+    source(file.path(here("dashboard/pages/download.R")), local = TRUE)$value
 
 
 }

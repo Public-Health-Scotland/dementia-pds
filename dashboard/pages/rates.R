@@ -1,5 +1,4 @@
-
-####################### Page 2 REFERRALS & RATES #######################
+####################### Page 1 REFERRALS & RATES #######################
 #UI ----
 output$rates_ui <-  renderUI({
   

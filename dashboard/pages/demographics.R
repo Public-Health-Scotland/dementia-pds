@@ -1,4 +1,4 @@
-####################### Page 3 DEMOGRAPHICS #######################
+####################### Page 4 DEMOGRAPHICS #######################
 #UI----
 output$demo_ui <-  renderUI({
   div(
@@ -39,9 +39,31 @@ output$demo_ui <-  renderUI({
       h4(strong("Notes:")),
       p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
       if(input$select_data_demo != "data_sex"){
-      p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."))
+      p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final. "),
+               if(input$select_data_demo == "data_age"){    
+                 em("Due to the discovery of previously unpublished data submitted by NHS Grampian, revisions have been 
+                    made in this publication for diagnoses in financial year 2019/20 and 2020/21. The impact of this is that
+                    the Number of People Referred to PDS and Proportion of Total Referrals in 2019/20 and 2020/21 has changed slightly for most age groups
+                    (the highest change to the proportion being 0.2%). Additionaly, in previous publications the calculation for Percentage of LDP Standard 
+                    Achieved in these years was erroneously including Aberdeen City referrals for which the LDP Standard can not be calculated.
+                    The impact of this is that the Percentage of LDP Standard Acheived for all age groups in 2019/20 and 2020/21 has been adjusted to between 1% to 4%
+                    higher than previously published, except the 59 and Under age group for which there is no change.")
+               }else{
+                 em("Due to the discovery of previously unpublished data submitted by NHS Grampian, revisions have been 
+                    made in this publication for diagnoses in financial year 2019/20 and 2020/21. The impact of this is that
+                    the Number of People Referred to PDS and Proportion of Total Referrals in 2019/20 and 2020/21 has changed slightly for all deprivation quintiles 
+                    (the highest change to the proportion being 0.1%). Additionaly, in previous publications the calculation for Percentage of LDP Standard 
+                    Achieved in these years was erroneously including Aberdeen City referrals for which the LDP Standard can not be calculated.
+                    The impact of this is that the Percentage of LDP Standard Acheived for all deprivation quintiles in 2019/20 and 2020/21 has been adjusted to between 1% to 4%
+                    higher than previously published, except for the following: 
+                    In 2019/20 for deprivation quintile 5 the percentage has been adjusted from 76.4% to 83.3%. 
+                    In 2019/20 for referrals with an unknown deprivation quintile the percentage has been adjusted from 55.6% to 100%.
+                    In 2020/21 for referrals with an unknown deprivation quintile the percentage has been adjusted from 31.3% to 100%.
+                    ")
+               }
+               )
         },
-      p("For detailed information on how the % LDP standard achieved is calculated, and how 'standard met', 'exempt from standard', 'PDS ongoing' and 'standard not met' are defined, please see the",
+      p("For detailed information on how the Percentage LDP Standard Achieved is calculated, and how 'Standard Met', 'Exempt from Standard', 'PDS Ongoing' and 'Standard Not Met' are defined, please see the",
         a(
           href = "#",
           "Methodology",
@@ -170,14 +192,28 @@ table_data_demo <- reactive({
     mutate(perc_prop = round(100*referrals/max(referrals),1), .after = referrals) %>% 
     mutate(across(where(is.numeric), ~if_else(is.na(.), "-", format(., big.mark = ",")))) %>%
     mutate(across(starts_with("perc"), ~ if_else(grepl("-", .), ., paste0(.,"%")))) %>% 
-    set_colnames(c(if(input$select_data_demo == "data_sex"){
+    # adds superscript R for NHS Grampian and incorrect formula revisions. 
+    #From 2026 onward REMOVE the first if statement and keep the column names that are currently set as else
+    set_colnames(if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
+    c(if(input$select_data_demo == "data_sex"){
                                                      "Gender"
                                      }else if(input$select_data_demo == "data_age"){
                                              "Age Group"
                                        }else{
                                       "Deprivation Quintile_"},
     
-    "Number of People Referred to PDS", "Proportion of Total Referrals", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved"))
+    "Number of People Referred to PDSᴿ", "Proportion of Total Referralsᴿ", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP Standard Achievedᴿ")
+    }else{
+      c(if(input$select_data_demo == "data_sex"){
+        "Gender"
+      }else if(input$select_data_demo == "data_age"){
+        "Age Group"
+      }else{
+        "Deprivation Quintile_"},
+      
+      "Number of People Referred to PDS", "Proportion of Total Referrals", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP Standard Achieved")
+    }
+    )
 })
 
 
