@@ -67,6 +67,7 @@ tabPanel(title = "Referrals & Rates",
              collapsible = TRUE, collapsed = FALSE),
          
          sidebarLayout(
+           
            sidebarPanel(
              #linebreaks(1),
              radioGroupButtons("RandR_sidebar", label = NULL, choices = RandR_sidebar_list,
@@ -75,31 +76,72 @@ tabPanel(title = "Referrals & Rates",
                                justified = T,
                                size = "lg"
              ),
-             linebreaks(1),
-
              conditionalPanel(condition = 'input.RandR_sidebar == "RandRreferrals"',
-
+                              linebreaks(1),
                               selectInput("select_year_p1_randr",
                                           label = "Select Financial Year of Diagnosis:",
                                           choices = included_years_extra_referrals,
                                           selected= extra_referrals_year_sup),
+             ), #cond panel total referrals
+             conditionalPanel(condition = 'input.RandR_tab == "RandR_part_1"',
+                              conditionalPanel(condition = 'input.RandR_sidebar == "RandRtrends"',
+                                               linebreaks(1),   
+                                               selectInput("select_randr_hb_trend_part_1",
+                                                           label = "Select Health Board/Integration Authority to show in chart:",
+                                                           choices = c("Scotland", boards, ijb_list))
+                              ), #cond panel trends
+             ),#cond panel part 1
+             conditionalPanel(condition = 'input.RandR_tab == "RandR_part_2"', 
+                              conditionalPanel(condition = 'input.RandR_sidebar == "RandRtrends"',
+                                               linebreaks(1), 
+                                               selectInput("randr_select_hb_ijb_trend_part_2",
+                                                           label = "Select Health Board/Integration Authority to show in chart:",
+                                                           choices = c("Scotland", boards, ijb_list))
+                              ), #cond panel trends
+             ),#cond panel part 2
                               radioButtons("select_hb_ijb_randr",
                                            label = "In the chart and table show:",
                                            choices = c("Health Boards", "Integration Authority Areas"),
-                                           selected = "Health Boards",
-                                           inline = FALSE),
-
-                              conditionalPanel(condition = 'input.RandR_tab == "RandR_part_2"',
-
-                                               radioButtons("select_hb_ijb_randr",
-                                                            label = "In the chart and table show:",
-                                                            choices = c("Health Boards", "Integration Authority Areas"),
-                                                            selected = "Health Boards",
-                                                            inline = FALSE)
-                              ) #cond panel RandR part 2
-                              
-             ), #cond panel outcomes
-             width = 3),#sidebarpanel
+                                           selected = "Health Boards"),
+            
+             width = 3
+           ), #sidebar panel
+           
+           # 
+           # 
+           # sidebarPanel(
+           #   #linebreaks(1),
+           #   radioGroupButtons("RandR_sidebar", label = NULL, choices = RandR_sidebar_list,
+           #                     status = "secondary",
+           #                     direction = "vertical",
+           #                     justified = T,
+           #                     size = "lg"
+           #   ),
+           #   linebreaks(1),
+           # 
+           #   conditionalPanel(condition = 'input.RandR_sidebar == "RandRreferrals"',
+           # 
+           #                    selectInput("select_year_p1_randr",
+           #                                label = "Select Financial Year of Diagnosis:",
+           #                                choices = included_years_extra_referrals,
+           #                                selected= extra_referrals_year_sup),
+           #                    radioButtons("select_hb_ijb_randr",
+           #                                 label = "In the chart and table show:",
+           #                                 choices = c("Health Boards", "Integration Authority Areas"),
+           #                                 selected = "Health Boards",
+           #                                 inline = FALSE),
+           # 
+           #                    conditionalPanel(condition = 'input.RandR_tab == "RandR_part_2"',
+           # 
+           #                                     radioButtons("select_hb_ijb_randr",
+           #                                                  label = "In the chart and table show:",
+           #                                                  choices = c("Health Boards", "Integration Authority Areas"),
+           #                                                  selected = "Health Boards",
+           #                                                  inline = FALSE)
+           #                    ) #cond panel RandR part 2
+           #                    
+           #   ), #cond panel outcomes
+           #   width = 3),#sidebarpanel
            mainPanel(width = 9,
 
                      uiOutput("rates_ui")
@@ -146,7 +188,6 @@ tabPanel(title = "LDP Standard",
                               ), #cond panel trends
              ),#cond panel ldp part 1
              conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"', 
-                              # conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"', 
                               conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
                                                linebreaks(1), 
                                                selectInput("select_hb_ijb_trend_part_2",

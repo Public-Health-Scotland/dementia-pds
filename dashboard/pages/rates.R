@@ -52,11 +52,11 @@ output$rates_ui <-  renderUI({
                                       column(
                                         # plot ----
                                         h4(strong(htmlOutput("randr_chart_title_trend_part_1"))),
-                                        fluidRow(
-                                          column(
-                                            selectInput("select_randr_hb_trend_part_1",
-                                                        label = "Select Health Board/Integration Authority to show in chart:",
-                                                        choices = c("Scotland", boards, ijb_list), width = "100%"), width = 5)),
+                                        # fluidRow(
+                                        #   column(
+                                        #     selectInput("select_randr_hb_trend_part_1",
+                                        #                 label = "Select Health Board/Integration Authority to show in chart:",
+                                        #                 choices = c("Scotland", boards, ijb_list), width = "100%"), width = 5)),
                                         plotlyOutput("hb_RandR_trend_plot"),
                                         #linebreaks(1),
                                         # table ----
@@ -109,20 +109,20 @@ output$rates_ui <-  renderUI({
                                       column(
                                         #plot----
                                         h4(strong(htmlOutput("randr_chart_title_trend_part_2"))),
-                                        fluidRow(
-                                          column(
-                                            selectInput("randr_select_hb_ijb_trend_part_2",
-                                                        label = "Select Health Board/Integration Authority to show in chart:",
-                                                        choices = c("Scotland", boards, ijb_list), width = "100%"), width = 5)),
+                                        # fluidRow(
+                                        #   column(
+                                        #     selectInput("randr_select_hb_ijb_trend_part_2",
+                                        #                 label = "Select Health Board/Integration Authority to show in chart:",
+                                        #                 choices = c("Scotland", boards, ijb_list), width = "100%"), width = 5)),
                                         plotlyOutput("randr_trend_plot_part_2"),
                                         linebreaks(1),
                                         #table----
                                         h4(strong(htmlOutput("randr_table_trend_part_2_title"))),
-                                        radioButtons("randr_select_table_trend_part_2",
-                                                     label = "In the table below show:",
-                                                     choices = c("Health Boards", "Integration Authority Areas"),
-                                                     selected = "Health Boards",
-                                                     inline = TRUE),
+                                        # radioButtons("randr_select_table_trend_part_2",
+                                        #              label = "In the table below show:",
+                                        #              choices = c("Health Boards", "Integration Authority Areas"),
+                                        #              selected = "Health Boards",
+                                        #              inline = TRUE),
                                         DT::dataTableOutput("randr_table_hb_ijb_trend_part_2"),
                                         linebreaks(1),
                                         width = 12,
@@ -337,7 +337,7 @@ output$randr_chart_title_trend_part_2 <- renderUI({HTML(paste("Percentage of peo
 trend_chart_data <- reactive({
   annual_table_data %>%
     filter(fy %in% included_years, ldp == "total") %>% 
-    filter(ijb == input$select_hb_ijb_trend_part_2 | ijb == "Scotland")})
+    filter(ijb == input$randr_select_hb_ijb_trend_part_2 | ijb == "Scotland")})
 
 
 output$randr_trend_plot_part_2 <- renderPlotly({
@@ -349,12 +349,12 @@ output$randr_trend_plot_part_2 <- renderPlotly({
 #data table trends part 2----    
 
 output$randr_table_trend_part_2_title <- renderUI({
-  HTML(paste0("Percentage of people referred for PDS who received a minimum of one year’s support within 12 months of diagnosis; Trend, Scotland and ", input$randr_select_table_trend_part_2))
+  HTML(paste0("Percentage of people referred for PDS who received a minimum of one year’s support within 12 months of diagnosis; Trend, Scotland and ", input$select_hb_ijb_randr))
 })
 
 output$randr_table_hb_ijb_trend_part_2 <- DT::renderDataTable({
   
-  if(input$randr_select_table_trend_part_2 == "Health Boards"){  
+  if(input$select_hb_ijb_randr == "Health Boards"){  
     
     trend_hb_data <- annual_table_data %>% 
       filter(fy %in% included_years) %>% 

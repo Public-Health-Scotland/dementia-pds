@@ -23,11 +23,6 @@ source(here("dashboard/data_setup/data_load_shiny.R"))
 
 # selections lists
 
-#adds a superscript r to indicate revisions added in 2025 publication due to Aberdeen City data issues
-#revised_201920_sup <- paste0("2019/20", "ʳ")  #REMOVE from 2026 onward
-
-#revised_202021_sup <- paste0("2020/21", "ʳ") #REMOVE from 2026 onward
-
 #adds superscript R to year which was provisional in previous publication
 revised_year_sup <- paste0(revised_year,"ᴿ")
 
