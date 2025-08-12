@@ -2,7 +2,8 @@
 #UI ----
 output$rates_ui <-  renderUI({
   
-  div(    fluidRow(column(
+  div(
+    fluidRow(column(
     linebreaks(1),
     radioGroupButtons("RandR_tab", label = NULL, choices = RandR_tab_list,
                       status = "tab",
@@ -21,8 +22,7 @@ output$rates_ui <-  renderUI({
                                           linebreaks(1),          
                                           #### value box ----
                                           fluidRow(
-                                            column(
-                                            shinydashboard::valueBox(
+                                              shinydashboard::valueBox(
                                               value = textOutput("scot_randr"),
                                               subtitle = "people were diagnosed with dementia and referred for post-diagnostic support.",
                                               width = 12,
@@ -31,9 +31,10 @@ output$rates_ui <-  renderUI({
                                             #     status = "primary", 
                                             #     title = (p(strong("How is this figure calculated?"))),
                                             #     width = 5), # box
-                                            width = 12)#column
+                                      
                                           ), #fluidRow
-                                          fluidRow(column(
+                                          fluidRow(
+                                            column(
                                                    linebreaks(1),
                                                    ####plot ----
                                                    h4(strong(htmlOutput("totals_RandR_plot_title"))),
@@ -45,8 +46,8 @@ output$rates_ui <-  renderUI({
                                                                   "Download table data"),
                                                    DT::dataTableOutput("table_totals_randr"),
                                                    linebreaks(1),
-                                                   width = 12)
-                                        ), # fluid Row
+                                                   width = 12) #column
+                                          ), # fluid Row
                                       ) #fluidRow
                      ), #cond panel referrals
                      ###TRENDS ----
@@ -65,30 +66,17 @@ output$rates_ui <-  renderUI({
                                           linebreaks(1),
                                         ) # fluidRow
                         ), #cond panel trends
-                    p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
-                     format(end_date, "%d %B %Y"), "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates.")),
+                    p("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
+                     format(end_date, "%d %B %Y")),
                    ### Notes----
                    h4(strong("Notes:")),
-                  p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
+                  p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
                    p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."),
                     em("Due to the discovery of previously unpublished data submitted by NHS Grampian, revisions have been 
                     made in this publication for diagnoses in financial year 2020/21. The impact of this is that the Number of 
-                    People Referred to PDS has increased by 11 for NHS Grampian and Scotland. This results in a 0.5% increase in 
-                    the Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS
-                    for NHS Grampian and a 0.1% increase for Scotland.")),
-                      p("The estimated number of people newly diagnosed with dementia is subject to the limitations detailed within the paper below published by the Scottish Government in 2016: ", 
-                  br(),
-                    a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
-                   br(),
-                      "Estimates are used as follows: calendar year 2016 estimates for 2016/17, calendar year 2017 estimates for 2017/18, calendar year 2018 estimates for 2018/19, calendar year 2019 estimates for 2019/20 and calendar year 2020 estimates for 2020/21.",
-                    br(),
-                  "For 2021/22 and 2022/23, the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the paper above and the National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates. See Note 2 on the",
-                       a(
-                        href = "#",
-                        "Home",
-                       onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
-                    "page for further information."),					
-              p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+                    People Referred to PDS has increased by 11 for Aberdeen City, NHS Grampian and Scotland.")),
+                      
+              p("Figures for 2018/19, 2019/20 and 2020/21 for Aberdeen City, NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
                  a(
                         href = "#",
                     "Home",
@@ -101,42 +89,41 @@ output$rates_ui <-  renderUI({
       ), #cond panel totals
                    ## RATES ----
                    conditionalPanel(condition = 'input.RandR_tab == "RandR_rates"',
+                                    column(
                                     ### REFERRALS BY YEAR----
                                     conditionalPanel(condition = 'input.RandR_sidebar == "referrals"',
                                                      fluidRow(
-                                                       column(
                                                          h3(strong(htmlOutput("randr_title_rates"))),
                                                          linebreaks(1),
                                                          #### value box ----
                                                          fluidRow(
                                                            shinydashboard::valueBox(
-                                                             value = textOutput("scot_pds_referrals"),
-                                                             subtitle = "of those referred for post-diagnostic support received a minimum of 12 months of support.",
-                                                             width = 7,
+                                                             value = textOutput("scot_rate"),
+                                                             subtitle = "people per 10,000 population (aged 65 and over) were diagnosed with dementia and referred for post-diagnostic support.",
+                                                             width = 12,
                                                              color = "fuchsia"), #valueBox
-                                                           box(htmlOutput("scot_referrals_text"),
-                                                               status = "primary",
-                                                               title = (p(strong("How is this figure calculated?"))),
-                                                               width = 5), #box
+                                                           # box(htmlOutput("scot_referrals_text"),
+                                                           #     status = "primary",
+                                                           #     title = (p(strong("How is this figure calculated?"))),
+                                                           #     width = 5), #box
                                                          ), #fluidRow
                                                          fluidRow(
+                                                           column(
                                                            linebreaks(1),
                                                            ####plot ----
-                                                           h4(strong(htmlOutput("referrals_plot_title"))),
-                                                           plotlyOutput("referrals_plot"),
+                                                           h4(strong(htmlOutput("rates_plot_title"))),
+                                                           plotlyOutput("rates_plot"),
                                                            #### table ----
-                                                           h4(strong(htmlOutput("referrals_table_title"))),
-                                                           DT::dataTableOutput("referrals_table"),
+                                                           h4(strong(htmlOutput("rates_table_title"))),
+                                                           DT::dataTableOutput("rates_table"),
                                                            linebreaks(1),
+                                                         width = 12)#column
                                                          ), # fluid Row
-                                                         width = 12,
-                                                         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"),
                                                      ) #fluidRow
                                     ), # cond panel referrals
                                     ### TRENDS----
                                     conditionalPanel(condition = 'input.RandR_sidebar == "trends"', 
                                                      fluidRow(
-                                                       column(
                                                          ####plot----
                                                          h4(strong(htmlOutput("randr_chart_title_trend_rates"))),
                                                          plotlyOutput("randr_trend_plot_rates"),
@@ -144,17 +131,36 @@ output$rates_ui <-  renderUI({
                                                          ####table----
                                                          h4(strong(htmlOutput("randr_table_trend_rates_title"))),
                                                          DT::dataTableOutput("randr_table_trend_rates"),
-                                                         linebreaks(1),
-                                                         width = 12,
-                                                         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
-                                                       ), # column
+                                                         linebreaks(1)
                                                      ) # fluidRow
-                                    ) #cond panel trends
+                                    ),#cond panel trends
+                                    p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
+                                      format(end_date, "%d %B %Y"), "; National Records of Scotland (NRS) mid-2021, mid-2022, and mid-2023 population estimates.")),
+                                    ### Notes----
+                                    h4(strong("Notes:")),
+                                    p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
+                                    #p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."), UNCOMMENT for 2026 publication
+                                    p("Rates are calculated using the NRS mid-year population estimates of the 65 and over age group for each geographical area. See Note 8 on the",
+                                      a(
+                                        href = "#",
+                                        "Home",
+                                        onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+                                      "page for further information."),
+                                      p("Figures for 2018/19, 2019/20 and 2020/21 for Aberdeen City, NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+                                      a(
+                                        href = "#",
+                                        "Home",
+                                        onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+                                      "page for further information."),
+                                    width = 12,
+                                    style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
+                                    ), # column
                    ) # cond panel rates
   )# div
   }) # renderUI
   
   #SERVER ----
+
   ## TOTAL Referrals----
   ## REFERRALS BY YEAR----
   ### total referrals title ----
@@ -164,10 +170,10 @@ output$rates_ui <-  renderUI({
   
   
   ### value boxes data ----
-  vb_data_randr<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_randr, ldp == "total")}) 
+  vb_data_totals<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_randr, ldp == "total")}) 
   
   # total number of people diagnosed and referred for post-diagnostic support
-  output$scot_randr <- renderText({prettyNum(vb_data_randr()$referrals, big.mark = ",")})
+  output$scot_randr <- renderText({prettyNum(vb_data_totals()$referrals, big.mark = ",")})
   
   # output$scot_randr_text <- renderUI({
   #   HTML(paste("A total of", "<b>",  prettyNum(vb_data()$referrals, big.mark = ","), "</b>", "referrals were made to post-diagnostic support. This is divided by",
@@ -352,21 +358,122 @@ output$rates_ui <-  renderUI({
   
   ## RATES ----
   ## RATES BY YEAR----
+  
   ### rates title ----
-  output$randr_title_rates <- renderUI({HTML(paste("Percentage of referrals for PDS who received one year's support; Scotland, ", 
+  output$randr_title_rates <- renderUI({HTML(paste("Number of People Referred for PDS per 10,000 Population (65+); Scotland, ", 
                                                    input$select_year_randr))
   })
-  ### value box----
+  
+ 
+  ### value boxes data ----
+  vb_data_rates <- reactive({data_rates %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_randr)}) 
+  
   # percentage of those referred for post-diagnostic support received a minimum of 12 months of support
-  output$scot_pds_referrals <- renderText({paste0(vb_data()$percent_met, "%")})
+  output$scot_rate <- renderText({paste0(vb_data_rates()$pop_rate_10000)})
   
-  vb_2_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_randr,
-                                                     ldp != "fail") %>% select(-diagnoses, -exp_perc) %>% 
-      pivot_wider(values_from = referrals, names_from = ldp)})
+  # vb_2_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_randr,
+  #                                                    ldp != "fail") %>% select(-diagnoses, -exp_perc) %>% 
+  #     pivot_wider(values_from = referrals, names_from = ldp)})
+  # 
+  # output$scot_referrals_text <- renderUI({
+  #   HTML(paste("<b>", prettyNum(vb_2_data()$complete + vb_2_data()$exempt, big.mark = ","), "</b>", "referrals either met or were exempt from the LDP standard. This is divided by",
+  #              "<b>", prettyNum(vb_2_data()$total - vb_2_data()$ongoing, big.mark = ","), "</b>", "the total number of referrals (excluding those whose support is ongoing)."))})
   
-  output$scot_referrals_text <- renderUI({
-    HTML(paste("<b>", prettyNum(vb_2_data()$complete + vb_2_data()$exempt, big.mark = ","), "</b>", "referrals either met or were exempt from the LDP standard. This is divided by",
-               "<b>", prettyNum(vb_2_data()$total - vb_2_data()$ongoing, big.mark = ","), "</b>", "the total number of referrals (excluding those whose support is ongoing)."))})
+  
+  
+  ### plot rates ----
+  output$rates_plot_title <- renderUI({HTML(paste0("Number of people per 10,000 population (65+) who were referred for PDS; ", 
+                                                      input$select_year_randr, ", Scotland and ", input$select_hb_ijb_randr))
+  })
+  
+  
+  rates_chart_data <- reactive({
+    
+    filtered_rates_data <- data_rates %>% filter(fy == input$select_year_randr)
+    
+    left_join(
+      if(input$select_hb_ijb_randr == "Health Boards"){
+        filtered_rates_data %>% filter(grepl("NHS", ijb))
+      }else{
+        filtered_rates_data %>% filter(!grepl("NHS", ijb), ijb != "Scotland")   
+      },
+      filtered_rates_data %>% filter(ijb == "Scotland") %>% select(fy, pop_rate_10000)%>%
+        rename(scot_pop_rate_10000 = pop_rate_10000)) %>% 
+      rename(geog = ijb)
+  })
+  
+  output$rates_plot <- renderPlotly({
+    
+    plot_bar(rates_chart_data(),
+                       measure = pop_rate_10000, scot_measure = scot_pop_rate_10000)
+    
+  })
+  
+  
+  ## data table rates ----
+  output$rates_table_title <- renderUI({HTML(paste0("Number of people per 10,000 population (65+) who were referred for PDS; ", 
+                                                       input$select_year_randr, ", Scotland and ", input$select_hb_ijb_randr))
+  })
+  
+  
+  table_rates_data <- reactive({
+    
+    if(input$select_hb_ijb_randr == "Health Boards"){
+      
+      data_rates %>% 
+        filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
+        filter(fy == input$select_year_randr) %>%
+        select(health_board,pop_rate_10000)%>%
+        arrange(health_board) %>% 
+        set_colnames(
+            c("Health Board","Number of People Referred to PDS per 10,000 population (65+)"))
+      
+    }else{
+      
+      data_rates %>%
+        filter(!grepl("NHS", ijb)) %>% 
+        filter(fy == input$select_year_randr) %>%
+        select(ijb,pop_rate_10000)%>%
+        set_colnames(
+          c("Integration Authority Area","Number of People Referred to PDS per 10,000 population (65+)"))
+       }
+  })
+  
+  output$rates_table <- DT::renderDataTable({
+    
+    make_table(table_rates_data(),
+               right_align = 1, selected = 1, rows_to_display = 32)
+    
+  })
+  
+  
+  # ### download button ldp2----
+  # output$downloadData_ldp2 <- downloadHandler(
+  #   filename = paste0("pds_data_as_at_", end_date, ".csv"),
+  #   content = function(file) {
+  #     write.csv(table_ldp2_data() %>% mutate(`Financial Year` = input$select_year_ldp, 
+  #                                            .before = everything()) %>% 
+  #                 #changes superscript R to in line R for downloaded csv since superscript is not supported 
+  #                 mutate(`Financial Year`  = case_when(
+  #                   `Financial Year`  == provisional_year_sup ~paste0(provisional_year,"P"),
+  #                   `Financial Year`  == revised_year_sup ~paste0(revised_year,"R"),
+  #                   TRUE ~`Financial Year` )) %>% 
+  #                 #From 2026 onward REMOVE the following 11 lines which only apply to Grampian revisions made in 2025
+  #                 set_colnames(
+  #                   if(input$select_hb_ijb == "Health Boards" & input$select_year_ldp == "2020/21"){
+  #                     c("Financial Year", "Health Board","Number of People Referred to PDS(R)", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
+  #                   }else if(input$select_hb_ijb == "Health Boards" & input$select_year_ldp != "2020/21"){
+  #                     c("Financial Year", "Health Board","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
+  #                   }else if(input$select_hb_ijb != "Health Boards" & input$select_year_ldp == "2020/21"){
+  #                     c("Financial Year", "Integration Authority Area","Number of People Referred to PDS(R)", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
+  #                   }else if(input$select_hb_ijb != "Health Boards" & input$select_year_ldp != "2020/21"){
+  #                     c("Financial Year", "Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
+  #                   }
+  #                 ),
+  #               file, row.names = FALSE)
+  #   }
+  # )
+  # 
   
   
   

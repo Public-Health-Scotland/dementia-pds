@@ -113,5 +113,17 @@ data_simd$health_board <- factor(data_simd$health_board, levels=unique(data_simd
 data_simd$type <- as.factor(data_simd$type)
 data_simd$fy <- as.factor(data_simd$fy)
 
+# CREATE RATES DATA TABLE -----
+
+data_rates <- left_join(
+  annual_table_data %>% filter(ldp == "total") %>% select(health_board, ijb, fy, referrals) %>% mutate(year = substr(fy, 1,4)),
+  
+  #use 65+ population as denominator for rates
+  data_pop %>% filter(age_grp_2 == "65+") %>%  mutate(year = as.character(year)) %>%  select(geog, year, pop_est), 
+  
+  join_by(ijb == geog, year)) %>% 
+  
+  select(-year) %>% 
+  mutate(pop_rate_10000 = round(10000*referrals/pop_est,1))
 
 #### END OF SCRIPT ####

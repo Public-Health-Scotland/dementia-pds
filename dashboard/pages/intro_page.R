@@ -86,6 +86,18 @@ output$intro_page_ui <-  renderUI({
                                   "by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the ",
                                   "PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland / Shetland Islands for 2022/23.")
                                 ),
+                        tags$li(p("The population estimates used in this report are from the National Records of Scotland (NRS)
+                                  Mid-year population estimates. As figures in this report are by financial year, the estimate for the calendar year
+                                  with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 
+                                  uses estimates for the calendar year 2018."),
+                                p(paste0("The rate per 10,000 population is calculated using the number of referrals with a dementia diagnosis date in the given
+                                  financial year and the estimated population of the same year for each geographical area.
+                                  The estimates used throughout the report are for the population that
+                                  is 65 years and older, as ", perc_65_plus, "% of referrals to PDS are in this age group.")),
+                                p("NRS Mid-year population estimates can be found at: ",
+                                  a("Population, migration and households - National Records of Scotland (NRS)",
+                                    href = "https://www.nrscotland.gov.uk/statistics-and-data/population-migration-and-households/#", target="_blank")),
+                                ),
                         tags$li(p("The COVID-19 pandemic and the infection control measures put in place are likely to have had an impact on the number of people being diagnosed and referred, particularly in 2020/21.")
                                 ),
                         tags$li(p("Some areas have reported difficulties in the COVID-19 pandemic affecting their ability and capacity to update their data systems which are required to provide the dementia PDS dataset, ",
@@ -144,3 +156,17 @@ output$intro_page_ui <-  renderUI({
   
 }) # renderUI
 
+
+###SERVER
+
+over_65_and_total <- left_join(
+
+scot_65_plus_total <- data_age %>% filter(type != "59 and Under", type != "60 to 64") %>% 
+  group_by(geog = "Scotland") %>% summarise(over_65_referrals = sum(referrals)),
+
+
+scot_overall_total <- annual_table_data %>% group_by(geog = "Scotland") %>%  filter(ijb == "Scotland", ldp == "total") %>% summarise(total_referrals = sum(referrals))
+
+)
+
+perc_65_plus<-round(over_65_and_total[2]/over_65_and_total[3]*100,1)
