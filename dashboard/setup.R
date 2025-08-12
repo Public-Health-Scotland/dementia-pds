@@ -62,13 +62,13 @@ ldp_sidebar_list <- c("Outcomes by Financial Year" = "outcomes",
                       )
 
 #tabs for rates and referrals page
-RandR_tab_list <- c("Total Referrals" = "RandR_part_1",
-                    "Rates per 10,000 population" = "RandR_part_2"
+RandR_tab_list <- c("Total Referrals" = "RandR_totals",
+                    "Rates per 10,000 population" = "RandR_rates"
 )
 
 #sidebar buttons for rates and referrals page
-RandR_sidebar_list <- c("Referrals by Financial Year" = "RandRreferrals",
-                        "Trends" = "RandRtrends"
+RandR_sidebar_list <- c("Referrals by Financial Year" = "referrals",
+                        "Trends" = "trends"
 )
 
 #sidebar buttons for demographics page

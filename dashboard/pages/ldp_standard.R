@@ -467,8 +467,7 @@ output$downloadData_ldp2 <- downloadHandler(
                   }else if(input$select_hb_ijb != "Health Boards" & input$select_year_ldp != "2020/21"){
                     c("Financial Year", "Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
                   }
-                )
-              ,
+                ),
               file, row.names = FALSE)
   }
 )
