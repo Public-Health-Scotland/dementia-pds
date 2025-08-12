@@ -303,10 +303,10 @@ output$table_title_hb_trend_part_1 <- renderUI({HTML(paste0("Percentage of peopl
 
 table_hb_trend_part_1_data <- reactive({
   annual_table_data %>% 
+    filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
     filter(fy %in% included_years, ldp == "total") %>% 
     select(health_board, fy, exp_perc) %>%
     mutate(exp_perc = paste0(exp_perc, "%")) %>% 
-    distinct(health_board, fy, .keep_all = T) %>% 
     #adds superscript R for revised NHS Grampian data
     mutate(fy = if_else(fy == "2020/21", paste0("2020/21", "ᴿ"),fy)) %>% #REMOVE from 2026 onward
     rename("Health Board" = "health_board")  
@@ -507,6 +507,7 @@ table_trend_part_2_data <- reactive({
     
     annual_table_data %>% 
       filter(fy %in% included_years) %>% 
+      filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
       select(health_board, fy, percent_met) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
       mutate(percent_met = if_else(percent_met == "   NA", "-", paste0(percent_met, "%"))) %>% 
