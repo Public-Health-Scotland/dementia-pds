@@ -115,6 +115,9 @@ output$rates_ui <-  renderUI({
                                                            plotlyOutput("rates_plot"),
                                                            #### table ----
                                                            h4(strong(htmlOutput("rates_table_title"))),
+                                                           #####download button rates----
+                                                           downloadButton("downloadData_rates", 
+                                                                          "Download table data"),
                                                            DT::dataTableOutput("rates_table"),
                                                            linebreaks(1),
                                                          width = 12)#column
@@ -447,33 +450,23 @@ output$rates_ui <-  renderUI({
   })
   
   
-  # ### download button ldp2----
-  # output$downloadData_ldp2 <- downloadHandler(
-  #   filename = paste0("pds_data_as_at_", end_date, ".csv"),
-  #   content = function(file) {
-  #     write.csv(table_ldp2_data() %>% mutate(`Financial Year` = input$select_year_ldp, 
-  #                                            .before = everything()) %>% 
-  #                 #changes superscript R to in line R for downloaded csv since superscript is not supported 
-  #                 mutate(`Financial Year`  = case_when(
-  #                   `Financial Year`  == provisional_year_sup ~paste0(provisional_year,"P"),
-  #                   `Financial Year`  == revised_year_sup ~paste0(revised_year,"R"),
-  #                   TRUE ~`Financial Year` )) %>% 
-  #                 #From 2026 onward REMOVE the following 11 lines which only apply to Grampian revisions made in 2025
-  #                 set_colnames(
-  #                   if(input$select_hb_ijb == "Health Boards" & input$select_year_ldp == "2020/21"){
-  #                     c("Financial Year", "Health Board","Number of People Referred to PDS(R)", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
-  #                   }else if(input$select_hb_ijb == "Health Boards" & input$select_year_ldp != "2020/21"){
-  #                     c("Financial Year", "Health Board","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
-  #                   }else if(input$select_hb_ijb != "Health Boards" & input$select_year_ldp == "2020/21"){
-  #                     c("Financial Year", "Integration Authority Area","Number of People Referred to PDS(R)", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
-  #                   }else if(input$select_hb_ijb != "Health Boards" & input$select_year_ldp != "2020/21"){
-  #                     c("Financial Year", "Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
-  #                   }
-  #                 ),
-  #               file, row.names = FALSE)
-  #   }
-  # )
-  # 
+  ### download button rates----
+  output$downloadData_rates <- downloadHandler(
+    filename = paste0("pds_data_as_at_", end_date, ".csv"),
+    content = function(file) {
+      write.csv(table_rates_data() %>% mutate(`Financial Year` = input$select_year_randr,
+                                             .before = everything()) %>%
+                  #changes superscript R to in line R for downloaded csv since superscript is not supported
+                  mutate(`Financial Year`  = case_when(
+                    `Financial Year`  == provisional_year_sup ~paste0(provisional_year,"P"),
+                    `Financial Year`  == revised_year_sup ~paste0(revised_year,"R"),
+                    `Financial Year`  == extra_referrals_year_sup ~paste0(extra_referrals_year,"P"),
+                    TRUE ~`Financial Year` ) 
+                                   ),
+                file, row.names = FALSE)
+    }
+  )
+
   
   
   
