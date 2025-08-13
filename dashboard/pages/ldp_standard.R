@@ -189,6 +189,10 @@ output$ldp_ui <-  renderUI({
 }) # renderUI
 
 #SERVER ----
+
+# filter to years included in publication----
+ldp_data <- annual_table_data %>% filter(fy %in% included_years)
+
 ##LDP PART 1----
 ## OUTCOMES BY YEAR----
 ##part 1 title ----
@@ -198,7 +202,7 @@ output$title_part_1 <- renderUI({HTML(paste("Percentage of estimated diagnoses r
 
 
 ##value boxes----
-vb_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_ldp, ldp == "total")}) 
+vb_data<- reactive({ldp_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_ldp, ldp == "total")}) 
 
 ## percentage of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support
 output$scot_exp_perc <- renderText({paste0(vb_data()$exp_perc, "%")})
@@ -215,13 +219,13 @@ output$hb_exp_plot_title <- renderUI({HTML(paste0("Percentage of people estimate
 
 hb_exp_chart_data <- reactive({
   left_join(
-    annual_table_data %>% filter(grepl("NHS", ijb), fy == input$select_year_ldp, ldp == "total"),
-    annual_table_data %>% filter(ijb == "Scotland", ldp == "total") %>% select(fy, exp_perc) %>%
+    ldp_data %>% filter(grepl("NHS", ijb), fy == input$select_year_ldp, ldp == "total"),
+    ldp_data %>% filter(ijb == "Scotland", ldp == "total") %>% select(fy, exp_perc) %>%
       rename(scot_exp_perc = exp_perc))
 })
 
 output$hb_exp_plot <- renderPlotly({
-  plot_bar_perc_line(hb_exp_chart_data(),
+  plot_bar_perc(hb_exp_chart_data(),
                      measure = exp_perc, scot_measure = scot_exp_perc, legend = "bottom")
 })
 
@@ -233,7 +237,7 @@ output$hb_exp_table_title <- renderUI({HTML(paste0("Number and percentage of peo
 
 table_hb_exp_data <- reactive({
   
-  annual_table_data %>% 
+  ldp_data %>% 
     filter(fy == input$select_year_ldp) %>%
     filter(grepl("NHS", ijb) | ijb == "Scotland", !is.na(diagnoses)) %>% 
     group_by(health_board)%>%
@@ -288,9 +292,8 @@ output$chart_title_trend_part_1 <- renderUI({HTML(paste0("Percentage of people e
 })
 
 trend_chart_data_part_1 <- reactive({
-  annual_table_data %>%
-    filter(fy %in% included_years, ldp == "total") %>% 
-    filter(ijb == input$select_hb_trend_part_1 | ijb == "Scotland")
+  ldp_data %>%
+    filter(ijb == input$select_hb_trend_part_1 | ijb == "Scotland", ldp == "total")
 })
 
 output$trend_plot_part_1 <- renderPlotly({
@@ -302,9 +305,8 @@ output$trend_plot_part_1 <- renderPlotly({
 output$table_title_hb_trend_part_1 <- renderUI({HTML(paste0("Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; Trend, Scotland and Health Boards"))})
 
 table_hb_trend_part_1_data <- reactive({
-  annual_table_data %>% 
-    filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
-    filter(fy %in% included_years, ldp == "total") %>% 
+  ldp_data %>% 
+    filter(grepl("NHS", ijb) | ijb == "Scotland", ldp == "total") %>% 
     select(health_board, fy, exp_perc) %>%
     mutate(exp_perc = paste0(exp_perc, "%")) %>% 
     #adds superscript R for revised NHS Grampian data
@@ -349,7 +351,7 @@ output$title_part_2 <- renderUI({HTML(paste("Percentage of referrals for PDS who
 ## percentage of those referred for post-diagnostic support received a minimum of 12 months of support
 output$scot_pds_perc <- renderText({paste0(vb_data()$percent_met, "%")})
 
-vb_2_data<- reactive({annual_table_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_ldp,
+vb_2_data<- reactive({ldp_data %>% filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_ldp,
                                                    ldp != "fail") %>% select(-diagnoses, -exp_perc) %>% 
     pivot_wider(values_from = referrals, names_from = ldp)})
 
@@ -365,7 +367,7 @@ output$perc_met_plot_title <- renderUI({HTML(paste0("Percentage of people referr
 
 perc_met_chart_data <- reactive({
   
-  filtered_annual_data <- annual_table_data %>% filter(fy == input$select_year_ldp, ldp == "total")
+  filtered_annual_data <- ldp_data %>% filter(fy == input$select_year_ldp, ldp == "total")
   
   left_join(
     if(input$select_hb_ijb == "Health Boards"){
@@ -379,7 +381,7 @@ perc_met_chart_data <- reactive({
 
 output$perc_met_plot <- renderPlotly({
   
-  plot_bar_perc_line(perc_met_chart_data(),
+  plot_bar_perc(perc_met_chart_data(),
                      measure = percent_met, scot_measure = scot_percent_met, legend = "bottom")
   
 })
@@ -394,7 +396,7 @@ table_ldp2_data <- reactive({
   
   if(input$select_hb_ijb == "Health Boards"){
     
-    annual_table_data %>% 
+    ldp_data %>% 
       filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
       filter(fy == input$select_year_ldp) %>%
       select(health_board,ldp,referrals,percent_met)%>%
@@ -415,7 +417,7 @@ table_ldp2_data <- reactive({
     
   }else{
     
-    annual_table_data %>%
+    ldp_data %>%
       filter(!grepl("NHS", ijb)) %>% 
       filter(fy == input$select_year_ldp) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
@@ -483,9 +485,8 @@ output$chart_title_trend_part_2 <- renderUI({HTML(paste("Percentage of people re
 })
 
 trend_chart_data <- reactive({
-  annual_table_data %>%
-    filter(fy %in% included_years, ldp == "total") %>% 
-    filter(ijb == input$select_hb_ijb_trend_part_2 | ijb == "Scotland")})
+  ldp_data %>%
+    filter(ijb == input$select_hb_ijb_trend_part_2 | ijb == "Scotland", ldp == "total")})
 
 
 output$trend_plot_part_2 <- renderPlotly({
@@ -505,8 +506,7 @@ table_trend_part_2_data <- reactive({
   
   if(input$select_hb_ijb == "Health Boards"){  
     
-    annual_table_data %>% 
-      filter(fy %in% included_years) %>% 
+    ldp_data %>% 
       filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
       select(health_board, fy, percent_met) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
@@ -516,8 +516,7 @@ table_trend_part_2_data <- reactive({
     
   }else{
     
-    annual_table_data %>% 
-      filter(fy %in% included_years) %>% 
+    ldp_data %>% 
       filter(!grepl("NHS", ijb)) %>% 
       select(ijb, fy, percent_met) %>%
       mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 

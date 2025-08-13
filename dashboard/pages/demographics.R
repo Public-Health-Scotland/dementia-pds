@@ -123,7 +123,7 @@ output$chart_title_demo_referrals <- renderUI({HTML(paste0("Proportion of total 
 
 #plot proportion
 output$plot_demo_referrals <- renderPlotly({
-  plot_bar_perc(data_demo(), category = type, measure = referrals/sum(referrals)*100,
+  plot_bar_perc_no_line(data_demo(), category = type, measure = referrals/sum(referrals)*100,
                        x_text_angle = if_else(input$select_data_demo == "data_age", 45, 0), 
                         fill = type, ylimit = max((data_demo()$referrals/sum(data_demo()$referrals)*100)+1)
                       )
@@ -148,7 +148,7 @@ if (input$select_data_demo == "data_age"){
 
 #plot outcomes
 output$plot_demo_ldp <- renderPlotly({
-  plot_bar_perc(data_demo(), category = type, measure = percent_met,
+  plot_bar_perc_no_line(data_demo(), category = type, measure = percent_met,
                         x_text_angle = if_else(input$select_data_demo == "data_age", 45, 0),
                         fill = type)
 })

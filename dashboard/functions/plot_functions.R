@@ -132,45 +132,9 @@ plot_trend_perc <- function(data, measure, group = ijb){
 }
 
 
-# bar chart for ldp percentage and proportions
+# bar chart for ldp percentage with dotted line for scotland
 
-plot_bar_perc <- function(data, category, measure, x_text_angle = 45, legend = "none", fill = NULL, ylimit = 101){
-  
-  yaxis_plots[["title"]] <- ""
-  xaxis_plots[["title"]] <- ""
-  
-  data %<>% filter({{category}} != "Unknown", {{category}} != "Not Specified") 
-  
-  plot <-  data %>% ggplot(aes(x = {{category}}, y = {{measure}}, fill = {{fill}},
-                               text = paste0({{category}}, "<br>",
-                                             round({{measure}},1), "%"))) +
-    geom_col(position=position_identity()) +
-    
-    scale_y_continuous(expand = c(0, 0), limits = c(0, ylimit),
-                       labels=function(x) paste0(x,"%")) +
-    
-    scale_fill_manual(values = phs_colours_core_no_rust) +
-    
-    theme_dementia_dashboard() +
-    
-    theme(legend.title = element_blank(),
-          legend.position = legend,
-          axis.text.x = element_text(angle=x_text_angle),
-          panel.grid.minor = element_blank(),
-          panel.grid.major.x = element_blank())
-  
-  ggplotly(plot, tooltip = "text") %>%
-    
-    config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove, 
-           displaylogo = F, editable = F) %>%
-    layout(margin = list(b = 30, t = 30), # to avoid labels getting cut out
-           yaxis = yaxis_plots, xaxis = xaxis_plots)
-  
-}
-
-# bar chart for ldp percentage and proportions
-
-plot_bar_perc_line <- function(data, category = ijb,
+plot_bar_perc<- function(data, category = ijb,
                                measure, scot_measure,
                                x_text_angle = 45, legend = "none", limit = 101){
   
@@ -219,6 +183,40 @@ plot_bar_perc_line <- function(data, category = ijb,
   
 }
 
+# bar chart for proportions and ldp percentages with no scotland line
+plot_bar_perc_no_line <- function(data, category, measure, x_text_angle = 45, legend = "none", fill = NULL, ylimit = 101){
+
+  yaxis_plots[["title"]] <- ""
+  xaxis_plots[["title"]] <- ""
+
+  data %<>% filter({{category}} != "Unknown", {{category}} != "Not Specified")
+
+  plot <-  data %>% ggplot(aes(x = {{category}}, y = {{measure}}, fill = {{fill}},
+                               text = paste0({{category}}, "<br>",
+                                             round({{measure}},1), "%"))) +
+    geom_col(position=position_identity()) +
+
+    scale_y_continuous(expand = c(0, 0), limits = c(0, ylimit),
+                       labels=function(x) paste0(x,"%")) +
+
+    scale_fill_manual(values = phs_colours_core_no_rust) +
+
+    theme_dementia_dashboard() +
+
+    theme(legend.title = element_blank(),
+          legend.position = legend,
+          axis.text.x = element_text(angle=x_text_angle),
+          panel.grid.minor = element_blank(),
+          panel.grid.major.x = element_blank())
+
+  ggplotly(plot, tooltip = "text") %>%
+
+    config(displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove,
+           displaylogo = F, editable = F) %>%
+    layout(margin = list(b = 30, t = 30), # to avoid labels getting cut out
+           yaxis = yaxis_plots, xaxis = xaxis_plots)
+
+}
 
 
 #bar chart for pathways and referrals
