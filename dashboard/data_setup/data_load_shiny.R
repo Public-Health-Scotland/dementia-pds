@@ -124,7 +124,7 @@ data_simd$fy <- as.factor(data_simd$fy)
 
 data_rates <- data_rates %>% mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
                                      #UNCOMMENT line below in 2026----
-                                     fy == revised_year ~paste0(revised_year,"ᴿ"),
+                                     #fy == revised_year ~paste0(revised_year,"ᴿ"),
                                      fy == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
                                      TRUE ~fy))
 

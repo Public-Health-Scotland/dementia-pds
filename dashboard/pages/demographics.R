@@ -121,12 +121,15 @@ output$chart_title_demo_referrals <- renderUI({HTML(paste0("Proportion of total 
 )
 })
 
+
 #plot proportion
 output$plot_demo_referrals <- renderPlotly({
-  plot_bar_perc_no_line(data_demo(), category = type, measure = referrals/sum(referrals)*100,
-                       x_text_angle = if_else(input$select_data_demo == "data_age", 45, 0), 
-                        fill = type, ylimit = max((data_demo()$referrals/sum(data_demo()$referrals)*100)+1)
-                      )
+ 
+    plot_bar_perc_no_line(data_demo(), category = type, measure = referrals/sum(referrals)*100,
+                          x_text_angle = if_else(input$select_data_demo == "data_age", 45, 0), 
+                          fill = type, ylimit = (max(data_demo()$referrals)/sum(data_demo()$referrals))*100+1
+    )
+ 
 })
 
 # chart 2 title
@@ -193,7 +196,7 @@ table_data_demo <- reactive({
     mutate(across(where(is.numeric), ~if_else(is.na(.), "-", format(., big.mark = ",")))) %>%
     mutate(across(starts_with("perc"), ~ if_else(grepl("-", .), ., paste0(.,"%")))) %>% 
     # adds superscript R for NHS Grampian and incorrect formula revisions. 
-    #From 2026 onward REMOVE the first if statement and keep the column names that are currently set as else
+    #From 2026 onward REMOVE the first if statement and keep the column names that are currently set as else----
     set_colnames(if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
     c(if(input$select_data_demo == "data_sex"){
                                                      "Gender"
@@ -219,7 +222,8 @@ table_data_demo <- reactive({
 
 output$table_demo <- DT::renderDataTable({
   
-  make_table(table_data_demo(), right_align = 1:7, ordering = FALSE, scrollY = FALSE, 
+  make_table(table_data_demo(),
+             right_align = 1:7, ordering = FALSE, scrollY = FALSE, 
              selected = nrow(table_data_demo()))                                                                                                  
   
   
@@ -236,7 +240,15 @@ output$downloadData_demo <- downloadHandler(
                 mutate(`Financial Year` = case_when(
                   `Financial Year` == provisional_year_sup ~paste0(provisional_year,"P"),
                   `Financial Year` == revised_year_sup ~paste0(revised_year,"R"),
-                  TRUE ~`Financial Year`)),
+                  TRUE ~`Financial Year`)) %>%
+                #REMOVE the next 7 lines from 2026 onwards----
+                rename_with(
+                if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
+                 ~ "Percentage of LDP Standard Achieved(R)"
+                }else{
+                  ~ "Percentage of LDP Standard Achieved"
+                }, .cols = last_col()
+                ),
               file, row.names = FALSE)
   }
 )
@@ -246,8 +258,7 @@ output$downloadData_demo <- downloadHandler(
 # REMOVE this section from 2026 onwards----
 
 observe({
-  if(input$select_data_demo != "data_sex" & input$select_year_demo == "2021/22")
-   {
+  if(input$select_data_demo != "data_sex" & input$select_year_demo == "2021/22"){
     updateSelectInput(session,"select_year_demo",
                       label = "Select Financial Year of Diagnosis:",
                       choices = included_years,
@@ -260,12 +271,12 @@ observe({
   }else if(input$select_data_demo == "data_sex" & input$select_year_demo == "2021/22ᴿ"){
     updateSelectInput(session,"select_year_demo",
                       label = "Select Financial Year of Diagnosis:",
-                      choices = included_years_sup,
+                      choices = included_years_2025_gender,
                       selected = "2021/22")
   }else if(input$select_data_demo == "data_sex" & input$select_year_demo != "2021/22ᴿ"){
     updateSelectInput(session,"select_year_demo",
                       label = "Select Financial Year of Diagnosis:",
-                      choices = included_years_sup,
+                      choices = included_years_2025_gender,
                       selected = input$select_year_demo)
   }
 })
