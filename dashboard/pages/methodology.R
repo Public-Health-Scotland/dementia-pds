@@ -3,13 +3,6 @@
 output$method_ui <-  renderUI({
 
   div(
-    fluidRow(column(
-
-      radioGroupButtons("method_tab", label = NULL, choices = method_list,
-                        status = "tab",
-                        direction = "horizontal",
-                        justified = T,
-                        size = "lg"), width = 12)),
     ##LDP classification ----
     conditionalPanel(
       condition= 'input.method_tab == "ldp_class"',

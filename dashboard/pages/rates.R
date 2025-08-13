@@ -3,15 +3,15 @@
 output$rates_ui <-  renderUI({
   
   div(
-    fluidRow(column(
-    linebreaks(1),
-    radioGroupButtons("RandR_tab", label = NULL, choices = RandR_tab_list,
-                      status = "tab",
-                      direction = "horizontal",
-                      justified = T,
-                      size = "normal"),
-    width = 12)
-  ), #fluidRow
+  #   fluidRow(column(
+  #   linebreaks(1),
+  #   radioGroupButtons("RandR_tab", label = NULL, choices = RandR_tab_list,
+  #                     status = "tab",
+  #                     direction = "horizontal",
+  #                     justified = T,
+  #                     size = "normal"),
+  #   width = 12)
+  # ), #fluidRow
   ##TOTAL Referrals----
   conditionalPanel(condition = 'input.RandR_tab == "RandR_totals"',
                    column(
@@ -366,8 +366,12 @@ output$rates_ui <-  renderUI({
   ## RATES ----
   
   # filter rates data to years included in publication----
+  #REMOVE the two lines below from 2026 onwards ----
   data_rates_sel_yrs <- data_rates %>% 
-    filter(fy %in% included_years_extra_referrals)
+    filter(fy %in% included_years_extra_referrals_2025_rates)#
+  #UNCOMMENT the two lines below from 2026 onwards ----
+  # data_rates_sel_yrs <- data_rates %>% 
+  #   filter(fy %in% included_years_extra_referrals)
   
   ## RATES BY YEAR----
   
@@ -571,6 +575,35 @@ output$rates_ui <-  renderUI({
     )
   }
   )
+  
+  
+  # the following dynamically updates the selection list to reflect that rates data from 2021/22
+  # has not been revised as it was not included in 2024 publication
+  # REMOVE this section from 2026 onwards----
+  
+  observe({
+    if(input$RandR_tab != "RandR_rates" & input$select_year_randr != "2021/22"){
+      updateSelectInput(session,"select_year_randr",
+                        label = "Select Financial Year of Diagnosis:",
+                        choices = included_years_extra_referrals,
+                        selected =  input$select_year_randr)
+    }else if(input$RandR_tab != "RandR_rates" & input$select_year_randr == "2021/22"){
+      updateSelectInput(session,"select_year_randr",
+                        label = "Select Financial Year of Diagnosis:",
+                        choices = included_years_extra_referrals,
+                        selected = "2021/22ᴿ")
+    }else if(input$RandR_tab == "RandR_rates" & input$select_year_randr == "2021/22ᴿ"){
+      updateSelectInput(session,"select_year_randr",
+                        label = "Select Financial Year of Diagnosis:",
+                        choices = included_years_extra_referrals_2025_rates,
+                        selected = "2021/22")
+    }else if(input$RandR_tab == "RandR_rates" & input$select_year_randr != "2021/22ᴿ"){
+      updateSelectInput(session,"select_year_randr",
+                        label = "Select Financial Year of Diagnosis:",
+                        choices = included_years_extra_referrals_2025_rates,
+                        selected = input$select_year_randr)
+    }
+  })
   
   ### END OF SCRIPT ###
   

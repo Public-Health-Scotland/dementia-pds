@@ -3,15 +3,6 @@
 output$ldp_ui <-  renderUI({
   
   div(
-    fluidRow(column(
-      linebreaks(1),
-      radioGroupButtons("ldp_tab", label = NULL, choices = ldp_tab_list,
-                        status = "tab",
-                        direction = "horizontal",
-                        justified = T,
-                        size = "normal"),
-      width = 12)
-    ), #fluidRow
     ##LDP PART 1----
     conditionalPanel(condition = 'input.ldp_tab == "ldp_part_1"',
                      column(

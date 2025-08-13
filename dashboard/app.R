@@ -55,7 +55,7 @@ tabPanel(title = "Home",
 ), # tabpanel
 
 ##############################################.
-# PAGE 2: Referrals and Rates ----
+# PAGE 1: Referrals and Rates ----
 ##############################################.
 tabPanel(title = "Referrals & Rates",
          # Look at https://fontawesome.com/search?m=free for icons
@@ -108,6 +108,16 @@ tabPanel(title = "Referrals & Rates",
            ), #sidebar panel
            
            mainPanel(width = 9,
+                     
+                     fluidRow(column(
+                       linebreaks(1),
+                       radioGroupButtons("RandR_tab", label = NULL, choices = RandR_tab_list,
+                                         status = "tab",
+                                         direction = "horizontal",
+                                         justified = T,
+                                         size = "normal"),
+                       width = 12)
+                     ), #fluidRow
 
                      uiOutput("rates_ui")
            )#main panel
@@ -116,7 +126,7 @@ tabPanel(title = "Referrals & Rates",
 ), # tabpanel
 
 ##############################################.
-# PAGE 3: LDP Standard  ----
+# PAGE 2: LDP Standard  ----
 ##############################################.
 
 tabPanel(title = "LDP Standard",
@@ -169,6 +179,16 @@ tabPanel(title = "LDP Standard",
            
            mainPanel(width = 9,
                      
+                     fluidRow(column(
+                       linebreaks(1),
+                       radioGroupButtons("ldp_tab", label = NULL, choices = ldp_tab_list,
+                                         status = "tab",
+                                         direction = "horizontal",
+                                         justified = T,
+                                         size = "normal"),
+                       width = 12)
+                     ), #fluidRow
+                     
                      uiOutput("ldp_ui")
            )#mainPanel
          )#sidebarLayout
@@ -200,7 +220,7 @@ tabPanel(title = "Pathways",
                               linebreaks(1),
                               selectInput("select_year_pathways",
                                           label = "Select Financial Year of Diagnosis:",
-                                          choices = included_years_sup,#change to included_years from 2026 onwards
+                                          choices = included_years_2025_gender_wait,#change to included_years from 2026 onwards
                                           selected= provisional_year_sup)
              ), #conditionalPanel wait
              conditionalPanel(condition = 'input.pathways_sidebar == "trends"',  
@@ -272,6 +292,14 @@ tabPanel(title = "Methodology",
          box(class = "header", h2("Dementia Post-Diagnostic Support; Methodology"),
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
+         
+         fluidRow(column(
+           
+           radioGroupButtons("method_tab", label = NULL, choices = method_list,
+                             status = "tab",
+                             direction = "horizontal",
+                             justified = T,
+                             size = "lg"), width = 12)),#fluidRow
          
          uiOutput("method_ui")
       

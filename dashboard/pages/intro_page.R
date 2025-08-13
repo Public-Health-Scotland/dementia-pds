@@ -157,7 +157,7 @@ output$intro_page_ui <-  renderUI({
 }) # renderUI
 
 
-###SERVER
+#SERVER----
 
 over_65_and_total <- left_join(
 
