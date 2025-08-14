@@ -221,9 +221,9 @@ output$rates_ui <-  renderUI({
       
       referrals_data_sel_yrs %>%
         filter(fy == input$select_year_randr) %>%
+        filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
         select(ijb,referrals)%>%
         mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-        filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
         arrange(ijb) %>% 
         set_colnames(
           # adds superscript R for NHS Grampian revisions.
@@ -239,9 +239,9 @@ output$rates_ui <-  renderUI({
       
       referrals_data_sel_yrs %>%
         filter(fy == input$select_year_randr) %>%
+        filter(!grepl("NHS", ijb)) %>% 
         select(ijb,referrals)%>%
         mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-        filter(!grepl("NHS", ijb)) %>% 
         arrange(ijb) %>% 
         set_colnames(
           #adds superscript R for NHS Grampian revisions.
@@ -262,11 +262,13 @@ output$rates_ui <-  renderUI({
     
   })
   
-  #### download button totals----
+  #### download button data totals----
   output$downloadData_totals <- downloadHandler(
     filename = paste0("pds_data_as_at_", end_date, ".csv"),
     content = function(file) {
-      write.csv(table_totals_data() %>% mutate(`Financial Year` = input$select_year_randr, 
+      write.csv(table_totals_data() %>%
+                  mutate(across(where(is.factor), ~as.character(.))) %>% 
+                  mutate(`Financial Year` = input$select_year_randr, 
                                                .before = everything()) %>% 
                   #changes superscript R to in line R for downloaded csv since superscript is not supported 
                   mutate(`Financial Year`  = case_when(
@@ -285,7 +287,19 @@ output$rates_ui <-  renderUI({
                     }else if(input$select_hb_ijb_randr != "Health Boards" & input$select_year_randr != "2020/21"){
                       c("Financial Year", "Integration Authority Area","Number of People Referred to PDS")  
                     }
-                  ),
+                  ) %>% 
+                  rbind(
+                    if(input$select_year_randr == revised_year_sup){
+                      c("","","Note: R indicates data has been revised. Please see dashboard for further information.")
+                    }else if(input$select_year_randr == provisional_year_sup | input$select_year_randr == extra_referrals_year_sup){
+                      c("","","Note: P indicates data is provisional. Please see dashboard for further information.")
+                      #REMOVE the following two lines from 2026 onward----
+                      }else if(input$select_year_randr == "2020/21"){
+                        c("","","Note: R indicates data has been revised. Please see dashboard for further information.")
+                      }else{
+                      rep("",3)
+                    }
+                    ),
                 file, row.names = FALSE)
     }
   )
@@ -342,11 +356,12 @@ output$rates_ui <-  renderUI({
                table_elements = "t", rows_to_display = 32)
   })
   
-  ### download button totals trend----
+  ### download button data totals trend----
   output$downloadData_totals_trend <- downloadHandler(
     filename = paste0("pds_data_as_at_", end_date, ".csv"),
     content = function(file) {
       write.csv(table_trend_totals_data() %>% 
+                  mutate(across(where(is.factor), ~as.character(.))) %>% 
                   #changes superscript R to in line R for downloaded csv since superscript is not supported 
                   mutate(fy = case_when(
                     fy == provisional_year_sup ~paste0(provisional_year,"P"),
@@ -358,7 +373,12 @@ output$rates_ui <-  renderUI({
                   pivot_wider(names_from = fy, values_from = referrals) %>% 
                   mutate(across(where(is.numeric), ~prettyNum(., big.mark = ","))) %>% 
                   mutate(Measure = "Number of people diagnosed with dementia who were referred for PDS", 
-                         .before = everything()), 
+                         .before = everything()) %>% 
+                  rbind(c(rep("",length(included_years_extra_referrals)+1),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                        
+                        ) %>% 
+                  rbind(c(rep("",length(included_years_extra_referrals)+1),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                        ),
                 file, row.names = FALSE)
     }
   )
@@ -463,19 +483,30 @@ output$rates_ui <-  renderUI({
   })
   
   
-  ### download button rates----
+  ### download button data rates----
   output$downloadData_rates <- downloadHandler(
     filename = paste0("pds_data_as_at_", end_date, ".csv"),
     content = function(file) {
-      write.csv(table_rates_data() %>% mutate(`Financial Year` = input$select_year_randr,
+      write.csv(table_rates_data() %>% 
+                  mutate(across(where(is.factor), ~as.character(.))) %>% 
+                  mutate(`Financial Year` = input$select_year_randr,
                                              .before = everything()) %>%
-                  #changes superscript R to in line R for downloaded csv since superscript is not supported
+                  #changes superscript P to in line P for downloaded csv since superscript is not supported
                   mutate(`Financial Year`  = case_when(
                     `Financial Year`  == provisional_year_sup ~paste0(provisional_year,"P"),
                     `Financial Year`  == revised_year_sup ~paste0(revised_year,"R"),
                     `Financial Year`  == extra_referrals_year_sup ~paste0(extra_referrals_year,"P"),
                     TRUE ~`Financial Year` ) 
-                                   ),
+                                   ) %>% 
+                  rbind(
+                    if(input$select_year_randr == provisional_year_sup | input$select_year_randr == extra_referrals_year_sup){
+                      c("","","Note: P indicates data is provisional. Please see dashboard for further information.")
+                    }else if(input$select_year_randr == revised_year_sup){
+                      c("","","Note: R indicates data has been revised. Please see dashboard for further information.")
+                    }else{
+                      rep("",3)
+                    }
+                  ),
                 file, row.names = FALSE)
     }
   )
@@ -544,11 +575,12 @@ output$rates_ui <-  renderUI({
     
   })
   
-  ### download button rates trend----
+  ### download button data rates trend----
   output$downloadData_rates_trend <- downloadHandler(
     filename = paste0("pds_data_as_at_", end_date, ".csv"),
     content = function(file) {
       write.csv(table_trend_rates_data() %>% 
+                  mutate(across(where(is.factor), ~as.character(.))) %>% 
                   mutate(fy = case_when(
                     fy == provisional_year_sup ~paste0(provisional_year,"P"),
                     fy  == extra_referrals_year_sup ~paste0(extra_referrals_year,"P"),
@@ -556,7 +588,11 @@ output$rates_ui <-  renderUI({
                     TRUE ~fy)) %>% 
                   pivot_wider(names_from = fy, values_from = pop_rate_10000) %>% 
                   mutate(Measure = "Number of people per 10,000 population (65+) who were referred for PDS", 
-                         .before = everything()), 
+                         .before = everything()) %>% 
+                  rbind(c(rep("",length(included_years_extra_referrals)+1),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                    ),# %>% 
+                # UNCOMMENT the line below from 2026 onward----
+                #rbind(c(rep("",length(included_years_extra_referrals)+1),"Note: R indicates data has been revised. Please see dashboard for further information.")),
                 file, row.names = FALSE)
     }
   )

@@ -230,24 +230,58 @@ output$table_demo <- DT::renderDataTable({
 })
 
 
-### download button----
+### download button data----
 output$downloadData_demo <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
-    write.csv(table_data_demo() %>% mutate(`Financial Year` = input$select_year_demo, 
+    write.csv(table_data_demo() %>%
+                mutate(across(where(is.factor), ~as.character(.))) %>% 
+                mutate(`Financial Year` = input$select_year_demo, 
                                            Geography = "Scotland",
                                            .before = everything()) %>% 
                 mutate(`Financial Year` = case_when(
                   `Financial Year` == provisional_year_sup ~paste0(provisional_year,"P"),
                   `Financial Year` == revised_year_sup ~paste0(revised_year,"R"),
                   TRUE ~`Financial Year`)) %>%
+                #### #changes superscript R to in line R for downloaded csv since superscript is not supported for NHS Grampian revision
                 #REMOVE the next 7 lines from 2026 onwards----
                 rename_with(
                 if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
-                 ~ "Percentage of LDP Standard Achieved(R)"
+                 ~ "Number of People Referred to PDS(R)"
+                }else{
+                  ~ "Number of People Referred to PDS"
+                }, .cols = 4
+                ) %>% 
+                #####changes superscript R to in line R for downloaded csv since superscript is not supported for NHS Grampian revision
+                #REMOVE the next 7 lines from 2026 onwards----
+              rename_with(
+                if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
+                  ~ "Proportion of Total Referrals(R)"
+                }else{
+                  ~ "Proportion of Total Referrals"
+                }, .cols = 5
+              ) %>% 
+                #####changes superscript R to in line R for downloaded csv since superscript is not supported for NHS Grampian revision
+                #REMOVE the next 7 lines from 2026 onwards----
+              rename_with(
+                if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
+                  ~ "Percentage of LDP Standard Achieved(R)"
                 }else{
                   ~ "Percentage of LDP Standard Achieved"
                 }, .cols = last_col()
+              ) %>% 
+                #### adds revision and provisional note
+                rbind(
+                  if(input$select_year_demo == revised_year_sup){
+                    c(rep("",9),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                  }else if(input$select_year_demo == provisional_year_sup){
+                    c(rep("",9),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                    #REMOVE the following two lines from 2026 onward----
+                  }else if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
+                    c(rep("",9),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                  }else{
+                    rep("",10)
+                  }
                 ),
               file, row.names = FALSE)
   }

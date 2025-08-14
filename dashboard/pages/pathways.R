@@ -83,7 +83,7 @@ output$plot_title_pathways <- renderUI({HTML(paste0("Average (median) days from 
 
 wait_times_chart_data <- reactive({
   
-  median_data <- data_wait %>% filter(fy == input$select_year_pathways) %>% 
+  median_data <- data_wait_sel_yrs %>% filter(fy == input$select_year_pathways) %>% 
     mutate(median_diagnosis_to_contact = if_else(is.na(median_diagnosis_to_contact)| median_diagnosis_to_contact < 0, 0, median_diagnosis_to_contact))
   
   if(input$select_hb_ijb_pathways == "Health Boards"){
@@ -123,7 +123,7 @@ median_table_data <- reactive({
   
   if(input$select_hb_ijb_pathways == "Health Boards"){
     
-    data_wait %>% 
+    data_wait_sel_yrs %>% 
       filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
       filter(fy == input$select_year_pathways) %>% 
       select(health_board, fy, total_referrals, perc_contacted, median_diagnosis_to_contact) %>% 
@@ -144,7 +144,7 @@ median_table_data <- reactive({
     
   }else{
     
-    data_wait %>% 
+    data_wait_sel_yrs %>% 
       filter(!grepl("NHS", ijb)) %>% 
       filter(fy == input$select_year_pathways) %>% 
       select(ijb, fy, total_referrals, perc_contacted, median_diagnosis_to_contact) %>%
@@ -173,16 +173,28 @@ output$table_pathways <- DT::renderDataTable({
   
 })
 
-### download button ----
+### download button data ----
 output$downloadData_pathways <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
-    write.csv(median_table_data() %>% mutate(`Financial Year` = input$select_year_pathways, 
+    write.csv(median_table_data() %>%
+                mutate(across(where(is.factor), ~as.character(.))) %>% 
+                mutate(`Financial Year` = input$select_year_pathways, 
                                              .before = everything()) %>% 
                 mutate(`Financial Year` = case_when(
                   `Financial Year` == provisional_year_sup ~paste0(provisional_year,"P"),
                   `Financial Year` == revised_year_sup ~paste0(revised_year,"R"),
-                  TRUE ~`Financial Year`)),
+                  TRUE ~`Financial Year`)) %>% 
+                #### adds revision and provisional note
+                rbind(
+                  if(input$select_year_pathways == provisional_year_sup){
+                    c(rep("",4),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                    }else if(input$select_year_randr == revised_year_sup){
+                      c("","","Note: R indicates data has been revised. Please see dashboard for further information.")
+                  }else{
+                    rep("",5)
+                  }
+                ),
               file, row.names = FALSE)
   }
 )
@@ -196,7 +208,7 @@ output$plot_title_pathways_trend <- renderUI({HTML(paste0("Average (median) days
 })
 
 trend_pathways_chart_data <- reactive({
-  data_wait %>%
+  data_wait_sel_yrs %>%
     #coding Aberdeen City and NHS Grampian medians as -999 so they do not appear on chart
     mutate(median_diagnosis_to_contact = 
              if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), -999, median_diagnosis_to_contact)) %>% 
@@ -220,7 +232,7 @@ median_table_trend_data <- reactive({
   
   if(input$select_hb_ijb_pathways == "Health Boards"){
     
-    median_hb_trend_table_data <- data_wait %>%
+    median_hb_trend_table_data <- data_wait_sel_yrs %>%
       filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
       #coding NHS Grampian medians as -999 so they do not appear on chart
       mutate(median_diagnosis_to_contact = 
@@ -237,7 +249,7 @@ median_table_trend_data <- reactive({
     
   }else{
     
-    median_ijb_trend_table_data <- data_wait %>%
+    median_ijb_trend_table_data <- data_wait_sel_yrs %>%
       filter(!grepl("NHS", ijb)) %>% 
       arrange(ijb) %>% 
       #coding Aberdeen City medians as -999 so they do not appear on chart
@@ -267,18 +279,24 @@ output$table_pathways_trend <- DT::renderDataTable({
 })
 
 
-### download button trend----
+### download button data trend----
 output$downloadData_pathways_trend <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
     write.csv(median_table_trend_data() %>% 
+                mutate(across(where(is.factor), ~as.character(.))) %>% 
                 mutate(fy = case_when(
                   fy == provisional_year_sup ~paste0(provisional_year,"P"),
                   fy == revised_year_sup ~paste0(revised_year,"R"),
                   TRUE ~fy)) %>% 
                 pivot_wider(names_from = fy, values_from = median_diagnosis_to_contact) %>% 
                 mutate(Measure = "Average (median) days from diagnosis to first contact", 
-                       .before = everything()), 
+                       .before = everything()) %>% 
+                #### adds revision and provisional note
+                rbind(c(rep("",length(included_years)+1),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                ),# %>% 
+              # UNCOMMENT the line below from 2026 onward----
+              #rbind(c(rep("",length(included_years)+1),"Note: R indicates data has been revised. Please see dashboard for further information.")), 
               file, row.names = FALSE)
   }
 )

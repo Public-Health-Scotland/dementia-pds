@@ -231,9 +231,9 @@ table_hb_exp_data <- reactive({
   ldp_data %>% 
     filter(fy == input$select_year_ldp) %>%
     filter(grepl("NHS", ijb) | ijb == "Scotland", !is.na(diagnoses)) %>% 
-    group_by(health_board)%>%
     select(health_board, diagnoses, referrals)%>%
     mutate(exp_perc = paste0(round(referrals/diagnoses*100, 1), "%")) %>%  
+    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
     arrange(health_board) %>% 
     # adds superscript R for NHS Grampian revisions. 
     #From 2026 onward REMOVE the if statement and keep the column names that are currently set as else
@@ -247,15 +247,16 @@ table_hb_exp_data <- reactive({
 })
 
 output$table_hb_exp <- DT::renderDataTable({
-  make_table(table_hb_exp_data(), right_align = 1:3, selected = 1) %>%
-    formatCurrency(c(2,3), currency = "", interval = 3, mark = ",", digits = 0)
+  make_table(table_hb_exp_data(), right_align = 1:3, selected = 1)
 })
 
-### download button ldp1----
+### download button data ldp1----
 output$downloadData_ldp1 <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
-    write.csv(table_hb_exp_data() %>% mutate(`Financial Year` = input$select_year_ldp, 
+    write.csv(table_hb_exp_data() %>%
+               mutate(across(where(is.factor), ~as.character(.))) %>% 
+                mutate(`Financial Year` = input$select_year_ldp, 
                                              .before = everything()) %>% 
                 #changes superscript R to in line R for downloaded csv since superscript is not supported 
                 mutate(`Financial Year`  = case_when(
@@ -269,6 +270,19 @@ output$downloadData_ldp1 <- downloadHandler(
                 }else{c("Financial Year", "Health Board","Estimated Number of People Newly Diagnosed with Dementia",
                         "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS")
                 }
+                ) %>% 
+                ##### adds revision and provisional note
+                rbind(
+                  if(input$select_year_ldp == revised_year_sup){
+                    c(rep("",4),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                  }else if(input$select_year_ldp == provisional_year_sup){
+                    c(rep("",4),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                    #REMOVE the following two lines from 2026 onward----
+                  }else if(input$select_year_ldp == "2020/21"){
+                    c(rep("",4),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                  }else{
+                    rep("",5)
+                  }
                 ),
               file, row.names = FALSE)
   }
@@ -312,11 +326,12 @@ output$table_hb_trend_part_1 <- DT::renderDataTable({
 })
 
 
-### download button ldp1 trend----
+### download button data ldp1 trend----
 output$downloadData_ldp1_trend <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
     write.csv(table_hb_trend_part_1_data() %>% 
+                mutate(across(where(is.factor), ~as.character(.))) %>% 
                 #changes superscript R to in line R for downloaded csv since superscript is not supported 
                 mutate(fy = case_when(
                   fy == provisional_year_sup ~paste0(provisional_year,"P"),
@@ -326,7 +341,12 @@ output$downloadData_ldp1_trend <- downloadHandler(
                   TRUE ~fy))  %>% 
                 pivot_wider(names_from = fy, values_from = exp_perc) %>%
                 mutate(Measure = "Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS", 
-                       .before = everything()), 
+                       .before = everything()) %>% 
+                rbind(c(rep("",length(included_years)+1),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                      
+                ) %>% 
+                rbind(c(rep("",length(included_years)+1),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                ), 
               file, row.names = FALSE)
   }
 )
@@ -438,11 +458,13 @@ output$perc_met_table <- DT::renderDataTable({
 })
 
 
-### download button ldp2----
+### download button data ldp2----
 output$downloadData_ldp2 <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
-    write.csv(table_ldp2_data() %>% mutate(`Financial Year` = input$select_year_ldp, 
+    write.csv(table_ldp2_data() %>% 
+                mutate(across(where(is.factor), ~as.character(.))) %>% 
+                mutate(`Financial Year` = input$select_year_ldp, 
                                            .before = everything()) %>% 
                 #changes superscript R to in line R for downloaded csv since superscript is not supported 
                 mutate(`Financial Year`  = case_when(
@@ -459,6 +481,18 @@ output$downloadData_ldp2 <- downloadHandler(
                     c("Financial Year", "Integration Authority Area","Number of People Referred to PDS(R)", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
                   }else if(input$select_hb_ijb != "Health Boards" & input$select_year_ldp != "2020/21"){
                     c("Financial Year", "Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
+                  }
+                )%>% 
+                rbind(
+                  if(input$select_year_ldp == revised_year_sup){
+                    c(rep("",4),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                  }else if(input$select_year_ldp == provisional_year_sup){
+                    c(rep("",4),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                    #REMOVE the following two lines from 2026 onward----
+                  }else if(input$select_year_ldp == "2020/21"){
+                    c(rep("",4),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                  }else{
+                    rep("",5)
                   }
                 ),
               file, row.names = FALSE)
@@ -527,18 +561,24 @@ output$table_hb_ijb_trend_part_2 <- DT::renderDataTable({
   
 })
 
-### download button ldp2 trend----
+### download button data ldp2 trend----
 output$downloadData_ldp2_trend <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
     write.csv(table_trend_part_2_data() %>% 
+                mutate(across(where(is.factor), ~as.character(.))) %>% 
                 mutate(fy = case_when(
                   fy == provisional_year_sup ~paste0(provisional_year,"P"),
                   fy == revised_year_sup ~paste0(revised_year,"R"),
                   TRUE ~fy)) %>% 
                 pivot_wider(names_from = fy, values_from = percent_met) %>% 
                 mutate(Measure = "Percentage of LDP standard achieved", 
-                       .before = everything()), 
+                       .before = everything()) %>% 
+                rbind(c(rep("",length(included_years)+1),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                      
+                ) %>% 
+                rbind(c(rep("",length(included_years)+1),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                ), 
               file, row.names = FALSE)
   }
 )
