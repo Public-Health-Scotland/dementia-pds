@@ -17,8 +17,10 @@ output$intro_page_ui <-  renderUI({
                          tags$ul(tags$li("Performance against the Local Delivery Plan (LDP) Standard"),
                                 tags$li("Total number of referrals to PDS and rates per 10,000 population"),
                                 tags$li("Demographics (Gender, Age and Deprivation)"),
-                                tags$li("Pathways from diagnosis of dementia to first contact by a PDS practitioner"))
-    
+                                tags$li("Pathways from diagnosis of dementia to first contact by a PDS practitioner"),
+                                tags$li("Information on the methodology used in the report"),
+                                tags$li("Downloading data from the report")
+                                )
                                 )
                      ), #fluidrow
                      
@@ -114,10 +116,24 @@ output$intro_page_ui <-  renderUI({
     ), #cond panel about
 ##Using the dashboard ----
     conditionalPanel(condition = 'input.home_select == "use"',
-                     fluidRow(
-                       h3("How to use this dashboard"),
-                       p("This dashboard..."),
-                       p(strong("some bold text"))  
+                     fluidRow(column(
+                       h3(strong("Using the Dashboard")),
+                       h4(strong("Interacting with the dashboard")),
+                       p("The dashboard has seven pages across the top which can be selected: Home, Referrals & Rates, LDP Standard, Pathways, 
+                         Demographics, Methodology, and Data Download. Most pages have buttons on the left hand side of the screen and/or 
+                         tabs towards the top of the screen to navigate to areas within each page."),
+                       p("Drop-down menus and radio buttons are located on the left hand side of the screen of most pages in the dashboard. Where these filters are available,
+                         you can make choices on the data presented and the dashboard will update in response to the selection.
+                         The charts are interactive and hovering the mouse over a specific data point will bring up more information."),
+                       h4(strong("Downloading data")),
+                       p("Data for each table can be downloaded as a .csv file by clicking the 'Download table data' button located above the table.
+                         Additionaly, the Download Data page allows users to select the data from the report they wish to explore using the drop-down menus and 
+                         checkboxes provided, and then clicking the ‘Download data’ button to download a .csv file."),
+                       linebreaks(1),
+                       width = 12,
+                       #fix panel so sidebar and navigation bar do not scroll with content
+                       style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white"
+                     )
                      ) #fluidrow
     ), #cond panel using the dashboard
 #Accessibility-----
@@ -149,7 +165,22 @@ output$intro_page_ui <-  renderUI({
                       style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white"
                        )
                    ) #fluidrow
-              ), #cond panel accessability
+              ), #cond panel accessibility
+
+#Contact-----
+conditionalPanel(condition = 'input.home_select == "contact"',
+                 fluidRow(column(
+                   h3(strong("Contact Us")),
+                   p("If you have any questions or feedback regarding this dashboard, or have any questions relating to the data, please contact us at ",
+                     a("phs.dementiapds@phs.scot", href="mailto:phs.dementiapds@phs.scot")),
+                   linebreaks(1),
+                   width = 12,
+                   #fix panel so sidebar and navigation bar do not scroll with content
+                   style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white"
+                 )
+                 ) #fluidrow
+), #cond panel contact
+
 
 ) # div
       

@@ -49,9 +49,9 @@ included_years_extra_referrals_2025_rates <- c(finalised_years, provisional_year
 #sidebar buttons for home page
 home_list <- c("About" = "about",
                "Using the Dashboard" = "use",
-               "Further Information" = "info",
-               #"Data Definitions" = "defs",
-               "Accessibility" = "access")
+               "Glossary" = "glossary",
+               "Accessibility" = "access",
+               "Contact" = "contact")
 
 
 #tabs for ldp standard page

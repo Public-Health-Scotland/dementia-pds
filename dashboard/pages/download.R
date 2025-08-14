@@ -9,7 +9,7 @@ output$download_ui <-  renderUI({
         You can use the additional selection options to further refine the data. 
         Note that gender, age group, and deprivation quintile are only available at Scotland level. 
         LDP standard part 2 is only available at Scotland and Health Board level. "),
-      p("Use the download button to download the selected data as a csv file.
+      p("Use the download button to download the selected data as a .csv file.
         A preview of the data (first 10 rows) is shown at the bottom of this page."),width = 12),
       column(selectInput("download", "Show data for:", choices = download_list), width = 3)
     ),#fluidRow
@@ -107,8 +107,14 @@ output$download_ui <-  renderUI({
                     #data table----
                     h4(strong("Preview of data to download (first 10 rows):")),
                     DT::dataTableOutput("table_download"), 
-                    
-                    linebreaks(1), width = 12)
+                    linebreaks(1), 
+                    p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
+                             format(end_date, "%d %B %Y"), "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021, mid-2022 and mid-2023 population estimates.")),
+                    ### Notes----
+                    h4(strong("Notes:")),
+                    p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
+                    p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
+                     width = 12) #column
     )#fluidRow
   ) # div
 })

@@ -306,9 +306,9 @@ tabPanel(title = "Methodology",
 ), # tabPanel
 
 ##############################################.
-# PAGE 6: Download Data ----
+# PAGE 6: Data Download----
 ##############################################.
-tabPanel(title = "Download Data",
+tabPanel(title = "Data Download",
          # Look at https://fontawesome.com/search?m=free for icons
          icon = icon_no_warning_fn("download"),
          value = "dl",

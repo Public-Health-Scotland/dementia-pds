@@ -271,12 +271,12 @@ observe({
   }else if(input$select_data_demo == "data_sex" & input$select_year_demo == "2021/22ᴿ"){
     updateSelectInput(session,"select_year_demo",
                       label = "Select Financial Year of Diagnosis:",
-                      choices = included_years_2025_gender,
+                      choices = included_years_2025_gender_wait,
                       selected = "2021/22")
   }else if(input$select_data_demo == "data_sex" & input$select_year_demo != "2021/22ᴿ"){
     updateSelectInput(session,"select_year_demo",
                       label = "Select Financial Year of Diagnosis:",
-                      choices = included_years_2025_gender,
+                      choices = included_years_2025_gender_wait,
                       selected = input$select_year_demo)
   }
 })
