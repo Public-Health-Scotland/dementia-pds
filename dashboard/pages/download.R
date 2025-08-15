@@ -199,7 +199,48 @@ output$downloadData <- downloadHandler(
                   financial_year == provisional_year_sup ~paste0(provisional_year,"P"),
                   financial_year == revised_year_sup ~paste0(revised_year,"R"),
                   financial_year == extra_referrals_year_sup ~paste0(extra_referrals_year,"P"),
-                                                    TRUE ~financial_year)),
+                                                    TRUE ~financial_year)) %>%
+                #adding (R) to indicate where revisions were made in 2025 publication due to Aberdeen City and incorrect formula being used
+                #REMOVE this section from 2025 onward----
+              mutate(measure = 
+                if(input$download == "download_data_scotland"){
+                  case_when(
+                    (financial_year == "2020/21" & gender == "All" & age_group != "90+" & measure == "number of people referred to PDS") ~"number of people referred to PDS(R)",
+                    (financial_year == "2020/21" & measure == "LDP standard part 1 - percentage of estimated number of people diagnosed with dementia referred to pds")
+                    ~"LDP standard part 1 - percentage of estimated number of people diagnosed with dementia referred to pds(R)",
+                    (financial_year == "2020/21" & gender == "All" & age_group != "59 and Under" & age_group != "All" & measure == "LDP standard part 2 - percentage of LDP standard achieved")
+                    ~"LDP standard part 2 - percentage of LDP standard achieved(R)",
+                    (financial_year == "2020/21" & gender == "All" & deprivation_quintile != "All" & measure == "LDP standard part 2 - percentage of LDP standard achieved")
+                    ~"LDP standard part 2 - percentage of LDP standard achieved(R)",
+                    (financial_year == "2019/20" & gender == "All" & age_group != "59 and Under" & age_group != "60 to 64" & age_group != "70 to 74" & age_group != "90+" & age_group != "All" & measure == "number of people referred to PDS") 
+                                                   ~"number of people referred to PDS(R)",
+                    (financial_year == "2019/20" & gender == "All" & deprivation_quintile != "All" & measure == "number of people referred to PDS") 
+                    ~"number of people referred to PDS(R)",
+                    (financial_year == "2019/20" & gender == "All" & age_group != "59 and Under" & age_group != "All" & measure == "LDP standard part 2 - percentage of LDP standard achieved")
+                    ~"LDP standard part 2 - percentage of LDP standard achieved(R)",
+                    (financial_year == "2019/20" & gender == "All" & deprivation_quintile != "All" & measure == "LDP standard part 2 - percentage of LDP standard achieved")
+                    ~"LDP standard part 2 - percentage of LDP standard achieved(R)",
+                    TRUE ~measure
+                         )
+                }else if(input$download == "download_data_hb"){ 
+                  case_when(
+                    (geography == "NHS Grampian" & financial_year == "2020/21" & measure == "number of people referred to PDS") ~"number of people referred to PDS(R)",
+                    (geography == "NHS Grampian" & financial_year == "2020/21" & measure == "LDP standard part 1 - percentage of estimated number of people diagnosed with dementia referred to pds")
+                    ~"LDP standard part 1 - percentage of estimated number of people diagnosed with dementia referred to pds(R)",
+                     TRUE ~measure
+                  )
+                }else{
+                  case_when(
+                    (geography == "Aberdeen City" & financial_year == "2020/21" & measure == "number of people referred to PDS") ~"number of people referred to PDS(R)",
+                    TRUE ~measure
+                    )
+                  }
+                ) %>% 
+                rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",6))
+                      
+                ) %>% 
+                rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",6))
+                ),
                file, row.names = FALSE)
   }
 )

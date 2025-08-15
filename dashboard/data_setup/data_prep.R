@@ -400,7 +400,10 @@ download_data_scotland <- left_join(scotland_ldp_exp_pop,
                 
   )
 
-download_data_scotland %<>% pivot_longer(cols = c(`number of people referred to PDS`:`average (median) days from diagnoses to first contact`), names_to = "measure")
+#pivot to put measures in a single column
+download_data_scotland %<>% pivot_longer(cols = c(`number of people referred to PDS`:`average (median) days from diagnoses to first contact`), names_to = "measure") %>% 
+#remove NA values
+  filter(!is.na(value))
 
 write_rds(download_data_scotland, 
           "//conf/dementia/A&I/Outputs/dashboard/data/download_data_scotland.rds")
@@ -438,12 +441,13 @@ hb_ldp_exp <- left_join(hb_ldp,
   mutate(exp_perc = if_else(!is.na(diagnoses), round(referrals/diagnoses*100, 1), NA))
 
 hb_ldp_exp_pop <- left_join(hb_ldp_exp,
-data_rates %>%
+data_rates %>% filter(grepl("NHS", ijb)) %>% 
   select(health_board, fy, pop_rate_10000)) 
 
 download_data_hb <- left_join(hb_ldp_exp_pop, 
                                    data_wait %>% filter(grepl("NHS",ijb)) %>% 
                                       select(health_board, fy, perc_contacted, median_diagnosis_to_contact)) %>% 
+  relocate(pop_rate_10000, .after = referrals) %>% 
   mutate(median_diagnosis_to_contact = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), NA, median_diagnosis_to_contact)) %>% 
   mutate(perc_contacted = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), NA, perc_contacted)) %>% 
   relocate(c(diagnoses, exp_perc), .after = pop_rate_10000) %>% 
@@ -462,7 +466,10 @@ download_data_hb <- left_join(hb_ldp_exp_pop,
          `percentage of referrals contacted by PDS practitioner` = perc_contacted,
          `average (median) days from diagnoses to first contact` = median_diagnosis_to_contact)
 
-download_data_hb %<>% pivot_longer(cols = c(`number of people referred to PDS`:`average (median) days from diagnoses to first contact`), names_to = "measure")
+#pivot so measures are in a single column
+download_data_hb %<>% pivot_longer(cols = c(`number of people referred to PDS`:`average (median) days from diagnoses to first contact`), names_to = "measure") %>% 
+ #show na and negative values as a dash
+   mutate(across(where(is.numeric), ~if_else(.<0 | is.na(.), "-", prettyNum(., big.mark = ",")))) 
 
 write_rds(download_data_hb, 
           "//conf/dementia/A&I/Outputs/dashboard/data/download_data_hb.rds")
@@ -501,10 +508,9 @@ ijb_ldp_pop <- left_join(ijb_ldp,
 download_data_ijb <- left_join(ijb_ldp_pop,
                               data_wait %>% 
                                 select(ijb, fy, perc_contacted, median_diagnosis_to_contact)) %>% 
-  mutate(median_diagnosis_to_contact = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), NA, median_diagnosis_to_contact)) %>% 
-  mutate(perc_contacted = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), NA, perc_contacted)) %>% 
-  
-  select(geography = ijb,
+  relocate(pop_rate_10000, .after = referrals) %>% 
+  mutate(across(complete:median_diagnosis_to_contact, ~if_else(ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), NA, .))) %>% 
+    select(geography = ijb,
          financial_year = fy,
          `number of people referred to PDS` = referrals,
          `number of people referred to PDS per 10,000 population (65+)` = pop_rate_10000,
@@ -516,7 +522,10 @@ download_data_ijb <- left_join(ijb_ldp_pop,
          `percentage of referrals contacted by PDS practitioner` = perc_contacted,
          `average (median) days from diagnoses to first contact` = median_diagnosis_to_contact)
 
-download_data_ijb %<>% pivot_longer(cols = c(`number of people referred to PDS`:`average (median) days from diagnoses to first contact`), names_to = "measure")
+#pivot so measures are in a single column
+download_data_ijb %<>% pivot_longer(cols = c(`number of people referred to PDS`:`average (median) days from diagnoses to first contact`), names_to = "measure") %>% 
+  #show na and negative values as a dash
+  mutate(across(where(is.numeric), ~if_else(.<0 | is.na(.), "-", prettyNum(., big.mark = ",")))) 
 
 write_rds(download_data_ijb, 
           "//conf/dementia/A&I/Outputs/dashboard/data/download_data_ijb.rds")
