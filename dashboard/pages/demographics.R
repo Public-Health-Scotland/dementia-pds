@@ -273,12 +273,12 @@ output$downloadData_demo <- downloadHandler(
                 #### adds revision and provisional note
                 rbind(
                   if(input$select_year_demo == revised_year_sup){
-                    c(rep("",9),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                    c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",9))
                   }else if(input$select_year_demo == provisional_year_sup){
-                    c(rep("",9),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                    c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",9))
                     #REMOVE the following two lines from 2026 onward----
                   }else if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
-                    c(rep("",9),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                    c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",9))
                   }else{
                     rep("",10)
                   }

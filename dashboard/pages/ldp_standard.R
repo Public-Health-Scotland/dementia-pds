@@ -274,12 +274,12 @@ output$downloadData_ldp1 <- downloadHandler(
                 ##### adds revision and provisional note
                 rbind(
                   if(input$select_year_ldp == revised_year_sup){
-                    c(rep("",4),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                    c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",4))
                   }else if(input$select_year_ldp == provisional_year_sup){
-                    c(rep("",4),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                    c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",4))
                     #REMOVE the following two lines from 2026 onward----
                   }else if(input$select_year_ldp == "2020/21"){
-                    c(rep("",4),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                    c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",4))
                   }else{
                     rep("",5)
                   }
@@ -342,10 +342,10 @@ output$downloadData_ldp1_trend <- downloadHandler(
                 pivot_wider(names_from = fy, values_from = exp_perc) %>%
                 mutate(Measure = "Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS", 
                        .before = everything()) %>% 
-                rbind(c(rep("",length(included_years)+1),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years)+1))
                       
                 ) %>% 
-                rbind(c(rep("",length(included_years)+1),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",length(included_years)+1))
                 ), 
               file, row.names = FALSE)
   }
@@ -574,10 +574,10 @@ output$downloadData_ldp2_trend <- downloadHandler(
                 pivot_wider(names_from = fy, values_from = percent_met) %>% 
                 mutate(Measure = "Percentage of LDP standard achieved", 
                        .before = everything()) %>% 
-                rbind(c(rep("",length(included_years)+1),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years)+1))
                       
                 ) %>% 
-                rbind(c(rep("",length(included_years)+1),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",length(included_years)+1))
                 ), 
               file, row.names = FALSE)
   }

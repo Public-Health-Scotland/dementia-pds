@@ -11,7 +11,7 @@
 #
 # Description - Sets up environment required for running quarterly 
 #               management reports. This is the only file 
-#               to be updated everytime the process is run.
+#               to be updated every time the process is run.
 ################################################################################
 
 
@@ -21,8 +21,8 @@
 #           outputs. This is useful for when the DM give us a test run when boards
 #           are still submitting the data or when making changes to the code.
 #
-#           test_report = TRUE - returns the test file path
-#           test_report = FALSE - returns the finalised report for distribution
+#           test_output = TRUE - returns the test file path for data and report
+#           test_output = FALSE - returns the finalised data and report for distribution
 test_output <- FALSE
 
 # UPDATE - Last day in reporting period (ddmmyyyy)

@@ -188,9 +188,9 @@ output$downloadData_pathways <- downloadHandler(
                 #### adds revision and provisional note
                 rbind(
                   if(input$select_year_pathways == provisional_year_sup){
-                    c(rep("",4),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                    c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",4))
                     }else if(input$select_year_randr == revised_year_sup){
-                      c("","","Note: R indicates data has been revised. Please see dashboard for further information.")
+                      c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",4))
                   }else{
                     rep("",5)
                   }
@@ -293,10 +293,10 @@ output$downloadData_pathways_trend <- downloadHandler(
                 mutate(Measure = "Average (median) days from diagnosis to first contact", 
                        .before = everything()) %>% 
                 #### adds revision and provisional note
-                rbind(c(rep("",length(included_years)+1),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years)+1))
                 ),# %>% 
               # UNCOMMENT the line below from 2026 onward----
-              #rbind(c(rep("",length(included_years)+1),"Note: R indicates data has been revised. Please see dashboard for further information.")), 
+              #rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",length(included_years)+1))), 
               file, row.names = FALSE)
   }
 )

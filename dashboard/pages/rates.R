@@ -290,12 +290,12 @@ output$rates_ui <-  renderUI({
                   ) %>% 
                   rbind(
                     if(input$select_year_randr == revised_year_sup){
-                      c("","","Note: R indicates data has been revised. Please see dashboard for further information.")
+                      c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",2))
                     }else if(input$select_year_randr == provisional_year_sup | input$select_year_randr == extra_referrals_year_sup){
-                      c("","","Note: P indicates data is provisional. Please see dashboard for further information.")
+                      c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",2))
                       #REMOVE the following two lines from 2026 onward----
                       }else if(input$select_year_randr == "2020/21"){
-                        c("","","Note: R indicates data has been revised. Please see dashboard for further information.")
+                        c(,"Note: R indicates data has been revised. Please see dashboard for further information.",rep("",2))
                       }else{
                       rep("",3)
                     }
@@ -374,10 +374,10 @@ output$rates_ui <-  renderUI({
                   mutate(across(where(is.numeric), ~prettyNum(., big.mark = ","))) %>% 
                   mutate(Measure = "Number of people diagnosed with dementia who were referred for PDS", 
                          .before = everything()) %>% 
-                  rbind(c(rep("",length(included_years_extra_referrals)+1),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                  rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years_extra_referrals)+1),)
                         
                         ) %>% 
-                  rbind(c(rep("",length(included_years_extra_referrals)+1),"Note: R indicates data has been revised. Please see dashboard for further information.")
+                  rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",length(included_years_extra_referrals)+1))
                         ),
                 file, row.names = FALSE)
     }
@@ -500,9 +500,9 @@ output$rates_ui <-  renderUI({
                                    ) %>% 
                   rbind(
                     if(input$select_year_randr == provisional_year_sup | input$select_year_randr == extra_referrals_year_sup){
-                      c("","","Note: P indicates data is provisional. Please see dashboard for further information.")
+                      c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",2))
                     }else if(input$select_year_randr == revised_year_sup){
-                      c("","","Note: R indicates data has been revised. Please see dashboard for further information.")
+                      c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",2))
                     }else{
                       rep("",3)
                     }
@@ -589,10 +589,10 @@ output$rates_ui <-  renderUI({
                   pivot_wider(names_from = fy, values_from = pop_rate_10000) %>% 
                   mutate(Measure = "Number of people per 10,000 population (65+) who were referred for PDS", 
                          .before = everything()) %>% 
-                  rbind(c(rep("",length(included_years_extra_referrals)+1),"Note: P indicates data is provisional. Please see dashboard for further information.")
+                  rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years_extra_referrals)+1))
                     ),# %>% 
                 # UNCOMMENT the line below from 2026 onward----
-                #rbind(c(rep("",length(included_years_extra_referrals)+1),"Note: R indicates data has been revised. Please see dashboard for further information.")),
+                #rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",length(included_years_extra_referrals)+1))),
                 file, row.names = FALSE)
     }
   )

@@ -45,6 +45,7 @@ download_data_scotland<-download_data_scotland %>%
                                     financial_year == revised_year ~paste0(revised_year,"ᴿ"),
                                     financial_year == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
                                     TRUE ~financial_year))
+  
 download_data_hb<-download_data_hb %>% 
   mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
                                     financial_year == revised_year ~paste0(revised_year,"ᴿ"),
@@ -57,13 +58,13 @@ download_data_ijb<-download_data_ijb %>%
                                     TRUE ~financial_year))
 
 # yearly referrals and ldp data
-#add superscripts and filter to selected years
+#add superscripts
 annual_table_data <- annual_table_data %>%  
   
   mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
-                                                                 fy == revised_year ~paste0(revised_year,"ᴿ"),
-                                                                 fy == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
-                                                                 TRUE ~fy))
+                       fy == revised_year ~paste0(revised_year,"ᴿ"),
+                       fy == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
+                       TRUE ~fy))
 
 
 annual_table_data$ijb <- factor(annual_table_data$ijb, levels=unique(annual_table_data$ijb))
