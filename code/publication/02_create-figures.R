@@ -632,4 +632,42 @@ ggsave(get_pub_figures_path(type = "c11", test_output = test_output),
        dpi = 600
 )
 
+# chart 12 - waiting times by HB
+
+#read in data
+c12_data <- data_wait <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output)) %>% 
+  filter(fy == max(fy_in_pub))
+
+c12_data$health_board <- factor(c12_data$health_board, levels = unique(c12_data$health_board))
+
+c12 <-
+  c12_data %>% 
+  # simd and gender breakdowns are not included in publication
+  filter(simd == "All", sex == "All", ijb == "All" | ijb == "Scotland") %>% 
+  ggplot(aes(x = median_diagnosis_to_contact, y = fct_rev(health_board), fill = health_board == "Scotland")) +
+  geom_bar(stat = "identity", width = 0.8) +
+  geom_text(aes(x = median_diagnosis_to_contact, y = health_board, label = median_diagnosis_to_contact),
+            nudge_x = 16, colour = "black", size = 3) +
+  theme_dementia_pub() +
+  scale_fill_manual(values = c("#3F3685", "#9B4393")) +
+  theme(panel.grid.major.y = element_blank()) +
+  scale_x_continuous(expand = c(0, 0), 
+                     limits = c(0, max(c12_data$median_diagnosis_to_contact))) +
+  xlab(
+    str_wrap(
+      paste0("Average (median) days from diagnosis to first contact by PDS practitioner"),
+      width = 45)
+  ) +
+  ylab("")
+
+c12
+
+ggsave(get_pub_figures_path(type = "c12", test_output = test_output),
+       plot = c1,
+       height = 6,
+       width = 7,
+       dpi = 600,
+       device = "png"
+)
+
 ### END OF SCRIPT ###
