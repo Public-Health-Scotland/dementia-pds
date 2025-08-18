@@ -69,15 +69,60 @@ pds <-
   )
 
 
-### 4 - Save out error summary ----
+### 4 - Save out error and query summary ----
 
-err <- pds %>%
+#queries/errors for all years
+q_err <- pds %>%
   mutate(health_board = if_else(is.na(health_board),
                                 "Missing",
                                 substring(health_board, 3))) %>%
   mutate(fy = extract_fin_year(dementia_diagnosis_confirmed_date)) %>%
   group_by(fy, health_board, ijb) %>%
-  summarise(total_errors     = sum(as.integer(error_flag)),
+  summarise(total_q_errors     = sum(as.integer(error_flag)),
+            records          = n(),
+            .groups = "drop") %>%
+  group_by(fy) %>%
+  group_modify(
+    ~ bind_rows(.x, summarise(.x,
+                              health_board = "Scotland",
+                              ijb = "Scotland",
+                              across(c(total_q_errors, records), sum)))
+  ) %>%
+  ungroup() %>%
+  arrange(fy, health_board, ijb) %T>%
+  write_file(path = get_mi_data_path("q_error_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+#queries for 2022/23 onward
+query <- pds %>% filter(dementia_diagnosis_confirmed_date >= dmy(01042022)) %>% 
+  mutate(health_board = if_else(is.na(health_board),
+                                "Missing",
+                                substring(health_board, 3))) %>%
+  mutate(fy = extract_fin_year(dementia_diagnosis_confirmed_date)) %>%
+  group_by(fy, health_board, ijb) %>%
+  summarise(total_queries     = sum(as.integer(q_flag)),
+            records          = n(),
+            .groups = "drop") %>%
+  group_by(fy) %>%
+  group_modify(
+    ~ bind_rows(.x, summarise(.x,
+                              health_board = "Scotland",
+                              ijb = "Scotland",
+                              across(c(total_queries, records), sum)))
+  ) %>%
+  ungroup() %>%
+  arrange(fy, health_board, ijb) %T>%
+  write_file(path = get_mi_data_path("query_data", ext = "rds", test_output = test_output))
+0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+#errors for 2022/23 onward
+err <- pds %>% filter(dementia_diagnosis_confirmed_date >= dmy(01042022)) %>% 
+  mutate(health_board = if_else(is.na(health_board),
+                                "Missing",
+                                substring(health_board, 3))) %>%
+  mutate(fy = extract_fin_year(dementia_diagnosis_confirmed_date)) %>%
+  group_by(fy, health_board, ijb) %>%
+  summarise(total_errors     = sum(as.integer(e_flag)),
             records          = n(),
             .groups = "drop") %>%
   group_by(fy) %>%

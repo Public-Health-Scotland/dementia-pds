@@ -203,7 +203,7 @@ final <- contact_before_diagnosis_ldp_complete %>%
     date_of_initial_first_contact >= initial_pds_practitioner_allocation_date ~1,
     TRUE ~0)
   ) %>% 
-  select(chi_number, fy, dementia_diagnosis_confirmed_date, date_pds_referral_received,
+  select(fy, dementia_diagnosis_confirmed_date, date_pds_referral_received,
          initial_pds_practitioner_allocation_date, date_of_initial_first_contact, 
          termination_or_transition_date, 
          termination_or_transition_reason, health_board, ijb, error_flag,

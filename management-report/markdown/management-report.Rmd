@@ -44,7 +44,19 @@ pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_o
 exp <- read_csv(get_exp_diagnoses_path())
 
 
-# Load error summary
+# Load error and queries summaries
+q_err <- read_rds(get_mi_data_path("q_error_data", ext = "rds", test_output = test_output)) %>% 
+
+  mutate(ijb = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
+
+query <- read_rds(get_mi_data_path("query_data", ext = "rds", test_output = test_output)) %>% 
+
+  mutate(ijb = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
+
 err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
 
   mutate(ijb = if_else(is.na(ijb),
@@ -230,7 +242,7 @@ Row
 
 **NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, *2024/25* and *2025/26*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. This is likely to be completed by the end of the year. 
 
-**NHS Lanarkshire** - PHS have identified two records submitted by NHS Lanarkshire for *2024/25* that show inconsistent dates. The reported dates resulted in these records showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions.  
+**NHS Lanarkshire** - PHS have identified one record submitted by NHS Lanarkshire for *2025/26* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions.  
 
 <!-- **NHS Borders** - PHS have identified one record submitted by NHS Borders for *2024/25* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions.  -->
 
@@ -616,12 +628,48 @@ Number of Records Submitted – This table shows the number of records submitted
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
-Row
+Row {.tabset data-height=750}
 -------------------------------------------------
 
-### **Queries/Errors**
+### **Queries**
 
-The table below shows the percentage of records which contain one or more queries/errors. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
+The table below shows the percentage of records which contain one or more queries. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
+
+```{r query summary}
+#create queries summary table
+query %>% 
+  group_by(fy, health_board) %>% 
+  summarise(query_rate = round_half_up(sum(total_queries) / sum(records) * 100, 1),
+            .groups = "drop") %>%
+  bind_rows(
+    query %>% 
+    group_by(fy = "All (2022/23 onward)", health_board) %>% 
+    summarise(query_rate = round_half_up(sum(total_queries) / sum(records) * 100, 1),
+              .groups = "drop")) %>%
+  mutate(query_rate = paste0(query_rate, "%")) %>%
+  pivot_wider(names_from = fy,
+              values_from = query_rate,
+              values_fill = list(query_rate = "\\-")) %>%
+  rename(`Health Board` = health_board) %>%
+  # right justify numeric columns
+     kable(align = c("l", rep("r", length(unique(query$fy)) + 1))) %>%
+  kable_styling(full_width = FALSE) %>%
+  # make Scotland row bold
+     row_spec(15, bold = TRUE) %>%
+ # Add header above table 
+  add_header_above(
+        c(" " = 1,
+          "Financial Year of Diagnosis" = length(unique(query$fy)),
+          " " = 1)) %>%
+  #add footnote
+  add_footnote(label = paste("A dash (\\-) indicates no records were submitted",
+                             "for diagnoses in this year."),
+               notation = "none") 
+```
+
+### **Errors**
+
+The table below shows the percentage of records which contain one or more errors. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
 
 ```{r error summary}
 #create error summary table
@@ -631,7 +679,7 @@ err %>%
             .groups = "drop") %>%
   bind_rows(
     err %>% 
-    group_by(fy = "All", health_board) %>% 
+    group_by(fy = "All (2022/23 onward)", health_board) %>% 
     summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1),
               .groups = "drop")) %>%
   mutate(err_rate = paste0(err_rate, "%")) %>%
@@ -647,7 +695,43 @@ err %>%
  # Add header above table 
   add_header_above(
         c(" " = 1,
-          "Financial Year of Diagnosis" = length(all_years),
+          "Financial Year of Diagnosis" = length(unique(err$fy)),
+          " " = 1)) %>%
+  #add footnote
+  add_footnote(label = paste("A dash (\\-) indicates no records were submitted",
+                             "for diagnoses in this year."),
+               notation = "none") 
+```
+
+### **Queries/Errors**
+
+The table below shows the percentage of records which contain one or more queries/errors. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
+
+```{r error summary}
+#create error summary table
+q_err %>% 
+  group_by(fy, health_board) %>% 
+  summarise(q_err_rate = round_half_up(sum(total_q_errors) / sum(records) * 100, 1),
+            .groups = "drop") %>%
+  bind_rows(
+    q_err %>% 
+    group_by(fy = "All", health_board) %>% 
+    summarise(q_err_rate = round_half_up(sum(total_q_errors) / sum(records) * 100, 1),
+              .groups = "drop")) %>%
+  mutate(q_err_rate = paste0(q_err_rate, "%")) %>%
+  pivot_wider(names_from = fy,
+              values_from = q_err_rate,
+              values_fill = list(q_err_rate = "\\-")) %>%
+  rename(`Health Board` = health_board) %>%
+  # right justify numeric columns
+     kable(align = c("l", rep("r", length(unique(q_err$fy)) + 1))) %>%
+  kable_styling(full_width = FALSE) %>%
+  # make Scotland row bold
+     row_spec(15, bold = TRUE) %>%
+ # Add header above table 
+  add_header_above(
+        c(" " = 1,
+          "Financial Year of Diagnosis" = length(unique(q_err$fy)),
           " " = 1)) %>%
   #add footnote
   add_footnote(label = paste("A dash (\\-) indicates no records were submitted",
