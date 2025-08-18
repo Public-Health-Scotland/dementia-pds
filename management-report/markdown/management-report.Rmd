@@ -1114,13 +1114,13 @@ The table below shows the number of records submitted by each Health Board. Reco
 
 ```{r record-summary}
 # add table showing number of records submitted by each health board
-err %>%
+q_err %>%
   filter(str_sub(fy, 1, 4) >= year(start_date)) %>%
   group_by(fy, health_board, ijb) %>% 
   summarise(records = sum(records),
             .groups = "drop") %>%
   bind_rows(
-    err %>%
+    q_err %>%
     group_by(fy = "All", health_board, ijb) %>% 
     summarise(records = sum(records),
               .groups = "drop")) %>%
@@ -1132,10 +1132,10 @@ err %>%
   rename(`Health Board` = health_board,
          `Integration Authority Area` = ijb) %>%
 # right justify numeric columns
-     kable(align = c("l", "l", rep("r", length(unique(err$fy)) + 1))) %>%
+     kable(align = c("l", "l", rep("r", length(unique(q_err$fy)) + 1))) %>%
   kable_styling(full_width = FALSE) %>%
 # make Scotland row bold
-    row_spec(length(unique(paste(err$health_board, err$ijb))), bold = TRUE) %>%
+    row_spec(length(unique(paste(q_err$health_board, q_err$ijb))), bold = TRUE) %>%
   collapse_rows(columns = 1, valign = "top") %>%
   scroll_box(height = "570px", width = "100%")
 ```
