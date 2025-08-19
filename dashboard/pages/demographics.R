@@ -44,17 +44,17 @@ output$demo_ui <-  renderUI({
                  em("Due to the discovery of previously unpublished data submitted by NHS Grampian, revisions have been 
                     made in this publication for diagnoses in financial year 2019/20 and 2020/21. The impact of this is that
                     the Number of People Referred to PDS and Proportion of Total Referrals in 2019/20 and 2020/21 has changed slightly for most age groups
-                    (the highest change to the proportion being 0.2%). Additionaly, in previous publications the calculation for Percentage of LDP Standard 
+                    (the highest change to the proportion being 0.2%). Additionally, in previous publications the calculation for Percentage of LDP Standard 
                     Achieved in these years was erroneously including Aberdeen City referrals for which the LDP Standard can not be calculated.
-                    The impact of this is that the Percentage of LDP Standard Acheived for all age groups in 2019/20 and 2020/21 has been adjusted to between 1% to 4%
+                    The impact of this is that the Percentage of LDP Standard Achieved for all age groups in 2019/20 and 2020/21 has been adjusted to between 1% to 4%
                     higher than previously published, except the 59 and Under age group for which there is no change.")
                }else{
                  em("Due to the discovery of previously unpublished data submitted by NHS Grampian, revisions have been 
                     made in this publication for diagnoses in financial year 2019/20 and 2020/21. The impact of this is that
                     the Number of People Referred to PDS and Proportion of Total Referrals in 2019/20 and 2020/21 has changed slightly for all deprivation quintiles 
-                    (the highest change to the proportion being 0.1%). Additionaly, in previous publications the calculation for Percentage of LDP Standard 
+                    (the highest change to the proportion being 0.1%). Additionally, in previous publications the calculation for Percentage of LDP Standard 
                     Achieved in these years was erroneously including Aberdeen City referrals for which the LDP Standard can not be calculated.
-                    The impact of this is that the Percentage of LDP Standard Acheived for all deprivation quintiles in 2019/20 and 2020/21 has been adjusted to between 1% to 4%
+                    The impact of this is that the Percentage of LDP Standard Achieved for all deprivation quintiles in 2019/20 and 2020/21 has been adjusted to between 1% to 4%
                     higher than previously published, except for the following: 
                     In 2019/20 for deprivation quintile 5 the percentage has been adjusted from 76.4% to 83.3%. 
                     In 2019/20 for referrals with an unknown deprivation quintile the percentage has been adjusted from 55.6% to 100%.
