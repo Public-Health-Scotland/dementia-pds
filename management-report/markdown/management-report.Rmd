@@ -248,11 +248,7 @@ Row
 
 <!-- **NHS Fife** - PHS have identified one record submitted by NHS Fife for *2024/25* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions. -->
 
-**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates.
-
-
-
-
+**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021, Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates. 
 
 METHODOLOGY {.hidden}
 =================================================
@@ -347,10 +343,10 @@ Service users for whom it is not yet known if they have met the standard as thei
 ### **Number of Expected Diagnoses**
 
 In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report.
-<!-- Update the paragraph below on start of new financial year and when new population estimates are used -->
-For financial years *2021/22*, *2022/23*, *2023/24*, *2024/25* and *2025/26* the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021, Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates.
+ <!-- UPDATE  the below paragraph when new population estimates are available / when financial year ends-->
+For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25* the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021, Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates. 
 
-Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018.
+Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018. *Note that For financial year 2024/25 the Mid-2023 populations are used as this is the latest available estimate.* <!-- UPDATE when new population estimates are available / when new financial year begins-->
 
 
 ### **Removal of Duplicate Records**
@@ -438,19 +434,19 @@ e.g. the rate for SIMD 1 (the most deprived quintile) for a particular area is c
 
 Across the reported years there are a small number of records (`r age_unknown` in total) with an incomplete date of birth and therefore the age group is unknown. These records have been excluded from the age group analysis. 
 
-*For the rates calculations, for financial year 2024/25 the Mid-2023 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
+*For the rates calculations, for financial year 2024/25 and 2025/26 the Mid-2023 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
 
 **Gender:** Gender is based on the sex recorded for each referral.  
 
 Across the reported years there are `r sex_unknown` records in total where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’). These records have been excluded from the gender analysis.
 
-*For the rates calculations, for financial year 2024/25 the Mid-2023 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
+*For the rates calculations, for financial year 2024/25 and 2025/26 the Mid-2023 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
 
 **Deprivation:** Deprivation is calculated by matching postcodes grouped into small geographical areas known as datazones to the Scottish Index of Multiple Deprivation (SIMD) quintiles. SIMD has seven domains (income, employment, education, housing, health, crime, and geographical access) at data zone level, which have been combined into an overall index to pick out area concentrations of multiple deprivation. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived quintile) to 5 (least deprived quintile). At Scotland level, approximately one fifth of the general population are within each deprivation quintile. The quintiles used in this report are from SIMD 2020v2. Further information on SIMD can be found on the [Scottish Government](https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/){target="_blank"} website.
 
 Across the reported years there are `r simd_unknown` records where it was not possible to assign a deprivation category. Possible reasons for not being able to assign a deprivation category are that no postcode was provided or the postcode provided is invalid, not in Scotland, or is a newly added postcode. These records have been excluded from the deprivation analysis.
 
-*For the rates calculations, for financial years 2023/24 and 2024/25 the Mid-2022 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
+*For the rates calculations, for financial years 2023/24, 2024/25 and 2025/26 the Mid-2022 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
 
 ***
 
@@ -707,7 +703,7 @@ err %>%
 
 The table below shows the percentage of records which contain one or more queries/errors. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
 
-```{r error summary}
+```{r queries/error summary}
 #create error summary table
 q_err %>% 
   group_by(fy, health_board) %>% 
@@ -791,6 +787,8 @@ Queries/Errors - Any queries/errors outstanding following the resubmission deadl
 Data Completion – The tables show, for three key mandatory fields, the percentage of records which are reported as NA/code 98/99 (Unknown)/Yet to be determined (YTBD). As these are fields of interest we would like to see a reduction in the number of records with these codes so that meaningful information can be produced from these data. The tables are designed to help areas monitor the number of cases they report as NA/98/99/YTBD.
 
 Number of Records Submitted – This table shows the number of records submitted for each area. Note these are the number of records, including duplicate records, therefore this is not the same as the number of people referred.
+
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
 Row {.tabset data-height=700}
 -------------------------------------------------
@@ -1105,6 +1103,8 @@ Data Completion – The tables show, for three key mandatory fields, the percent
 
 Number of Records Submitted – This table shows the number of records submitted for each area. Note these are the number of records, including duplicate records, therefore this is not the same as the number of people referred.
 
+`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+
 Row {data-height=700}
 -------------------------------------------------
 
@@ -1133,11 +1133,18 @@ q_err %>%
          `Integration Authority Area` = ijb) %>%
 # right justify numeric columns
      kable(align = c("l", "l", rep("r", length(unique(q_err$fy)) + 1))) %>%
-  kable_styling(full_width = FALSE) %>%
+  kable_styling(full_width = TRUE) %>%
 # make Scotland row bold
     row_spec(length(unique(paste(q_err$health_board, q_err$ijb))), bold = TRUE) %>%
   collapse_rows(columns = 1, valign = "top") %>%
-  scroll_box(height = "570px", width = "100%")
+  scroll_box(height = "580px")
+```
+
+```{css }
+/* forces number of records table to fit in window */
+#number-of-records-submitted-2{
+  width: -webkit-fill-available;
+}
 ```
 
 <!-- converts R environment objects for use with js script below -->
