@@ -295,7 +295,7 @@ output$rates_ui <-  renderUI({
                       c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",2))
                       #REMOVE the following two lines from 2026 onward----
                       }else if(input$select_year_randr == "2020/21"){
-                        c(,"Note: R indicates data has been revised. Please see dashboard for further information.",rep("",2))
+                        c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",2))
                       }else{
                       rep("",3)
                     }
@@ -374,7 +374,7 @@ output$rates_ui <-  renderUI({
                   mutate(across(where(is.numeric), ~prettyNum(., big.mark = ","))) %>% 
                   mutate(Measure = "Number of people diagnosed with dementia who were referred for PDS", 
                          .before = everything()) %>% 
-                  rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years_extra_referrals)+1),)
+                  rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years_extra_referrals)+1))
                         
                         ) %>% 
                   rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",length(included_years_extra_referrals)+1))
