@@ -245,14 +245,13 @@ Row
 
 This page includes rates of the number of people referred to PDS per 10,000 population (65 years and over). Note that for financial year *2024/25* and *2025/26* the Mid-2023 populations are used as this is the latest available estimate.<!-- UPDATE when new population estimates are available / when new financial year begins --> *See the [Glossary](#glossary) for more details.*
 
-The Integration Authority Area and Health Board tabs include a chart and table showing the rate for each geographical area by financial year.  
+The Integration Authority Area and Health Board tabs include a chart and table showing the rate for each geographical area by financial year. 
 
 The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland, Integration Authority Areas and Health Boards. Multiple areas can be selected.  
 
 *The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
-
 
 Row {.tabset data-height=1260}
 ----------------------------------------------------------------------
