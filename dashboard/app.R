@@ -338,6 +338,7 @@ server <- function(input, output, session) {
   ##link to home page----
   observeEvent(input$home_link, {
     updateTabsetPanel(session, "intabset", selected = "intro")
+    updateRadioGroupButtons(session, "home_select", selected = "about")
   })
   
 

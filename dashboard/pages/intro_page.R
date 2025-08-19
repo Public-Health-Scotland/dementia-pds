@@ -80,15 +80,16 @@ output$intro_page_ui <-  renderUI({
                                   "in NHS Grampian, data for Aberdeen City is not included in the measurement figures for the LDP standard due to data quality issues and missing dates meaning it is not possible ",
                                   "to accurately measure these referrals against the LDP standard.")
                                 ),
-                        tags$li(p("NHS Tayside experienced challenges in capturing and reporting on electronic system data within Perth & Kinross over the period 2018/19 to 2019. ",
-                                  "Despite local work undertaken to uncover the missing data, it has not been possible to fill this gap. Subsequent measures put in place have successfully ",
+                        tags$li(p("NHS Tayside experienced challenges in capturing and reporting on electronic system data within Perth & Kinross over the period 2018 to 2019. ",
+                                  "Despite local work undertaken to uncover the missing data, it has not been possible to fill this gap. This should be taken into account when interpreting figures for NHS Tayside and ",
+                                  "Perth & Kinross for financial years 2018/19 and 2019/20. Subsequent measures put in place have successfully ",
                                   "allowed NHS Tayside to improve on data reporting from 2019 onwards.")
                                 ),
                         tags$li(p("NHS Shetland / Shetland Islands did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted ",
                                   "by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the ",
                                   "PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland / Shetland Islands for 2022/23.")
                                 ),
-                        tags$li(p("The population estimates used in this report are from the National Records of Scotland (NRS)
+                        tags$li(p("The population estimates used in this report to calculate rates per 10,000 population are from the National Records of Scotland (NRS)
                                   Mid-year population estimates. As figures in this report are by financial year, the estimate for the calendar year
                                   with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 
                                   uses estimates for the calendar year 2018."),
@@ -128,7 +129,7 @@ output$intro_page_ui <-  renderUI({
                        h4(strong("Downloading data")),
                        p("Data for each table can be downloaded as a .csv file by clicking the 'Download table data' button located above the table.
                          Additionaly, the Data Download page allows users to select the data from the report they wish to explore by using the drop-down menus and 
-                         checkboxes provided, and then clicking the ‘Download data’ button to download a .csv file."),
+                         checkboxes provided, and then clicking the ‘Download data’ button to download a .csv file of the selected data."),
                        linebreaks(1),
                        width = 12,
                        #fix panel so sidebar and navigation bar do not scroll with content
@@ -142,10 +143,25 @@ conditionalPanel(condition = 'input.home_select == "glossary"',
                    h3(strong("Glossary")),
                    h4(strong("General Information")),
                    p(strong("Post-Diagnostic Support (PDS):"),"Support commissioned by the Scottish Government that everyone newly diagnosed with dementia is entitled
-                        to a minimum of one year’s post-diagnostic support. Further information on post-diagnostic support can be found on the
-                     Alzheimer Scotland
-                     website."),
+                        to a minimum of one year’s post-diagnostic support. Further information on post-diagnostic support can be found on the ",
+                      a("Alzheimer Scotland", href ="https://www.alzscot.org/about-us/care/post-diagnostic-support/", target="_blank"),
+                      " website."),
+                   p(strong("Referral:"), "When a person receives a new diagnosis of dementia, a referral is made to a service that provides post-diagnostic support
+                   and allocates a named person to work alongside the individual and those close to them."),
+                   p(strong("Health Board:"), "This is the Health Board of the PDS Practitioner or Team providing care and support to the service user."),
+                   p(strong("Integration Authority Area (IAA):"), "This is the IAA of the PDS Practitioner or Team providing care and support to the service user."),
+                   p(strong("Provisional Years:"), "As it can take up to two years for a person to receive 12 months of PDS, the data reported by financial year
+                   is deemed to be provisional for two years and PHS do not finalise the data until then. Therefore, the figures shown for",
+                   provisional_year, "and", extra_referrals_year, "are currently provisional and subject to change in future versions of this report."),
                    h4(strong("Pathways")),
+                   p(strong("Dementia Diagnosis Date:"), "The date on which the service user receives a confirmed diagnosis of dementia. This diagnosis must be confirmed
+                     by a doctor or clinical practitioner with sufficient training and experience in the diagnosis of dementia."),
+                   p(strong("First Contact:"), "The date on which an appropriate face to face direct contact took place with the service user by the PDS Practitioner 
+                     or PDS Team with the knowledge and skills to introduce each model of care. Direct contact can be done in person or by video link and is not
+                     restricted to both parties being in the same room."),
+                   p(strong("Average (Median) Days:"), "The midpoint of the number of days between the given dates for each referral, such that there is an equal number
+                     of values falling above and below it. The median number of days for each time period will be such that half of the people will
+                     have experienced a wait time this long or longer."),
                    linebreaks(1),
                    width = 12,
                    #fix panel so sidebar and navigation bar do not scroll with content

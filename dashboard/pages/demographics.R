@@ -74,7 +74,11 @@ output$demo_ui <-  renderUI({
       } else if(input$select_data_demo == "data_simd"){
         p("Deprivation is calculated by matching postcode to the Scottish Index of Multiple Deprivation (SIMD) quintiles. Each quintile consists of approximately 20% of the general population living in Scotland, 
           with deprivation quintile 1 indicating the 20% of the population living in the most deprived areas and deprivation quintile 5 indicating the 20% of the population living in the least deprived areas.
-          There are a small number of records where it was not possible to assign a deprivation category. Possible reasons for not being able to assign a deprivation category are that no postcode was provided 
+           The quintiles used in this report are from SIMD 2020v2. Further information on SIMD can be found on the",
+          a("Scottish Government,", href ="https://www.alzscot.org/about-us/care/post-diagnostic-support/", target="_blank"),
+          "website.",
+        br(),
+        "There are a small number of records where it was not possible to assign a deprivation category. Possible reasons for not being able to assign a deprivation category are that no postcode was provided 
           or the postcode provided is invalid, not in Scotland, or is a newly added postcode.")
       } else if(input$select_data_demo == "data_sex"){
         p("Gender is based on the sex recorded for each referral. There are a small number of records where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’).")
