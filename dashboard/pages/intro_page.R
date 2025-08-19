@@ -127,7 +127,7 @@ output$intro_page_ui <-  renderUI({
                          The charts are interactive and hovering the mouse over a specific data point will bring up more information."),
                        h4(strong("Downloading data")),
                        p("Data for each table can be downloaded as a .csv file by clicking the 'Download table data' button located above the table.
-                         Additionaly, the Download Data page allows users to select the data from the report they wish to explore using the drop-down menus and 
+                         Additionaly, the Data Download page allows users to select the data from the report they wish to explore by using the drop-down menus and 
                          checkboxes provided, and then clicking the ‘Download data’ button to download a .csv file."),
                        linebreaks(1),
                        width = 12,
@@ -136,6 +136,23 @@ output$intro_page_ui <-  renderUI({
                      )
                      ) #fluidrow
     ), #cond panel using the dashboard
+#Glossary ----
+conditionalPanel(condition = 'input.home_select == "glossary"',
+                 fluidRow(column(
+                   h3(strong("Glossary")),
+                   h4(strong("General Information")),
+                   p(strong("Post-Diagnostic Support (PDS):"),"Support commissioned by the Scottish Government that everyone newly diagnosed with dementia is entitled
+                        to a minimum of one year’s post-diagnostic support. Further information on post-diagnostic support can be found on the
+                     Alzheimer Scotland
+                     website."),
+                   h4(strong("Pathways")),
+                   linebreaks(1),
+                   width = 12,
+                   #fix panel so sidebar and navigation bar do not scroll with content
+                   style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white"
+                 )
+                 ) #fluidrow
+), #cond panel glossary
 #Accessibility-----
     conditionalPanel(condition = 'input.home_select == "access"',
                      fluidRow(column(
