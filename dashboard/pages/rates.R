@@ -194,20 +194,25 @@ output$rates_ui <-  renderUI({
                                                           input$select_year_randr, ", " ,input$select_hb_ijb_randr))
   })
   
+  totals_bar_plot_data <- reactive({
+    
+  if(input$select_hb_ijb_randr == "Health Boards"){
+    
+   referrals_data_sel_yrs %>% filter(grepl("NHS", ijb), fy == input$select_year_randr) %>% 
+      rename(geog = health_board)
+    
+  }else{
+    referrals_data_sel_yrs %>% filter((!grepl(("NHS|Scotland"), referrals_data_sel_yrs$ijb)), fy == input$select_year_randr) %>% 
+      rename(geog = ijb)
+  }
+  })
+  
   output$totals_RandR_plot <- renderPlotly({
-    if(input$select_hb_ijb_randr == "Health Boards"){
+    
+      plot_bar_no_line(totals_bar_plot_data(),
+                       ytitle = "Number Referred",
+                       measure = referrals, measure_text = "Number of people referred for PDS: ")
       
-      plot_bar_no_line(referrals_data_sel_yrs %>% filter(grepl("NHS", ijb), fy == input$select_year_randr) %>% 
-                         rename(geog = health_board),
-                       ytitle = "Referrals",
-                       measure = referrals, measure_text = "Number of referrals to PDS: ")
-      
-    }else{
-      plot_bar_no_line(referrals_data_sel_yrs %>% filter((!grepl(("NHS|Scotland"), referrals_data_sel_yrs$ijb)),fy == input$select_year_randr) %>% 
-                         rename(geog = ijb),
-                       ytitle = "Referrals",
-                       measure = referrals, measure_text = "Number of referrals to PDS: ")
-    } 
   })
   
   ### data table total referrals ----
@@ -316,7 +321,7 @@ output$rates_ui <-  renderUI({
   
   output$totals_RandR_trend_plot <- renderPlotly({
     plot_trend(referrals_data_sel_yrs %>% filter(ijb == input$select_randr_trend_totals),
-               measure = referrals, ytitle = "Referrals",
+               measure = referrals, ytitle = "Number Referred",
                colours = if(input$select_randr_trend_totals == "Scotland"){"#9B4393"
                }else{"#0078D4"}
     )
