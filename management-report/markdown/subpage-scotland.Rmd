@@ -77,7 +77,7 @@ est_date4 <- dmy(01042024)
              "For financial years *2021/22*, *2022/23*, *2023/24*, and *2024/25* the rates referenced in ", 
              "the report were used to create national, age specific rates of dementia incidence ",
              "per 1,000 population which were then applied to the National Records of ",
-             "Scotland (NRS) Mid-2021, Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates."),
+             "Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates."),
       TRUE ~ paste0(""))
   
 
