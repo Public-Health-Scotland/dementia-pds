@@ -21,7 +21,7 @@ source(here("dashboard/functions/plot_functions.R"))
 
 source(here("dashboard/data_setup/data_load_shiny.R"))
 
-# selections lists
+# selections lists----
 
 #adds superscript R to year which was provisional in previous publication
 revised_year_sup <- paste0(revised_year,"ᴿ")
@@ -66,7 +66,7 @@ ldp_sidebar_list <- c("Outcomes by Financial Year" = "outcomes",
 
 #tabs for rates and referrals page
 RandR_tab_list <- c("Total Referrals" = "RandR_totals",
-                    "Rates per 10,000 population" = "RandR_rates"
+                    "Rates per 10,000 Population" = "RandR_rates"
 )
 
 #sidebar buttons for rates and referrals page
@@ -97,8 +97,6 @@ download_list <- c("Scotland" = "download_data_scotland",
 #list of health boards and integration authority areas
 boards <- as.character(sort(unique(filter(annual_table_data, health_board != "Scotland")$health_board)))
 ijb_list <- as.character(sort(unique(filter(annual_table_data, ijb != "Scotland", !grepl("NHS", ijb))$ijb)))
-
-simd_list <- as.character(sort(unique(filter(data_simd, type != "Unknown")$type)))
 
 
 ### END OF SCRIPT----
