@@ -2,12 +2,12 @@
 # dementia pds
 # Original author(s): Abram McCormick
 # Original date: 2024-09-24
-# Written/run on RStudio R 4.1.2
+# Written/run on RStudio R 4.4.2
 # Description of content: Dementia PDS dashboard for annual publication
 ####
 
 
-# Get packages
+# Get packages, data and define lists
 library(here)
 source(here("dashboard/setup.R"))
 
@@ -42,13 +42,14 @@ tabPanel(title = "Home",
         collapsible = FALSE, collapsed = FALSE),
         # linebreaks(1),
     sidebarLayout(
+      #sidebar buttons
       sidebarPanel(radioGroupButtons("home_select", label = NULL, choices = home_list,
                                      status = "primary",
                                      direction = "vertical", 
                                      justified = T,
                                      size = "lg"), width = 3),
              mainPanel(
-                uiOutput("intro_page_ui")
+                uiOutput("intro_page_ui") #pages/intro_page.R
       )
     )
 
@@ -69,7 +70,7 @@ tabPanel(title = "Referrals & Rates",
          sidebarLayout(
            
            sidebarPanel(
-             #linebreaks(1),
+             #sidebar buttons
              radioGroupButtons("RandR_sidebar", label = NULL, choices = RandR_sidebar_list,
                                status = "secondary",
                                direction = "vertical",
@@ -78,6 +79,7 @@ tabPanel(title = "Referrals & Rates",
              ),
              conditionalPanel(condition = 'input.RandR_sidebar == "referrals"',
                               linebreaks(1),
+                              # dropdown menu to select financial year
                               selectInput("select_year_randr",
                                           label = "Select Financial Year of Diagnosis:",
                                           choices = included_years_extra_referrals,
@@ -85,7 +87,8 @@ tabPanel(title = "Referrals & Rates",
              ), #cond panel total referrals
              conditionalPanel(condition = 'input.RandR_tab == "RandR_totals"',
                               conditionalPanel(condition = 'input.RandR_sidebar == "trends"',
-                                               linebreaks(1),   
+                                               linebreaks(1),  
+                                               #dropdown menu to select geography for totals trend plot
                                                selectInput("select_randr_trend_totals",
                                                            label = "Select Health Board/Integration Authority to show in chart:",
                                                            choices = c("Scotland", boards, ijb_list))
@@ -94,11 +97,13 @@ tabPanel(title = "Referrals & Rates",
              conditionalPanel(condition = 'input.RandR_tab == "RandR_rates"', 
                               conditionalPanel(condition = 'input.RandR_sidebar == "trends"',
                                                linebreaks(1), 
+                                               #dropdown menu to select geography for rates trend plot
                                                selectInput("randr_select_trend_rates",
                                                            label = "Select Health Board/Integration Authority to show in chart:",
                                                            choices = c("Scotland", boards, ijb_list))
                               ), #cond panel trends
              ),#cond panel part 2
+                              #radio buttons to toggle between health boards and integration authority areas
                               radioButtons("select_hb_ijb_randr",
                                            label = "In the chart and table show:",
                                            choices = c("Health Boards", "Integration Authority Areas"),
@@ -111,6 +116,7 @@ tabPanel(title = "Referrals & Rates",
                      
                      fluidRow(column(
                        linebreaks(1),
+                       #tabs to select Total Referrals and Rates per 10,000 Population
                        radioGroupButtons("RandR_tab", label = NULL, choices = RandR_tab_list,
                                          status = "tab",
                                          direction = "horizontal",
@@ -119,7 +125,7 @@ tabPanel(title = "Referrals & Rates",
                        width = 12)
                      ), #fluidRow
 
-                     uiOutput("rates_ui")
+                     uiOutput("rates_ui") #pages/rates.R
            )#main panel
          )#sidebar layout
          
@@ -140,7 +146,7 @@ tabPanel(title = "LDP Standard",
          
          sidebarLayout(
            sidebarPanel(
-             #linebreaks(1),
+             #sidebar buttons
              radioGroupButtons("ldp_sidebar", label = NULL, choices = ldp_sidebar_list,
                                status = "secondary",
                                direction = "vertical", 
@@ -149,6 +155,7 @@ tabPanel(title = "LDP Standard",
              ),
              conditionalPanel(condition = 'input.ldp_sidebar == "outcomes"',
                               linebreaks(1),
+                              #dropdown menu to select financial year
                               selectInput("select_year_ldp",
                                           label = "Select Financial Year of Diagnosis:",
                                           choices = included_years,
@@ -156,7 +163,8 @@ tabPanel(title = "LDP Standard",
              ), #cond panel outcomes
              conditionalPanel(condition = 'input.ldp_tab == "ldp_part_1"',
                               conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
-                                               linebreaks(1),   
+                                               linebreaks(1),  
+                                               #dropdown menu to select health board to show in part 1 trend chart
                                                selectInput("select_hb_trend_part_1",
                                                            label = "Select Health Board to show in chart:",
                                                            choices = c("Scotland", boards))
@@ -165,10 +173,12 @@ tabPanel(title = "LDP Standard",
              conditionalPanel(condition = 'input.ldp_tab == "ldp_part_2"', 
                               conditionalPanel(condition = 'input.ldp_sidebar == "trends"',
                                                linebreaks(1), 
+                                               #dropdown menu to select health board/IAA to show in part 2 trend chart
                                                selectInput("select_hb_ijb_trend_part_2",
                                                            label = "Select Health Board/Integration Authority to show in chart:",
                                                            choices = c("Scotland", boards, ijb_list))
                               ), #cond panel trends
+                              #radio buttons to toggle between health boards and integration authority areas
                               radioButtons("select_hb_ijb",
                                            label = "In the chart and table show:",
                                            choices = c("Health Boards", "Integration Authority Areas"),
@@ -181,6 +191,7 @@ tabPanel(title = "LDP Standard",
                      
                      fluidRow(column(
                        linebreaks(1),
+                       #tabs for selecting LDP Standard Part 1 and LDP Standard Part 2
                        radioGroupButtons("ldp_tab", label = NULL, choices = ldp_tab_list,
                                          status = "tab",
                                          direction = "horizontal",
@@ -189,7 +200,7 @@ tabPanel(title = "LDP Standard",
                        width = 12)
                      ), #fluidRow
                      
-                     uiOutput("ldp_ui")
+                     uiOutput("ldp_ui")#pages/ldp_standard.R
            )#mainPanel
          )#sidebarLayout
 ), # tabpanel
@@ -208,7 +219,7 @@ tabPanel(title = "Pathways",
          
          sidebarLayout(
            sidebarPanel(
-             #linebreaks(1),
+             #sidebar buttons
              radioGroupButtons("pathways_sidebar", label = NULL, choices = pathways_list,
                                status = "secondary",
                                direction = "vertical", 
@@ -218,6 +229,7 @@ tabPanel(title = "Pathways",
              
              conditionalPanel(condition = 'input.pathways_sidebar == "wait"',
                               linebreaks(1),
+                              #dropdown to select financial year
                               selectInput("select_year_pathways",
                                           label = "Select Financial Year of Diagnosis:",
                                           choices = included_years_2025_gender_wait,#change to included_years from 2026 onwards
@@ -225,18 +237,22 @@ tabPanel(title = "Pathways",
              ), #conditionalPanel wait
              conditionalPanel(condition = 'input.pathways_sidebar == "trends"',  
                               linebreaks(1),
+                              #drop down to select healthboard/IAA in trend chart
                               selectInput("select_hb_ijb_pathways_trend",
                                           label = "Select Health Board/Integration Authority to show in chart:",
                                           choices = c("Scotland", boards, ijb_list))
              ), #cond panel trends
+             #radio buttons to toggle between health boards and integration authority areas
              radioButtons("select_hb_ijb_pathways",
                           label = "In the chart and table show:",
                           choices = c("Health Boards", "Integration Authority Areas"),
                           selected = "Health Boards"),
              width = 3
            ),#sidebarPanel
+           
            mainPanel(width = 9,
-                     uiOutput("pathways_ui")
+                     uiOutput("pathways_ui")#pages/pathways.R
+                     
            ) # mainPanel
          ) #sidebarLayout
 ), # tabpanel
@@ -254,16 +270,17 @@ tabPanel(title = "Demographics",
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
       
-         linebreaks(1),
-
          sidebarLayout(
-           sidebarPanel(radioGroupButtons("select_data_demo", label = NULL, choices = demographics_list,
+           sidebarPanel(
+             #sidebar buttons
+             radioGroupButtons("select_data_demo", label = NULL, choices = demographics_list,
                                           status = "secondary",
                                           direction = "vertical",
                                           justified = T,
                                           size = "normal"
                                           ),
                         linebreaks(1),
+                        #dropdown to select financial year
                         selectInput("select_year_demo",
                                            label = "Select Financial Year of Diagnosis:",
                                            choices = included_years,
@@ -274,7 +291,8 @@ tabPanel(title = "Demographics",
 
            mainPanel(width = 10,
                    
-           uiOutput("demo_ui") 
+           uiOutput("demo_ui")#pages/demographics.R
+           
          ) #main panel
        ) #sidebar layout
 
@@ -294,14 +312,14 @@ tabPanel(title = "Methodology",
              collapsible = TRUE, collapsed = FALSE),
          
          fluidRow(column(
-           
+           #tab for selecting LDP Classification, Number of Expected Diagnoses, Removal of Duplicate Records
            radioGroupButtons("method_tab", label = NULL, choices = method_list,
                              status = "tab",
                              direction = "horizontal",
                              justified = T,
                              size = "lg"), width = 12)),#fluidRow
          
-         uiOutput("method_ui")
+         uiOutput("method_ui")#pages/methodology.R
       
 ), # tabPanel
 
@@ -317,14 +335,13 @@ tabPanel(title = "Data Download",
              width = 12,
              collapsible = TRUE, collapsed = FALSE),
          
-         uiOutput("download_ui")
+         uiOutput("download_ui")#pages/download.R
          
 ), # tabPanel
 
     collapsible = TRUE) # navbar
   ) # taglist
 ) # ui fluidpage
-
 
 # SERVER
 
