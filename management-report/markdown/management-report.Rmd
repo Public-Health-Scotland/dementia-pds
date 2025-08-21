@@ -412,11 +412,11 @@ Row
 
 **Population Estimates:** The population estimates used in this report are from the National Records of Scotland (NRS) Mid-year population estimates and the NRS Population estimates by Scottish Index of Multiple Deprivation (SIMD). As figures in this report are by financial year, the estimate for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018. The estimates used throughout the report are for the population that is 65 years and older, as `r perc_65_plus`% of referrals to PDS are in this age group. 
 
-NRS Mid-year population estimates can be found using the links below: 
+NRS Mid-year population estimates can be found using the link below: 
 
 [Population, migration and households - National Records of Scotland (NRS)](https://www.nrscotland.gov.uk/statistics-and-data/population-migration-and-households){target="_blank"}
-
-[Population estimates by Scottish Index of Multiple Deprivation (SIMD) - National Records of Scotland (NRS)](https://www.nrscotland.gov.uk/publications/population-estimates-by-scottish-index-of-multiple-deprivation-simd/){target="_blank"}
+<!-- The link below is no longer valid as it does not include the rebased figures that were releaseed 1 July 2025. Simd populations can be found at the link above via the small area poulations data-->
+<!-- [Population estimates by Scottish Index of Multiple Deprivation (SIMD) - National Records of Scotland (NRS)](https://www.nrscotland.gov.uk/publications/population-estimates-by-scottish-index-of-multiple-deprivation-simd/){target="_blank"} -->
 
 **Rates per 10,000 population:** The rate per 10,000 population is calculated using the number of referrals with a dementia diagnosis date in the given financial year and the estimated population, for the relevant cohort, of the same year for each geographical area. 
 
