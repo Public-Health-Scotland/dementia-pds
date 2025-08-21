@@ -141,7 +141,7 @@ contact_before_diagnosis_ldp_complete %<>%
   
   mutate(ldp_if_diag_date_used_as_contact_date = case_when(
     
-    #### COMPLETE ####
+    #### COMPLETE 
     
     # Started PDS within 12m of diagnosis AND PDS still ongoing after 12m
     date_of_initial_first_contact < diag_12 & 
@@ -210,6 +210,6 @@ final <- contact_before_diagnosis_ldp_complete %>%
          ldp, ldp_if_diag_date_used_as_contact_date, same_ldp, contact_on_or_after_referral, contact_on_or_after_allocation)
 
 
-final %>% write_tests_xlsx(sheet_name = "diag before contact met")
+final %>% write_tests_xlsx(sheet_name = "contact_b4_diag_met_stan")
 
 # End of Script # 
