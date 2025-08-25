@@ -48,7 +48,7 @@ exp <- read_csv(get_exp_diagnoses_path()) %>%
 
 ### 3 - Create figures ----
 
-# Chart 1 - Incidence by Health Board
+# Chart 1 - Incidence by Health Board----
 
 c1_data <-
   basefile %>%
@@ -100,7 +100,7 @@ ggsave(get_pub_figures_path(type = "c1", test_output = test_output),
 )
 
 
-# Chart 2 - One year PDS by Health Board
+# Chart 2 - One year PDS by Health Board----
 
 c2_data <-
   basefile %>%
@@ -167,7 +167,7 @@ ggsave(get_pub_figures_path(type = "summary", test_output = test_output),
 )
 
 
-# Chart 3 - One year PDS by IJB
+# Chart 3 - One year PDS by IJB----
 
 c3_data <-
   basefile %>%
@@ -208,7 +208,7 @@ ggsave(get_pub_figures_path(type = "c3", test_output = test_output),
 )
 
 
-# Chart 4 - Referrals by age
+# Chart 4 - Referrals by age----
 
 c4_data <-
   basefile %>%
@@ -266,7 +266,7 @@ ggsave(get_pub_figures_path(type = "c4", test_output = test_output),
 )
 
 
-# Chart 5 - One year PDS by age
+# Chart 5 - One year PDS by age----
 
 c5_data <-
   basefile %>% 
@@ -336,7 +336,7 @@ ggsave(get_pub_figures_path(type = "c5", test_output = test_output),
 )
 
 
-# Chart 6 - Referrals by SIMD
+# Chart 6 - Referrals by SIMD----
 
 c6_data <-
   basefile %>%
@@ -392,7 +392,7 @@ ggsave(get_pub_figures_path(type = "c6", test_output = test_output),
 )
 
 
-# Chart 7 - One year PDS by SIMD
+# Chart 7 - One year PDS by SIMD----
 
 c7_data <-
   basefile %>%
@@ -453,7 +453,7 @@ ggsave(get_pub_figures_path(type = "c7", test_output = test_output),
   dpi = 600
 )
 
-# Chart 8 - Referrals trend (Added July 2025)
+# Chart 8 - Referrals trend (Added July 2025)----
 
 trend_year <- paste0(as.numeric(substr(max(fy_in_pub),1,4)) + 1,
                            "/", as.numeric(substr(max(fy_in_pub),6,7)) + 1)
@@ -493,7 +493,7 @@ ggsave(get_pub_figures_path(type = "c8", test_output = test_output),
 )
 
 
-# Chart 9 - Rates trend (Added July 2025)
+# Chart 9 - Rates trend (Added July 2025)----
 
 trend_year <- paste0(as.numeric(substr(max(fy_in_pub),1,4)) + 1,
                      "/", as.numeric(substr(max(fy_in_pub),6,7)) + 1)
@@ -548,7 +548,7 @@ ggsave(get_pub_figures_path(type = "c9", test_output = test_output),
 
 
 
-# Chart 10 - Referrals by gender
+# Chart 10 - Referrals by gender (Added July 2025)----
 
 c10_data <-
   basefile %>%
@@ -594,7 +594,7 @@ ggsave(get_pub_figures_path(type = "c10", test_output = test_output),
 )
 
 
-# Chart 11 - One year PDS by sex
+# Chart 11 - One year PDS by sex (Added July 2025)----
 
 c11_data <-
   basefile %>%
@@ -632,7 +632,7 @@ ggsave(get_pub_figures_path(type = "c11", test_output = test_output),
        dpi = 600
 )
 
-# chart 12 - waiting times by HB
+# chart 12 - waiting times by HB (Added Aug 2025)----
 
 #read in data
 c12_data <- data_wait <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output)) %>% 
@@ -663,7 +663,45 @@ c12 <-
 c12
 
 ggsave(get_pub_figures_path(type = "c12", test_output = test_output),
-       plot = c1,
+       plot = c12,
+       height = 6,
+       width = 8,
+       dpi = 600,
+       device = "png"
+)
+
+# chart 13 - waiting times by IJB (Added Aug 2025)----
+
+#read in data
+c13_data <- data_wait <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output)) %>% 
+  filter(fy == max(fy_in_pub))
+
+c13_data$ijb <- factor(c12_data$ijb, levels = unique(c12_data$ijb))
+
+c13 <-
+  c13_data %>% 
+  # simd and gender breakdowns are not included in publication
+  filter(simd == "All", sex == "All", ijb == "All" | ijb == "Scotland") %>% 
+  ggplot(aes(x = median_diagnosis_to_contact, y = fct_rev(health_board), fill = health_board == "Scotland")) +
+  geom_bar(stat = "identity", width = 0.8) +
+  geom_text(aes(x = median_diagnosis_to_contact, y = health_board, label = median_diagnosis_to_contact),
+            nudge_x = 16, colour = "black", size = 3) +
+  theme_dementia_pub() +
+  scale_fill_manual(values = c("#3F3685", "#9B4393")) +
+  theme(panel.grid.major.y = element_blank()) +
+  scale_x_continuous(expand = c(0, 0), 
+                     limits = c(0, max(c13_data$median_diagnosis_to_contact))) +
+  xlab(
+    str_wrap(
+      paste0("Average (median) days from diagnosis to first contact by PDS practitioner"),
+      width = 45)
+  ) +
+  ylab("")
+
+c13
+
+ggsave(get_pub_figures_path(type = "c13", test_output = test_output),
+       plot = c13,
        height = 6,
        width = 7,
        dpi = 600,
