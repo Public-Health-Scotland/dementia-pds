@@ -238,7 +238,7 @@ Row
 
 **NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland for *2022/23* and *2023/24*.
 
-**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected.
+**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected. Due to staff absence Aberdeen City was unable to submit any data for *2025/26 Q1*, hence they are showing as having no referrals for this quarter. It is expected that data submission will resume in time for next quarter’s update.
 
 **NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, *2024/25* and *2025/26*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. This is likely to be completed by the end of the year. 
 
@@ -631,6 +631,8 @@ Row {.tabset data-height=750}
 
 The table below shows the percentage of records which contain one or more queries. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
 
+A query is sent by PHS when the data submitted requires further checking to ensure accuracy. An example of a query is 'Q02: QUERY FOR CHECKING: First Contact Date is missing but Diagnosis Date is more than 6 months ago and there is no Termination Date'. 
+
 ```{r query summary}
 #create queries summary table
 query %>% 
@@ -639,7 +641,7 @@ query %>%
             .groups = "drop") %>%
   bind_rows(
     query %>% 
-    group_by(fy = "All (2022/23 onward)", health_board) %>% 
+    group_by(fy = "All (2021/22 onward)", health_board) %>% 
     summarise(query_rate = round_half_up(sum(total_queries) / sum(records) * 100, 1),
               .groups = "drop")) %>%
   mutate(query_rate = paste0(query_rate, "%")) %>%
@@ -667,6 +669,8 @@ query %>%
 
 The table below shows the percentage of records which contain one or more errors. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
 
+An error is flagged by PHS when data is inaccurate or missing. Examples of an error are 'E13: First Contact Date is before Diagnosis Date. Please check both dates.' and 'E18: Termination Date is missing but Termination Reason is provided.'
+
 ```{r error summary}
 #create error summary table
 err %>% 
@@ -675,7 +679,7 @@ err %>%
             .groups = "drop") %>%
   bind_rows(
     err %>% 
-    group_by(fy = "All (2022/23 onward)", health_board) %>% 
+    group_by(fy = "All (2021/22 onward)", health_board) %>% 
     summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1),
               .groups = "drop")) %>%
   mutate(err_rate = paste0(err_rate, "%")) %>%
@@ -706,12 +710,13 @@ The table below shows the percentage of records which contain one or more querie
 ```{r queries/error summary}
 #create error summary table
 q_err %>% 
+  filter(!fy%in% unique(err$fy)) %>% 
   group_by(fy, health_board) %>% 
   summarise(q_err_rate = round_half_up(sum(total_q_errors) / sum(records) * 100, 1),
             .groups = "drop") %>%
   bind_rows(
     q_err %>% 
-    group_by(fy = "All", health_board) %>% 
+    group_by(fy = "All (2016/17 - 2020/21)", health_board) %>% 
     summarise(q_err_rate = round_half_up(sum(total_q_errors) / sum(records) * 100, 1),
               .groups = "drop")) %>%
   mutate(q_err_rate = paste0(q_err_rate, "%")) %>%
@@ -720,14 +725,14 @@ q_err %>%
               values_fill = list(q_err_rate = "\\-")) %>%
   rename(`Health Board` = health_board) %>%
   # right justify numeric columns
-     kable(align = c("l", rep("r", length(unique(q_err$fy)) + 1))) %>%
+     kable(align = c("l", rep("r", length(unique(q_err$fy)) - length(unique(err$fy)) + 1))) %>%
   kable_styling(full_width = FALSE) %>%
   # make Scotland row bold
      row_spec(15, bold = TRUE) %>%
  # Add header above table 
   add_header_above(
         c(" " = 1,
-          "Financial Year of Diagnosis" = length(unique(q_err$fy)),
+          "Financial Year of Diagnosis" = length(unique(q_err$fy)) - length(unique(err$fy)),
           " " = 1)) %>%
   #add footnote
   add_footnote(label = paste("A dash (\\-) indicates no records were submitted",

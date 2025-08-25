@@ -84,6 +84,7 @@ est_date4 <- dmy(01042024)
 # Data quality notes - Aberdeen City
   ac_date1 <- dmy(01042019)
   ac_date2 <- dmy(01042020)
+  ac_date3 <- dmy(01042025)
 
   ac_text <-  
     case_when(sel_fy == extract_fin_year(ac_date1) | sel_fy == extract_fin_year(ac_date2) ~
@@ -94,7 +95,16 @@ est_date4 <- dmy(01042024)
              "This change in model, and process of receiving referrals and recording, ",
              "resulted in data quality issues for financial years 2019/20 and 2020/21. ",
              "This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*"),
+            sel_fy == extract_fin_year(ac_date3) ~
+        paste0(" ",
+               "**Please note:** ",
+                "*Due to staff absence Aberdeen City was unable to submit any data for ",
+               "2025/26 Q1, hence they are showing as having no referrals for this quarter. ",
+               "It is expected that data submission will resume in time for next quarter’s update.*"),
               TRUE ~ paste0(""))
+  
+  
+  
   
      # Data quality notes - Perth & Kinross
   tay_date1 <- dmy(01042018)
