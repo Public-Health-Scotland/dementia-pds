@@ -238,7 +238,7 @@ Row
 
 **NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland for *2022/23* and *2023/24*.
 
-**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected. Due to staff absence Aberdeen City was unable to submit any data for *2025/26 Q1*, hence they are showing as having no referrals for this quarter. It is expected that data submission will resume in time for next quarter’s update.
+**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected. Due to staff absence Aberdeen City was unable to submit any data for *2025/26 Q1*, so no referrals have been reported for this quarter. Aberdeen City are changing their reporting process and data submission will resume for next quarter’s update.
 
 **NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, *2024/25* and *2025/26*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. This is likely to be completed by the end of the year. 
 

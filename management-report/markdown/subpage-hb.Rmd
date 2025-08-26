@@ -101,8 +101,9 @@ est_date4 <- dmy(01042024)
         paste0(" ",
                "**Please note:** ",
                 "*Due to staff absence Aberdeen City was unable to submit any data for ",
-               "2025/26 Q1, hence they are showing as having no referrals for this quarter. ",
-               "It is expected that data submission will resume in time for next quarter’s update.*")
+               "2025/26 Q1, so no referrals have been reported for this quarter. ",
+               "Aberdeen City are changing their reporting process and data submission ",
+               "will resume for next quarter’s update.*"),
               TRUE ~ paste0(""))
   
   
