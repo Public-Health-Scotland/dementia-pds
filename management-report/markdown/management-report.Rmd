@@ -624,7 +624,7 @@ Number of Records Submitted – This table shows the number of records submitted
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
-Row {.tabset data-height=750}
+Row {.tabset data-height=810}
 -------------------------------------------------
 
 ### **Queries**
