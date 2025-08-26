@@ -616,7 +616,7 @@ Row
 
 This page includes information about data quality. 
 
-Queries/Errors - Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+Queries/Errors - Any queries or errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be. For submissions prior to 2021/22 it has not been possible to differentiate between the queries and errors reported back to the Health Boards. Therefore data from 2016/17 to 2020/21 is provided in a combined table. Query and error figures for 2021/22 onwards are reported in separate tables.
 
 Data Completion – The tables show, for three key mandatory fields, the percentage of records which are reported as NA/code 98/99 (Unknown)/Yet to be determined (YTBD). As these are fields of interest we would like to see a reduction in the number of records with these codes so that meaningful information can be produced from these data. The tables are designed to help areas monitor the number of cases they report as NA/98/99/YTBD.
 
@@ -787,7 +787,7 @@ Row
 
 This page includes information about data quality. 
 
-Queries/Errors - Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+Queries/Errors - Any queries or errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be. For submissions prior to 2021/22 it has not been possible to differentiate between the queries and errors reported back to the Health Boards. Therefore data from 2016/17 to 2020/21 is provided in a combined table. Query and error figures for 2021/22 onwards are reported in separate tables.
 
 Data Completion – The tables show, for three key mandatory fields, the percentage of records which are reported as NA/code 98/99 (Unknown)/Yet to be determined (YTBD). As these are fields of interest we would like to see a reduction in the number of records with these codes so that meaningful information can be produced from these data. The tables are designed to help areas monitor the number of cases they report as NA/98/99/YTBD.
 
@@ -1102,7 +1102,7 @@ Row
 
 This page includes information about data quality. 
 
-Queries/Errors - Any queries/errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be.
+Queries/Errors - Any queries or errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be. For submissions prior to 2021/22 it has not been possible to differentiate between the queries and errors reported back to the Health Boards. Therefore data from 2016/17 to 2020/21 is provided in a combined table. Query and error figures for 2021/22 onwards are reported in separate tables.
 
 Data Completion – The tables show, for three key mandatory fields, the percentage of records which are reported as NA/code 98/99 (Unknown)/Yet to be determined (YTBD). As these are fields of interest we would like to see a reduction in the number of records with these codes so that meaningful information can be produced from these data. The tables are designed to help areas monitor the number of cases they report as NA/98/99/YTBD.
 
