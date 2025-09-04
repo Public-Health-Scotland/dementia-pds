@@ -52,6 +52,7 @@ Sidebar - trend {.sidebar}
 **FURTHER INFORMATION:**
 
 <ul style="list-style-type:square;">
+   <li >[About This Report](#home)</li>
    <li >[Glossary](#glossary)</li>
    <li >[Navigation Guide](#navigation-guide)</li>
 </ul>
@@ -70,9 +71,11 @@ Row
 
 This page includes a chart and table showing the trend for number of people referred to PDS by financial year for Scotland, Integration Authority Areas and Health Boards. Multiple areas can be selected in the Integration Authority and Health Board tabs. 
 
-*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*  
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+<br>
+*See Additional Notes on [Home](#home) page for further information on data issues with specific Boards/Integration Authority Areas/Financial Years.*  
 
 Row {.tabset data-height=1210}
 ----------------------------------------------------------------------
@@ -249,9 +252,11 @@ The Integration Authority Area and Health Board tabs include a chart and table s
 
 The Trend tab includes a chart and table showing the trend of the rate by financial year for Scotland, Integration Authority Areas and Health Boards. Multiple areas can be selected.  
 
-*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*  
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+<br>
+*See Additional Notes on [Home](#home) page for further information on data issues with specific Boards/Integration Authority Areas/Financial Years.*  
 
 Row {.tabset data-height=1260}
 ----------------------------------------------------------------------
@@ -440,16 +445,11 @@ The first tab shows the percentage of the estimated number of people newly diagn
 
 The second tab shows the percentage of referrals that have received one year’s support which started within a year of diagnosis (or have been exempt from the LDP Standard) for Scotland, Integration Authority Areas and Health Boards. 
 
-*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*
+*The figures shown for `r provisional_year` onwards are currently provisional and subject to change in future versions of this report.*  
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
-`r if(qt != 4) {HTML("<br>")}`
-
-**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates.
-
-**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
-
-**Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
+<br>
+*See Additional Notes on [Home](#home) page for further information on data issues with specific Boards/Integration Authority Areas/Financial Years.*  
 
 Row {.tabset data-height=1215}
 ----------------------------------------------------------------------
