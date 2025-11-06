@@ -73,8 +73,8 @@ The Waiting Times Breakdown tab provides a table showing the number of referrals
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 `r if(qt != 4) {HTML("<br>")}`
-**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 **Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. This will affect the pathway waiting times for NHS Shetland for 2022/23 and 2023/24. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
@@ -86,7 +86,7 @@ Row {.tabset data-height=1220}
 ```{r dropdown-median-ijb}
 median_data_ijb <- wait_data %>% 
       filter(sex == "All") %>% 
-     filter(ijb != "All", simd == "All") %>% 
+     filter(ijb != "All", simd == "All", ijb != "Unknown") %>% 
       select(ijb, fy, median_diagnosis_to_contact) %>% 
   mutate(median_diagnosis_to_contact = if_else(is.na(median_diagnosis_to_contact)| median_diagnosis_to_contact < 0, 0, median_diagnosis_to_contact)) %>% 
       mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
@@ -101,12 +101,12 @@ median_data_ijb %>% filter(ijb == "Scotland") %>% select(fy, median_diagnosis_to
 median_data_ijb$geog<- factor(median_data_ijb$geog, levels = c(unique(median_data_ijb$geog)))
 
 
-median_data_ijb_table <- SharedData$new(median_data_ijb, key = ~fy, group = "median_ijb")
+median_data_ijb_shared <- SharedData$new(median_data_ijb, key = ~fy, group = "median_ijb")
 
 data_filter_median <- filter_select(id = "filter_median",
                                     label = "Select Financial Year of Diagnosis:",
                                     group = ~fy,
-                                    sharedData = median_data_ijb_table,
+                                    sharedData = median_data_ijb_shared,
                                     multiple = FALSE
                                    )
 
@@ -121,7 +121,7 @@ NULL)
 
 bscols(widths = 12,
   div(style = css(width="98%", height="385px", marginBottom="-30px"),
-plot_bar_median(median_data_ijb_table))
+plot_bar_median(median_data_ijb_shared))
 )
 
 ```
@@ -132,8 +132,10 @@ median_ijb_table_data <- wait_data %>%
       filter(sex == "All") %>% 
      filter(ijb != "All", simd == "All") %>% 
       select(ijb, fy, total_referrals, perc_contacted, median_diagnosis_to_contact) %>%
-   mutate(median_diagnosis_to_contact = if_else(median_diagnosis_to_contact < 0, "-", as.character(median_diagnosis_to_contact))) %>% 
-  mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
+  complete(ijb, fy, fill = list(total_referrals = 0)) %>% 
+  filter(ijb != "All", ijb != "Unknown") %>% 
+   mutate(median_diagnosis_to_contact = if_else(is.na(median_diagnosis_to_contact)| median_diagnosis_to_contact < 0, "-", as.character(median_diagnosis_to_contact))) %>% 
+  mutate(across(starts_with("perc"), ~ if_else(is.na(.), "-", paste0(.,"%")))) %>%
     mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
       mutate(ijb = if_else(ijb == "Scotland", "AAA", ijb)) %>%
       arrange(ijb) %>% 
@@ -156,7 +158,7 @@ bscols(widths = 12,
 DT::datatable(median_ijb_table, rownames = FALSE, extensions = "FixedColumns",
                caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left; color:black;',
-                       "A dash (-) indicates that this measure could not be calculated due to data quality issues."),
+                       "A dash (-) indicates that due to data quality issues, or lack of data, this measure could not be calculated."),
               options = list(pageLength = 33,
                              scrollX = TRUE,
                              fixedColumns = list(leftColumns = 1),
@@ -223,7 +225,7 @@ median_hb_table_data <- wait_data %>%
       filter(sex == "All") %>% 
      filter(ijb == "All" | ijb == "Scotland", simd == "All") %>% 
       select(health_board, fy, total_referrals, perc_contacted, median_diagnosis_to_contact) %>% 
-    mutate(median_diagnosis_to_contact = if_else(median_diagnosis_to_contact < 0, "-", as.character(median_diagnosis_to_contact))) %>% 
+    mutate(median_diagnosis_to_contact = if_else(is.na(median_diagnosis_to_contact)| median_diagnosis_to_contact < 0, "-", as.character(median_diagnosis_to_contact))) %>% 
   mutate(across(starts_with("perc"), ~ paste0(.,"%"))) %>%
     mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>%
         mutate(median_diagnosis_to_contact = if_else(health_board == "NHS Grampian" & fy %in% c("2019/20", "2020/21"), "-", median_diagnosis_to_contact)) %>% 
@@ -243,7 +245,7 @@ bscols(widths = 12,
 DT::datatable(median_hb_table, rownames = FALSE, extensions = "FixedColumns",
               caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left; color:black;',
-                       "A dash (-) indicates that due to data quality issues this measure could not be calculated."),
+                       "A dash (-) indicates that due to data quality issues, or lack of data, this measure could not be calculated."),
               options = list(pageLength = 15,
                              scrollX = TRUE,
                              fixedColumns = list(leftColumns = 1),
@@ -307,16 +309,17 @@ wait_data_trend_table <- wait_data_trend_all
 wait_data_trend_table$geog<- factor(wait_data_trend_table$geog, levels = unique(pds_all$geog))
 
 wait_data_trend_table %<>% arrange(geog) %>% 
-  mutate(median_diagnosis_to_contact = if_else(median_diagnosis_to_contact < 0, "-", as.character(median_diagnosis_to_contact))) %>% 
+  mutate(median_diagnosis_to_contact = if_else(is.na(median_diagnosis_to_contact)| median_diagnosis_to_contact < 0, "-", as.character(median_diagnosis_to_contact))) %>% 
   pivot_wider(names_from = fy, values_from = median_diagnosis_to_contact) %>%
-            rename(`Integration Authority Area/Health Board` = geog)
+            rename(`Integration Authority Area/Health Board` = geog) %>% 
+  mutate(across(everything(), ~if_else(is.na(.), "-", .)))
             
 bscols(widths = 12,
        div(style = css(width="97%", height="615px", margin="20px"),
     DT::datatable(wait_data_trend_table, rownames = FALSE,  
                                        caption = htmltools::tags$caption(
                        style = 'caption-side: bottom; text-align: left; color:black;',
-                       "A dash (-) indicates that due to data quality issues this measure could not be calculated."),
+                       "A dash (-) indicates that due to data quality issues, or lack of data, this measure could not be calculated."),
                        options = list(pageLength = 46,
                              scrollX = FALSE,
                              scrollY = TRUE,
@@ -466,8 +469,8 @@ The Exempt tab includes a table showing the percentage of total referrals and nu
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 `r if(qt != 4) {HTML("<br>")}`
-**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 **Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
@@ -489,9 +492,10 @@ not_met_data <- pds_all %>% filter(ldp == "fail") %>% group_by(geog, fy, ldp_ful
 
 not_met_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), not_met_data) %>% 
-    mutate(perc_of_total = paste0(round_half_up(100*total/total_referrals,1), "%"),
+    mutate(perc_of_total = if_else(total_referrals == 0, "-",
+      paste0(round_half_up(100*total/total_referrals,1), "%")),
                                               .after = total_referrals) %>% 
-  mutate(across(where(is.numeric), ~format(., big.mark = ","))) 
+  mutate(across(where(is.numeric), ~format(., big.mark = ",")))
 
 not_met_table_data <- SharedData$new(not_met_data_totals)
 
@@ -570,7 +574,8 @@ ongoing_data <- pds_all %>% filter(ldp == "ongoing") %>% group_by(geog, fy, ldp_
 
 ongoing_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), ongoing_data) %>% 
-   mutate(`% of Total referrals PDS Ongoing` = paste0(round_half_up(100*total/total_referrals,1), "%"),
+   mutate(`% of Total referrals PDS Ongoing` = if_else(total_referrals == 0, "-",
+            paste0(round_half_up(100*total/total_referrals,1), "%")),
                                               .after = total_referrals) %>% 
   filter(!fy %in% finalised_years) %>% 
   rename(`Integration Authority Area/Health Board` = geog, 
@@ -647,7 +652,8 @@ exempt_data <- pds_all %>% filter(ldp == "exempt") %>% group_by(geog, fy, ldp_fu
 
 exempt_data_totals <- left_join(pds_all_totals %>% 
                                select(-age_grp_2), exempt_data) %>% 
-   mutate(`% of Total referrals Exempt` = paste0(round_half_up(100*total/total_referrals,1), "%"),
+   mutate(`% of Total referrals Exempt` =  if_else(total_referrals == 0, "-",
+            paste0(round_half_up(100*total/total_referrals,1), "%")),
                                               .after = total_referrals) %>% 
   rename(`Integration Authority Area/Health Board` = geog, 
          `Total referrals` = total_referrals,
@@ -739,6 +745,7 @@ This page includes a table showing the percentage of total referrals where ‘PD
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 `r if(qt != 4) {HTML("<br>")}`
+
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 Row {.tabset data-height=820}
@@ -760,10 +767,11 @@ Row {.tabset data-height=820}
       mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% rename("geog" = "ijb")
   ) %>% 
        mutate(Known = total_referrals - `Not Known`) %>% 
-       mutate(perc_known = paste0(round_half_up(100*Known/total_referrals,1), "%")) %>%
+       mutate(perc_known = if_else(total_referrals == 0, "-",
+                paste0(round_half_up(100*Known/total_referrals,1), "%"))) %>%
       select(2,1,4,7,8,9,10,11,12) %>% 
-  mutate(perc_declined = if_else(Known == 0, "-", paste0(round_half_up(100*Declined/Known,1), "%"))) %>%
-  mutate(perc_accepted = if_else(Known == 0, "-", paste0(round_half_up((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
+  mutate(perc_declined = if_else(Known == 0 | is.na(Known), "-", paste0(round_half_up(100*Declined/Known,1), "%"))) %>%
+  mutate(perc_accepted = if_else(Known == 0 | is.na(Known), "-", paste0(round_half_up((Accepted + `Accepted, but Initially Declined`)/Known*100,1), "%"))) %>%  
           mutate(across(where(is.numeric), ~format(., big.mark = ","))
                     ) %>% 
   select(fy, geog, total_referrals, perc_known, perc_accepted, perc_declined) %>% 
@@ -927,7 +935,10 @@ the number and percentage of total referrals whose PDS was ended with no contact
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 `r if(qt != 4) {HTML("<br>")}`
+
 **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
+
+**Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. This will affect the pathway waiting times for NHS Shetland for 2022/23 and 2023/24. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
 Row {.tabset data-height=930}
 ----------------------------------------------------------------------

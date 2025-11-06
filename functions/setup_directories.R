@@ -93,7 +93,9 @@ get_mi_year_dir <- function(folder = c("data", "output", "tests"),
 #'
 #' @return the file path to the data files needed to create the MI report.
 #' 
-get_mi_data_path <- function(type = c("error_data",
+get_mi_data_path <- function(type = c("q_error_data",
+                                      "error_data",
+                                      "query_data",
                                       "dupe_data",
                                       "clean_data",
                                       "ldp_data",
@@ -109,7 +111,9 @@ get_mi_data_path <- function(type = c("error_data",
   if (previous_data){
     file_name <- dplyr::case_match(
       type,
+      "q_error_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_query-error-summary"),
       "error_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_error-summary"),
+      "query_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_query-summary"),
       "dupe_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_dupes"),
       "clean_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_clean-data"),
       "ldp_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_individuals-with-ldp"),
@@ -127,7 +131,9 @@ get_mi_data_path <- function(type = c("error_data",
   } else if(previous_year_to_qt){
     file_name <- dplyr::case_match(
       type,
+      "q_error_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_query-error-summary"),
       "error_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_error-summary"),
+      "query_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_query-summary"),
       "dupe_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_dupes"),
       "clean_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_clean-data"),
       "ldp_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_individuals-with-ldp"),
@@ -145,7 +151,9 @@ get_mi_data_path <- function(type = c("error_data",
   } else {
     file_name <- dplyr::case_match(
     type,
+    "q_error_data" ~ stringr::str_glue("{fy}-{qt}_query-error-summary"),
     "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
+    "query_data" ~ stringr::str_glue("{fy}-{qt}_query-summary"),
     "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"),
     "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
     "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),

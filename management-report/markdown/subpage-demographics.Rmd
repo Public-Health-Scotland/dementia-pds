@@ -128,14 +128,14 @@ pds_all_simd_rates %>% filter(geog == "Scotland") %>% select(fy, simd, pop_rate_
 
 #legend tibble
 legend_data_1 <- tibble(
-  geog = unique(pds_all$geog),
+  geog = unique((pds_all %>% filter(geog != "Unknown"))$geog),
   legend = c(" ", rep("Scotland",45)),
   x = 1,
   y = 0)
 
 legend_data_2 <- tibble(
-  geog = unique(pds_all$geog),
-  legend = unique(pds_all$geog),
+  geog = unique((pds_all %>% filter(geog != "Unknown"))$geog),
+  legend = unique((pds_all %>% filter(geog != "Unknown"))$geog),
   x = 1,
   y = 0)
 
@@ -552,8 +552,8 @@ The Trend tab shows the trend of the percentage of referrals that have received 
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
 `r if(qt != 4) {HTML("<br>")}`
-**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 **Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
@@ -1139,8 +1139,8 @@ The Trend tab shows the trend of the percentage of referrals that have received 
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
 `r if(qt != 4) {HTML("<br>")}`
-**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 **Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 
@@ -1786,8 +1786,8 @@ The Trend tabs include a chart showing the trend of the percentage by financial 
 
 `r if(qt != 4) {div(style = css(fontStyle="italic"),paste("LDP Standard performance figures are not provided until data is available for the full financial year."))}`
 `r if(qt != 4) {HTML("<br>")}`
-**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
+**Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*
 
 **Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*
 

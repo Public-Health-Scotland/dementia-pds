@@ -219,7 +219,7 @@ ldp_wait_times %<>%
   mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_date), "PDS Active", termination_or_transition_reason)) %>%
   mutate(termination_or_transition_reason = if_else(is.na(termination_or_transition_reason), "13 Unknown Reason", termination_or_transition_reason))
 
-# save out individual data with wait times for checking/ further analysis
+# save out individual data with wait times for checking / further analysis
 ldp_wait_times %>% 
   write_file(path = get_mi_data_path("ldp_wait_data", ext = "rds", test_output = test_output))
 0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.

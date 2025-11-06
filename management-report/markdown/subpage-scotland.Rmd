@@ -77,13 +77,14 @@ est_date4 <- dmy(01042024)
              "For financial years *2021/22*, *2022/23*, *2023/24*, and *2024/25* the rates referenced in ", 
              "the report were used to create national, age specific rates of dementia incidence ",
              "per 1,000 population which were then applied to the National Records of ",
-             "Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates."),
+             "Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates."),
       TRUE ~ paste0(""))
   
 
 # Data quality notes - Aberdeen City
   ac_date1 <- dmy(01042019)
   ac_date2 <- dmy(01042020)
+  ac_date3 <- dmy(01042025)
 
   ac_text <-  
     case_when(sel_fy == extract_fin_year(ac_date1) | sel_fy == extract_fin_year(ac_date2) ~
@@ -94,13 +95,24 @@ est_date4 <- dmy(01042024)
              "This change in model, and process of receiving referrals and recording, ",
              "resulted in data quality issues for financial years 2019/20 and 2020/21. ",
              "This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*"),
+            sel_fy == extract_fin_year(ac_date3) ~
+        paste0(" ",
+               "**Please note:** ",
+                "*Due to staff absence Aberdeen City was unable to submit any data for ",
+               "2025/26 Q1, so no referrals have been reported for this quarter. ",
+               "Aberdeen City are changing their reporting process and data submission ",
+               "will resume for next quarter’s update.*"),
               TRUE ~ paste0(""))
+  
+  
+  
   
      # Data quality notes - Perth & Kinross
   tay_date1 <- dmy(01042018)
   tay_date2 <- dmy(01042019)
   tay_date3 <- dmy(01042023)
   tay_date4 <- dmy(01042024)
+  tay_date5 <- dmy(01042025)
   
   tay_text <-  
     case_when(sel_fy == extract_fin_year(tay_date1) |
@@ -113,11 +125,12 @@ est_date4 <- dmy(01042024)
            "possible to fill this gap. Subsequent measures put in place have successfully ", 
            "allowed NHS Tayside to improve on data reporting from 2019 onwards.*"),
               sel_fy == extract_fin_year(tay_date3)|
-              sel_fy == extract_fin_year(tay_date4)~
+              sel_fy == extract_fin_year(tay_date4)|
+              sel_fy == extract_fin_year(tay_date5)~
         paste0(" ", 
-            "**Please note:** ",
-              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24 ", 
-              "and 2024/25, which has resulted in some records showing as incorrectly having met the standard. ",
+           "**Please note:** ",
+              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ", 
+              "2024/25 and 2025/26, which has resulted in some records showing as incorrectly having met the standard. ",
               "NHS Tayside has informed PHS that these data issues will be rectified once they have completed the ", 
               "migration to a new IT system. This is likely to be completed by the end of the year.*"), 
     TRUE ~ paste0(""))
@@ -160,16 +173,16 @@ est_date4 <- dmy(01042024)
    
     
     # Data quality notes - inconsistent first contact dates
-   fc_date <- dmy(01042024)
+   fc_date <- dmy(01042025)
       
    fc_text <- 
     case_when(sel_fy == extract_fin_year(fc_date) ~
               paste0(" ", 
               "**Please note:** ",
-              "*PHS have identified some records submitted by NHS Lanarkshire, NHS Borders and NHS Fife ", 
-              "for 2024/25 that show inconsistent dates. The reported dates resulted in these records ",
+              "*PHS have identified one record submitted by NHS Lanarkshire ", 
+              "for 2025/26 that shows inconsistent dates. The reported dates resulted in this record ",
               "showing as having met the standard. PHS have queried the ", 
-              "dates with the Health Boards and are expecting these to be rectified in future submissions.*"), 
+              "dates with the Health Board and are expecting these to be rectified in future submissions.*"), 
             TRUE ~ paste0(""))
 
 
@@ -260,7 +273,7 @@ Row `r if(complete_year == FALSE)"{.hidden}"`
 
 `r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
 ```{r Expected Value Box, include = complete_year}
-valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
+flexdashboard::valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
          caption = glue("of people estimated to be newly diagnosed with ",
                         "dementia were referred for post-diagnostic support."))
 ```
@@ -274,7 +287,7 @@ Row `r if(complete_year == FALSE)"{.hidden}"`
 
 `r ifelse(complete_year == TRUE, "### 12 Months Value Box", "")`
 ```{r 12 Months Value Box, include = complete_year}
-valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
+flexdashboard::valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
          caption = glue("of those referred for post-diagnostic support ",
                         "received a minimum of 12 months of support."))
 ```

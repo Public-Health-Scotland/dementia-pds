@@ -114,7 +114,102 @@ ijb_comparison <- produce_test_comparison(calculate_measures(previous_data,
 
 
 
+### 5 analysing those with contact before diagnosis and ldp classification complete in latest submission----
+
+# read in latest individual data file
+ldp <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output)) %>% 
+  
+  # Remove codes from board, IJB, and sex
+  mutate(n_referrals = 1,
+         health_board = str_sub(health_board, 3, -1),
+         ijb          = if_else(is.na(ijb),
+                                "Unknown",
+                                str_sub(ijb, 11, -1)))
+
+# filter for those with a contact date before diagnosis that are marked as meeting the standard
+contact_before_diagnosis_ldp_complete <- ldp %>% filter(contact_before_diag == 1, !fy %in% finalised_years, grepl("complete", ldp))
+
+# adds ldp classification IF diagnosis date was used as date of first contact
+contact_before_diagnosis_ldp_complete %<>% 
+  
+  mutate(
+    
+    # Date 11 months after diagnosis date
+    diag_11 = add_with_rollback(dementia_diagnosis_confirmed_date, 
+                                months(11),
+                                roll_to_first = TRUE)) %>% 
+  
+  mutate(ldp_if_diag_date_used_as_contact_date = case_when(
+    
+    #### COMPLETE 
+    
+    # Started PDS within 12m of diagnosis AND PDS still ongoing after 12m
+    date_of_initial_first_contact < diag_12 & 
+      end_date >= diag_12 & # pds_12 changed to diag_12
+      is.na(termination_or_transition_date)
+    ~ "complete - Without termination date",
+    
+    # Started PDS within 12m of diagnosis AND PDS ended after 11m
+    date_of_initial_first_contact < diag_12 &
+      termination_or_transition_date >= diag_11 # pds_11 changed to diag_11
+    ~ "complete - PDS ended",
+    
+    # PDS terminated before 11 months from start date
+    termination_or_transition_date < diag_11 & # pds_11 changed to diag_11
+      !(substr(termination_or_transition_reason, 1, 2) %in% exempt_reasons)
+    ~ "fail - PDS terminated less than 11 months after first contact",
+    
+    #### EXEMPT
+    
+    # Exempt termination reason; died
+    substr(termination_or_transition_reason, 1, 2) == "03"
+    ~ "exempt - 03 Service user has died",
+    
+    # Exempt termination reason; moved to other HB
+    substr(termination_or_transition_reason, 1, 2) == "04"
+    ~ "exempt - 04 Service user has moved to a different Health Board area",
+    
+    # Exempt termination reason; refused
+    substr(termination_or_transition_reason, 1, 2) == "05"
+    ~ "exempt - 05 Service user has terminated PDS early/refused",
+    
+    # Exempt termination reason; can't engage
+    substr(termination_or_transition_reason, 1, 2) == "06"
+    ~ "exempt - 06 Service user no longer able to engage in PDS",
+    
+    #### ONGOING 
+    
+    # PDS started within 12m of diagnosis but not yet ended
+    date_of_initial_first_contact < diag_12 &
+      end_date < diag_12 & # pds_12 changed to diag_12
+      is.na(termination_or_transition_date)
+    ~ "ongoing - Still receiving PDS and less than 12 months since first contact",
+    
+   
+  TRUE ~ ldp
+    
+  ))
+
+# adds flag if ldp classification is unchanged when using diagnosis date as date of first contact
+final <- contact_before_diagnosis_ldp_complete %>% 
+  mutate(same_ldp = if_else(ldp == ldp_if_diag_date_used_as_contact_date, 1, 0)) %>% 
+# adds flag if date of first contact is on or after date of referral
+  mutate(contact_on_or_after_referral = case_when(
+    date_of_initial_first_contact >= date_pds_referral_received ~1,
+    TRUE ~0)
+  ) %>% 
+# adds flag if date of first contact is on or after date of allocation
+  mutate(contact_on_or_after_allocation = case_when(
+    date_of_initial_first_contact >= initial_pds_practitioner_allocation_date ~1,
+    TRUE ~0)
+  ) %>% 
+  select(fy, dementia_diagnosis_confirmed_date, date_pds_referral_received,
+         initial_pds_practitioner_allocation_date, date_of_initial_first_contact, 
+         termination_or_transition_date, 
+         termination_or_transition_reason, health_board, ijb, error_flag,
+         ldp, ldp_if_diag_date_used_as_contact_date, same_ldp, contact_on_or_after_referral, contact_on_or_after_allocation)
 
 
+final %>% write_tests_xlsx(sheet_name = "contact_b4_diag_met_stan")
 
 # End of Script # 
