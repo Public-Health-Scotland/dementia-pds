@@ -14,10 +14,10 @@ output$intro_page_ui <-  renderUI({
                          a("here.", href = paste0("https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-",
                                          str_replace(latest_fy, "/","")), target="_blank")),
                        p("This dashboard contains pages providing information on the following areas:",
-                         tags$ul(tags$li("Performance against the Local Delivery Plan (LDP) Standard"),
-                                tags$li("Total number of referrals to PDS and rates per 10,000 population"),
+                         tags$ul(tags$li("Total number of referrals to PDS and rates per 10,000 population"),
+                                 tags$li("Pathways from diagnosis of dementia to first contact by a PDS practitioner"),
+                                tags$li("Performance against the Local Delivery Plan (LDP) Standard"),
                                 tags$li("Demographics (Gender, Age and Deprivation)"),
-                                tags$li("Pathways from diagnosis of dementia to first contact by a PDS practitioner"),
                                 tags$li("Information on the methodology used in the report"),
                                 tags$li("Downloading data from the report")
                                 )
@@ -57,8 +57,8 @@ output$intro_page_ui <-  renderUI({
                                           "diagnosed and referred for post-diagnostic support within their local areas and this dataset forms the basis ",
                                           "of the LDP standard calculation. These statistics are derived from quarterly post-diagnostic support data ",
                                           "submissions by NHS Boards as at ", format(end_date, "%d %B %Y"),".")),
-                                 p("Further information regarding the Dementia PDS dataset and submission process can be found on the ", 
-                                   a("Dementia PDS pages.", href ="https://publichealthscotland.scot/services/data-management/data-management-in-primary-social-and-community-care/dementia-post-diagnostic-support-pds/", target="_blank"))
+                                 p("Further information regarding the PHS Dementia PDS dataset and submission process can be found on the ", 
+                                   a("PHS Dementia PDS pages.", href ="https://publichealthscotland.scot/services/data-management/data-management-in-primary-social-and-community-care/dementia-post-diagnostic-support-pds/", target="_blank"))
                                  ),
                          tags$li(p("NHS Board level estimates of the number of people newly diagnosed with dementia (incidence) used in Tab 6 for the years 2016/17 to 2020/21, are from the paper ",
                                    a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
