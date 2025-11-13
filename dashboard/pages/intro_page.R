@@ -120,7 +120,7 @@ output$intro_page_ui <-  renderUI({
                      fluidRow(column(
                        h3(strong("Using the Dashboard")),
                        h4(strong("Interacting with the dashboard")),
-                       p("The dashboard has seven pages across the top which can be selected: Home, Referrals & Rates, LDP Standard, Pathways, 
+                       p("The dashboard has seven pages across the top which can be selected: Home, Referrals & Rates, Pathways, LDP Standard, 
                          Demographics, Methodology, and Data Download. Most pages have buttons on the left hand side of the screen and/or 
                          tabs towards the top of the screen to navigate to areas within each page."),
                        p("Drop-down menus and radio buttons are located on the left hand side of the screen of most pages in the dashboard. Where these filters are available,

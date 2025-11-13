@@ -132,7 +132,61 @@ tabPanel(title = "Referrals & Rates",
 ), # tabpanel
 
 ##############################################.
-# PAGE 2: LDP Standard  ----
+# PAGE 2: Pathways ----
+##############################################.
+tabPanel(title = "Pathways",
+         # Look at https://fontawesome.com/search?m=free for icons
+         icon = icon_no_warning_fn("arrows-turn-to-dots"),
+         value = "pathways",
+         
+         box(class = "header", h2("Dementia Post-Diagnostic Support; Pathways"),
+             width = 12,
+             collapsible = TRUE, collapsed = FALSE),
+         
+         sidebarLayout(
+           sidebarPanel(
+             #sidebar buttons
+             radioGroupButtons("pathways_sidebar", label = NULL, choices = pathways_list,
+                               status = "secondary",
+                               direction = "vertical", 
+                               justified = T,
+                               size = "lg"
+             ),
+             
+             conditionalPanel(condition = 'input.pathways_sidebar == "wait"',
+                              linebreaks(1),
+                              #dropdown to select financial year
+                              selectInput("select_year_pathways",
+                                          label = "Select Financial Year of Diagnosis:",
+                                          choices = included_years_2025_gender_wait,#CHANGE to included_years from 2026 onwards----
+                                          selected= provisional_year_sup)
+             ), #conditionalPanel wait
+             conditionalPanel(condition = 'input.pathways_sidebar == "trends"',  
+                              linebreaks(1),
+                              #drop down to select healthboard/IAA in trend chart
+                              selectInput("select_hb_ijb_pathways_trend",
+                                          label = "Select Health Board/Integration Authority to show in chart:",
+                                          choices = c("Scotland", boards, ijb_list))
+             ), #cond panel trends
+             #radio buttons to toggle between health boards and integration authority areas
+             radioButtons("select_hb_ijb_pathways",
+                          label = "In the chart and table show:",
+                          choices = c("Health Boards", "Integration Authority Areas"),
+                          selected = "Health Boards"),
+             width = 3
+           ),#sidebarPanel
+           
+           mainPanel(width = 9,
+                     uiOutput("pathways_ui")#pages/pathways.R
+                     
+           ) # mainPanel
+         ) #sidebarLayout
+), # tabpanel
+
+
+
+##############################################.
+# PAGE 3: LDP Standard  ----
 ##############################################.
 
 tabPanel(title = "LDP Standard",
@@ -203,58 +257,6 @@ tabPanel(title = "LDP Standard",
                      uiOutput("ldp_ui")#pages/ldp_standard.R
            )#mainPanel
          )#sidebarLayout
-), # tabpanel
-
-##############################################.
-# PAGE 3: Pathways ----
-##############################################.
-tabPanel(title = "Pathways",
-         # Look at https://fontawesome.com/search?m=free for icons
-         icon = icon_no_warning_fn("arrows-turn-to-dots"),
-         value = "pathways",
-         
-         box(class = "header", h2("Dementia Post-Diagnostic Support; Pathways"),
-             width = 12,
-             collapsible = TRUE, collapsed = FALSE),
-         
-         sidebarLayout(
-           sidebarPanel(
-             #sidebar buttons
-             radioGroupButtons("pathways_sidebar", label = NULL, choices = pathways_list,
-                               status = "secondary",
-                               direction = "vertical", 
-                               justified = T,
-                               size = "lg"
-             ),
-             
-             conditionalPanel(condition = 'input.pathways_sidebar == "wait"',
-                              linebreaks(1),
-                              #dropdown to select financial year
-                              selectInput("select_year_pathways",
-                                          label = "Select Financial Year of Diagnosis:",
-                                          choices = included_years_2025_gender_wait,#CHANGE to included_years from 2026 onwards----
-                                          selected= provisional_year_sup)
-             ), #conditionalPanel wait
-             conditionalPanel(condition = 'input.pathways_sidebar == "trends"',  
-                              linebreaks(1),
-                              #drop down to select healthboard/IAA in trend chart
-                              selectInput("select_hb_ijb_pathways_trend",
-                                          label = "Select Health Board/Integration Authority to show in chart:",
-                                          choices = c("Scotland", boards, ijb_list))
-             ), #cond panel trends
-             #radio buttons to toggle between health boards and integration authority areas
-             radioButtons("select_hb_ijb_pathways",
-                          label = "In the chart and table show:",
-                          choices = c("Health Boards", "Integration Authority Areas"),
-                          selected = "Health Boards"),
-             width = 3
-           ),#sidebarPanel
-           
-           mainPanel(width = 9,
-                     uiOutput("pathways_ui")#pages/pathways.R
-                     
-           ) # mainPanel
-         ) #sidebarLayout
 ), # tabpanel
 
 
