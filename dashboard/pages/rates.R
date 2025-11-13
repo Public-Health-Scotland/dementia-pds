@@ -71,10 +71,10 @@ output$rates_ui <-  renderUI({
                    ### Notes----
                    h4(strong("Notes:")),
                   p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
-                   p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."),
-                    em("Due to the discovery of previously unpublished data submitted by NHS Grampian, revisions have been 
-                    made in this publication for diagnoses in financial year 2020/21. The impact of this is that the Number of 
-                    People Referred to PDS has increased by 11 for Aberdeen City, NHS Grampian and Scotland.")),
+                   p(paste0("ᴿ Figures for ", revised_year_sup," have been revised and are now final."),
+                    em("Figures for Aberdeen City NHS Grampian and Scotland for 2020/21 have been revised due to the 
+                    receipt of additional data. The 2020/21 figures include an additional 11 referrals from those 
+                    previously published.")),
                       
               p("Figures for 2018/19, 2019/20 and 2020/21 for Aberdeen City, NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
                  a(
@@ -145,7 +145,7 @@ output$rates_ui <-  renderUI({
                                     ### Notes----
                                     h4(strong("Notes:")),
                                     p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
-                                    #p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."), UNCOMMENT for 2026 publication
+                                    #p(paste0("ᴿ Figures for ", revised_year_sup," have been revised and are now final."), UNCOMMENT for 2026 publication
                                     p("Rates are calculated using the NRS mid-year population estimates of the 65 and over age group for each geographical area. See Note 8 on the",
                                       a(
                                         href = "#",
