@@ -33,6 +33,9 @@ provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
 revised_year <- paste0(as.numeric(substr(last(finalised_years),1,4)),
                        "/", as.numeric(substr(last(finalised_years),6,7)))
 
+revised_year_extra <- paste0(as.numeric(substr(last(finalised_years),1,4)) - 1,
+                       "/", as.numeric(substr(last(finalised_years),6,7)))
+
 
 extra_referrals_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 2,
                                "/", as.numeric(substr(last(finalised_years),6,7)) + 2)
