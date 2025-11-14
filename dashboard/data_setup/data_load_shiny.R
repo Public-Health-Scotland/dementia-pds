@@ -30,12 +30,12 @@ provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
                            "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
 
 
+revised_year_extra <- paste0(as.numeric(substr(last(finalised_years),1,4)) - 1,
+                             "/", as.numeric(substr(last(finalised_years),6,7)) - 1)
+
+
 revised_year <- paste0(as.numeric(substr(last(finalised_years),1,4)),
                        "/", as.numeric(substr(last(finalised_years),6,7)))
-
-revised_year_extra <- paste0(as.numeric(substr(last(finalised_years),1,4)) - 1,
-                       "/", as.numeric(substr(last(finalised_years),6,7)))
-
 
 extra_referrals_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 2,
                                "/", as.numeric(substr(last(finalised_years),6,7)) + 2)
@@ -45,17 +45,20 @@ extra_referrals_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 2
 #add superscripts
 download_data_scotland<-download_data_scotland %>% 
   mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                    financial_year == revised_year_extra ~paste0(revised_year_extra,"ᴿ"),
                                     financial_year == revised_year ~paste0(revised_year,"ᴿ"),
                                     financial_year == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
                                     TRUE ~financial_year))
   
 download_data_hb<-download_data_hb %>% 
   mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                    financial_year == revised_year_extra ~paste0(revised_year_extra,"ᴿ"),
                                     financial_year == revised_year ~paste0(revised_year,"ᴿ"),
                                     financial_year == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
                                     TRUE ~financial_year))
 download_data_ijb<-download_data_ijb %>% 
   mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                    financial_year == revised_year_extra ~paste0(revised_year_extra,"ᴿ"),
                                     financial_year == revised_year ~paste0(revised_year,"ᴿ"),
                                     financial_year == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
                                     TRUE ~financial_year))
@@ -65,8 +68,9 @@ download_data_ijb<-download_data_ijb %>%
 annual_table_data <- annual_table_data %>%  
   
   mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
-                       fy == revised_year ~paste0(revised_year,"ᴿ"),
-                       fy == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
+                        fy == revised_year_extra ~paste0(revised_year_extra,"ᴿ"),
+                        fy == revised_year ~paste0(revised_year,"ᴿ"),
+                        fy == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
                        TRUE ~fy))
 
 

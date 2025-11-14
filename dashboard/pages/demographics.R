@@ -41,25 +41,32 @@ output$demo_ui <-  renderUI({
       if(input$select_data_demo != "data_sex"){
       p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final. "),
                if(input$select_data_demo == "data_age"){    
-                 em("Due to the discovery of previously unpublished data submitted by NHS Grampian, revisions have been 
-                    made in this publication for diagnoses in financial year 2019/20 and 2020/21. The impact of this is that
-                    the Number of People Referred to PDS and Proportion of Total Referrals in 2019/20 and 2020/21 has changed slightly for most age groups
-                    (the highest change to the proportion being 0.2%). Additionally, in previous publications the calculation for Percentage of LDP Standard 
-                    Achieved in these years was erroneously including Aberdeen City referrals for which the LDP Standard can not be calculated.
-                    The impact of this is that the Percentage of LDP Standard Achieved for all age groups in 2019/20 and 2020/21 has been adjusted to between 1% to 4%
-                    higher than previously published, except the 59 and Under age group for which there is no change.")
+                 em("Figures for 2021/22 have been revised and are now final. Figures 
+                 for the percentage of LDP standard achieved by age group for 2019/20 
+                 and 2020/21 have also been revised. This is due to the receipt of 
+                    additional data for Aberdeen City for 6 existing records in 2029/20 
+                    and for 11 additional records in 2020/21. The revision also includes 
+                    a correction for the fact that previously published figures for these 
+                    years erroneously included the Aberdeen City referrals in the 
+                    denominator when they should have been excluded.  The corrected figures
+                    for each age group have been revised upwards (between 1 and 4 
+                    percentage points, except the 59 and under age group which hasn’t 
+                    changed) for these years.")
                }else{
-                 em("Due to the discovery of previously unpublished data submitted by NHS Grampian, revisions have been 
-                    made in this publication for diagnoses in financial year 2019/20 and 2020/21. The impact of this is that
-                    the Number of People Referred to PDS and Proportion of Total Referrals in 2019/20 and 2020/21 has changed slightly for all deprivation quintiles 
-                    (the highest change to the proportion being 0.1%). Additionally, in previous publications the calculation for Percentage of LDP Standard 
-                    Achieved in these years was erroneously including Aberdeen City referrals for which the LDP Standard can not be calculated.
-                    The impact of this is that the Percentage of LDP Standard Achieved for all deprivation quintiles in 2019/20 and 2020/21 has been adjusted to between 1% to 4%
-                    higher than previously published, except for the following: 
-                    In 2019/20 for deprivation quintile 5 the percentage has been adjusted from 76.4% to 83.3%. 
-                    In 2019/20 for referrals with an unknown deprivation quintile the percentage has been adjusted from 55.6% to 100%.
-                    In 2020/21 for referrals with an unknown deprivation quintile the percentage has been adjusted from 31.3% to 100%.
-                    ")
+                 em("Figures for 2021/22 have been revised and are now 
+                    final. Figures for the percentage of LDP standard 
+                    achieved by age group for 2019/20 and 2020/21 have 
+                    also been revised.  This is due to the receipt of 
+                    additional data for Aberdeen City for 6 existing 
+                    records in 2029/20 and for 11 additional records in 
+                    2020/21. The revision also includes a correction for the 
+                    fact that previously published figures for these years 
+                    erroneously included the Aberdeen City referrals in the 
+                    denominator when they should have been excluded.  The 
+                    corrected figures for each SIMD quintile have been revised 
+                    upwards (between 1 and 4 percentage points, except for 
+                    deprivation quintile 5 which has increased by 6.9 percentage 
+                    points in 2019/20) for these years.")
                }
                )
         },
@@ -81,9 +88,11 @@ output$demo_ui <-  renderUI({
         "There are a small number of records where it was not possible to assign a deprivation category. Possible reasons for not being able to assign a deprivation category are that no postcode was provided 
           or the postcode provided is invalid, not in Scotland, or is a newly added postcode.")
       } else if(input$select_data_demo == "data_sex"){
-        p("Gender is based on the sex recorded for each referral. There are a small number of records where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’).")
+        p("Gender is based on the sex recorded for each referral. There are a small number of records where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’).   These records are not reported separately in the tables but are included in the Totals shown.")
       },
-      p("Figures for 2018/19, 2019/20 and 2020/21 are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
+      p("Figures for 2018/19, 2019/20 and 2020/21 are affected by the 
+        change in service provision of PDS within Aberdeen City during 
+        2019. See Note 5 on the",
         a(
           href = "#",
           "Home",

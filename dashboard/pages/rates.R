@@ -71,7 +71,7 @@ output$rates_ui <-  renderUI({
                    ### Notes----
                    h4(strong("Notes:")),
                   p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
-                   p(paste0("ᴿ Figures for ", revised_year_sup," have been revised and are now final."),
+                   p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."),
                     em("Figures for Aberdeen City NHS Grampian and Scotland for 2020/21 have been revised due to the 
                     receipt of additional data. The 2020/21 figures include an additional 11 referrals from those 
                     previously published.")),

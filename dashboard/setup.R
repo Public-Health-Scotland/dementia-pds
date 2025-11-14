@@ -25,6 +25,7 @@ source(here("dashboard/data_setup/data_load_shiny.R"))
 
 #adds superscript R to year which was provisional in previous publication
 revised_year_sup <- paste0(revised_year,"ᴿ")
+revised_year_sup_extra <- paste0(revised_year_extra,"ᴿ")
 
 #adds superscript P to provisional data
 provisional_year_sup <- paste0(provisional_year,"ᴾ")
@@ -35,15 +36,16 @@ extra_referrals_year_sup <- paste0(extra_referrals_year,"ᴾ")
 included_years_2025_gender_wait <- c(finalised_years, provisional_year_sup) #REMOVE from 2026 onward----
 
 #list of included years for ldp standard, demographics and pathways data
-included_years <- c(finalised_years[-length(finalised_years)],
-                        revised_year_sup,
+included_years <- c(finalised_years_referrals,
+                    revised_year_sup_extra,
+                    revised_year_sup,
                         provisional_year_sup)
 
 #list of included years for referrals and rates page
-included_years_extra_referrals <- c(finalised_years[-length(finalised_years)], revised_year_sup, provisional_year_sup, extra_referrals_year_sup)
+included_years_extra_referrals <- c(finalised_years_referrals, revised_year_sup_extra, revised_year_sup,provisional_year_sup, extra_referrals_year_sup)
 
 #list of included years for referrals and rates page
-included_years_extra_referrals_2025_rates <- c(finalised_years, provisional_year_sup, extra_referrals_year_sup) #REMOVE from 2026 onward----
+included_years_extra_referrals_2025_rates <- c(finalised_years_referrals, provisional_year_sup, extra_referrals_year_sup) #REMOVE from 2026 onward----
 
 
 #sidebar buttons for home page
@@ -80,7 +82,7 @@ demographics_list <- c("Gender" = "data_sex",
                        "Deprivation (SIMD)" = "data_simd")
 
 #sidebar buttons for pathways page
-pathways_list <- c("Waiting Times by Financial Year" = "wait",
+pathways_list <- c("Time to first contact by Financial Year" = "wait",
                       "Trends" = "trends"
 )
 
