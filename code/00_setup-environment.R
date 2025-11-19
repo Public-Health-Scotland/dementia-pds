@@ -144,7 +144,13 @@ finalised_years_referrals <-
   str_replace("-", "/")
 finalised_years_referrals <- finalised_years_referrals [-c(5, 6)]
  
-   
+#Define years in which data has been made final
+finalised_years_demographics <- 
+  list.files(get_final_data_dir()) %>% 
+  str_sub(1, 7) %>%
+  str_replace("-", "/")
+finalised_years_demographics <- finalised_years_demographics [-c(4, 5, 6)]
+
 
 
 ### END OF SCRIPT ###
