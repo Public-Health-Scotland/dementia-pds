@@ -71,7 +71,7 @@ output$pathways_ui <-  renderUI({
 # SERVER----
 #REMOVE the two lines below from 2026 onwards ----
 data_wait_sel_yrs <- data_wait %>% 
-  filter(fy %in% included_years_2025_gender_wait)
+  filter(fy %in% included_years_pathways)
 #UNCOMMENT the two lines below from 2026 onwards ----
 # data_wait_sel_yrs <- data_wait %>% 
 #   filter(fy %in% included_years)
@@ -274,7 +274,7 @@ output$table_pathways_trend <- DT::renderDataTable({
   
   make_table(median_table_trend_data() %>% 
                pivot_wider(names_from = fy, values_from = median_diagnosis_to_contact),
-             right_align = 1:length(included_years), rows_to_display = 32, selected = 1, filename = paste0("pds_wait_times_iaa_trend"))
+             right_align = 1:length(included_years_pathways), rows_to_display = 32, selected = 1, filename = paste0("pds_wait_times_iaa_trend"))
   
 })
 
@@ -293,7 +293,7 @@ output$downloadData_pathways_trend <- downloadHandler(
                 mutate(Measure = "Average (median) days from diagnosis to first contact", 
                        .before = everything()) %>% 
                 #### adds revision and provisional note
-                rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years)+1))
+                rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years_pathways)+1))
                 ),# %>% 
               # UNCOMMENT the line below from 2026 onward----
               #rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",length(included_years)+1))), 

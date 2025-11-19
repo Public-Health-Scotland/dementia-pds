@@ -26,6 +26,8 @@ source(here("dashboard/data_setup/data_load_shiny.R"))
 #adds superscript R to year which was provisional in previous publication
 revised_year_sup <- paste0(revised_year,"ᴿ")
 revised_year_sup_extra <- paste0(revised_year_extra,"ᴿ")
+revised_year_sup_extra_2 <- paste0(revised_year_extra_2,"ᴿ")
+
 
 #adds superscript P to provisional data
 provisional_year_sup <- paste0(provisional_year,"ᴾ")
@@ -35,14 +37,25 @@ extra_referrals_year_sup <- paste0(extra_referrals_year,"ᴾ")
 # year list with no superscript R for data that was not included in 2024 publication
 included_years_2025_gender_wait <- c(finalised_years, provisional_year_sup) #REMOVE from 2026 onward----
 
+# year list with no superscript R for data that was not included in 2024 publication
+included_years_pathways <- c(finalised_years, provisional_year_sup, extra_referrals_year_sup) #REMOVE from 2026 onward----
+
 #list of included years for ldp standard, demographics and pathways data
 included_years <- c(finalised_years_referrals,
                     revised_year_sup_extra,
                     revised_year_sup,
                         provisional_year_sup)
 
+#list of included years for demographics data
+included_years_demographics <- c(finalised_years_demographics,
+                                 revised_year_sup_extra_2,
+                                 revised_year_sup_extra,
+                    revised_year_sup,
+                    provisional_year_sup)
+
 #list of included years for referrals and rates page
 included_years_extra_referrals <- c(finalised_years_referrals, revised_year_sup_extra, revised_year_sup,provisional_year_sup, extra_referrals_year_sup)
+
 
 #list of included years for referrals and rates page
 included_years_extra_referrals_2025_rates <- c(finalised_years_referrals, provisional_year_sup, extra_referrals_year_sup) #REMOVE from 2026 onward----

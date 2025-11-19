@@ -158,8 +158,8 @@ tabPanel(title = "Pathways",
                               #dropdown to select financial year
                               selectInput("select_year_pathways",
                                           label = "Select Financial Year of Diagnosis:",
-                                          choices = included_years_2025_gender_wait,#CHANGE to included_years from 2026 onwards----
-                                          selected= provisional_year_sup)
+                                          choices = included_years_pathways,#CHANGE to included_years from 2026 onwards----
+                                          selected= extra_referrals_year_sup)
              ), #conditionalPanel wait
              conditionalPanel(condition = 'input.pathways_sidebar == "trends"',  
                               linebreaks(1),
@@ -285,7 +285,7 @@ tabPanel(title = "Demographics",
                         #dropdown to select financial year
                         selectInput("select_year_demo",
                                            label = "Select Financial Year of Diagnosis:",
-                                           choices = included_years,
+                                           choices = included_years_demographics,
                                            selected = provisional_year_sup),
 
                     width = 2

@@ -29,7 +29,9 @@ download_data_ijb <- read_rds("//conf/dementia/A&I/Outputs/dashboard/data/downlo
 provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
                            "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
 
-
+# 2 add superscript to provisional and revised years and convert to factors----
+provisional_year_2 <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 2,
+                           "/", as.numeric(substr(last(finalised_years),6,7)) + 2)
 revised_year_extra <- paste0(as.numeric(substr(last(finalised_years),1,4)) - 1,
                              "/", as.numeric(substr(last(finalised_years),6,7)) - 1)
 
@@ -54,12 +56,14 @@ download_data_scotland<-download_data_scotland %>%
   
 download_data_hb<-download_data_hb %>% 
   mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                    financial_year == provisional_year_2 ~paste0(provisional_year_2 ,"ᴾ"),
                                     financial_year == revised_year_extra ~paste0(revised_year_extra,"ᴿ"),
                                     financial_year == revised_year ~paste0(revised_year,"ᴿ"),
                                     financial_year == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
                                     TRUE ~financial_year))
 download_data_ijb<-download_data_ijb %>% 
   mutate(financial_year = case_when(financial_year == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                    financial_year == provisional_year_2 ~paste0(provisional_year_2 ,"ᴾ"),
                                     financial_year == revised_year_extra ~paste0(revised_year_extra,"ᴿ"),
                                     financial_year == revised_year ~paste0(revised_year,"ᴿ"),
                                     financial_year == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
@@ -86,6 +90,7 @@ annual_table_data$fy <- as.factor(annual_table_data$fy)
 #filter simd and sex to All and add superscripts
 data_wait <- data_wait %>% 
   mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                        fy == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
                         #UNCOMMENT line below in 2026----
                         # fy == revised_year ~paste0(revised_year,"ᴿ"),
                         TRUE ~fy))
@@ -97,7 +102,10 @@ data_wait$fy <- as.factor(data_wait$fy)
 #data_age----
 #filter sex to All and add superscripts
 data_age <- data_age %>% mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
+                                               fy == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
                                                fy == revised_year ~paste0(revised_year,"ᴿ"),
+                                               fy == revised_year_extra ~paste0(revised_year_extra,"ᴿ"),
+                                               fy == revised_year_extra_2 ~paste0(revised_year_extra_2,"ᴿ"),
                                                TRUE ~fy)) 
 
 data_age$health_board <- factor(data_age$health_board, levels=unique(data_age$health_board))
@@ -122,6 +130,8 @@ data_sex$fy <- as.factor(data_sex$fy)
 #filter sex to All and add superscripts
 data_simd <- data_simd %>% mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
                                                  fy == revised_year ~paste0(revised_year,"ᴿ"),
+                                                 fy == revised_year_extra ~paste0(revised_year_extra,"ᴿ"),
+                                                 fy == revised_year_extra_2 ~paste0(revised_year_extra_2,"ᴿ"),
                                                  TRUE ~fy))
 
 data_simd$health_board <- factor(data_simd$health_board, levels=unique(data_simd$health_board))
