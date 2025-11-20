@@ -122,7 +122,7 @@ data_sex <- data_sex %>% mutate(fy = case_when(fy == provisional_year ~paste0(pr
 
 data_sex$health_board <- factor(data_sex$health_board, levels=unique(data_sex$health_board))
 data_sex$ijb <- factor(data_sex$ijb, levels=unique(annual_table_data$ijb))
-data_sex$type <- factor(data_sex$type, levels = c("Male", "Female", "Not Specified", "Unknown"))
+data_sex$type <- factor(data_sex$type, levels = c("Male", "Female"))
 data_sex$fy <- as.factor(data_sex$fy)
 
 
@@ -144,7 +144,8 @@ data_simd$fy <- as.factor(data_simd$fy)
 
 data_rates <- data_rates %>% mutate(fy = case_when(fy == provisional_year ~paste0(provisional_year ,"ᴾ"),
                                      #UNCOMMENT line below in 2026----
-                                     #fy == revised_year ~paste0(revised_year,"ᴿ"),
+                                     fy == revised_year ~paste0(revised_year,"ᴿ"),
+                                     fy == revised_year_extra ~paste0(revised_year_extra,"ᴿ"),
                                      fy == extra_referrals_year ~paste0(extra_referrals_year ,"ᴾ"),
                                      TRUE ~fy))
 

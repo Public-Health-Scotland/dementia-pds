@@ -393,7 +393,7 @@ output$rates_ui <-  renderUI({
   # filter rates data to years included in publication----
   #REMOVE the two lines below from 2026 onwards ----
   data_rates_sel_yrs <- data_rates %>% 
-    filter(fy %in% included_years_extra_referrals_2025_rates)#
+    filter(fy %in% included_years_extra_referrals)#
   #UNCOMMENT the two lines below from 2026 onwards ----
   # data_rates_sel_yrs <- data_rates %>% 
   #   filter(fy %in% included_years_extra_referrals)
@@ -623,12 +623,12 @@ output$rates_ui <-  renderUI({
   # REMOVE this section from 2026 onwards----
   
   observe({
-    if(input$RandR_tab != "RandR_rates" & input$select_year_randr != "2021/22"){
+    if(input$RandR_tab != "RandR_rates" & input$select_year_randr != "2021/22ᴿ"){
       updateSelectInput(session,"select_year_randr",
                         label = "Select Financial Year of Diagnosis:",
                         choices = included_years_extra_referrals,
                         selected =  input$select_year_randr)
-    }else if(input$RandR_tab != "RandR_rates" & input$select_year_randr == "2021/22"){
+    }else if(input$RandR_tab != "RandR_rates" & input$select_year_randr == "2021/22ᴿ"){
       updateSelectInput(session,"select_year_randr",
                         label = "Select Financial Year of Diagnosis:",
                         choices = included_years_extra_referrals,
@@ -636,12 +636,12 @@ output$rates_ui <-  renderUI({
     }else if(input$RandR_tab == "RandR_rates" & input$select_year_randr == "2021/22ᴿ"){
       updateSelectInput(session,"select_year_randr",
                         label = "Select Financial Year of Diagnosis:",
-                        choices = included_years_extra_referrals_2025_rates,
-                        selected = "2021/22")
+                        choices = included_years_extra_referrals,
+                        selected = "2021/22ᴿ")
     }else if(input$RandR_tab == "RandR_rates" & input$select_year_randr != "2021/22ᴿ"){
       updateSelectInput(session,"select_year_randr",
                         label = "Select Financial Year of Diagnosis:",
-                        choices = included_years_extra_referrals_2025_rates,
+                        choices = included_years_extra_referrals,
                         selected = input$select_year_randr)
     }
   })
