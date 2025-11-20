@@ -18,6 +18,8 @@
 ### 1 - Load environment file and themes ----
 
 library(scales)
+library(ggplot2)
+library(ggtext)
 
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
@@ -472,6 +474,7 @@ c8_data <-  read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_out
   # calculate total referrals by year
   group_by(geog = "Scotland", fy) %>% summarise(annual_referrals = sum(referrals))
 
+
 c8 <-
   c8_data %>%
   ggplot(aes(x = fy, y = annual_referrals, group = geog)) +
@@ -481,7 +484,7 @@ c8 <-
           #  size = 3) +
   theme_dementia_pub() +
   scale_y_continuous(expand = c(0, 0), limits = c(0, max(c8_data$annual_referrals)+300),labels = comma, breaks=c(2500, 5000, 7500, 10000)) +
-  scale_x_discrete(labels = str_wrap(c8_data$fy, width = 8)) +
+  scale_x_discrete(labels = included_years_pathways) +
   xlab("Financial Year of Diagnosis") +
   ylab(str_wrap("Number of Referrals", width = 10)) 
 
@@ -535,9 +538,9 @@ c9 <-
   scale_y_continuous(expand = c(0, 0),
                      limits = c(0, max(c9_data$pop_rate_10000)+5),
                      breaks = seq(0, max(c9_data$pop_rate_10000)+5, by = 15)) +
-  scale_x_discrete(labels = str_wrap(c9_data$fy, width = 8)) +
+  scale_x_discrete(labels = included_years_pathways) +
   xlab("Financial Year of Diagnosis") +
-  ylab(str_wrap("Number of Referrals per 10k Population", width = 10)) 
+  ylab(str_wrap("Number of Referrals per 10,000 Population", width = 10)) 
 
 # Save chart to output folder
 ggsave(get_pub_figures_path(type = "c9", test_output = test_output),
@@ -577,7 +580,7 @@ c10 <-
             size = 3) +
   theme_dementia_pub() +
     scale_y_continuous(
-    limits = c(0, c10_limit + 2),
+    limits = c(0, c10_limit + 5),
     breaks = seq(0, c10_limit, by = 10),
     labels = paste0(seq(0, c10_limit, by = 10), "%"),
     expand = c(0, 0)) +
