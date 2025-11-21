@@ -28,7 +28,7 @@ output$intro_page_ui <-  renderUI({
                        ###about the standard----
                        h3(strong("About the LDP Standard")),
                        p("The Scottish Government published their third national dementia strategy in 2017. This included the commitment to extend and embed dementia post-diagnostic support. In order to effectively monitor the delivery of post-diagnosis support a national local delivery plan (LDP) standard was introduced for ",
-                         em("all people newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker, including the building of a person-centred support plan. ")),
+                         ("all people newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker, including the building of a person-centred support plan. ")),
                          p("The LDP Standard is reported in two parts:"),
                        box(width = 12,
                            background = "blue",

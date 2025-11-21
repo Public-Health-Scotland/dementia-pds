@@ -120,11 +120,25 @@ data_sex <- data_sex %>% mutate(fy = case_when(fy == provisional_year ~paste0(pr
                                                # fy == revised_year ~paste0(revised_year,"ᴿ"),
                                                TRUE ~fy))  
 
+data_sex_new <- data_sex %>% 
+  group_by(health_board,ijb,fy,) %>% 
+  summarize(type="Scotland",referrals = sum(referrals),complete= sum(complete), exempt= sum(exempt), 
+            ongoing= sum(ongoing), not_met= sum(not_met),percent_met = (sum(complete+exempt)/referrals))
+  
+data_sex_all <- data_sex %>% 
+  filter(!(type %in% c("Not Specified", "Unknown")))
+
+df1 = data_sex_new
+df2 = data_sex_all
+
+all_data_sex = merge(df1, df2, all = T)
+all_data_sex$type <- factor(all_data_sex$type, levels = c("Male", "Female","Scotland"))
+
+  
 data_sex$health_board <- factor(data_sex$health_board, levels=unique(data_sex$health_board))
 data_sex$ijb <- factor(data_sex$ijb, levels=unique(annual_table_data$ijb))
-data_sex$type <- factor(data_sex$type, levels = c("Male", "Female"))
+data_sex$type <- factor(data_sex$type, levels = c("Male", "Female","Not Specified", "Unknown"))
 data_sex$fy <- as.factor(data_sex$fy)
-
 
 #data_simd----
 #filter sex to All and add superscripts

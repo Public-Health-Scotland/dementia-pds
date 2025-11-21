@@ -41,7 +41,7 @@ output$demo_ui <-  renderUI({
       if(input$select_data_demo != "data_sex"){
       p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final. "),
                if(input$select_data_demo == "data_age"){    
-                 em("Figures for 2021/22 have been revised and are now final. Figures 
+                 ("Figures for 2021/22 have been revised and are now final. Figures 
                  for the percentage of LDP standard achieved by age group for 2019/20 
                  and 2020/21 have also been revised. This is due to the receipt of 
                     additional data for Aberdeen City for 6 existing records in 2029/20 
@@ -53,7 +53,7 @@ output$demo_ui <-  renderUI({
                     percentage points, except the 59 and under age group which hasn’t 
                     changed) for these years.")
                }else{
-                 em("Figures for 2021/22 have been revised and are now 
+                 ("Figures for 2021/22 have been revised and are now 
                     final. Figures for the percentage of LDP standard 
                     achieved by age group for 2019/20 and 2020/21 have 
                     also been revised.  This is due to the receipt of 
@@ -207,7 +207,7 @@ table_data_demo <- reactive({
   ) %>% 
     mutate(perc_prop = round(100*referrals/max(referrals),1), .after = referrals) %>% 
     mutate(across(where(is.numeric), ~if_else(is.na(.), "-", format(., big.mark = ",")))) %>%
-    mutate(across(starts_with("perc"), ~ if_else(grepl("-", .), ., paste0(.,"%")))) %>% 
+    mutate(across(starts_with("perc"), ~ if_else(grepl("-", .), ., paste0(.,"%")))) %>%
     # adds superscript R for NHS Grampian and incorrect formula revisions. 
     #From 2026 onward REMOVE the first if statement and keep the column names that are currently set as else----
     set_colnames(if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){

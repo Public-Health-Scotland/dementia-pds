@@ -63,7 +63,7 @@ output$ldp_ui <-  renderUI({
                        h4(strong("Notes:")),
                        p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
                        p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."),
-                         em("Figures for Aberdeen City NHS Grampian and Scotland for 2020/21 have been revised due to the receipt of additional
+                         ("Figures for Aberdeen City NHS Grampian and Scotland for 2020/21 have been revised due to the receipt of additional
                             data. The 2020/21 figures include an additional 11 referrals from those previously published. The Percentage of 
                             Estimated Number of People Diagnosed with Dementia Referred to PDS for NHS Grampian is now 19.4% (previously 18.8%) 
                             and 33.8% for Scotland (previously 33.7%).")),

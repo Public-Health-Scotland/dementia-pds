@@ -72,7 +72,7 @@ output$rates_ui <-  renderUI({
                    h4(strong("Notes:")),
                   p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
                    p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."),
-                    em("Figures for Aberdeen City NHS Grampian and Scotland for 2020/21 have been revised due to the 
+                    ("Figures for Aberdeen City NHS Grampian and Scotland for 2020/21 have been revised due to the 
                     receipt of additional data. The 2020/21 figures include an additional 11 referrals from those 
                     previously published.")),
                       
@@ -446,7 +446,7 @@ output$rates_ui <-  renderUI({
   output$rates_plot <- renderPlotly({
     
     plot_bar(rates_chart_data(),
-                       measure = pop_rate_10000, scot_measure = scot_pop_rate_10000, ytitle = "rate per 10,000 population")
+                       measure = pop_rate_10000, scot_measure = scot_pop_rate_10000, ytitle = "number per 10,000 population")
     
   })
   
