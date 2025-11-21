@@ -324,6 +324,7 @@ get_pub_figures_path <- function(type = c("c1",
                                           "c11",
                                           "c12",
                                           "c13",
+                                          "c14",
                                           "summary"), 
                                  test_output = FALSE) {
   
@@ -342,6 +343,7 @@ get_pub_figures_path <- function(type = c("c1",
     "c11" ~ stringr::str_glue("{pub_date}_12-months-sex.png"),
     "c12" ~ stringr::str_glue("{pub_date}_wait-times-hb.png"),
     "c13" ~ stringr::str_glue("{pub_date}_wait-times-ijb.png"),
+    "c14" ~ stringr::str_glue("{pub_date}_wait-times-trend.png"),
     "summary" ~ stringr::str_glue("{pub_date}_summary-chart.png"), 
     "twitter" ~ stringr::str_glue("{pub_date}_dementia-pds_twitter-chart.png")
   )

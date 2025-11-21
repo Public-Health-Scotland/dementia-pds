@@ -713,4 +713,38 @@ ggsave(get_pub_figures_path(type = "c13", test_output = test_output),
        device = "png"
 )
 
+
+
+## # chart 14 - trend plot for wait times ----
+
+#read in data
+c14_data <- data_wait <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output)) %>% 
+  # Select FY to be included in rest of pub plus extra year
+  filter(fy %in% c(fy_in_pub, trend_year)) %>%
+  filter(health_board=="Scotland", simd=="All", sex=="All")
+
+c14 <-
+  c14_data %>%
+  filter(health_board == "Scotland") %>% 
+  ggplot(aes(x = fy, y = median_diagnosis_to_contact, group = health_board)) +
+  geom_line(colour = "#3F3685", linewidth = 1.3) +
+  # geom_text(aes(label = format(annual_referrals, big.mark = ",")), 
+  #   vjust = 1.5,
+  #  size = 3) +
+  theme_dementia_pub() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, max(c14_data$median_diagnosis_to_contact))) +
+  scale_x_discrete(labels = included_years_pathways) +
+  xlab("Financial Year of Diagnosis") +
+  ylab(str_wrap("Median Wait (Days)", width = 10)) 
+
+# Save chart to output folder
+ggsave(get_pub_figures_path(type = "c14", test_output = test_output),
+       plot = c14,
+       width = 7,
+       height = 3,
+       device = "png",
+       dpi = 600
+)
+
+
 ### END OF SCRIPT ###
