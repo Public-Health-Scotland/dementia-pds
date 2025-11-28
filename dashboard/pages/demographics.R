@@ -41,32 +41,27 @@ output$demo_ui <-  renderUI({
       if(input$select_data_demo != "data_sex"){
       p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final. "),
                if(input$select_data_demo == "data_age"){    
-                 ("Figures for 2021/22 have been revised and are now final. Figures 
-                 for the percentage of LDP standard achieved by age group for 2019/20 
-                 and 2020/21 have also been revised. This is due to the receipt of 
-                    additional data for Aberdeen City for 6 existing records in 2029/20 
-                    and for 11 additional records in 2020/21. The revision also includes 
-                    a correction for the fact that previously published figures for these 
-                    years erroneously included the Aberdeen City referrals in the 
-                    denominator when they should have been excluded.  The corrected figures
-                    for each age group have been revised upwards (between 1 and 4 
-                    percentage points, except the 59 and under age group which hasn’t 
-                    changed) for these years.")
+                 ("Figures for 2021/22 have been revised to include the 11 additional 
+                  records for Aberdeen City in the Total figure. Figures for the 
+                  percentage of LDP standard achieved by age group for 2019/20 and 
+                  2020/21 have also been revised to correct for the fact that 
+                  previously published figures for these years erroneously included
+                  the Aberdeen City referrals in the denominator when they should 
+                  have been excluded. The corrected figures for each age group have 
+                  been revised upwards (between 1 and 4 percentage points, except 
+                  the 59 and under age group which hasn’t changed) for these years.")
                }else{
-                 ("Figures for 2021/22 have been revised and are now 
-                    final. Figures for the percentage of LDP standard 
-                    achieved by age group for 2019/20 and 2020/21 have 
-                    also been revised.  This is due to the receipt of 
-                    additional data for Aberdeen City for 6 existing 
-                    records in 2029/20 and for 11 additional records in 
-                    2020/21. The revision also includes a correction for the 
-                    fact that previously published figures for these years 
-                    erroneously included the Aberdeen City referrals in the 
-                    denominator when they should have been excluded.  The 
-                    corrected figures for each SIMD quintile have been revised 
-                    upwards (between 1 and 4 percentage points, except for 
-                    deprivation quintile 5 which has increased by 6.9 percentage 
-                    points in 2019/20) for these years.")
+                 (" Figures for 2021/22 have been revised to include the 11 
+                  additional records for Aberdeen City in the Total figure. 
+                  Figures for the percentage of LDP standard achieved by SIMD 
+                  quintile for 2019/20 and 2020/21 have also been revised to 
+                  correct for the fact that previously published figures for 
+                  these years erroneously included the Aberdeen City referrals 
+                  in the denominator when they should have been excluded.  The 
+                  corrected figures for each SIMD quintile have been revised 
+                  upwards (between 1 and 4 percentage points, except for deprivation 
+                  quintile 5 which has increased by 6.9 percentage points in 2019/20) 
+                  for these years.")
                }
                )
         },

@@ -42,7 +42,7 @@ output$pathways_ui <-  renderUI({
            format(end_date, "%d %B %Y"))),
     ## Notes----
   h4(strong("Notes:")),
-  p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
+  p(paste0("ᴾ Figures for ", provisional_year," and 2023/24 are provisional subject to all service users completing their support.")),
   p("Date of diagnosis is the date recorded for when the service user received a confirmed diagnosis of dementia.
                        This diagnosis must be confirmed by a doctor or clinical practitioner with sufficient training and experience in the diagnosis of dementia.", 
     br(), 

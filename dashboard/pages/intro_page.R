@@ -159,9 +159,13 @@ conditionalPanel(condition = 'input.home_select == "glossary"',
                    p(strong("First Contact:"), "The date on which an appropriate face to face direct contact took place with the service user by the PDS Practitioner 
                      or PDS Team with the knowledge and skills to introduce each model of care. Direct contact can be done in person or by video link and is not
                      restricted to both parties being in the same room."),
-                   p(strong("Average (Median) Days:"), "The midpoint of the number of days between the given dates for each referral, such that there is an equal number
-                     of values falling above and below it. The median number of days for each time period will be such that half of the people will
-                     have experienced a wait time this long or longer."),
+                   p(strong("Average (Median) Days:"), "The median is the midpoint, 
+                     when the number of days between diagnosis and contact dates 
+                     for each referral are ordered from smallest to largest, such 
+                     that there is an equal number of records falling above and 
+                     below it. Half the people who were contacted by PDS were 
+                     contacted within the median time and for half it took longer 
+                     than the median time."),
                    linebreaks(1),
                    width = 12,
                    #fix panel so sidebar and navigation bar do not scroll with content
