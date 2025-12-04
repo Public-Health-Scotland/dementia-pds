@@ -219,7 +219,7 @@ trend_pathways_chart_data <- reactive({
     filter(ijb == input$select_hb_ijb_pathways_trend | ijb == "Scotland")})
 
 output$plot_pathways_trend <- renderPlotly({
-  plot_trend(trend_pathways_chart_data(), measure = median_diagnosis_to_contact, ytitle = "Median Wait (days)")
+  plot_trend(trend_pathways_chart_data(), measure = median_diagnosis_to_contact, ytitle = "Median time (days)")
   
 })
 

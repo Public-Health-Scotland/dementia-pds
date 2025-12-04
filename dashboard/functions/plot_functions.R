@@ -220,7 +220,7 @@ plot_bar_perc_no_line <- function(data, category, measure, x_text_angle = 45, le
 
 
 #bar chart for pathways and referrals
-plot_bar <- function(data, ytitle = "Median Wait (days)",
+plot_bar <- function(data, ytitle = "Median time (days)",
                      measure_text = "Average (median) days from diagnosis to first contact: ", 
                      measure = median_diagnosis_to_contact,
                      scot_measure = scot_median_diagnosis_to_contact,
