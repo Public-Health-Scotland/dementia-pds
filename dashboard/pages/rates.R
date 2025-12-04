@@ -454,10 +454,12 @@ output$rates_ui <-  renderUI({
   })
   
   output$rates_plot <- renderPlotly({
-    
-    plot_bar(rates_chart_data(),
-                       measure = pop_rate_10000, scot_measure = scot_pop_rate_10000, ytitle = "number per 10,000 population")
-    
+    plot_bar(data = rates_chart_data(),
+             ytitle = "Number per 10,000 population",
+             measure_text = "Number per 10,000 population: ",
+             measure = pop_rate_10000, 
+             scot_measure = scot_pop_rate_10000, 
+             scot_measure_text = "Number per 10,000 population: ")
   })
   
   
