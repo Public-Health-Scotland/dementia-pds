@@ -185,7 +185,7 @@ output$table_title_demo <- renderUI({HTML(paste0("Number and percentage of peopl
 #filter data
 table_data_demo <- reactive({
   
-    bind_rows(
+  df <- bind_rows(
     # breakdown of selected demographic
     data_demo() %>% 
       select(type, referrals, complete, exempt, ongoing, not_met, percent_met) %>% 
@@ -225,6 +225,10 @@ table_data_demo <- reactive({
       "Number of People Referred to PDS", "Proportion of Total Referrals", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP Standard Achieved")
     }
     )
+  if (input$select_data_demo=='data_sex'){
+    df <- df %>% filter(!Gender %in% c("Not Specified", "Unknown"))
+  }
+  return(df)
 })
 
 
