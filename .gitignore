@@ -1,10 +1,14 @@
+# R files #
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 
-# 'data' folder #
-data/
+# App deployment folder
+**/rsconnect/
+
+# 'data' folders #
+**/data/
 
 # 'output' folders #
 */output/

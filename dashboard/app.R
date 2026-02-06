@@ -1,19 +1,31 @@
-####
+################################################################################.
 # dementia pds
 # Original author(s): Abram McCormick
 # Original date: 2024-09-24
 # Written/run on RStudio R 4.4.2
 # Description of content: Dementia PDS dashboard for annual publication
-####
+################################################################################.
 
+################################################################################.
+# SETUP ----
+################################################################################.
 
 # Get packages, data and define lists
-library(here)
-source(here("dashboard/setup.R"))
+source("setup.R")
 
-# UI
-ui <- fluidPage(
-tagList(
+# Get whether password protect is on or off
+load("data/AUTH_ENABLED.RData")
+
+# Get password protect credentials
+credentials <- readRDS("data/credentials.rds")
+
+################################################################################.
+# UI ----
+################################################################################.
+
+ui <- 
+    fluidPage(
+  tagList(
 # Specify most recent fontawesome library - change version as needed
 tags$style("@import url(https://use.fontawesome.com/releases/v6.1.2/css/all.css);"),
 
@@ -30,6 +42,7 @@ navbarPage(
                        includeScript("www/app.js"),
     tags$link(rel = "shortcut icon", href = "favicon_phs.ico") # Icon for browser tab
     ), 
+    
 ##############################################.
 # INTRO PAGE: Home ----
 ##############################################.
@@ -128,7 +141,6 @@ tabPanel(title = "Referrals & Rates",
                      uiOutput("rates_ui") #pages/rates.R
            )#main panel
          )#sidebar layout
-         
 ), # tabpanel
 
 ##############################################.
@@ -183,12 +195,9 @@ tabPanel(title = "Pathways",
          ) #sidebarLayout
 ), # tabpanel
 
-
-
 ##############################################.
 # PAGE 3: LDP Standard  ----
 ##############################################.
-
 tabPanel(title = "LDP Standard",
          # Look at https://fontawesome.com/search?m=free for icons
          icon = icon_no_warning_fn("clipboard-list"),
@@ -259,7 +268,6 @@ tabPanel(title = "LDP Standard",
          )#sidebarLayout
 ), # tabpanel
 
-
 ##############################################.
 # PAGE 4: Demographics ----
 ##############################################.
@@ -299,7 +307,6 @@ tabPanel(title = "Demographics",
        ) #sidebar layout
 
       ), # tabpanel
-
 
 ##############################################.
 # PAGE 5: Methodology ----
@@ -345,35 +352,70 @@ tabPanel(title = "Data Download",
   ) # taglist
 ) # ui fluidpage
 
-# SERVER
+################################################################################.
+# SERVER ----
+################################################################################.
 
 server <- function(input, output, session) {
-  
-  ##link to methodology page----
+  options(encoding="UTF-8")
+ 
+  # Link to methodology page
   observeEvent(input$method_link, {
     updateTabsetPanel(session, "intabset", selected = "method")
   })
   
-  ##link to home page----
+  # Link to home page
   observeEvent(input$home_link, {
     updateTabsetPanel(session, "intabset", selected = "intro")
     updateRadioGroupButtons(session, "home_select", selected = "about")
   })
+
+  # Get content for individual pages
+  source("pages/intro_page.R", local = TRUE)$value
+  source("pages/ldp_standard.R", local = TRUE)$value
+  source("pages/rates.R", local = TRUE)$value
+  source("pages/demographics.R", local = TRUE)$value
+  source("pages/pathways.R", local = TRUE)$value
+  source("pages/methodology.R", local = TRUE)$value
+  source("pages/download.R", local = TRUE)$value
+
+  # Radio button label updates (ldp, pathways, RandR)
+  observeEvent(input$ldp_sidebar, {
+    req(input$ldp_sidebar)
+    updateRadioButtons(session, "select_hb_ijb", label = if (input$ldp_sidebar == "trends") "In the table show:" else "In the chart and table show:")
+  }, ignoreInit = TRUE)
   
-
-## Get content for individual pages----
-    source(file.path(here("dashboard/pages/intro_page.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/ldp_standard.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/rates.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/demographics.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/pathways.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/methodology.R")), local = TRUE)$value
-    source(file.path(here("dashboard/pages/download.R")), local = TRUE)$value
-
-
+  observeEvent(input$pathways_sidebar, {
+    req(input$pathways_sidebar)
+    updateRadioButtons(session, "select_hb_ijb_pathways", label = if (input$pathways_sidebar == "trends") "In the table show:" else "In the chart and table show:")
+  }, ignoreInit = TRUE)
+  
+  observeEvent(input$RandR_sidebar, {
+    req(input$RandR_sidebar)
+    updateRadioButtons(session, "select_hb_ijb_randr", label = if (input$RandR_sidebar == "trends") "In the table show:" else "In the chart and table show:")
+  }, ignoreInit = TRUE)
+  
+  # RandR: year select logic
+  observeEvent(list(input$RandR_tab, input$select_year_randr), {
+    req(input$RandR_tab, input$select_year_randr)
+    updateSelectInput(session, "select_year_randr", label = "Select Financial Year of Diagnosis:",
+                      choices = included_years_extra_referrals, selected = input$select_year_randr)
+  }, ignoreInit = TRUE)
 }
 
-# Run the application
-shinyApp(ui=ui, server=server)
+################################################################################.
+# RUN APPLICATION ----
+################################################################################.
+
+if (AUTH_ENABLED) {
+  ui <- shinymanager::secure_app(ui)
+  secured_server <- function(input, output, session) {
+    shinymanager::secure_server(check_credentials(credentials))
+    server(input, output, session)
+  }
+  shinyApp(ui, secured_server)
+} else {
+  shinyApp(ui, server)
+}
 
 ### END OF SCRIPT ###

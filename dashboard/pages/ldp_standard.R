@@ -579,20 +579,4 @@ output$downloadData_ldp2_trend <- downloadHandler(
               file, row.names = FALSE)
   }
 )
-
-# updates radio buttons label depending on selection
-observe(if(input$ldp_sidebar == "trends"){
-    updateRadioButtons(session, "select_hb_ijb",
-                       label = "In the table show:"
-    )
-  }
-)
-observe(if(input$ldp_sidebar == "outcomes"){
-  updateRadioButtons(session, "select_hb_ijb",
-                     label = "In the chart and table show:"
-  )
-}
-)
-
-
 ### END OF SCRIPT ###

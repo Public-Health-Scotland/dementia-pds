@@ -28,6 +28,7 @@ pub_date <- lubridate::dmy(29072025)
 # UPDATE - Date of last publication (ddmmyyyy)
 last_pub_date <- lubridate::dmy(28052024)
 
+test_output <- FALSE
 
 ### 1 - Load packages ----
 

@@ -300,20 +300,4 @@ output$downloadData_pathways_trend <- downloadHandler(
               file, row.names = FALSE)
   }
 )
-
-# updates radio buttons label depending on selection
-observe(if(input$pathways_sidebar == "trends"){
-  updateRadioButtons(session, "select_hb_ijb_pathways",
-                     label = "In the table show:"
-  )
-}
-)
-observe(if(input$pathways_sidebar == "wait"){
-  updateRadioButtons(session, "select_hb_ijb_pathways",
-                     label = "In the chart and table show:"
-  )
-}
-)
-
-
 ### END OF SCRIPT ###
