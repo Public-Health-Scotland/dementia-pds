@@ -470,6 +470,9 @@ download_data_ijb %<>% pivot_longer(cols = c(`number of people referred to PDS`:
 ################################################################################.
 # Save ----
 ################################################################################.
+# Create data folder if it does not exist
+if (!dir.exists(here::here("dashboard/data"))) {dir.create(here::here("dashboard/data"))}
+
 save(finalised_years, finalised_years_referrals, finalised_years_demographics, latest_fy, end_date, file = here::here("dashboard/data/dashboard_variables.RData"))
 write_rds(annual_table_data, here::here("dashboard/data/annual_table_data.rds"))
 write_rds(data_sex, here::here("dashboard/data/data_sex.rds"))

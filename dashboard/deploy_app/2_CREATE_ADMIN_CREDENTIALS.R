@@ -19,6 +19,9 @@ user <- user # Defined in "//conf/dementia/A&I/Outputs/dashboard/passwords.R"
 password <- password # Defined in "//conf/dementia/A&I/Outputs/dashboard/passwords.R"
 password_protect <- "off" # "on" or "off"
 
+# Create data folder if it does not exist
+if (!dir.exists(here::here("dashboard/data"))) {dir.create(here::here("dashboard/data"))}
+
 # Save password protect on/off
 if (password_protect == "on"){
   AUTH_ENABLED <- TRUE
