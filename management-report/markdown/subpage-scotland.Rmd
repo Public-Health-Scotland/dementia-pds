@@ -242,8 +242,6 @@ Row
 
 `r shet_text`
 
-`r fc_text`
-
 Row `r if(complete_year == FALSE)"{.hidden}"` 
 ----------------------------------------------------------------------
 
