@@ -159,32 +159,6 @@ est_date4 <- dmy(01042024)
               "recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 ",
               "and the PDS service in Shetland has resumed.*"), 
       TRUE ~ paste0(""))
-  
-  
-   # Data quality notes - fife
-  fife_date <- dmy(01042024)
-
-  fife_text <-  
-    case_when(hb == "NHS Fife" & sel_fy == extract_fin_year(fife_date) ~
-      paste0(" ",
-              "**Please note:** ",
-              "*PHS have identified one record submitted by NHS Fife ", 
-              "for 2024/25 that shows inconsistent dates. The reported dates resulted in this record ",
-              "showing as having met the standard. PHS have queried the ", 
-              "dates with the Health Board and expecting these to be rectified in future submissions.*"),  TRUE ~ paste0(""))
-
-     # Data quality notes - borders
-  bord_date <- dmy(01042024)
-
-  bord_text <-  
-    case_when(hb == "NHS Borders" & sel_fy == extract_fin_year(bord_date) ~
-      paste0(" ",
-              "**Please note:** ",
-              "*PHS have identified one record submitted by NHS Borders ", 
-              "for 2024/25 that shows inconsistent dates. The reported dates resulted in this record ",
-              "showing as having met the standard. PHS have queried the ", 
-              "dates with the Health Board and are expecting these to be rectified in future submissions.*"), TRUE ~ paste0(""))
-  
 
 ```
 
@@ -264,10 +238,6 @@ Row
 `r shetland_text`
 
 `r orkney_text`
-
-<!-- `r fife_text` -->
-
-<!-- `r bord_text` -->
 
 `r lan_text`
 
