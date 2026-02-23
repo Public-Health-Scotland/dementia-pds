@@ -239,8 +239,6 @@ Row
 
 `r orkney_text`
 
-`r lan_text`
-
 Row `r if(complete_year == FALSE)"{.hidden}"` 
 ----------------------------------------------------------------------
 
