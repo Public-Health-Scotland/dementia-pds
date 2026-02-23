@@ -242,7 +242,7 @@ Row
 
 **NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, *2024/25* and *2025/26*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. This is likely to be completed by the end of the year. 
 
-**NHS Lanarkshire** - PHS have identified one record submitted by NHS Lanarkshire for *2025/26* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions.  
+<!-- **NHS Lanarkshire** - PHS have identified one record submitted by NHS Lanarkshire for *2025/26* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions.  -->
 
 <!-- **NHS Borders** - PHS have identified one record submitted by NHS Borders for *2024/25* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions.  -->
 
