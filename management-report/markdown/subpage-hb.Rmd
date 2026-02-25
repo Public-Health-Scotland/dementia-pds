@@ -125,7 +125,7 @@ est_date4 <- dmy(01042024)
               "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ", 
               "2024/25 and 2025/26, which has resulted in some records showing as incorrectly having met the standard. ",
               "NHS Tayside has informed PHS that these data issues will be rectified once they have completed the ", 
-              "migration to a new IT system. This is likely to be completed by the end of the year.*"), 
+              "migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data for 2025/26 Q3.*"), 
     TRUE ~ paste0(""))
   
   
