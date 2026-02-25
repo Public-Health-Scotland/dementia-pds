@@ -36,7 +36,10 @@ pds <- read_csv(get_national_data_path(),
   mutate(health_board = str_replace(health_board, " and ", " & ")) %>%
   
   # Remove records with missing diag date or outwith reporting period
-  filter(between(dementia_diagnosis_confirmed_date, start_date, end_date)) 
+  filter(between(dementia_diagnosis_confirmed_date, start_date, end_date)) %>%
+  
+  # Remove rows with unknown IAA
+  filter(!is.na(ijb))
 
   ## If including this, remove the comments
   # Recode NA for NHS Lothian 
