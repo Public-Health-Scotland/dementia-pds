@@ -428,7 +428,7 @@ e.g. the rate for SIMD 1 (the most deprived quintile) for a particular area is c
 
 Across the reported years there are a small number of records (`r age_unknown` in total) with an incomplete date of birth and therefore the age group is unknown. These records have been excluded from the age group analysis. 
 
-*For the rates calculations, for financial year 2024/25 and 2025/26 the Mid-2023 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
+*For the rates calculations, for financial year 2025/26 the Mid-2024 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
 
 **Gender:** Gender is based on the sex recorded for each referral.  
 
