@@ -434,7 +434,7 @@ Across the reported years there are a small number of records (`r age_unknown` i
 
 Across the reported years there are `r sex_unknown` records in total where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’). These records have been excluded from the gender analysis.
 
-*For the rates calculations, for financial year 2024/25 and 2025/26 the Mid-2023 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
+*For the rates calculations, for financial year 2025/26 the Mid-2024 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
 
 **Deprivation:** Deprivation is calculated by matching postcodes grouped into small geographical areas known as datazones to the Scottish Index of Multiple Deprivation (SIMD) quintiles. SIMD has seven domains (income, employment, education, housing, health, crime, and geographical access) at data zone level, which have been combined into an overall index to pick out area concentrations of multiple deprivation. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived quintile) to 5 (least deprived quintile). At Scotland level, approximately one fifth of the general population are within each deprivation quintile. The quintiles used in this report are from SIMD 2020v2. Further information on SIMD can be found on the [Scottish Government](https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/){target="_blank"} website.
 
