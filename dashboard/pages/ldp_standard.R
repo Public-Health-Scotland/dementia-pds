@@ -232,14 +232,9 @@ table_hb_exp_data <- reactive({
     mutate(exp_perc = paste0(round(referrals/diagnoses*100, 1), "%")) %>%  
     mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
     arrange(health_board) %>% 
-    # adds superscript R for NHS Grampian revisions. 
-    #From 2026 onward REMOVE the if statement and keep the column names that are currently set as else
-    set_colnames(if(input$select_year_ldp == "2020/21"){
+    set_colnames(
       c("Health Board","Estimated Number of People Newly Diagnosed with Dementia",
-        "Number of People Referred to PDSᴿ","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDSᴿ")
-    }else{c("Health Board","Estimated Number of People Newly Diagnosed with Dementia",
-            "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS")
-    }
+        "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS")
     )
 })
 
@@ -260,23 +255,12 @@ output$downloadData_ldp1 <- downloadHandler(
                   `Financial Year`  == provisional_year_sup ~paste0(provisional_year,"P"),
                   `Financial Year`  == revised_year_sup ~paste0(revised_year,"R"),
                   TRUE ~`Financial Year` )) %>% 
-                #From 2026 onward REMOVE the following 6 lines which only apply to Grampian revisions made in 2025
-                set_colnames(if(input$select_year_ldp == "2020/21"){
-                  c("Financial Year", "Health Board","Estimated Number of People Newly Diagnosed with Dementia",
-                    "Number of People Referred to PDS(R)","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS(R)")
-                }else{c("Financial Year", "Health Board","Estimated Number of People Newly Diagnosed with Dementia",
-                        "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS")
-                }
-                ) %>% 
                 ##### adds revision and provisional note
                 rbind(
                   if(input$select_year_ldp == revised_year_sup){
                     c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",4))
                   }else if(input$select_year_ldp == provisional_year_sup){
                     c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",4))
-                    #REMOVE the following two lines from 2026 onward----
-                  }else if(input$select_year_ldp == "2020/21"){
-                    c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",4))
                   }else{
                     rep("",5)
                   }
@@ -311,8 +295,6 @@ table_hb_trend_part_1_data <- reactive({
     filter(grepl("NHS", ijb) | ijb == "Scotland", ldp == "total") %>% 
     select(health_board, fy, exp_perc) %>%
     mutate(exp_perc = paste0(exp_perc, "%")) %>% 
-    #adds superscript R for revised NHS Grampian data
-    mutate(fy = if_else(fy == "2020/21", paste0("2020/21", "ᴿ"),fy)) %>% #REMOVE from 2026 onward
     rename("Health Board" = "health_board")  
 })
 
@@ -333,8 +315,6 @@ output$downloadData_ldp1_trend <- downloadHandler(
                 mutate(fy = case_when(
                   fy == provisional_year_sup ~paste0(provisional_year,"P"),
                   fy == revised_year_sup ~paste0(revised_year,"R"),
-                  # remove the following line from 2026 onwards
-                  fy == "2020/21ᴿ" ~ "2020/21R",
                   TRUE ~fy))  %>% 
                 pivot_wider(names_from = fy, values_from = exp_perc) %>%
                 mutate(Measure = "Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS", 
@@ -414,14 +394,8 @@ table_ldp2_data <- reactive({
       select(health_board, total, complete, exempt, ongoing, fail, percent_met) %>% 
       arrange(health_board) %>% 
       set_colnames(
-        # adds superscript R for NHS Grampian revisions. 
-        #From 2026 onward REMOVE the if statement and keep the column names that are currently set as else
-        if(input$select_year_ldp == "2020/21"){
-          c("Health Board","Number of People Referred to PDSᴿ", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
-        }else{
-          c("Health Board","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
-        }
-      )
+        c("Health Board","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
+        )
     
   }else{
     
@@ -436,14 +410,8 @@ table_ldp2_data <- reactive({
       select(ijb, total, complete, exempt, ongoing, fail, percent_met) %>% 
       arrange(ijb) %>% 
       set_colnames(
-        # adds superscript R for NHS Grampian revisions. 
-        #From 2026 onward REMOVE the if statement and keep the column names that are currently set as else
-        if(input$select_year_ldp == "2020/21"){
-          c("Integration Authority Area","Number of People Referred to PDSᴿ", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
-        }else{
-          c("Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
-        }
-      )
+        c("Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
+        )
   }
 })
 
@@ -468,26 +436,11 @@ output$downloadData_ldp2 <- downloadHandler(
                   `Financial Year`  == provisional_year_sup ~paste0(provisional_year,"P"),
                   `Financial Year`  == revised_year_sup ~paste0(revised_year,"R"),
                   TRUE ~`Financial Year` )) %>% 
-                #From 2026 onward REMOVE the following 11 lines which only apply to Grampian revisions made in 2025
-                set_colnames(
-                  if(input$select_hb_ijb == "Health Boards" & input$select_year_ldp == "2020/21"){
-                    c("Financial Year", "Health Board","Number of People Referred to PDS(R)", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
-                  }else if(input$select_hb_ijb == "Health Boards" & input$select_year_ldp != "2020/21"){
-                    c("Financial Year", "Health Board","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
-                  }else if(input$select_hb_ijb != "Health Boards" & input$select_year_ldp == "2020/21"){
-                    c("Financial Year", "Integration Authority Area","Number of People Referred to PDS(R)", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")
-                  }else if(input$select_hb_ijb != "Health Boards" & input$select_year_ldp != "2020/21"){
-                    c("Financial Year", "Integration Authority Area","Number of People Referred to PDS", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP standard achieved")  
-                  }
-                )%>% 
                 rbind(
                   if(input$select_year_ldp == revised_year_sup){
                     c(rep("",4),"Note: R indicates data has been revised. Please see dashboard for further information.")
                   }else if(input$select_year_ldp == provisional_year_sup){
                     c(rep("",4),"Note: P indicates data is provisional. Please see dashboard for further information.")
-                    #REMOVE the following two lines from 2026 onward----
-                  }else if(input$select_year_ldp == "2020/21"){
-                    c(rep("",4),"Note: R indicates data has been revised. Please see dashboard for further information.")
                   }else{
                     rep("",5)
                   }

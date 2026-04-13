@@ -484,7 +484,7 @@ c8 <-
           #  size = 3) +
   theme_dementia_pub() +
   scale_y_continuous(expand = c(0, 0), limits = c(0, max(c8_data$annual_referrals)+300),labels = comma, breaks=c(2500, 5000, 7500, 10000)) +
-  scale_x_discrete(labels = included_years_pathways) +
+  scale_x_discrete(labels = str_wrap(c8_data$fy, width = 8)) +
   xlab("Financial Year of Diagnosis") +
   ylab(str_wrap("Number of Referrals", width = 10)) 
 
@@ -538,7 +538,7 @@ c9 <-
   scale_y_continuous(expand = c(0, 0),
                      limits = c(0, max(c9_data$pop_rate_10000)+5),
                      breaks = seq(0, max(c9_data$pop_rate_10000)+5, by = 15)) +
-  scale_x_discrete(labels = included_years_pathways) +
+  scale_x_discrete(labels = str_wrap(c9_data$fy, width = 8)) +
   xlab("Financial Year of Diagnosis") +
   ylab(str_wrap("Number of Referrals per 10,000 Population", width = 10)) 
 
@@ -733,8 +733,7 @@ c14 <-
   #  size = 3) +
   theme_dementia_pub() +
   scale_y_continuous(expand = c(0, 0), limits = c(0, max(c14_data$median_diagnosis_to_contact))) +
-  scale_x_discrete(labels = included_years_pathways) +
-  xlab("Financial Year of Diagnosis") +
+  scale_x_discrete(labels = str_wrap(c14_data$fy, width = 8)) +  xlab("Financial Year of Diagnosis") +
   ylab(str_wrap("Median Wait (Days)", width = 10)) 
 
 # Save chart to output folder

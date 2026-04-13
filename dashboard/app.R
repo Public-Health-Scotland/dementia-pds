@@ -170,7 +170,7 @@ tabPanel(title = "Pathways",
                               #dropdown to select financial year
                               selectInput("select_year_pathways",
                                           label = "Select Financial Year of Diagnosis:",
-                                          choices = included_years_pathways,#CHANGE to included_years from 2026 onwards----
+                                          choices = included_years,
                                           selected= extra_referrals_year_sup)
              ), #conditionalPanel wait
              conditionalPanel(condition = 'input.pathways_sidebar == "trends"',  

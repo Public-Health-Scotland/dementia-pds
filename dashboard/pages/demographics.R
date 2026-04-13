@@ -212,31 +212,20 @@ table_data_demo <- reactive({
     mutate(perc_prop = round(100*referrals/max(referrals),1), .after = referrals) %>% 
     mutate(across(where(is.numeric), ~if_else(is.na(.), "-", format(., big.mark = ",")))) %>%
     mutate(across(starts_with("perc"), ~ if_else(grepl("-", .), ., paste0(.,"%")))) %>%
-    # adds superscript R for NHS Grampian and incorrect formula revisions. 
-    #From 2026 onward REMOVE the first if statement and keep the column names that are currently set as else----
-    set_colnames(if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
-    c(if(input$select_data_demo == "data_sex"){
-                                                     "Gender"
-                                     }else if(input$select_data_demo == "data_age"){
-                                             "Age Group"
-                                       }else{
-                                      "Deprivation Quintile_"},
-    
-    "Number of People Referred to PDSᴿ", "Proportion of Total Referralsᴿ", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP Standard Achievedᴿ")
-    }else{
+    set_colnames(
       c(if(input$select_data_demo == "data_sex"){
         "Gender"
       }else if(input$select_data_demo == "data_age"){
         "Age Group"
       }else{
         "Deprivation Quintile_"},
-      
       "Number of People Referred to PDS", "Proportion of Total Referrals", "Standard Met","Exempt from Standard","PDS Ongoing", "Standard Not Met", "Percentage of LDP Standard Achieved")
-    }
-    )
+      )
+  
   if (input$select_data_demo=='data_sex'){
     df <- df %>% filter(!Gender %in% c("Not Specified", "Unknown"))
   }
+  
   return(df)
 })
 
@@ -264,42 +253,12 @@ output$downloadData_demo <- downloadHandler(
                   `Financial Year` == provisional_year_sup ~paste0(provisional_year,"P"),
                   `Financial Year` == revised_year_sup ~paste0(revised_year,"R"),
                   TRUE ~`Financial Year`)) %>%
-                #### #changes superscript R to in line R for downloaded csv since superscript is not supported for NHS Grampian revision
-                #REMOVE the next 7 lines from 2026 onwards----
-                rename_with(
-                if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
-                 ~ "Number of People Referred to PDS(R)"
-                }else{
-                  ~ "Number of People Referred to PDS"
-                }, .cols = 4
-                ) %>% 
-                #####changes superscript R to in line R for downloaded csv since superscript is not supported for NHS Grampian revision
-                #REMOVE the next 7 lines from 2026 onwards----
-              rename_with(
-                if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
-                  ~ "Proportion of Total Referrals(R)"
-                }else{
-                  ~ "Proportion of Total Referrals"
-                }, .cols = 5
-              ) %>% 
-                #####changes superscript R to in line R for downloaded csv since superscript is not supported for NHS Grampian revision
-                #REMOVE the next 7 lines from 2026 onwards----
-              rename_with(
-                if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
-                  ~ "Percentage of LDP Standard Achieved(R)"
-                }else{
-                  ~ "Percentage of LDP Standard Achieved"
-                }, .cols = last_col()
-              ) %>% 
                 #### adds revision and provisional note
                 rbind(
                   if(input$select_year_demo == revised_year_sup){
                     c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",9))
                   }else if(input$select_year_demo == provisional_year_sup){
                     c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",9))
-                    #REMOVE the following two lines from 2026 onward----
-                  }else if((input$select_year_demo == "2019/20" | input$select_year_demo == "2020/21") & input$select_data_demo != "data_sex"){
-                    c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",9))
                   }else{
                     rep("",10)
                   }

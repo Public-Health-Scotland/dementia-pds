@@ -20,13 +20,13 @@ source(here::here("code", "00_setup-environment.R"))
 ### 0 - Manual Variable(s) - TO UPDATE ----
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(31032025) 
+end_date <- lubridate::dmy(31122025) 
 
 # UPDATE - Date of publication (ddmmyyyy)
-pub_date <- lubridate::dmy(29072025)
+pub_date <- lubridate::dmy(29072026)
 
 # UPDATE - Date of last publication (ddmmyyyy)
-last_pub_date <- lubridate::dmy(28052024)
+last_pub_date <- lubridate::dmy(16122025)
 
 test_output <- FALSE
 

@@ -150,7 +150,7 @@ output$rates_ui <-  renderUI({
                                     ### Notes----
                                     h4(strong("Notes:")),
                                     p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
-                                    #p(paste0("ᴿ Figures for ", revised_year_sup," have been revised and are now final."), UNCOMMENT for 2026 publication
+                                    p(paste0("ᴿ Figures for ", revised_year_sup," have been revised and are now final.")),
                                     p("Rates are calculated using the NRS mid-year population estimates of the 65 and over age group for each geographical area. See Note 8 on the",
                                       a(
                                         href = "#",
@@ -240,15 +240,7 @@ output$rates_ui <-  renderUI({
         select(ijb,referrals)%>%
         mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
         arrange(ijb) %>% 
-        set_colnames(
-          # adds superscript R for NHS Grampian revisions.
-          #From 2026 onward REMOVE the if statement and keep the column names that are currently set as else
-          if(input$select_year_randr == "2020/21"){
-            c("Health Board","Number of People Referred to PDSᴿ")
-          }else{
-            c("Health Board","Number of People Referred to PDS")
-          }
-        )
+        set_colnames(c("Health Board","Number of People Referred to PDS"))
       
     }else{
       
@@ -258,16 +250,9 @@ output$rates_ui <-  renderUI({
         select(ijb,referrals)%>%
         mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
         arrange(ijb) %>% 
-        set_colnames(
-          #adds superscript R for NHS Grampian revisions.
-          #From 2026 onward REMOVE the if statement and keep the column names that are currently set as else
-          if(input$select_year_randr == "2020/21"){
-            c("Integration Authority Area","Number of People Referred to PDSᴿ")
-          }else{
-            c("Integration Authority Area","Number of People Referred to PDS")
-          }
-        )
+        set_colnames(c("Integration Authority Area","Number of People Referred to PDS"))
     }
+    
   })
   
   output$table_totals_randr <- DT::renderDataTable({
@@ -291,27 +276,12 @@ output$rates_ui <-  renderUI({
                     `Financial Year`  == revised_year_sup ~paste0(revised_year,"R"),
                     `Financial Year`  == extra_referrals_year_sup ~paste0(extra_referrals_year,"P"),
                     TRUE ~`Financial Year` )) %>% 
-                  #From 2026 onward REMOVE the following 6 lines which only apply to Grampian revisions made in 2025
-                  set_colnames(
-                    if(input$select_hb_ijb_randr == "Health Boards" & input$select_year_randr == "2020/21"){
-                      c("Financial Year", "Health Board","Number of People Referred to PDS(R)")
-                    }else if(input$select_hb_ijb_randr == "Health Boards" & input$select_year_randr != "2020/21"){
-                      c("Financial Year", "Health Board","Number of People Referred to PDS")  
-                    }else if(input$select_hb_ijb_randr != "Health Boards" & input$select_year_randr == "2020/21"){
-                      c("Financial Year", "Integration Authority Area","Number of People Referred to PDS(R)")
-                    }else if(input$select_hb_ijb_randr != "Health Boards" & input$select_year_randr != "2020/21"){
-                      c("Financial Year", "Integration Authority Area","Number of People Referred to PDS")  
-                    }
-                  ) %>% 
                   rbind(
                     if(input$select_year_randr == revised_year_sup){
                       c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",2))
                     }else if(input$select_year_randr == provisional_year_sup | input$select_year_randr == extra_referrals_year_sup){
-                      c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",2))
-                      #REMOVE the following two lines from 2026 onward----
-                      }else if(input$select_year_randr == "2020/21"){
-                        c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",2))
-                      }else{
+                        c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",2))
+                    }else{
                       rep("",3)
                     }
                     ),
@@ -348,15 +318,11 @@ output$rates_ui <-  renderUI({
       referrals_data_sel_yrs %>% 
         filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
         select(health_board, fy, referrals) %>%
-        #adds superscript R for revised NHS Grampian data
-        mutate(fy = if_else(fy == "2020/21", paste0("2020/21", "ᴿ"),fy)) %>% #REMOVE from 2026 onward
         rename("Health Board" = "health_board")  
     }else{
       referrals_data_sel_yrs %>% 
         filter(!grepl("NHS", ijb)) %>% 
         select(ijb, fy, referrals) %>%
-        #adds superscript R for revised NHS Grampian data
-        mutate(fy = if_else(fy == "2020/21", paste0("2020/21", "ᴿ"),fy)) %>% #REMOVE from 2026 onward
         rename("Integration Authority Area" = "ijb")  
       
     }
@@ -382,8 +348,6 @@ output$rates_ui <-  renderUI({
                     fy == provisional_year_sup ~paste0(provisional_year,"P"),
                     fy == revised_year_sup ~paste0(revised_year,"R"),
                     fy == extra_referrals_year_sup ~paste0(extra_referrals_year,"P"),
-                    # remove the following line from 2026 onwards
-                    fy == "2020/21ᴿ" ~ "2020/21R",
                     TRUE ~fy)) %>% 
                   pivot_wider(names_from = fy, values_from = referrals) %>% 
                   mutate(across(where(is.numeric), ~prettyNum(., big.mark = ","))) %>% 
@@ -401,12 +365,8 @@ output$rates_ui <-  renderUI({
   ## RATES ----
   
   # filter rates data to years included in publication----
-  #REMOVE the two lines below from 2026 onwards ----
   data_rates_sel_yrs <- data_rates %>% 
-    filter(fy %in% included_years_extra_referrals)#
-  #UNCOMMENT the two lines below from 2026 onwards ----
-  # data_rates_sel_yrs <- data_rates %>% 
-  #   filter(fy %in% included_years_extra_referrals)
+    filter(fy %in% included_years_extra_referrals)
   
   ## RATES BY YEAR----
   
@@ -606,10 +566,10 @@ output$rates_ui <-  renderUI({
                   pivot_wider(names_from = fy, values_from = pop_rate_10000) %>% 
                   mutate(Measure = "Number of people per 10,000 population (65+) who were referred for PDS", 
                          .before = everything()) %>% 
-                  rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years_extra_referrals)+1))
-                    ),# %>% 
-                # UNCOMMENT the line below from 2026 onward----
-                #rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",length(included_years_extra_referrals)+1))),
+                  rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",
+                          rep("",length(included_years_extra_referrals)+1))) %>% 
+                  rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",
+                          rep("",length(included_years_extra_referrals)+1))),
                 file, row.names = FALSE)
     }
   )

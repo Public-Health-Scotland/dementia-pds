@@ -69,12 +69,9 @@ output$pathways_ui <-  renderUI({
 }) # renderUI
 
 # SERVER----
-#REMOVE the two lines below from 2026 onwards ----
+
 data_wait_sel_yrs <- data_wait %>% 
-  filter(fy %in% included_years_pathways)
-#UNCOMMENT the two lines below from 2026 onwards ----
-# data_wait_sel_yrs <- data_wait %>% 
-#   filter(fy %in% included_years)
+   filter(fy %in% included_years)
 
 ## bar plot for wait times ----
 output$plot_title_pathways <- renderUI({HTML(paste0("Average (median) days from diagnosis to first contact by PDS practitioner: Financial Year ", 
@@ -293,11 +290,10 @@ output$downloadData_pathways_trend <- downloadHandler(
                 mutate(Measure = "Average (median) days from diagnosis to first contact", 
                        .before = everything()) %>% 
                 #### adds revision and provisional note
-                rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years_pathways)+1))
-                ),# %>% 
-              # UNCOMMENT the line below from 2026 onward----
-              #rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",length(included_years)+1))), 
+                rbind(c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",length(included_years_pathways)+1))) %>% 
+                rbind(c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",length(included_years)+1))), 
               file, row.names = FALSE)
-  }
-)
+    }
+  )
+
 ### END OF SCRIPT ###

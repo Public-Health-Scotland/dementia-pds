@@ -1,4 +1,4 @@
-################################################################################
+################################################################################.
 # Name of file - setup.R
 # Original Authors - Zaineb
 # Updated by Abram McCormick - Sep 2024
@@ -6,7 +6,7 @@
 # Written/run on - RStudio Server
 # Version of R - 4.4.2
 # Description - Setup for shiny dashboard 
-################################################################################
+################################################################################.
 
 ################################################################################.
 # Load packages ----
@@ -87,12 +87,6 @@ revised_year_sup_extra_2 <- paste0(revised_year_extra_2,"ᴿ")
 # Define included years ----
 ################################################################################.
 
-# Year list with no superscript R for data that was not included in 2024 publication
-included_years_2025_gender_wait <- c(finalised_years, provisional_year_sup) # Remove from 2026 onward ----
-
-# Year list with no superscript R for data that was not included in 2024 publication
-included_years_pathways <- c(finalised_years, provisional_year_sup, extra_referrals_year_sup) # Remove from 2026 onward ----
-
 # List of included years for ldp standard, demographics and pathways data
 included_years <- c(finalised_years_referrals, revised_year_sup_extra, revised_year_sup, provisional_year_sup)
 
@@ -101,9 +95,6 @@ included_years_demographics <- c(finalised_years_demographics, revised_year_sup_
 
 # List of included years for referrals and rates page
 included_years_extra_referrals <- c(finalised_years_referrals, revised_year_sup_extra, revised_year_sup,provisional_year_sup, extra_referrals_year_sup)
-
-# List of included years for referrals and rates page
-included_years_extra_referrals_2025_rates <- c(finalised_years_referrals, provisional_year_sup, extra_referrals_year_sup) #REMOVE from 2026 onward----
 
 ################################################################################.
 # Add superscripts to data frames ----
