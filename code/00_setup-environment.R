@@ -26,12 +26,12 @@
 test_output <- FALSE
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(31032025)
-previous_end_date <- lubridate::dmy(31122024)
+end_date <- lubridate::dmy(31122025)
+previous_end_date <- lubridate::dmy(30092025)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure
-pub_date <- lubridate::dmy(28052024)
+pub_date <- lubridate::dmy(16122025)
 
 ### 1 - Load packages ----
 
@@ -138,19 +138,8 @@ finalised_years <-
   str_sub(1, 7) %>%
   str_replace("-", "/")
 
-finalised_years_referrals <- 
-  list.files(get_final_data_dir()) %>% 
-    str_sub(1, 7)%>%
-  str_replace("-", "/")
-finalised_years_referrals <- finalised_years_referrals [-c(5, 6)]
+finalised_years_referrals <- finalised_years [-c((length(finalised_years)-1), length(finalised_years))]
  
-#Define years in which data has been made final
-finalised_years_demographics <- 
-  list.files(get_final_data_dir()) %>% 
-  str_sub(1, 7) %>%
-  str_replace("-", "/")
-finalised_years_demographics <- finalised_years_demographics [-c(4, 5, 6)]
-
-
+finalised_years_demographics <- finalised_years [-c((length(finalised_years)-2), (length(finalised_years)-1), length(finalised_years))]
 
 ### END OF SCRIPT ###
