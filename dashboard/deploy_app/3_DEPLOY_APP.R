@@ -1,6 +1,6 @@
 ################################################################################.
 # SOURCE THIS SCRIPT TO DEPLOY APP
-# VARIABLES TO UPDATE: "token", "secret", "filepath", "appName"
+# VARIABLES TO UPDATE: "token", "secret", "filepath", "appName", "password_protect_deploy"
 # "token" & "secret" ARE LOCATED IN "//conf/dementia/A&I/Outputs/dashboard/passwords.R"
 ################################################################################.
 
@@ -19,10 +19,22 @@ token <- token # Defined in "//conf/dementia/A&I/Outputs/dashboard/passwords.R"
 secret <- secret # Defined in "//conf/dementia/A&I/Outputs/dashboard/passwords.R"
 filepath <- "/conf/dementia/A&I/Analysts/Lucy/dementia-pds/dashboard" # Absolute path to the folder the app is being deployed from
 appName <- "phs-dementiapds2025-app" # Name of the app
-
-# Update data, admin credentials and password protect 
+password_protect_deploy <- "off" # "on" for pre-release, "off" for general release
+  
+# Update data and admin credentials
 source(here::here("dashboard", "deploy_app", "1_PREPARE_DATA.R"))
 source(here::here("dashboard", "deploy_app", "2_CREATE_ADMIN_CREDENTIALS.R"))
+
+# Overwrite password_protect and AUTH_ENABLED set in 2_CREATE_ADMIN_CREDENTIALS.R
+password_protect <- password_protect_deploy
+if (password_protect == "on"){
+  AUTH_ENABLED <- TRUE
+} else if (password_protect == "off"){
+  AUTH_ENABLED <- FALSE
+} else {
+  print("Please set password_protect_deploy to 'on' or 'off'")
+}
+save(AUTH_ENABLED, file = here::here("dashboard", "data", "AUTH_ENABLED.RData"))
 
 # Ask user to check that end_date, pub_date and last_pub_date have been updated
 check_msg1 <- paste0("Please check the data being used is correct.",
@@ -37,7 +49,7 @@ continue_msg <- "Continuing app deployment..."
   
 # Ask user to check that password protect is on/off
 check_msg2 <- paste0("Password protect is ", password_protect, ".")
-stop_msg2 <- "App deployment cancelled by user. Update 'password_protect' in 'dementia-pds/dashboard/deploy_app/2_CREATE_ADMIN_CREDENTIALS.R'"
+stop_msg2 <- "App deployment cancelled by user. Update 'password_protect_deploy'"
 
 # Option 1: RStudio pop-up message
 # library(rstudioapi)
@@ -63,5 +75,19 @@ if (!require('rsconnect')) install.packages('rsconnect'); library('rsconnect')
 options(rsconnect.packrat = TRUE)
 rsconnect::setAccountInfo(name='scotland', token=token, secret=secret)
 rsconnect::deployApp(filepath, appName = appName)
+
+# Copy data used in the dashboard to stats drive
+files <- list.files(
+  here::here("dashboard", "data"),
+  full.names = TRUE
+)
+
+dest_dir <- file.path(
+  "conf", "dementia", "A&I", "Outputs", "dashboard", "data", pub_date
+)
+
+dir.create(dest_dir, recursive = TRUE, showWarnings = FALSE)
+
+file.copy(files, dest_dir, overwrite = TRUE)
 
 ### END OF SCRIPT ###
