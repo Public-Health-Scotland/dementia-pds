@@ -23,15 +23,15 @@
 #
 #           test_report = TRUE - returns the test file path
 #           test_report = FALSE - returns the finalised report for distribution
-test_output <- TRUE
+test_output <- FALSE
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(30062025)
-previous_end_date <- lubridate::dmy(31032025)
+end_date <- lubridate::dmy(31122025)
+previous_end_date <- lubridate::dmy(30092025)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure
-pub_date <- lubridate::dmy(28052024)
+pub_date <- lubridate::dmy(16122025)
 
 ### 1 - Load packages ----
 

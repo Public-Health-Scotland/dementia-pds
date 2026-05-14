@@ -84,24 +84,16 @@ est_date4 <- dmy(01042024)
 # Data quality notes - Aberdeen City
   ac_date1 <- dmy(01042019)
   ac_date2 <- dmy(01042020)
-  ac_date3 <- dmy(01042025)
 
   ac_text <-  
     case_when(sel_fy == extract_fin_year(ac_date1) | sel_fy == extract_fin_year(ac_date2) ~
-      paste0(" ",
-             "**Please note:** ",
-             "*Aberdeen City Health & Social Care Partnership changed ",
-             "to provide PDS in 2019 to an inhouse hybrid model. ",
-             "This change in model, and process of receiving referrals and recording, ",
-             "resulted in data quality issues for financial years 2019/20 and 2020/21. ",
-             "This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*"),
-            sel_fy == extract_fin_year(ac_date3) ~
-        paste0(" ",
-               "**Please note:** ",
-                "*Due to staff absence Aberdeen City was unable to submit any data for ",
-               "2025/26 Q1, so no referrals have been reported for this quarter. ",
-               "Aberdeen City are changing their reporting process and data submission ",
-               "will resume for next quarter’s update.*"),
+                paste0(" ",
+                "**Please note:** ",
+                "*Aberdeen City Health & Social Care Partnership changed ",
+                "to provide PDS in 2019 to an inhouse hybrid model. ",
+                "This change in model, and process of receiving referrals and recording, ",
+                "resulted in data quality issues for financial years 2019/20 and 2020/21. ",
+                "This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*"),
               TRUE ~ paste0(""))
   
   
@@ -132,7 +124,7 @@ est_date4 <- dmy(01042024)
               "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ", 
               "2024/25 and 2025/26, which has resulted in some records showing as incorrectly having met the standard. ",
               "NHS Tayside has informed PHS that these data issues will be rectified once they have completed the ", 
-              "migration to a new IT system. This is likely to be completed by the end of the year.*"), 
+              "migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data for 2025/26 Q3.*"), 
     TRUE ~ paste0(""))
   
   
@@ -170,22 +162,6 @@ est_date4 <- dmy(01042024)
               "not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the ",
               "PDS service in Shetland has resumed.*"), 
             TRUE ~ paste0(""))
-   
-    
-    # Data quality notes - inconsistent first contact dates
-   fc_date <- dmy(01042025)
-      
-   fc_text <- 
-    case_when(sel_fy == extract_fin_year(fc_date) ~
-              paste0(" ", 
-              "**Please note:** ",
-              "*PHS have identified one record submitted by NHS Lanarkshire ", 
-              "for 2025/26 that shows inconsistent dates. The reported dates resulted in this record ",
-              "showing as having met the standard. PHS have queried the ", 
-              "dates with the Health Board and are expecting these to be rectified in future submissions.*"), 
-            TRUE ~ paste0(""))
-
-
 ```
 
 
@@ -265,8 +241,6 @@ Row
 `r ork_text`
 
 `r shet_text`
-
-`r fc_text`
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
 ----------------------------------------------------------------------

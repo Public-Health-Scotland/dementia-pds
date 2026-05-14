@@ -238,15 +238,9 @@ Row
 
 **NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland for *2022/23* and *2023/24*.
 
-**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected. Due to staff absence Aberdeen City was unable to submit any data for *2025/26 Q1*, so no referrals have been reported for this quarter. Aberdeen City are changing their reporting process and data submission will resume for next quarter’s update.
+**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected. 
 
-**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, *2024/25* and *2025/26*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. This is likely to be completed by the end of the year. 
-
-**NHS Lanarkshire** - PHS have identified one record submitted by NHS Lanarkshire for *2025/26* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions.  
-
-<!-- **NHS Borders** - PHS have identified one record submitted by NHS Borders for *2024/25* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions.  -->
-
-<!-- **NHS Fife** - PHS have identified one record submitted by NHS Fife for *2024/25* that shows inconsistent dates. The reported dates resulted in this record showing as having met the standard. PHS have queried the dates with the Health Board and are expecting these to be rectified in future submissions. -->
+**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, *2024/25* and *2025/26*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data for *2025/26 Q3*.
 
 **Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates. 
 
@@ -434,13 +428,13 @@ e.g. the rate for SIMD 1 (the most deprived quintile) for a particular area is c
 
 Across the reported years there are a small number of records (`r age_unknown` in total) with an incomplete date of birth and therefore the age group is unknown. These records have been excluded from the age group analysis. 
 
-*For the rates calculations, for financial year 2024/25 and 2025/26 the Mid-2023 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
+*For the rates calculations, for financial year 2025/26 the Mid-2024 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
 
 **Gender:** Gender is based on the sex recorded for each referral.  
 
 Across the reported years there are `r sex_unknown` records in total where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’). These records have been excluded from the gender analysis.
 
-*For the rates calculations, for financial year 2024/25 and 2025/26 the Mid-2023 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
+*For the rates calculations, for financial year 2025/26 the Mid-2024 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
 
 **Deprivation:** Deprivation is calculated by matching postcodes grouped into small geographical areas known as datazones to the Scottish Index of Multiple Deprivation (SIMD) quintiles. SIMD has seven domains (income, employment, education, housing, health, crime, and geographical access) at data zone level, which have been combined into an overall index to pick out area concentrations of multiple deprivation. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived quintile) to 5 (least deprived quintile). At Scotland level, approximately one fifth of the general population are within each deprivation quintile. The quintiles used in this report are from SIMD 2020v2. Further information on SIMD can be found on the [Scottish Government](https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/){target="_blank"} website.
 
