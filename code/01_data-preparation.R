@@ -39,7 +39,10 @@ pds <- read_csv(get_national_data_path(),
   filter(between(dementia_diagnosis_confirmed_date, start_date, end_date)) %>%
   
   # Remove rows with unknown IAA
-  filter(!is.na(ijb))
+  filter(!is.na(ijb)) %>%
+  
+  # Remove chi numbers where health board does not match IAA
+  filter(!chi_number %in% (pds %>% filter(health_board == "V NHS Forth Valley", ijb == "S37000033 Perth and Kinross"))$chi_number)
 
   ## If including this, remove the comments
   # Recode NA for NHS Lothian 
