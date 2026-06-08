@@ -1,5 +1,21 @@
 All Referrals - Trends & Rates
 =================================================
+```{r data-setup-trends, include=FALSE}
+rates <- create_rates_table_age_sex(ldp_df, population_df, ESP13, 
+                                age_cutoff = 65)
+
+rates_age <- create_rates_table_age_sex(ldp_df, population_df, ESP13, 
+                                age_cutoff = 65, 
+                                grouping = c("age_grp_2"))
+
+rates_sex <- create_rates_table_age_sex(ldp_df, population_df, ESP13, 
+                                age_cutoff = 65, 
+                                grouping = c("sex"))
+
+rates_simd <- create_rates_table_age_sex(ldp_df, population_df, ESP13, 
+                                age_cutoff = 65, 
+                                grouping = c("simd"))
+```
 
 ```{r data-setup-trends, include=FALSE}
 
@@ -94,23 +110,33 @@ bscols(widths = 12,
             trends_plot))
 
 ```
+
+```{r trend-plot}
+
+trends_plot <- plot_trend(rates %>% filter(name == "scot"), total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", Scotland = TRUE)
+
+bscols(widths = 12,
+        div(style = css(width="98%", height="360px"), 
+            trends_plot))
+
+```
+
 <br>
 <br>
 ```{r trend-table}
 
-pds_all_totals %>%  
-            mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
-            pivot_wider(names_from = fy, values_from = total_referrals) %>% 
-            rename(`Integration Authority Area/Health Board` = geog) %>%
-            select(-age_grp_2) %>% 
-            kable(align = c("l", rep("r", length(all_years)))) %>% 
-            kable_styling(full_width = TRUE, c("striped","hover")) %>%
-            column_spec(1, bold = TRUE) %>%
+rates %>% 
+  arrange(desc(name)) %>%
+  mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
+  select(geog, fy, total_referrals) %>% 
+  pivot_wider(names_from = fy, values_from = total_referrals) %>% 
+  rename(`Integration Authority Area/Health Board` = geog) %>%
+  kable(align = c("l", rep("r", length(all_years)))) %>% 
+  kable_styling(full_width = TRUE, c("striped","hover")) %>%
+  column_spec(1, bold = TRUE) %>%
   # Add header above table 
-            add_header_above(
-                       c(" " = 1,
-                         "Financial Year of Diagnosis" = length(all_years))) %>%
-            scroll_box(height = "685px")
+  add_header_above(c(" " = 1, "Financial Year of Diagnosis" = length(all_years))) %>%
+  scroll_box(height = "685px")
  
 
 ```
