@@ -26,8 +26,8 @@
 test_output <- FALSE
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(31122025)
-previous_end_date <- lubridate::dmy(30092025)
+end_date <- lubridate::dmy(31032026)
+previous_end_date <- lubridate::dmy(31122025)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure

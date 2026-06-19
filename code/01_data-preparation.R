@@ -48,6 +48,9 @@ pds <- read_csv(get_national_data_path(),
   # mutate(ijb = if_else(health_board == "S NHS Lothian" & is.na(ijb), 
   #                    "S37000012 Edinburgh City", ijb))
 
+# Remove chi numbers where health board does not match IAA
+pds <- pds %>%
+  filter(!chi_number %in% (pds %>% filter(health_board == "V NHS Forth Valley", ijb == "S37000033 Perth and Kinross"))$chi_number)
 
 ### 3 - Add finalised data ----
 

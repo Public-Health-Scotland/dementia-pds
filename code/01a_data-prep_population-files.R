@@ -22,14 +22,14 @@ source(here::here("code", "00_setup-environment.R"))
 pop_filepath <- glue("{cl_out}/lookups/Unicode/Populations/Estimates/")
 pop_files <- list.files(pop_filepath)
 
-# Get files corresponding to IAA, Health Board and SIMD estimates
+# Get list of files corresponding to IAA, Health Board and SIMD estimates
 ijb_files <- pop_files[grepl("^HSCP\\d+_pop_est_\\d+_\\d+\\.rds$", pop_files)]
 hb_files <- pop_files[grepl("^HB\\d+_pop_est_\\d+_\\d+\\.rds$", pop_files)]
 simd_files <- pop_files[grepl("^DataZone\\d+_pop_est_\\d+_\\d+\\.rds$", pop_files)]
 
 # Function which takes a list of strings containing dates and returns the most recent
 get_latest <- function(list, name, type){
-  latest <- as_tibble(do.call(rbind, str_extract_all(list, "\\d+"))) %>% # Extract numbers from each string as separate columns of a tibble
+  latest <- as_tibble(do.call(rbind, str_extract_all(list, "\\d+")), .name_repair = "unique") %>% # Extract numbers from each string as separate columns of a tibble
     mutate(across(everything(), as.numeric), string = list) %>% # Convert to numeric and add new column containing original string in 
     arrange(across(everything(), desc)) %>% # Sort by numbers, highest at the top (first number is most important, then second etc.)
     slice(1) %>% # Get the first row
@@ -39,6 +39,7 @@ get_latest <- function(list, name, type){
   return (latest) # Return latest
 }
 
+# Select latest files corresponding to IAA, Health Board and SIMD estimates
 ijb_file <- get_latest(ijb_files, "IAA", "file")
 hb_file <- get_latest(hb_files, "Health Board", "file")
 simd_file <- get_latest(simd_files, "SIMD", "file")
@@ -47,7 +48,7 @@ simd_file <- get_latest(simd_files, "SIMD", "file")
 la_pop <- read_rds(glue(pop_filepath, ijb_file))%>% 
   filter(year >= 2016, age >= 18)
 
-# Read IAA file and remove rows before 2016 or younger than 18
+# Read Health Board file and remove rows before 2016 or younger than 18
 hb_pop <- read_rds(glue(pop_filepath, hb_file)) %>%
   filter(year >= 2016, age >= 18)
 
@@ -60,7 +61,7 @@ geog_cols_ijb <- grep("hscp[0-9].*name", colnames(la_pop), value = TRUE)
 geog_cols_hb <- grep("hb[0-9].*name", colnames(hb_pop), value = TRUE)
 simd_cols <- sort(grep("simd[0-9].*_sc_quintile", colnames(simd_pop), value = TRUE))
 
-# Select files
+# Select columns
 geog_col_ijb <- get_latest(geog_cols_ijb, "IAA", "column")
 geog_col_hb <- get_latest(geog_cols_hb, "Health Board", "column")
 simd_col <- get_latest(simd_cols, "SIMD", "column")
