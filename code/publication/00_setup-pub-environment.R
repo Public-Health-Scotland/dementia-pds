@@ -23,7 +23,7 @@ source(here::here("code", "00_setup-environment.R"))
 end_date <- lubridate::dmy(31122025) 
 
 # UPDATE - Date of publication (ddmmyyyy)
-pub_date <- lubridate::dmy(29072026)
+pub_date <- lubridate::dmy(21072026)
 
 # UPDATE - Date of last publication (ddmmyyyy)
 last_pub_date <- lubridate::dmy(16122025)
