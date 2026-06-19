@@ -3,6 +3,97 @@ Age Groups {data-navmenu="Demographics"}
 
 ```{r data-setup-demo, include=FALSE}
 
+################################################################################.
+# AGE
+################################################################################.
+# Referral Rates by Age (Per 10,000 Population)
+referral_rates_age <- standardised_rates_age %>% 
+  select(fy, geog, name, age_grp_2, all_of(contains("rate"))) %>%
+  pivot_longer(cols = contains("rate"), names_to = "rate_type", values_to = "rate") %>%
+  mutate(rate = round(rate, 1))
+
+# Outcomes by Age (Percentage Standard Met)
+outcomes_age <- measures_age %>%
+  select(fy, geog, name, age_grp_2, perc_met)
+
+################################################################################.
+# SEX
+################################################################################.
+# Referral Rates by Sex (Per 10,000 Population)
+referral_rates_sex <- standardised_rates_sex %>% 
+  select(fy, geog, name, sex, all_of(contains("rate"))) %>%
+  pivot_longer(cols = contains("rate"), names_to = "rate_type", values_to = "rate") %>%
+  mutate(rate = round(rate, 1))
+
+# Outcomes by Sex (Percentage Standard Met)
+outcomes_sex <- measures_sex %>%
+  select(fy, geog, name, sex, perc_met)
+
+################################################################################.
+# SIMD
+################################################################################.
+# Referral Rates by SIMD (Per 10,000 Population)
+referral_rates_simd <- standardised_rates_simd %>% 
+  select(fy, geog, name, simd, all_of(contains("rate"))) %>%
+  pivot_longer(cols = contains("rate"), names_to = "rate_type", values_to = "rate") %>%
+  mutate(rate = round(rate, 1))
+
+# Outcomes by SIMD (Percentage Standard Met)
+outcomes_simd <- measures_simd %>%
+  select(fy, geog, name, simd, perc_met)
+
+plot_demog_bar <- function(data, x, y, demog){
+  colours <- if (demog == "simd") {
+    c("#0062AD", "#0078D4", "#3393DD", "#80BCEA", "#B3D7F2")
+    } else if (demog == "sex") {
+      c("#3F3685", "#9B4393")
+    } else if (demog == "age_grp_2") {
+      c("#6B5C85", "#0078D4", "#1E7F84")
+    }
+
+  text_label <- if (demog == "simd") {
+    "Deprivation Quintile"
+  } else if (demog == "sex") {
+    "Gender"
+  } else if (demog == "age_grp_2") {
+    "Age Group"
+  }
+  
+  bscols(widths = 12, 
+         div(style = css(width="98%", height="350px", marginBottom="-20px"),
+             plot_ly(data, 
+                     x = data[[x]], 
+                     y = data[[y]], 
+                     meta = ~fy, 
+                     hovertext = data[[demog]], 
+                     type = 'bar', 
+                     color = data[[demog]], 
+                     colors = colours, 
+                     hovertemplate = paste0("%{x} <br>", "%{meta} <br>", text_label, ": %{hovertext} <br>",
+                                            "Rate per 10,000 Population: %{y}<extra></extra>")) %>%
+               layout(clickmode = "none", 
+                      showlegend = TRUE, 
+                      legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
+                      margin = list(l = -5, b = 10, t = 40),
+                      xaxis = list(title = "", 
+                                   showline = FALSE, 
+                                   linecolor = "#b3b3b3",
+                                   categoryorder = "trace", 
+                                   tickangle = -45, 
+                                   titlefont = list(size = 16)),
+                      yaxis = list(title = "Rate per 10,000 Population", 
+                                   linecolor = "#b3b3b3", 
+                                   titlefont = list(size = 16))) %>%
+               config(displayModeBar = TRUE, doubleClick = F,
+                      modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
+                                         'zoomOut2d', 'autoScale2d', 'toggleSpikelines', 
+                                         'hoverCompareCartesian', 'hoverClosestCartesian', 'toImage'), 
+                      displaylogo = F, editable = F)))
+}
+```
+
+
+```{r data-setup-demo, include=FALSE}
 #prepare age data 
 ldp_all_age <- pds_all %>%
   filter(fy %in% full_years, age_grp_2 != "Unknown") %>%
@@ -219,74 +310,48 @@ Row {.tabset data-height=1180}
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb-age-pop}
-#filter for authority areas
-pds_ijb_age_rates <- pds_all_age_rates %>% filter(!grepl("NHS", geog)) %>% 
-   mutate(pop_rate_10000 = if_else(is.na(pop_rate_10000), 0, pop_rate_10000)) %>% #this was added to avoid any areas with missing data being placed at the end of the chart
-#age_grp_2_group is for use with age group dropdown below which has been removed in current version
-         mutate(age_grp_2_group = "All", .before = age_grp_2)  %>% 
-#create key for connecting dropdown to plot and table
-         mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
 
-#create sharedData object for dropdown menu
-pds_pop_age_data_ijb <- SharedData$new(pds_ijb_age_rates, key = ~key, group = "ijb_age_pop")
+# Dynamic Plot Data (Age-Stratified Referral Rates by IAA and Rate Type)
+rates_df_age_ijb <- SharedData$new(
+  referral_rates_age %>%
+    filter(name %in% c("scot", "ijb")), 
+  key = ~paste0(fy, rate_type), 
+  group = "ratesageijb")
 
-#create dropdown menu for selecting financial year
-data_filter_ijb_age_pop <- filter_select(id = "filter_ijb_age_pop",
-                                    label = "Select Financial Year:",
-                                    group = ~fy,
-                                    sharedData = pds_pop_age_data_ijb,
-                                    multiple = FALSE
-                                      )
+# Dropdown (Year)
+rates_filter_age_ijb_fy <- filter_select(
+  id = "filter_ijb_age_pop",
+  label = "Select Financial Year:",
+  group = ~fy,
+  sharedData = rates_df_age,
+  multiple = FALSE)
 
-## filter for selecting age group (removed in current version) 
-# data_filter_ijb_age_group <- filter_select(id = "filter_ijb_age_group",
-#                                     label = "Select Age Group:",
-#                                     group = ~age_grp_2_group,
-#                                     sharedData = pds_pop_age_data_ijb,
-#                                     multiple = FALSE)
-  
-#create dropdown menu for selecting authority area
-data_filter_ijb_age_pop_geog <- filter_select(id = "filter_ijb_age_pop_geog",
-                                    label = "Select Integration Authority Area(s):",
-                                    group = ~geog,
-                                    sharedData = pds_pop_age_data_ijb,
-                                    multiple = TRUE
-                                      )
-#place dropdown menus in columns and set size
-bscols(widths = c(1,5,NA),
-       NULL,
-       data_filter_ijb_age_pop,
-       NULL)
+# Dropdown (Rate Type)
+rates_filter_age_ijb_rate <- filter_select(
+  id = "filter_ijb_age_rate",
+  label = "Select Rate Measure:",
+  group = ~rate_type,
+  sharedData = rates_df_age,
+  multiple = FALSE)
 
-bscols(widths = c(1,10,NA), NULL, data_filter_ijb_age_pop_geog, NULL)
+# Layout
+bscols(widths = c(1, 4, 4, NA), NULL, rates_filter_age_ijb_fy, rates_filter_age_ijb_rate, NULL)
+
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by Age Group and Integration Authority Area</h2>
+
 ```{r plot-ijb-age-pop}
 
-bscols(widths = 12,
-  div(style = css(width="98%", height="350px", marginBottom="-20px"),
-plot_ly(pds_pop_age_data_ijb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~age_grp_2, type = 'bar', color = ~age_grp_2, colors = age_colours, 
-        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Age Group: %{hovertext} <br>",
-                            "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
-  layout(clickmode = "none", 
-         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
-         margin = list(l = -5, b = 10, t = 40),
-         xaxis = list(title = "", showline = FALSE, linecolor = "#b3b3b3",
-                      categoryorder = "trace", tickangle = -45, titlefont = list(size = 16)),
-         yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
-      ) %>%
-  config(displayModeBar = TRUE, doubleClick = F,
-         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
-                                       'zoomOut2d', 'autoScale2d', 
-                                       'toggleSpikelines', 
-                                       'hoverCompareCartesian', 
-                                       'hoverClosestCartesian', 'toImage'), 
-         displaylogo = F, editable = F)
-  )
-)
+# Dynamic Plot (Age-Stratified Referral Rates by IAA and Rate Type)
+plot_demog_bar(
+  data = rates_df_age_ijb, 
+  x = "geog", 
+  y = "rate", 
+  demog = "age_grp_2")
 
 ```
+create_dynamic_table <- function(data, measure, geog_filter, dropdown_col, dropdown_grp, pivot_col, demog)
 
 
 ```{r table-ijb-age-pop}
@@ -330,57 +395,44 @@ DT::datatable(ijb_age_table_pop, rownames = FALSE, selection = 'none',
 ### **Health Boards**
 
 ```{r dropdown-hb-age-pop}
-pds_hb_age_rates <- pds_all_age_rates %>% filter(grepl("NHS", geog) | geog == "Scotland") %>% 
-         mutate(age_grp_2_group = "All", .before = age_grp_2)  %>% 
-         mutate(key = paste0(fy,age_grp_2_group,geog), .before = geog)
 
-pds_pop_age_data_hb <- SharedData$new(pds_hb_age_rates, key = ~key, group = "hb_age_pop")
+# Dynamic Plot Data (Age-Stratified Referral Rates by Health Board and Rate Type)
+rates_df_age_hb <- SharedData$new(
+  referral_rates_age %>%
+    filter(name %in% c("scot", "health_board")), 
+  key = ~paste0(fy, rate_type), 
+  group = "ratesagehb")
 
-data_filter_hb_age_pop <- filter_select(id = "filter_hb_age_pop",
-                                    label = "Select Financial Year:",
-                                    group = ~fy,
-                                    sharedData = pds_pop_age_data_hb,
-                                    multiple = FALSE
-                                      )
+# Dropdown (Year)
+rates_filter_age_hb_fy <- filter_select(
+  id = "filter_hb_age_pop",
+  label = "Select Financial Year:",
+  group = ~fy,
+  sharedData = rates_df_age_hb,
+  multiple = FALSE)
 
-# data_filter_hb_age_pop_quintile <- filter_select(id = "filter_hb_age_pop_quintile",
-#                                     label = "Select Age Group:",
-#                                     group = ~age_grp_2_group,
-#                                     sharedData = pds_pop_age_data_hb,
-#                                     multiple = FALSE)
+# Dropdown (Rate Type)
+rates_filter_age_hb_rate <- filter_select(
+  id = "filter_hb_age_rate",
+  label = "Select Rate Measure:",
+  group = ~rate_type,
+  sharedData = rates_df_age_hb,
+  multiple = FALSE)
 
-
-bscols(widths = c(1,5,NA),
-       NULL,
-       data_filter_hb_age_pop,
-       NULL)
+# Layout
+bscols(widths = c(1, 4, 4, NA), NULL, rates_filter_age_hb_fy, rates_filter_age_hb_rate, NULL)
 
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of people referred to PDS per 10,000 population by Age Group and Health Board</h2>
 ```{r plot-hb-age-pop}
 
-bscols(widths = 12,
-  div(style = css(width="98%", height="365px", marginBottom="-20px"),
-plot_ly(pds_pop_age_data_hb, x = ~geog, y = ~pop_rate_10000, meta = ~fy, hovertext = ~age_grp_2, type = 'bar', color = ~age_grp_2, colors = age_colours, 
-        hovertemplate = paste0("%{x} <br>", "%{meta} <br>", "Age Group: %{hovertext} <br>",
-                            "Rate per 10,000 Population: %{y}<extra></extra>")) %>% 
-  layout(clickmode = "none", 
-         showlegend = TRUE, legend = list(orientation = 'h', x = 0.5, y = 100, xanchor = "center"),
-         margin = list(l = -5, b = 10, t = 40),
-         xaxis = list(title = "", showline = FALSE, linecolor = "#b3b3b3",
-                      categoryorder = "array", categoryarray = pds_hb_age_rates$geog, tickangle = -45, titlefont = list(size = 16)),
-         yaxis = list(title = "Rate per 10,000 Population", linecolor = "#b3b3b3", titlefont = list(size = 16))
-      ) %>%
-  config(displayModeBar = TRUE, doubleClick = F,
-         modeBarButtonsToRemove = list('select2d', 'lasso2d', 'zoomIn2d', 
-                                       'zoomOut2d', 'autoScale2d', 
-                                       'toggleSpikelines', 
-                                       'hoverCompareCartesian', 
-                                       'hoverClosestCartesian', 'toImage'), 
-         displaylogo = F, editable = F)
-  )
-)
+# Dynamic Plot (Age-Stratified Referral Rates by Health Board and Rate Type)
+plot_demog_bar(
+  data = rates_df_age_hb, 
+  x = "geog", 
+  y = "rate", 
+  demog = "age_grp_2")
 
 ```
 

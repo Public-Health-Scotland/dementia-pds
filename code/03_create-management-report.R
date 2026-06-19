@@ -17,6 +17,9 @@
 
 source(here::here("code", "00_setup-environment.R"))
 
+rmarkdown::render(
+  input = here("management-report", "markdown", "management-report.Rmd"),
+  output_file = "/conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/mi_report.html")
 
 ### 2 - Render markdown script ----
 # render_check firsts checks if a file already exists before running rmarkdown::render
@@ -26,6 +29,5 @@ render_check(
   input = here("management-report", "markdown", 
                "management-report.Rmd"),
   output_file = get_mi_output_path(test_output = test_output))
-
 
 ### END OF SCRIPT ###

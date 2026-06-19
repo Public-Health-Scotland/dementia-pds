@@ -12,6 +12,12 @@ source(here::here("code", "00_setup-environment.R"))
 library(crosstalk) # for drop down menus
 library(htmltools)
 
+# Remove tidylog
+detach("package:tidylog", unload = TRUE)
+
+# Load functions
+walk(dir(here::here("functions"), full.names = TRUE), source)
+
 # Write numbers with thousands separator
 knit_hooks$set(inline = function(x){
   if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
@@ -24,13 +30,95 @@ date: "`r paste('Data as at', format(end_date, '%d %B %Y'))`"
 
 ```{r setup, include=FALSE}
 
-# Remove tidylog
-detach("package:tidylog", unload = TRUE)
+################################################################################.
+# Data
+################################################################################.
 
-# Load functions
-walk(dir(here::here("functions"), full.names = TRUE), source)
+# LDP Data
+ldp_df <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output)) %>%
+  mutate(
+    # Remove health board and ijb codes
+    ijb = str_sub(ijb, 11, -1),
+    health_board = str_sub(health_board, 3, -1), 
+    # Create a new column called scot (used for calculating Scotland totals)
+    scot = "Scotland",
+    # Create a new column called board (used for keeping track of which health board each ijb belongs to)
+    board = health_board) %>%
+  # Put scot, ijb and health board in the same column named geog
+  pivot_longer(c(scot, ijb, health_board), values_to = "geog") %>%
+  mutate(board = ifelse(name == "scot", "Scotland", board))
+
+# Population Data
+population_df <- read_rds("//conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/population_data.rds")
+
+# European Standard Population Data
+ESP13_df <- read_csv("/conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/european_standard_population_by_sex.csv") %>%
+  clean_names() %>%
+  mutate(
+    sex = case_when(
+      sex == "Male" ~ "01 Male",
+      sex == "Female" ~ "02 Female"))
+
+# Expected Diagnoses Data
+exp_df <- read_csv(get_exp_diagnoses_path()) %>%
+  rename(geog = health_board_label) %>% # Rename health board column to geog to match PDS and population data
+  select(-health_board) # Remove health board code column
+
+################################################################################.
+# Year Lists
+################################################################################.
+
+provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
+                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
+
+current_fy <- paste0(substr(fy,1,4),
+                           "/", as.numeric(substr(fy,3,4)) + 1)
+
+last_full_year <- if_else(qt == 4, current_fy, paste0(as.numeric(substr(fy,1,4)) - 1,
+                           "/", as.numeric(substr(fy,3,4))))
+
+all_years <- unique(ldp_df$fy)
+
+if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
+
+################################################################################.
+# Rates
+################################################################################.
+standardised_rates <- full_join(
+  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age-sex", 
+                     age_cutoff = 65, demographic = c()), 
+  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age", 
+                     age_cutoff = 65, demographic = c()))
+
+standardised_rates_age <- full_join(
+  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age-sex", 
+                     age_cutoff = 65, demographic = c("age_grp_2")), 
+  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age", 
+                     age_cutoff = 65, demographic = c("age_grp_2")))
+
+standardised_rates_sex <- full_join(
+  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age-sex", 
+                     age_cutoff = 65, demographic = c("sex")), 
+  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age", 
+                     age_cutoff = 65, demographic = c("sex")))
+
+standardised_rates_simd <- full_join(
+  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age-sex", 
+                     age_cutoff = 65, demographic = c("simd")), 
+  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age", 
+                     age_cutoff = 65, demographic = c("simd")))
+
+################################################################################.
+# Other Measures
+################################################################################.
+measures <- create_measures_table(ldp_df, exp_df, demographic = c())
+measures_age <- create_measures_table(ldp_df, exp_df, demographic = c("age_grp_2"))
+measures_sex <- create_measures_table(ldp_df, exp_df, demographic = c("sex"))
+measures_simd <- create_measures_table(ldp_df, exp_df, demographic = c("simd"))
+```
 
 
+```{r setup, include=FALSE}
 # Load PDS monthly data
 pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
   
@@ -100,19 +188,6 @@ pds_scot_totals <- pds_scot %>% group_by(geog, fy, age_grp_2 = "All") %>% summar
 #load population rates data
 pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
 
-#create year lists
-provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
-                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
-
-current_fy <- paste0(substr(fy,1,4),
-                           "/", as.numeric(substr(fy,3,4)) + 1)
-
-last_full_year <- if_else(qt == 4, current_fy, paste0(as.numeric(substr(fy,1,4)) - 1,
-                           "/", as.numeric(substr(fy,3,4))))
-
-all_years <- unique(pds_all$fy)
-
-if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
 
 #load completion data
 comp_data <- read_rds(get_mi_data_path("comp_data", ext = "rds", test_output = test_output))
@@ -1147,267 +1222,80 @@ q_err %>%
 ```
 
 <!-- converts R environment objects for use with js script below -->
-<script>
-
-var pds_year = "`r current_fy`";
-
-var ldp_year = "`r last_full_year`";
-
-</script>
+```{r results="asis"}
+cat(sprintf('<script>var pds_year = "%s"; var ldp_year = "%s";</script>', 
+            current_fy, last_full_year))
+```
 
 ```{js }
 
 function filter_default() {
 
-  
-// all referrals - trends and rates  
-  
- document.getElementById("trend_filter_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("NHS Ayrshire & Arran", false);
-
-  document.getElementById("trend_filter_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-   document.getElementById("trend_filter_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Aberdeen City", false);
-
-  document.getElementById("trend_filter_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
- 
-   document.getElementById("trend_filter_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("trend_filter_pop").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("trend_filter_year_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("trend_filter_year_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("trend_filter_outcomes_exp").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("trend_filter_outcomes_met").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  
-  
-  // demographics
-
-  document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("filter_ijb_age_pop").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ijb_age_pop_geog").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_hb_age_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("filter_hb_age_pop").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ijb_age_ldp_geog").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_trend_age_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("filter_trend_age_pop").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-
-  document.getElementById("filter_ijb_age_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue(ldp_year, false);
-
-  document.getElementById("filter_ijb_age_ldp").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-    
-  document.getElementById("filter_hb_age_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue(ldp_year, false);
-
-  document.getElementById("filter_hb_age_ldp").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ldp_age").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("filter_ldp_age").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("filter_trend_sex_pop").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("filter_hb_sex_pop").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("filter_ijb_sex_pop").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue(ldp_year, false);
-
-  document.getElementById("filter_ijb_sex_ldp").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-    
-  document.getElementById("filter_hb_sex_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue(ldp_year, false);
-
-  document.getElementById("filter_hb_sex_ldp").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ldp_sex").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("filter_ldp_sex").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_trend_simd_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("filter_trend_simd_pop").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("filter_hb_simd_pop").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("filter_ijb_simd_pop").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ijb_simd_pop_geog").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ijb_simd_ldp_geog").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ldp_simd").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("filter_ldp_simd").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_hb_simd_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue(ldp_year, false);
-
-  document.getElementById("filter_hb_simd_ldp").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized") 
-  [0].selectize.setValue(ldp_year, false);
-
-  document.getElementById("filter_ijb_simd_ldp").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("filter_ldp_simd_bar").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-
-// pathways
-
-   document.getElementById("not_met_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("not_met_filter_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-   document.getElementById("ongoing_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("ongoing_filter_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("exempt_filter_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("exempt_filter_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("wait_filter_all_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("wait_filter_all_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_median").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("filter_median").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_median_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("filter_median_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("trend_filter_wait").getElementsByClassName("selectized") 
-  [0].selectize.setValue("Scotland", false);
-
-  document.getElementById("trend_filter_wait").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("filter_uptake_hb_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("filter_uptake_ijb_year").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-  document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("no_contact_filter_year_hb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-  
-   document.getElementById("no_contact_filter_year_ijb").getElementsByClassName("selectized") 
-  [0].selectize.setValue(pds_year, false);
-
-  document.getElementById("no_contact_filter_year_ijb").getElementsByClassName("selectized")
-  [0].selectize.removeOption("");
-
-
-  
+  function setFilter(id, value) {
+    try {
+      var el = document.getElementById(id)
+        .getElementsByClassName("selectized")[0].selectize;
+      if(value) el.setValue(value, false);
+      el.removeOption("");
+    } catch(e) {
+      console.log("Failed to set filter: " + id, e);
+    }
   }
-  
-  $(document).ready(filter_default);
+
+  // all referrals - trends and rates
+  setFilter("trend_filter_hb", "NHS Ayrshire & Arran");
+  setFilter("trend_filter_ijb", "Aberdeen City");
+  setFilter("trend_filter_pop", "Scotland");
+  setFilter("trend_filter_year_hb", pds_year);
+  setFilter("trend_filter_rate_hb", "old_rate");
+  setFilter("trend_filter_year_ijb", pds_year);
+  setFilter("trend_filter_rate_ijb", "old_rate");
+  setFilter("trend_filter_geog_trend", "Scotland");
+  setFilter("trend_filter_rate_trend", "old_rate");
+  setFilter("trend_filter_outcomes_exp", "Scotland");
+  setFilter("trend_filter_outcomes_met", "Scotland");
+
+  // demographics
+  setFilter("filter_ijb_age_pop", pds_year);
+  setFilter("filter_ijb_age_pop_geog", null);
+  setFilter("filter_hb_age_pop", pds_year);
+  setFilter("filter_ijb_age_ldp_geog", null);
+  setFilter("filter_trend_age_pop", "Scotland");
+  setFilter("filter_ijb_age_ldp", ldp_year);
+  setFilter("filter_hb_age_ldp", ldp_year);
+  setFilter("filter_ldp_age", "Scotland");
+  setFilter("filter_trend_sex_pop", "Scotland");
+  setFilter("filter_hb_sex_pop", pds_year);
+  setFilter("filter_ijb_sex_pop", pds_year);
+  setFilter("filter_ijb_sex_ldp", ldp_year);
+  setFilter("filter_hb_sex_ldp", ldp_year);
+  setFilter("filter_ldp_sex", "Scotland");
+  setFilter("filter_trend_simd_pop", "Scotland");
+  setFilter("filter_hb_simd_pop", pds_year);
+  setFilter("filter_ijb_simd_pop", pds_year);
+  setFilter("filter_ijb_simd_pop_geog", null);
+  setFilter("filter_ijb_simd_ldp_geog", null);
+  setFilter("filter_ldp_simd", "Scotland");
+  setFilter("filter_hb_simd_ldp", ldp_year);
+  setFilter("filter_ijb_simd_ldp", ldp_year);
+  setFilter("filter_ldp_simd_bar", "Scotland");
+
+  // pathways
+  setFilter("not_met_filter_year", pds_year);
+  setFilter("ongoing_filter_year", pds_year);
+  setFilter("exempt_filter_year", pds_year);
+  setFilter("wait_filter_all_year", pds_year);
+  setFilter("filter_median", pds_year);
+  setFilter("filter_median_hb", pds_year);
+  setFilter("trend_filter_wait", "Scotland");
+  setFilter("filter_uptake_hb_year", pds_year);
+  setFilter("filter_uptake_ijb_year", pds_year);
+  setFilter("no_contact_filter_year_hb", pds_year);
+  setFilter("no_contact_filter_year_ijb", pds_year);
+
+}
+
+$(document).ready(filter_default);
 
 ```
 

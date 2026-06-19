@@ -1,48 +1,99 @@
 All Referrals - Trends & Rates
 =================================================
-```{r data-setup-trends, include=FALSE}
-rates <- create_rates_table_age_sex(ldp_df, population_df, ESP13, 
-                                age_cutoff = 65)
 
-rates_age <- create_rates_table_age_sex(ldp_df, population_df, ESP13, 
-                                age_cutoff = 65, 
-                                grouping = c("age_grp_2"))
+```{r data-trends, include=FALSE}
 
-rates_sex <- create_rates_table_age_sex(ldp_df, population_df, ESP13, 
-                                age_cutoff = 65, 
-                                grouping = c("sex"))
+# Referrals
+referrals <- standardised_rates %>%
+  select(fy, geog, name, total_referrals)
 
-rates_simd <- create_rates_table_age_sex(ldp_df, population_df, ESP13, 
-                                age_cutoff = 65, 
-                                grouping = c("simd"))
+# Referral Rates (Per 10,000 Population)
+referral_rates <- standardised_rates %>% 
+  select(fy, geog, name, all_of(contains("rate"))) %>%
+  pivot_longer(cols = contains("rate"), names_to = "rate_type", values_to = "rate") %>%
+  mutate(rate = round(rate, 1))
+
+# Outcomes (Rates Per Expected Diagnoses & Percentage Standard Met)
+outcomes <- measures %>%
+  select(fy, geog, name, exp_rate, perc_met)
+
 ```
 
-```{r data-setup-trends, include=FALSE}
+```{r functions-trends, include=FALSE}
 
-#prepare population rate data using 65+ population estimates as denominator
-pop_data_trends <- pop_data %>%  filter(age_grp != "All", age_grp != "59 and Under", age_grp != "60 to 64", age_grp_2 == "All", sex == "All") %>% select(geog, year, age_grp, pop_est) %>% 
-  group_by(geog, year) %>% summarise(pop_est = sum(pop_est)) %>% ungroup()
+create_static_table <- function(data, measure, geog_filter) {
+  
+  geog_name <- case_when(
+    "ijb" %in% geog_filter & "health_board" %in% geog_filter ~ "Integration Authority Area/Health Board",
+    "ijb" %in% geog_filter ~ "Integration Authority Area",
+    "health_board" %in% geog_filter ~ "Health Board"
+  )
+  
+  static_table <- data %>%
+    arrange(desc(name)) %>%
+    filter(name %in% geog_filter) %>%
+    select(geog, fy, {{ measure }}) %>%
+    mutate(across(where(is.numeric), ~ if_else(. %% 1 == 0, 
+                                               format(., big.mark = ","), 
+                                               paste0(., "%")))) %>%
+    pivot_wider(names_from = fy, values_from = {{ measure }}) %>%
+    rename(!!geog_name := geog) %>%
+    kable(align = c("l", rep("r", length(unique(data$fy))))) %>%
+    kable_styling(full_width = TRUE, c("striped", "hover")) %>%
+    column_spec(1, bold = TRUE) %>%
+    add_header_above(c(" " = 1, "Financial Year of Diagnosis" = length(unique(data$fy)))) %>%
+    scroll_box(height = "685px")
+  
+  return(static_table)
+}
 
-# add year column to pds data to match pop data
-pds_all_cal_year <- pds_all_totals %>% 
-  mutate(year = as.numeric(substr(fy, 1, 4)))
 
-# join pds data with pop data and calculate rates
-pds_all_rates <- left_join(pds_all_cal_year, pop_data_trends) %>% select(geog, fy, total_referrals, pop_est) %>% 
-  mutate(pop_rate_10000 = round_half_up((total_referrals/pop_est)*10000, 1)) %>%
-  select(geog, fy, pop_rate_10000) %>% 
-  ungroup()
+create_dynamic_table <- function(data, measure, geog_filter, dropdown_col, dropdown_grp) {
+  
+  geog_name <- case_when(
+    "ijb" %in% geog_filter & "health_board" %in% geog_filter ~ "Integration Authority Area/Health Board",
+    "ijb" %in% geog_filter ~ "Integration Authority Area",
+    "health_board" %in% geog_filter ~ "Health Board")
+  
+  table_data <- SharedData$new(
+    data %>%
+      filter(name %in% geog_filter) %>%
+      select(geog, fy, name, rate_type, {{ measure }}) %>%
+      pivot_wider(names_from = fy, values_from = {{ measure }}) %>%
+      { if (dropdown_col == "fy") crossing(., x = unique(data[[dropdown_col]])) else mutate(., x = .data[[dropdown_col]]) } %>%
+      arrange(desc(name)) %>%
+      rename(!!geog_name := geog),
+  key = ~paste0(x, rate_type),
+  group = dropdown_grp)
+  
+  fy_targets <- which(grepl("/", names(table_data$origData()))) - 1
+  
+  bscols(
+    widths = 12, 
+    div(
+      style = css(width="97%", height="560px", margin="20px"),
+      DT::datatable(
+        table_data, 
+        rownames = FALSE, 
+        selection = 'none',
+        options = list(
+          pageLength = nrow(table_data$origData()),
+          scrollX = TRUE,
+          scrollY = TRUE,
+          dom = "t",
+          ordering = FALSE,
+          columnDefs = list(
+            list(visible = FALSE, targets = c("rate_type", "x", "name")),
+            list(className = 'dt-right', targets =  as.list(fy_targets))))) %>%
+        DT::formatStyle(
+          columns = geog_name, 
+          fontWeight = "bold") %>%
+        DT::formatStyle(
+          columns = "name",
+          target = "row",
+          fontWeight = DT::styleEqual("scot", "bold"))))
+}
 
-#add column with scotland rates
-pds_all_rates <- left_join(pds_all_rates,
-pds_all_rates %>% filter(geog == "Scotland") %>% select(fy, pop_rate_10000) %>% rename(scot_pop_rate_10000 = pop_rate_10000))
-
-pds_all_rates$geog<- factor(pds_all_rates$geog, levels = unique(pds_all_rates$geog))
-
-pds_ijb_rates <- pds_all_rates %>% filter(geog != "Scotland", !grepl("NHS", geog))
-
-pds_hb_rates <- pds_all_rates %>% filter(geog != "Scotland", grepl("NHS", geog))
- 
 ```
 
 Sidebar - trend {.sidebar}
@@ -101,133 +152,138 @@ Row {.tabset data-height=1210}
 <br>
 <br>
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS; Scotland</h2>
-```{r trend-plot}
-
-trends_plot <- plot_trend(pds_scot_totals, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", Scotland = TRUE)
-
-bscols(widths = 12,
-        div(style = css(width="98%", height="360px"), 
-            trends_plot))
-
-```
 
 ```{r trend-plot}
 
-trends_plot <- plot_trend(rates %>% filter(name == "scot"), total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", Scotland = TRUE)
+# Static Plot Data (All Referrals)
+referrals_df_scot <- SharedData$new(
+  referrals %>%  
+  filter(name == "scot"))
 
-bscols(widths = 12,
-        div(style = css(width="98%", height="360px"), 
-            trends_plot))
+# Plot (All Referrals)
+referrals_plot_scot <- plot_trend(
+  data = referrals_df_scot, 
+  measure = total_referrals, 
+  x ="Financial Year of Diagnosis", 
+  y = "Number Referred", 
+  measure_text = "Referrals: ", 
+  Scotland = TRUE)
+
+# Layout
+bscols(widths = 12, div(style = css(width="98%", height="360px"), referrals_plot_scot))
 
 ```
 
 <br>
 <br>
+
 ```{r trend-table}
 
-rates %>% 
-  arrange(desc(name)) %>%
-  mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
-  select(geog, fy, total_referrals) %>% 
-  pivot_wider(names_from = fy, values_from = total_referrals) %>% 
-  rename(`Integration Authority Area/Health Board` = geog) %>%
-  kable(align = c("l", rep("r", length(all_years)))) %>% 
-  kable_styling(full_width = TRUE, c("striped","hover")) %>%
-  column_spec(1, bold = TRUE) %>%
-  # Add header above table 
-  add_header_above(c(" " = 1, "Financial Year of Diagnosis" = length(all_years))) %>%
-  scroll_box(height = "685px")
+# Static Table (All Referrals)
+create_static_table(
+  data = referrals, 
+  measure = total_referrals,
+  geog_filter = c("ijb", "health_board", "scot"))
  
-
 ```
 
 ### **Integration Authority Areas**
 
 ```{r dropdown-ijb}
-pds_trends_data_ijb <- SharedData$new(pds_ijb_totals %>% filter(geog != "Unknown"))
 
-data_filter_ijb <- filter_select(id = "trend_filter_ijb",
-                                    label = "Select Integration Authority Area(s):",
-                                    group = ~geog,
-                                    sharedData = pds_trends_data_ijb
-                                   )
+# Dynamic Plot Data (Referrals by IAA)
+referrals_df_ijb <- SharedData$new(
+  referrals %>%  
+  filter(name == "ijb"))
 
-bscols(widths = c(1,10,NA), NULL,
-data_filter_ijb, NULL)
+# Dropdown (IAA)
+referrals_filter_ijb <- filter_select(
+  id = "trend_filter_ijb",
+  label = "Select Integration Authority Area(s):",
+  group = ~geog,
+  sharedData = referrals_df_ijb,
+  multiple = TRUE)
+
+# Layout
+bscols(widths = c(1,10,NA), NULL, referrals_filter_ijb, NULL)
 
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS; Integration Authority Areas </h2>
+
 ```{r trend-plot-ijb}
 
-trends_plot_ijb <- plot_trend(pds_trends_data_ijb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", colours = phs_colours_31)
+# Dynamic Plot (Referrals by IAA)
+referrals_plot_ijb <- plot_trend(
+  data = referrals_df_ijb, 
+  measure = total_referrals, 
+  x ="Financial Year of Diagnosis", 
+  y = "Number Referred", 
+  measure_text = "Referrals: ", 
+  colours = phs_colours_31)
 
-bscols(widths = 12,
-        div(style = css(width="98%", height="360px"),
-trends_plot_ijb))
+# Layout
+bscols(widths = 12, div(style = css(width="98%", height="360px"), referrals_plot_ijb))
 
 ```
 
 ```{r trend-table-ijb}
 
-pds_all_totals %>% filter(!grepl("NHS", geog), geog != "Scotland") %>% 
-            mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
-            pivot_wider(names_from = fy, values_from = total_referrals) %>% 
-            rename(`Integration Authority Area` = geog) %>%
-            select(-age_grp_2) %>% 
-            kable(align = c("l", rep("r", length(all_years)))) %>% 
-            kable_styling(full_width = TRUE, c("striped","hover")) %>%
-            column_spec(1, bold = TRUE) %>%
-  # Add header above table 
-            add_header_above(
-                       c(" " = 1,
-                         "Financial Year of Diagnosis" = length(all_years))) %>%
-            scroll_box(height = "660px")
+# Static Table (Referrals by IAA)
+create_static_table(
+  data = referrals, 
+  measure = total_referrals,
+  geog_filter = c("ijb", "scot"))
  
-
 ```
 
 ### **Health Boards**
 
 ```{r dropdown-hb}
-pds_trends_data_hb <- SharedData$new(pds_hb_totals)
 
-data_filter_hb <- filter_select(id = "trend_filter_hb",
-                                    label = "Select Health Board(s):",
-                                    group = ~geog,
-                                    sharedData = pds_trends_data_hb
-                                   )
+# Dynamic Plot Data (Referrals by Health Board)
+referrals_df_hb <- SharedData$new(
+  referrals %>%  
+  filter(name == "health_board"))
+  
+# Dropdown (Health Board)
+referrals_filter_hb <- filter_select(
+  id = "trend_filter_hb",
+  label = "Select Health Board(s):",
+  group = ~geog,
+  sharedData = referrals_df_hb,
+  multiple = TRUE)
 
-bscols(widths = c(1,10,NA), NULL,
-data_filter_hb, NULL)
+# Layout
+bscols(widths = c(1,10,NA), NULL, referrals_filter_hb, NULL)
 
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Number of Individuals Diagnosed and Referred for PDS; Health Boards </h2>
+
 ```{r trend-plot-hb}
 
-trends_plot_hb <- plot_trend(pds_trends_data_hb, total_referrals, x ="Financial Year of Diagnosis", y = "Number Referred", measure_text = "Referrals: ", colours = phs_colours_14)
+# Dynamic Plot (Referrals by Health Board)
+referrals_plot_hb <- plot_trend(
+  data = referrals_df_hb, 
+  measure = total_referrals, 
+  x ="Financial Year of Diagnosis", 
+  y = "Number Referred", 
+  measure_text = "Referrals: ", 
+  colours = phs_colours_14)
 
-bscols(widths = 12,
-        div(style = css(width="98%", height="390px"),
-trends_plot_hb))
+# Layout
+bscols(widths = 12, div(style = css(width="98%", height="360px"), referrals_plot_hb))
 
 ```
 
 ```{r trend-table-hb}
 
-pds_all_totals %>% filter(grepl("NHS", geog)) %>% 
-            mutate(total_referrals = format(total_referrals, big.mark = ",")) %>% 
-            pivot_wider(names_from = fy, values_from = total_referrals) %>%
-            rename(`Health Board` = geog) %>%
-            select(-age_grp_2) %>% 
-            kable(align = c("l", rep("r", length(all_years)))) %>%
-            kable_styling(full_width = TRUE, c("striped","hover")) %>%
-            column_spec(1, bold = TRUE) %>%
-  # Add header above table 
-            add_header_above(
-                    c(" " = 1,
-                     "Financial Year of Diagnosis" = length(all_years)))
+# Static Table (Referrals by Health Board)
+create_static_table(
+  data = referrals, 
+  measure = total_referrals,
+  geog_filter = c("health_board", "scot"))
 
 ```
 
@@ -290,135 +346,194 @@ Row {.tabset data-height=1260}
 ### **Integration Authority Areas**
 
 ```{r dropdown-pop-ijb}
-pds_ijb_pop_data <- SharedData$new(pds_ijb_rates,
-                                   key = ~fy, group = "groupijb")
+  
+# Dynamic Plot Data (Referral Rates by IAA and Rate Type)
+rates_df_ijb <- SharedData$new(
+  referral_rates %>%  
+    filter(name == "ijb"),
+  key = ~paste0(fy, rate_type), 
+  group = "ratesijb")
+  
+# Dynamic Plot Data (Scotland Referral Rates by Rate Type)
+rates_df_scot1 <- SharedData$new(
+    referral_rates %>%  
+    filter(name == "scot"),
+  key = ~paste0(fy, rate_type), 
+  group = "ratesijb")
 
-data_filter_year_ijb <- filter_select(id = "trend_filter_year_ijb",
-                                    label = "Select Financial Year:",
-                                    group = ~fy,
-                                    sharedData = pds_ijb_pop_data,
-                                    multiple = FALSE
-                                   )
+# Dropdown (Year)
+rates_filter_ijb_year <- filter_select(
+  id = "trend_filter_year_ijb",
+  label = "Select Financial Year:",
+  group = ~fy,
+  sharedData = rates_df_ijb,
+  multiple = FALSE)
 
-bscols(widths = c(1,3,NA),NULL,
-data_filter_year_ijb,NULL)
+# Dropdown (Rate Type)
+rates_filter_ijb_rate <- filter_select(
+  id = "trend_filter_rate_ijb",
+  label = "Select Rate Measure:",
+  group = ~rate_type,
+  sharedData = rates_df_ijb,
+  multiple = FALSE)
+
+# Layout
+bscols(widths = c(1, 4, 4, NA), NULL, rates_filter_ijb_year, rates_filter_ijb_rate, NULL)
 
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+); Integration Authority Areas</h2>
+
 ```{r plot-ijb-pop}
 
-ijb_rates_plot <- plot_bar_pop_rate(pds_ijb_pop_data)
+# Dynamic Plot (Referral Rates by IAA and Rate Type)
+rates_plot_ijb <- plot_bar_pop_rate(
+  bar_data = rates_df_ijb,
+  line_data = rates_df_scot1,
+  x = geog,
+  y = rate)
 
-bscols(widths = 12,
-        div(style = css(width="98%", height="410px"),
- ijb_rates_plot))
+# Layout
+bscols(widths = 12, div(style = css(width="98%", height="410px"), rates_plot_ijb))
 
 ```
 
 ```{r trend-table-ijb-pop}
 
-pds_all_rates %>% filter(geog == "Scotland" | !grepl("NHS", geog)) %>%
-            select(-scot_pop_rate_10000) %>% 
-            pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
-            rename(`Integration Authority Area` = geog) %>%
-            kable(align = c("l", rep("r", length(all_years)))) %>%
-            kable_styling(full_width = TRUE, c("striped","hover")) %>%
-            column_spec(1, bold = TRUE) %>%
-  # Add header above table
-            add_header_above(
-                       c(" " = 1,
-                         "Financial Year of Diagnosis" = length(all_years))) %>%
-            scroll_box(height = "650px")
-
+# Dynamic Table (Referral Rates by IAA and Rate Type)
+create_dynamic_table(
+  data = referral_rates, 
+  measure = "rate", 
+  geog_filter = c("scot", "ijb"),
+  dropdown_col = "fy",
+  dropdown_grp = "ratesijb")
 
 ```
 
 ### **Health Boards**
 
 ```{r dropdown-pop-hb}
-pds_hb_pop_data <- SharedData$new(pds_hb_rates ,
-                                  key = ~fy, group = "grouphb")
 
-data_filter_year_hb <- filter_select(id = "trend_filter_year_hb",
-                                    label = "Select Financial Year:",
-                                    group = ~fy,
-                                    sharedData = pds_hb_pop_data,
-                                    multiple = FALSE
-                                   )
+# Dynamic Plot Data (Referral Rates by Health Board and Rate Type)
+rates_df_hb <- SharedData$new(
+  referral_rates %>%  
+    filter(name == "health_board"),
+  key = ~paste0(fy, rate_type), 
+  group = "rateshb")
+  
+# Dynamic Plot Data (Scotland Referral Rates by Rate Type)
+rates_df_scot2 <- SharedData$new(
+    referral_rates %>%  
+    filter(name == "scot"),
+  key = ~paste0(fy, rate_type), 
+  group = "rateshb")
 
-bscols(widths = c(1,3,NA),NULL,
-data_filter_year_hb,NULL)
+# Dropdown (Year)
+rates_filter_hb_year <- filter_select(
+  id = "trend_filter_year_hb",
+  label = "Select Financial Year:",
+  group = ~fy,
+  sharedData = rates_df_hb,
+  multiple = FALSE)
+
+# Dropdown (Rate Type)
+rates_filter_hb_rate <- filter_select(
+  id = "trend_filter_rate_hb",
+  label = "Select Rate Measure:",
+  group = ~rate_type,
+  sharedData = rates_df_hb,
+  multiple = FALSE)
+
+# Layout
+bscols(widths = c(1, 4, 4, NA), NULL, rates_filter_hb_year, rates_filter_hb_rate, NULL)
 
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+); Health Boards</h2>
+
 ```{r plot-hb-pop}
  
- hb_rates_plot <- plot_bar_pop_rate(pds_hb_pop_data)
+# Dynamic Plot (Referral Rates by Health Board and Rate Type)
+rates_plot_hb <- plot_bar_pop_rate(
+  bar_data = rates_df_hb,
+  line_data = rates_df_scot2,
+  x = geog,
+  y = rate)
 
- bscols(widths = 12,
-         div(style = css(width="98%", height="410px"),
-  hb_rates_plot))
+# Layout
+bscols(widths = 12, div(style = css(width="98%", height="410px"), rates_plot_hb))
 
 ```
 
 ```{r trend-table-hb-pop}
 
-pds_all_rates %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>%
-            select(-scot_pop_rate_10000) %>% 
-            pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
-            rename(`Health Board` = geog) %>%
-            kable(align = c("l", rep("r", length(all_years)))) %>%
-            kable_styling(full_width = TRUE, c("striped","hover")) %>%
-            column_spec(1, bold = TRUE) %>%
-  # Add header above table
-            add_header_above(
-                    c(" " = 1,
-                     "Financial Year of Diagnosis" = length(all_years)))
+# Dynamic Table (Referral Rates by Health Board and Rate Type)
+create_dynamic_table(
+  data = referral_rates, 
+  measure = "rate", 
+  geog_filter = c("scot", "health_board"),
+  dropdown_col = "fy",
+  dropdown_grp = "rateshb")
 
 ```
 
 ### **Trend**
 
 ```{r dropdown-pop}
-pds_trends_pop_data <- SharedData$new(pds_all_rates %>% filter(geog != "Unknown"))
+# Dynamic Plot Data (Scotland Referral Rates by Rate Type)
+rates_df_all <- SharedData$new(
+  referral_rates, 
+  key = ~paste0(geog, rate_type), 
+  group = "ratesall")
 
-data_filter_hb_ijb_pop <- filter_select(id = "trend_filter_pop",
-                                    label = "Select Integration Authority Area(s) or Health Board(s):",
-                                    group = ~geog,
-                                    sharedData = pds_trends_pop_data
-                                   )
-bscols(widths = c(1,10,NA),NULL,
-data_filter_hb_ijb_pop,NULL)
+# Dropdown (Geography)
+rates_filter_all_geog <- filter_select(
+  id = "trend_filter_geog_trend",
+  label = "Select Integration Authority Area(s) or Health Board(s):",
+  group = ~geog,
+  sharedData = rates_df_all,
+  multiple = TRUE)
+
+# Dropdown (Rate Type)
+rates_filter_all_rate <- filter_select(
+  id = "trend_filter_rate_trend",
+  label = "Select Rate Measure:",
+  group = ~rate_type,
+  sharedData = rates_df_all,
+  multiple = FALSE)
+
+# Layout
+bscols(widths = c(1, 4, 4, NA), NULL, rates_filter_all_geog, rates_filter_all_rate, NULL)
 
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Number of Individuals Diagnosed and Referred for PDS per 10,000 Population (65+)</h2>
+
 ```{r trend-plot-pop}
 
- trends_pop_plot <- plot_trend(pds_trends_pop_data, pop_rate_10000, x ="Financial Year of Diagnosis", y = "Rate Per 10,000 Popuation", colours = phs_colours_46, measure_text = "Rate per 10,000 population: ")
+# Dynamic Plot (Scotland Referral Rates by Rate Type)
+rates_plot_all <- plot_trend(
+  data = rates_df_all, 
+  measure = rate, 
+  x ="Financial Year of Diagnosis", 
+  y = "Rate Per 10,000 Popuation", 
+  colours = phs_colours_46, 
+  measure_text = "Rate per 10,000 population: ")
 
-bscols(widths = 12,
-        div(style = css(width="98%", height="360px"),
- trends_pop_plot)
-)
+# Layout
+bscols(widths = 12, div(style = css(width="98%", height="360px"), rates_plot_all))
+
 ```
 
 ```{r trend-table-pop}
 
-pds_all_rates %>% 
-       select(-scot_pop_rate_10000) %>%
-            pivot_wider(names_from = fy, values_from = pop_rate_10000) %>%
-            rename(`Integration Authority Area/Health Board` = geog) %>%
-            kable(align = c("l", rep("r", length(all_years)))) %>%
-            kable_styling(full_width = TRUE, c("striped","hover")) %>%
-            column_spec(1, bold = TRUE) %>%
-  # Add header above table
-            add_header_above(
-                    c(" " = 1,
-                     "Financial Year of Diagnosis" = length(all_years))) %>%
-            scroll_box(height = "700px")
+# Dynamic Table (Referral Rates by IAA and Rate Type)
+create_dynamic_table(
+  data = referral_rates, 
+  measure = "rate", 
+  geog_filter = c("scot", "ijb", "health_board"),
+  dropdown_col = "geog",
+  dropdown_grp = "ratesall")
 
 ```
 
@@ -483,101 +598,92 @@ Row {.tabset data-height=1215}
 ### **Percentage of estimated diagnoses referred to PDS**
 
 ```{r dropdown-exp}
-pds_exp_rates <- left_join(
-bind_rows(pds_scot_totals, pds_hb_totals) %>% filter(fy %in% full_years),
-exp %>% select(-health_board) %>% rename(geog = health_board_label)) %>% 
-  mutate(exp_rate = round_half_up(100*total_referrals/diagnoses,1))
 
-pds_exp_rates$geog<- factor(pds_exp_rates$geog, levels = unique(pds_exp_rates$geog))
+# Dynamic Plot Data (Expected Diagnosis Rates by Health Board)
+exp_df <- SharedData$new(
+  outcomes %>%
+    filter(name %in% c("scot", "health_board")))
 
-pds_exp_rates_data <- SharedData$new(pds_exp_rates)
+# Dropdown (Health Board)
+filter_exp <- filter_select(
+  id = "trend_filter_outcomes_exp",
+  label = "Select Health Board(s):",
+  group = ~geog,
+  sharedData = exp_df)
 
-data_filter_exp_trend <- filter_select(id = "trend_filter_outcomes_exp",
-                                    label = "Select Health Board(s):",
-                                    group = ~geog,
-                                    sharedData = pds_exp_rates_data
-                                   )
-bscols(widths = c(1,10,NA),NULL,
-data_filter_exp_trend,NULL)
+# Layout
+bscols(widths = c(1,10,NA), NULL, filter_exp, NULL)
 
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px"> Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS</h2>
+
 ```{r trend-plot-exp}
 
- trends_exp_plot <- plot_trend_perc(pds_exp_rates_data, exp_rate, x ="Financial Year of Diagnosis", colours = phs_colours_15)
+# Dynamic Plot (Expected Diagnosis Rates by Health Board)
+exp_plot <- plot_trend_perc(
+  data = exp_df, 
+  measure = exp_rate, 
+  x ="Financial Year of Diagnosis", 
+  colours = phs_colours_15)
 
-bscols(widths = 12,
-        div(style = css(width="98%", height="360px"),
- trends_exp_plot)
-)
+# Layout
+bscols(widths = 12, div(style = css(width="98%", height="360px"), exp_plot))
+
 ```
 
 ```{r trend-table-exp}
 
-pds_exp_rates %>% select(geog, fy, exp_rate) %>% 
-            pivot_wider(names_from = fy, values_from = exp_rate) %>%
-            mutate(across(where(is.numeric), ~paste0(.,"%"))) %>% 
-            rename(`Health Board` = geog) %>%
-            kable(align = c("l", rep("r", length(full_years)))) %>%
-            kable_styling(full_width = TRUE, c("striped","hover")) %>%
-            column_spec(1, bold = TRUE) %>%
-  # Add header above table
-            add_header_above(
-                    c(" " = 1,
-                     "Financial Year of Diagnosis" = length(full_years)))
+# Static Table (Expected Diagnosis Rates by Health Board)
+create_static_table(
+  data = exp_rates, 
+  measure = "exp_rate", 
+  geog_filter = c("health_board", "scot"))
 
 ```
 
 ### **Percentage receiving one year's PDS support**
 
 ```{r dropdown-met-ldp}
-pds_met_rates <-
-  pds_all %>% filter(ldp != "ongoing", fy %in% full_years) %>% filter(geog != "Unknown") %>% 
-  group_by(geog, fy, ldp) %>% 
-  summarise(referrals = sum(referrals)) %>% pivot_wider(names_from = ldp, values_from = referrals, values_fill = 0) %>% 
-  mutate(perc_met = round_half_up(100*(complete + exempt)/(complete + exempt + fail), 1))
+# Dynamic Plot Data (Percentage Met)
+met_df <- SharedData$new(
+  outcomes)
 
-pds_met_rates$geog<- factor(pds_met_rates$geog, levels = unique(pds_met_rates$geog))
+# Dropdown (Geography)
+filter_met <- filter_select(
+  id = "trend_filter_outcomes_exp",
+  label = "Select Health Board(s):",
+  group = ~geog,
+  sharedData = met_df)
 
-pds_met_rates_data <- SharedData$new(pds_met_rates)
-
-data_filter_met_trend <- filter_select(id = "trend_filter_outcomes_met",
-                                    label = "Select Integration Authority Area(s) or Health Board(s):",
-                                    group = ~geog,
-                                    sharedData = pds_met_rates_data
-                                   )
-bscols(widths = c(1,10,NA),NULL,
-data_filter_met_trend,NULL)
+# Layout
+bscols(widths = c(1,10,NA), NULL, filter_met, NULL)
 
 ```
 
 <h2 style="margin-left: 70px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals who received a minimum of one year’s PDS (Standard Met/Exempt)</h2>
 ```{r trend-plot-met-ldp}
-trends_met_plot <- plot_trend_perc(pds_met_rates_data, perc_met, x ="Financial Year of Diagnosis", colours = phs_colours_46)
 
-bscols(widths = 12,
-        div(style = css(width="98%", height="360px"),
- trends_met_plot)
-)
+# Dynamic Plot (Percentage Met by Geography)
+met_plot <- plot_trend_perc(
+  data = met_df, 
+  measure = perc_met, 
+  x ="Financial Year of Diagnosis", 
+  colours = phs_colours_46)
+
+# Layout
+bscols(widths = 12, div(style = css(width="98%", height="360px"), met_plot))
 
 ```
 
 
 ```{r trend-table-met}
 
-pds_met_rates %>% select(geog, fy, perc_met) %>% 
-            pivot_wider(names_from = fy, values_from = perc_met) %>%
-            mutate(across(where(is.numeric), ~if_else(is.na(.), "\\-", paste0(.,"%")))) %>%
-            rename(`Integration Authority Area/Health Board` = geog) %>%
-            kable(align = c("l", rep("r", length(full_years)))) %>%
-            kable_styling(full_width = TRUE, c("striped","hover")) %>%
-            column_spec(1, bold = TRUE) %>%
-  # Add header above table
-            add_header_above(
-                    c(" " = 1,
-                     "Financial Year of Diagnosis" = length(full_years))) %>% 
-  scroll_box(height = "650px")
+# Static Table (Percentage Met by Geography)
+create_static_table(
+  data = outcomes, 
+  measure = "perc_met", 
+  geog_filter = c("ijb", "health_board", "scot"))
 
 ```
 
