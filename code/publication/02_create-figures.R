@@ -30,12 +30,10 @@ source(here("functions", "ggplot_themes.R"))
 
 basefile <- read_rds(get_pub_data_path(test_output = test_output))
 
-
 # Load expected diagnoses reference file
 exp <- read_csv(get_exp_diagnoses_path()) %>% 
   filter(fy == max(fy_in_pub)) %>%
   select(health_board = health_board_label, fy, diagnoses)
-
 
 # Aberdeen city lookup
 # For populating charts with 2021 aberdeen city data. 
@@ -49,6 +47,7 @@ exp <- read_csv(get_exp_diagnoses_path()) %>%
 # 
 # ac_lookup_age_group <- read_xlsx(get_ac_lookup_path(), sheet = "age_group") %>% 
 #   filter(fy == "2020/21")
+
 
 ### 3 - Create figures ----
 
@@ -457,6 +456,7 @@ ggsave(get_pub_figures_path(type = "c7", test_output = test_output),
   dpi = 600
 )
 
+
 # Chart 8 - Referrals trend (Added July 2025)----
 
 trend_year <- paste0(as.numeric(substr(max(fy_in_pub),1,4)) + 1,
@@ -472,21 +472,30 @@ c8_data <-  read_rds(get_mi_data_path(type = "final_data", ext = "rds", test_out
   summarise(referrals = sum(referrals),
             .groups = "drop")  %>% 
   # calculate total referrals by year
-  group_by(geog = "Scotland", fy) %>% summarise(annual_referrals = sum(referrals))
-
+  group_by(geog = "Scotland", fy) %>% summarise(annual_referrals = sum(referrals)) %>%
+  
+  # Add superscripts
+  mutate(fy = case_when(
+    fy %in% tail(sort(unique(fy)), 2) ~ paste0(fy, "\u1D3E"),   # last 2 → ᴾ
+    fy == tail(sort(unique(fy)), 3)[1] ~ paste0(fy, "\u1D3F"),  # 3rd last → ᴿ
+    TRUE ~ fy))
 
 c8 <-
   c8_data %>%
   ggplot(aes(x = fy, y = annual_referrals, group = geog)) +
   geom_line(colour = "#3F3685", linewidth = 1.3) +
- # geom_text(aes(label = format(annual_referrals, big.mark = ",")), 
-         #   vjust = 1.5,
-          #  size = 3) +
   theme_dementia_pub() +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, max(c8_data$annual_referrals)+300),labels = comma, breaks=c(2500, 5000, 7500, 10000)) +
-  scale_x_discrete(labels = str_wrap(c8_data$fy, width = 8)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, max(c8_data$annual_referrals) + 300), labels = comma, breaks = c(2500, 5000, 7500, 10000)) +
+  scale_x_discrete(
+    labels = function(x) {
+      idx <- seq_along(x)
+      show <- idx %% 2 == 1 # Only label every other year
+      show[1] <- TRUE # Force first year to be labelled
+      show[length(show)] <- TRUE # Force current year to be labelled
+      ifelse(show, x, "")
+    }) +
   xlab("Financial Year of Diagnosis") +
-  ylab(str_wrap("Number of Referrals", width = 10)) 
+  ylab(str_wrap("Number of Referrals", width = 10))
 
 # Save chart to output folder
 ggsave(get_pub_figures_path(type = "c8", test_output = test_output),
@@ -525,7 +534,12 @@ pop_data_trends <- pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-
 c9_data <- left_join(c9_data_pds, pop_data_trends) %>% select(geog, fy, annual_referrals, pop_est) %>% 
   mutate(pop_rate_10000 = round((annual_referrals/pop_est)*10000, 1)) %>%
   select(geog, fy, pop_rate_10000) %>% 
-  ungroup()
+  ungroup() %>%
+  # Add superscripts
+  mutate(fy = case_when(
+    fy %in% tail(sort(unique(fy)), 2) ~ paste0(fy, "\u1D3E"),   # last 2 → ᴾ
+    fy == tail(sort(unique(fy)), 3)[1] ~ paste0(fy, "\u1D3F"),  # 3rd last → ᴿ
+    TRUE ~ fy))
 
 c9 <-
   c9_data %>%
@@ -538,7 +552,14 @@ c9 <-
   scale_y_continuous(expand = c(0, 0),
                      limits = c(0, max(c9_data$pop_rate_10000)+5),
                      breaks = seq(0, max(c9_data$pop_rate_10000)+5, by = 15)) +
-  scale_x_discrete(labels = str_wrap(c9_data$fy, width = 8)) +
+  scale_x_discrete(
+    labels = function(x) {
+      idx <- seq_along(x)
+      show <- idx %% 2 == 1 # Only label every other year
+      show[1] <- TRUE # Force first year to be labelled
+      show[length(show)] <- TRUE # Force current year to be labelled
+      ifelse(show, x, "")
+    }) +
   xlab("Financial Year of Diagnosis") +
   ylab(str_wrap("Number of Referrals per 10,000 Population", width = 10)) 
 
@@ -550,7 +571,6 @@ ggsave(get_pub_figures_path(type = "c9", test_output = test_output),
        device = "png",
        dpi = 600
 )
-
 
 
 # Chart 10 - Referrals by gender (Added July 2025)----
@@ -572,7 +592,7 @@ c10_data <-
 c10_limit <- ceiling(max(c10_data$perc) / 10) * 10
 
 c10 <-
-  c10_data %>% filter(sex!= "Unknown") %>% 
+  c10_data %>% filter(sex!= "Not Known") %>% 
   ggplot(aes(x = sex, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
@@ -616,7 +636,7 @@ c11_data <-
   )
 
 c11 <-
-  c11_data %>% filter(sex!= "Unknown") %>%
+  c11_data %>% filter(sex!= "Not Known") %>%
   ggplot(aes(x = sex, y = perc, fill = 1)) +
   geom_bar(stat = "identity", width = 0.5, fill = "#3F3685") +
   geom_text(aes(label = paste0(format(round_half_up(perc, 1), nsmall = 1), "%")), 
@@ -636,6 +656,7 @@ ggsave(get_pub_figures_path(type = "c11", test_output = test_output),
        device = "png",
        dpi = 600
 )
+
 
 # chart 12 - waiting times by HB (Added Aug 2025)----
 
@@ -674,6 +695,7 @@ ggsave(get_pub_figures_path(type = "c12", test_output = test_output),
        dpi = 600,
        device = "png"
 )
+
 
 # chart 13 - waiting times by IJB (Added Aug 2025)----
 
@@ -714,14 +736,18 @@ ggsave(get_pub_figures_path(type = "c13", test_output = test_output),
 )
 
 
-
 ## # chart 14 - trend plot for wait times ----
 
 #read in data
 c14_data <- data_wait <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output)) %>% 
   # Select FY to be included in rest of pub plus extra year
   filter(fy %in% c(fy_in_pub, trend_year)) %>%
-  filter(health_board=="Scotland", simd=="All", sex=="All")
+  filter(health_board=="Scotland", simd=="All", sex=="All") %>%
+  # Add superscripts
+  mutate(fy = case_when(
+    fy %in% tail(sort(unique(fy)), 2) ~ paste0(fy, "\u1D3E"),   # last 2 → ᴾ
+    fy == tail(sort(unique(fy)), 3)[1] ~ paste0(fy, "\u1D3F"),  # 3rd last → ᴿ
+    TRUE ~ fy))
 
 c14 <-
   c14_data %>%
@@ -732,8 +758,16 @@ c14 <-
   #   vjust = 1.5,
   #  size = 3) +
   theme_dementia_pub() +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, max(c14_data$median_diagnosis_to_contact))) +
-  scale_x_discrete(labels = str_wrap(c14_data$fy, width = 8)) +  xlab("Financial Year of Diagnosis") +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, max(c14_data$median_diagnosis_to_contact)+2)) +
+  scale_x_discrete(
+    labels = function(x) {
+      idx <- seq_along(x)
+      show <- idx %% 2 == 1 # Only label every other year
+      show[1] <- TRUE # Force first year to be labelled
+      show[length(show)] <- TRUE # Force current year to be labelled
+      ifelse(show, x, "")
+    }) +
+  xlab("Financial Year of Diagnosis") +
   ylab(str_wrap("Median Wait (Days)", width = 10)) 
 
 # Save chart to output folder
