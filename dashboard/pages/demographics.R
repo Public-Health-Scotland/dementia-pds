@@ -247,8 +247,8 @@ output$downloadData_demo <- downloadHandler(
     write.csv(table_data_demo() %>%
                 mutate(across(where(is.factor), ~as.character(.))) %>% 
                 mutate(`Financial Year` = input$select_year_demo, 
-                                           Geography = "Scotland",
-                                           .before = everything()) %>% 
+                       Geography = "Scotland",
+                       .before = everything()) %>% 
                 mutate(`Financial Year` = case_when(
                   `Financial Year` == provisional_year_sup ~paste0(provisional_year,"P"),
                   `Financial Year` == revised_year_sup ~paste0(revised_year,"R"),
