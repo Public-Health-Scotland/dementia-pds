@@ -79,12 +79,9 @@ rsconnect::deployApp(filepath, appName = appName)
 # Copy data used in the dashboard to stats drive
 files <- list.files(
   here::here("dashboard", "data"),
-  full.names = TRUE
-)
+  full.names = TRUE)
 
-dest_dir <- file.path(
-  "conf", "dementia", "A&I", "Outputs", "dashboard", "data", pub_date
-)
+dest_dir <- file.path("conf", "dementia", "A&I", "Outputs", "dashboard", "data", pub_date)
 
 dir.create(dest_dir, recursive = TRUE, showWarnings = FALSE)
 

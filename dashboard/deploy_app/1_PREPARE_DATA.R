@@ -43,7 +43,6 @@ exp %<>% select(-health_board) %>% rename("health_board" = "health_board_label")
 ################################################################################.
 
 pds %<>%
-  # filter(fy %in% included_years) %>% # inlcude only finalised years
   mutate(health_board = str_sub(health_board, 3, -1), ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1))) %>% # Remove codes from board and IJB
   mutate(ldp = if_else(ijb == "Aberdeen City" & fy %in% c("2019/20","2020/21"), "Aberdeen", ldp))   # Re-class all aberdeen city referrals from 2019/20 and 2020/21 so they are not included in ldp calculations
 
@@ -473,7 +472,7 @@ download_data_ijb %<>% pivot_longer(cols = c(`number of people referred to PDS`:
 # Create data folder if it does not exist
 if (!dir.exists(here::here("dashboard/data"))) {dir.create(here::here("dashboard/data"))}
 
-save(finalised_years, finalised_years_referrals, finalised_years_demographics, latest_fy, end_date, file = here::here("dashboard/data/dashboard_variables.RData"))
+save(finalised_years, finalised_years_referrals, latest_fy, end_date, file = here::here("dashboard/data/dashboard_variables.RData"))
 write_rds(annual_table_data, here::here("dashboard/data/annual_table_data.rds"))
 write_rds(data_sex, here::here("dashboard/data/data_sex.rds"))
 write_rds(data_age, here::here("dashboard/data/data_age.rds"))
