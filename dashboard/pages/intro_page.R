@@ -63,13 +63,13 @@ output$intro_page_ui <-  renderUI({
                          tags$li(p("NHS Board level estimates of the number of people newly diagnosed with dementia (incidence) used in Tab 6 for the years 2016/17 to 2020/21, are from the paper ",
                                    a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
                                    " published by the Scottish Government in December 2016. Note that these estimations are subject to the limitations detailed within the paper."),
-                                p("For financial years 2021/22 and 2022/23 the rates referenced in 'Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020' were used to create national, age ",
-                                 "specific rates of dementia incidence per 1,000 population which were then applied to the Mid-2021 and Mid-2022 population estimates to obtain the incidence estimates. Population estimates taken from ",
-                                  "National Records of Scotland (NRS) Mid-2021 and Mid-2022 Population Estimates at NHS Board Level."),
+                                p("For financial years 2021/22 and 2022/23, 2023/24 the rates referenced in 'Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020' were used to create national, age ",
+                                 "specific rates of dementia incidence per 1,000 population which were then applied to the Mid-2021, Mid-2022 and Mid-2023 population estimates to obtain the incidence estimates. Population estimates taken from ",
+                                 "National Records of Scotland (NRS) Mid-2021, Mid-2022 and Mid-2023 Population Estimates at NHS Board Level."),
                                 p("NRS Mid-year population estimates can be found at: ",
                                   a("Population, migration and households - National Records of Scotland (NRS)", href = "https://www.nrscotland.gov.uk/statistics-and-data/population-migration-and-households/#", target="_blank"))
                                 ),
-                        tags$li(p(paste0("Figures for ", provisional_year, " are provisional subject to all service users completing their support. Service users for whom it is not yet known if they have met the standard are excluded from the percentage figures."))
+                        tags$li(p(paste0("Figures for ", provisional_year, " and ", extra_referrals_year , " are provisional subject to all service users completing their support. Service users for whom it is not yet known if they have met the standard are excluded from the percentage figures."))
                                ),
                         tags$li(p("Information presented in this publication is not comparable to information published for time periods prior to 2016/17.")
                                 ),
@@ -85,10 +85,12 @@ output$intro_page_ui <-  renderUI({
                                   "Perth & Kinross for financial years 2018/19 and 2019/20. Subsequent measures put in place have successfully ",
                                   "allowed NHS Tayside to improve on data reporting from 2019 onwards.")
                                 ),
-                        tags$li(p("NHS Shetland / Shetland Islands did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted ",
-                                  "by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the ",
-                                  "PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland / Shetland Islands for 2022/23.")
+                        tags$li(p("NHS Shetland did not have a PDS worker in post from 2022/23 Q1 to 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted ",
+                                  "by a PDS worker within 12 months of diagnosis, and they will have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the ",
+                                  "PDS service resumed. This will also affect the pathway waiting times for NHS Shetland / Shetland Islands for 2022/23 and 2023/24.")
                                 ),
+                        tags$li(p("NHS Orkney had no referrals in 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2) as they were unable to access a consultant psychiatrist.")
+                                ), 
                         tags$li(p("The population estimates used in this report to calculate rates per 10,000 population are from the National Records of Scotland (NRS)
                                   Mid-year population estimates. As figures in this report are by financial year, the estimate for the calendar year
                                   with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 
