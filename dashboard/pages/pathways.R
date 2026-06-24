@@ -42,7 +42,8 @@ output$pathways_ui <-  renderUI({
            format(end_date, "%d %B %Y"))),
     ## Notes----
   h4(strong("Notes:")),
-  p(paste0("ᴾ Figures for ", provisional_year," and 2023/24 are provisional subject to all service users completing their support.")),
+  p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
+  p(paste0("ᴿ Figures for ", revised_year, " have been revised and are now final.")),
   p("Date of diagnosis is the date recorded for when the service user received a confirmed diagnosis of dementia.
                        This diagnosis must be confirmed by a doctor or clinical practitioner with sufficient training and experience in the diagnosis of dementia.", 
     br(), 
@@ -55,12 +56,13 @@ output$pathways_ui <-  renderUI({
       "Home",
       onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
     "page for further information."),
-  p("NHS Shetland / Shetland Islands did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. This will affect the pathway waiting times for NHS Shetland / Shetland Islands for 2022/23. See Note 7 on the",
+  p("NHS Shetland / Shetland Islands did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. This will affect the pathway waiting times for NHS Shetland / Shetland Islands for 2022/23 and 2023/24. See Note 7 on the",
     a(
       href = "#",
       "Home",
       onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
     "page for further information."),
+  p("NHS Orkney/Orkney Islands had no referrals in 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2) as they were unable to access a consultant psychiatrist. This will affect the pathway waiting times for NHS Orkney Islands / Orkney Islands for 2022/23 and 2023/24."),
   width = 12,
   #fix panel so sidebar and navigation bar do not scroll with content
   style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
