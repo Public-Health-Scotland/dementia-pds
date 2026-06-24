@@ -39,29 +39,6 @@ output$demo_ui <-  renderUI({
       h4(strong("Notes:")),
       p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
       p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final. ")),
-      if (input$select_data_demo == "data_age") {
-               p(paste0("Figures for 2021/22 have been revised to include the 11 additional 
-               records for Aberdeen City in the Total figure. Figures for the 
-               percentage of LDP standard achieved by age group for 2019/20 and 
-               2020/21 have also been revised to correct for the fact that 
-               previously published figures for these years erroneously included
-               the Aberdeen City referrals in the denominator when they should 
-               have been excluded. The corrected figures for each age group have 
-               been revised upwards (between 1 and 4 percentage points, except 
-               the 59 and under age group which hasn’t changed) for these years."))
-      } else if (input$select_data_demo == "data_simd") {
-              p(paste0(" Figures for 2021/22 have been revised to include the 11 
-              additional records for Aberdeen City in the Total figure. 
-              Figures for the percentage of LDP standard achieved by SIMD 
-              quintile for 2019/20 and 2020/21 have also been revised to 
-              correct for the fact that previously published figures for 
-              these years erroneously included the Aberdeen City referrals 
-              in the denominator when they should have been excluded.  The 
-              corrected figures for each SIMD quintile have been revised 
-              upwards (between 1 and 4 percentage points, except for deprivation 
-              quintile 5 which has increased by 6.9 percentage points in 2019/20) 
-              for these years."))
-        },
       p("For detailed information on how the Percentage LDP Standard Achieved is calculated, and how 'Standard Met', 'Exempt from Standard', 'PDS Ongoing' and 'Standard Not Met' are defined, please see the",
         a(
           href = "#",
