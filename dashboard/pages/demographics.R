@@ -38,18 +38,9 @@ output$demo_ui <-  renderUI({
       ## notes----
       h4(strong("Notes:")),
       p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
-      
-      if(input$select_data_demo == "data_sex"){
-        p("ᴿ Although Gender figures are being published for the first time the underlying 
-        number of people who have been referred for PDS, used to calculate 
-        the percentage of people achieving the LDP Standard, has been revised for these 
-        years.")
-        
-      } else {
-        p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final. "),
-          
-          if(input$select_data_demo == "data_age"){
-               ("Figures for 2021/22 have been revised to include the 11 additional 
+      p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final. ")),
+      if (input$select_data_demo == "data_age") {
+               p(paste0("Figures for 2021/22 have been revised to include the 11 additional 
                records for Aberdeen City in the Total figure. Figures for the 
                percentage of LDP standard achieved by age group for 2019/20 and 
                2020/21 have also been revised to correct for the fact that 
@@ -57,10 +48,9 @@ output$demo_ui <-  renderUI({
                the Aberdeen City referrals in the denominator when they should 
                have been excluded. The corrected figures for each age group have 
                been revised upwards (between 1 and 4 percentage points, except 
-               the 59 and under age group which hasn’t changed) for these years.")
-
-          } else {
-              (" Figures for 2021/22 have been revised to include the 11 
+               the 59 and under age group which hasn’t changed) for these years."))
+      } else if (input$select_data_demo == "data_simd") {
+              p(paste0(" Figures for 2021/22 have been revised to include the 11 
               additional records for Aberdeen City in the Total figure. 
               Figures for the percentage of LDP standard achieved by SIMD 
               quintile for 2019/20 and 2020/21 have also been revised to 
@@ -70,10 +60,8 @@ output$demo_ui <-  renderUI({
               corrected figures for each SIMD quintile have been revised 
               upwards (between 1 and 4 percentage points, except for deprivation 
               quintile 5 which has increased by 6.9 percentage points in 2019/20) 
-              for these years.")
-            })
+              for these years."))
         },
-      
       p("For detailed information on how the Percentage LDP Standard Achieved is calculated, and how 'Standard Met', 'Exempt from Standard', 'PDS Ongoing' and 'Standard Not Met' are defined, please see the",
         a(
           href = "#",
@@ -92,7 +80,7 @@ output$demo_ui <-  renderUI({
         "There are a small number of records where it was not possible to assign a deprivation category. Possible reasons for not being able to assign a deprivation category are that no postcode was provided 
           or the postcode provided is invalid, not in Scotland, or is a newly added postcode.")
       } else if(input$select_data_demo == "data_sex"){
-        p("Gender is based on the sex recorded for each referral. There are a small number of records where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’).   These records are not reported separately in the tables but are included in the Totals shown.")
+        p("There are a small number of records where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’). These records are not reported separately in the tables but are included in the Totals shown.")
       },
       p("Figures for 2018/19, 2019/20 and 2020/21 are affected by the 
         change in service provision of PDS within Aberdeen City during 
@@ -131,7 +119,7 @@ output$chart_title_demo_referrals <- renderUI({HTML(paste0("Proportion of total 
                                                            } else if(input$select_data_demo == "data_simd"){
                                                              "Deprivation Quintile"
                                                            } else if(input$select_data_demo == "data_sex"){
-                                                             "Gender"
+                                                             "Sex"
                                                            },
                                                            ": ", "Scotland", ", Financial Year ", input$select_year_demo
 )
@@ -158,7 +146,7 @@ if (input$select_data_demo == "data_age"){
 } else if(input$select_data_demo == "data_simd"){
   "Deprivation Quintile"
 } else if(input$select_data_demo == "data_sex"){
-  "Gender"
+  "Sex"
 },
 ": ", "Scotland", ", Financial Year ", input$select_year_demo
 )
@@ -184,7 +172,7 @@ output$table_title_demo <- renderUI({HTML(paste0("Number and percentage of peopl
                                                  } else if(input$select_data_demo == "data_simd"){
                                                    "Deprivation Quintile"
                                                  } else if(input$select_data_demo == "data_sex"){
-                                                   "Gender"
+                                                   "Sex"
                                                  },
                                                  ": ", "Scotland", ", Financial Year ", input$select_year_demo
 )
@@ -214,7 +202,7 @@ table_data_demo <- reactive({
     mutate(across(starts_with("perc"), ~ if_else(grepl("-", .), ., paste0(.,"%")))) %>%
     set_colnames(
       c(if(input$select_data_demo == "data_sex"){
-        "Gender"
+        "Sex"
       }else if(input$select_data_demo == "data_age"){
         "Age Group"
       }else{
@@ -223,7 +211,7 @@ table_data_demo <- reactive({
       )
   
   if (input$select_data_demo=='data_sex'){
-    df <- df %>% filter(!Gender %in% c("Not Specified", "Unknown"))
+    df <- df %>% filter(!Sex %in% c("Not Specified", "Unknown"))
   }
   
   return(df)
