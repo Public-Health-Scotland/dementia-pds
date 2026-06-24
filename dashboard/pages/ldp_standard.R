@@ -70,24 +70,18 @@ output$ldp_ui <- renderUI({
         ##############################################.
         p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                  format(end_date, "%d %B %Y"), 
-                 "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates."
+                 "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021, mid-2022 and mid-2023 population estimates."
                  )),
         h4(strong("Notes:")),
         p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
-        p(paste0(
-          "ᴿ Figures for ", revised_year," have been revised and are now final."),
-          ("Figures for Aberdeen City NHS Grampian and Scotland for 2020/21 have been revised due to the receipt of additional
-          data. The 2020/21 figures include an additional 11 referrals from those previously published. The Percentage of 
-          Estimated Number of People Diagnosed with Dementia Referred to PDS for NHS Grampian is now 19.4% (previously 18.8%) 
-          and 33.8% for Scotland (previously 33.7%).")
-          ),
+        p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
         p("The estimated number of people newly diagnosed with dementia is subject to the limitations detailed within the paper below published by the Scottish Government in 2016: ", 
           br(),
           a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
           br(),
           "Estimates are used as follows: calendar year 2016 estimates for 2016/17, calendar year 2017 estimates for 2017/18, calendar year 2018 estimates for 2018/19, calendar year 2019 estimates for 2019/20 and calendar year 2020 estimates for 2020/21.",
           br(),
-          "For 2021/22 and 2022/23, the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the paper above and the National Records of Scotland (NRS) mid-2021 and mid-2022 population estimates. See Note 2 on the",
+          "For 2021/22 and 2022/23, the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the paper above and the National Records of Scotland (NRS) mid-2021, mid-2022 and mid-2023 population estimates. See Note 2 on the",
           a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
           "page for further information."),					
         p("Figures for 2018/19, 2019/20 and 2020/21 for NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
@@ -171,9 +165,10 @@ output$ldp_ui <- renderUI({
         p("Figures for 2018/19, 2019/20 and 2020/21 for Aberdeen City, NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
           a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
           "page for further information."),
-        p("NHS Shetland / Shetland Islands did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. This will affect the figures for NHS Shetland / Shetland Islands for 2022/23. See Note 7 on the",
+        p("NHS Shetland / Shetland Islands did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. This will affect the figures for NHS Shetland / Shetland Islands for 2022/23 and 2023/24. See Note 7 on the",
           a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
           "page for further information."),
+        p("NHS Orkney/Orkney Islands had no referrals in 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2) as they were unable to access a consultant psychiatrist. This will affect the pathway waiting times for NHS Orkney Islands / Orkney Islands for 2022/23 and 2023/24."),
         width = 12,
         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available" # Fix panel so sidebar and navigation bar do not scroll with content
         
