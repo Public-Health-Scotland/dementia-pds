@@ -72,9 +72,7 @@ output$rates_ui <-  renderUI({
                    h4(strong("Notes:")),
                   p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
                    p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."),
-                    ("Figures for Aberdeen City NHS Grampian and Scotland for 2020/21 have been revised due to the 
-                    receipt of additional data. The 2020/21 figures include an additional 11 referrals from those 
-                    previously published.")),
+                    ),
                  
               p("Figures for 2018/19, 2019/20 and 2020/21 for Aberdeen City, NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
                  a(
@@ -82,11 +80,6 @@ output$rates_ui <-  renderUI({
                     "Home",
                       onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
                    "page for further information."),
-              p(paste0("ᴿ Although the rates per 10,000 population 
-                           figures are being published for the first time 
-                           the underlying number of people who have been 
-                           referred for PDS, used to calculate the rate, 
-                           has been revised for these years.")),
                         width = 12,
                         #fix panel so sidebar and navigation bar do not scroll with content
                         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
@@ -151,7 +144,7 @@ output$rates_ui <-  renderUI({
                                     h4(strong("Notes:")),
                                     p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
                                     p(paste0("ᴿ Figures for ", revised_year_sup," have been revised and are now final.")),
-                                    p("Rates are calculated using the NRS mid-year population estimates of the 65 and over age group for each geographical area. See Note 8 on the",
+                                    p("Rates are calculated using the NRS mid-year population estimates of the 65 and over age group for each geographical area. See Note 9 on the",
                                       a(
                                         href = "#",
                                         "Home",
