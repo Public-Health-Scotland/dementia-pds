@@ -7,7 +7,7 @@
 ################################################################################.
 
 ################################################################################.
-# SETUP ----
+### SETUP ----
 ################################################################################.
 
 # Get packages, data and define lists
@@ -20,7 +20,7 @@ load("data/AUTH_ENABLED.RData")
 credentials <- readRDS("data/credentials.rds")
 
 ################################################################################.
-# UI ----
+### UI ----
 ################################################################################.
 
 ui <- fluidPage(
@@ -44,7 +44,7 @@ ui <- fluidPage(
         ), # tags$head
       
       ##############################################.
-      # INTRO PAGE: Home ----
+      ## INTRO PAGE: Home ----
       ##############################################.
       tabPanel(
         title = "Home",
@@ -74,7 +74,7 @@ ui <- fluidPage(
         ), # tabPanel
       
       ##############################################.
-      # PAGE 1: Referrals and Rates ----
+      ## PAGE 1: Referrals and Rates ----
       ##############################################.
       tabPanel(
         title = "Referrals & Rates",
@@ -161,7 +161,7 @@ ui <- fluidPage(
         ), # tabPanel
       
       ##############################################.
-      # PAGE 2: Pathways ----
+      ## PAGE 2: Pathways ----
       ##############################################.
       tabPanel(
         title = "Pathways",
@@ -191,8 +191,8 @@ ui <- fluidPage(
               selectInput( # Drop-down to select financial year
                 "select_year_pathways", 
                 label = "Select Financial Year of Diagnosis:",
-                choices = included_years,
-                selected = included_years[length(included_years)]
+                choices = included_years_extra_referrals,
+                selected = included_years_extra_referrals[length(included_years_extra_referrals)]
                 ) # selectInput
               ), # conditionalPanel
             conditionalPanel(
@@ -220,7 +220,7 @@ ui <- fluidPage(
         ), # tabpanel
       
       ##############################################.
-      # PAGE 3: LDP Standard  ----
+      ## PAGE 3: LDP Standard ----
       ##############################################.
       tabPanel(
         title = "LDP Standard",
@@ -307,7 +307,7 @@ ui <- fluidPage(
         ), # tabPanel
 
       ##############################################.
-      # PAGE 4: Demographics ----
+      ## PAGE 4: Demographics ----
       ##############################################.
       tabPanel(
         title = "Demographics",
@@ -341,13 +341,13 @@ ui <- fluidPage(
              ), # sidebarPanel
           mainPanel(
             width = 10,
-            uiOutput("demo_ui")#pages/demographics.R
+            uiOutput("demo_ui") # pages/demographics.R
             ) # mainPanel
           ) # sidebarLayout
         ), # tabPanel
       
       ##############################################.
-      # PAGE 5: Methodology ----
+      ## PAGE 5: Methodology ----
       ##############################################.
       tabPanel(
         title = "Methodology",
@@ -375,7 +375,7 @@ ui <- fluidPage(
         ), # tabPanel
       
       ##############################################.
-      # PAGE 6: Data Download----
+      ## PAGE 6: Data Download ----
       ##############################################.
       tabPanel(
         title = "Data Download",
@@ -397,7 +397,7 @@ ui <- fluidPage(
   ) # fluidPage
 
 ################################################################################.
-# SERVER ----
+### SERVER ----
 ################################################################################.
 
 server <- function(input, output, session) {
@@ -466,7 +466,7 @@ server <- function(input, output, session) {
   } # server
 
 ################################################################################.
-# RUN APPLICATION ----
+### RUN APPLICATION ----
 ################################################################################.
 
 if (AUTH_ENABLED) {
@@ -480,4 +480,4 @@ if (AUTH_ENABLED) {
     shinyApp(ui, server)
   }
 
-### END OF SCRIPT ###
+################################# END OF SCRIPT ################################.
