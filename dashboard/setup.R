@@ -194,7 +194,7 @@ RandR_sidebar_list <- c(
 
 # Sidebar buttons for demographics page
 demographics_list <- c(
-  "Gender" = "data_sex",
+  "Sex" = "data_sex",
   "Age" = "data_age",
   "Deprivation (SIMD)" = "data_simd")
 
