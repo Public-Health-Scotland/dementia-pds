@@ -1,22 +1,24 @@
-############################# Page 2: LDP Standard #############################.
+############################# PAGE 2: LDP Standard #############################.
 
 ################################################################################.
-# UI ----
+### UI ----
 ################################################################################.
 
 output$ldp_ui <- renderUI({
   div(
     
     ##############################################.
-    # LDP Standard Part 1 ----
+    ## LDP Standard Part 1 ----
     ##############################################.
+    
     conditionalPanel(
       condition = 'input.ldp_tab == "ldp_part_1"',
       column(
         
         ##############################################.
-        # Outcomes by Financial Year ----
+        ## Outcomes by Financial Year ----
         ##############################################.
+        
         conditionalPanel(
           condition = 'input.ldp_sidebar == "outcomes"',
           fluidRow(
@@ -51,8 +53,9 @@ output$ldp_ui <- renderUI({
           ), # conditionalPanel
         
         ##############################################.
-        # Trends ----
+        ## Trends ----
         ##############################################.
+        
         conditionalPanel(
           condition = 'input.ldp_sidebar == "trends"',
           fluidRow(
@@ -66,12 +69,14 @@ output$ldp_ui <- renderUI({
           ), # conditionalPanel
         
         ##############################################.
-        # Notes ----
+        ## Notes ----
         ##############################################.
+        
         p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                  format(end_date, "%d %B %Y"), 
                  "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021, mid-2022 and mid-2023 population estimates."
                  )),
+        
         h4(strong("Notes:")),
         p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
         p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
@@ -94,15 +99,17 @@ output$ldp_ui <- renderUI({
       ), # conditionalPanel
     
     ##############################################.
-    # LDP Standard Part 2 ----
+    ## LDP Standard Part 2 ----
     ##############################################.
+    
     conditionalPanel(
       condition = 'input.ldp_tab == "ldp_part_2"',
       column(
         
         ##############################################.
-        # Outcomes by Financial Year ----
+        ## Outcomes by Financial Year ----
         ##############################################.
+        
         conditionalPanel(
           condition = 'input.ldp_sidebar == "outcomes"',
           fluidRow(
@@ -137,8 +144,9 @@ output$ldp_ui <- renderUI({
           ), # conditionalPanel
         
         ##############################################.
-        # Trends ----
+        ## Trends ----
         ##############################################.
+        
         conditionalPanel(
           condition = 'input.ldp_sidebar == "trends"', 
           fluidRow(
@@ -149,13 +157,16 @@ output$ldp_ui <- renderUI({
             DT::dataTableOutput("table_hb_ijb_trend_part_2"), # Table
             linebreaks(1),
             ) # fluidRow
-          ), #cond panel trends
+          ), # conditionalPanel
         
         ##############################################.
-        # Notes ----
+        ## Notes ----
         ##############################################.
+        
         p(paste0("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
-                 format(end_date, "%d %B %Y"))),
+                 format(end_date, "%d %B %Y")
+        )),
+
         h4(strong("Notes:")),
         p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
         p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."), em("")),
@@ -173,39 +184,45 @@ output$ldp_ui <- renderUI({
         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available" # Fix panel so sidebar and navigation bar do not scroll with content
         
         ), # column
-      ) # cond panel part 2
+      ) # conditionalPanel
+    
     ) # div
   }) # renderUI
 
 ################################################################################.
-# SERVER ----
+### SERVER ----
 ################################################################################.
 
-# Filter to years included in publication
+# Filter data ----
 ldp_data <- annual_table_data %>% filter(fy %in% included_years)
 
 ##############################################.
-# LDP Standard Part 1 ----
+## LDP Standard Part 1 ----
 ##############################################.
 
 ##############################################.
-# Outcomes by Financial Year ----
+## Outcomes by Financial Year ----
 ##############################################.
 
-# Value box
-output$title_part_1 <- renderUI({ # Title
+# Value box ----------------------------------
+
+# Value box title (LDP Standard Part 1; Outcomes by Financial Year)
+output$title_part_1 <- renderUI({
   HTML(paste("Percentage of estimated diagnoses referred for PDS; Scotland, ", 
              input$select_year_ldp))
 })
 
-vb_data <- reactive({ # Data
+# Value box data (LDP Standard Part 1; Outcomes by Financial Year)
+vb_data <- reactive({
   ldp_data %>% 
     filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_ldp, ldp == "total")
   }) 
 
-output$scot_exp_perc <- renderText({paste0(vb_data()$exp_perc, "%")}) # Value
+# Value box value (LDP Standard Part 1; Outcomes by Financial Year)
+output$scot_exp_perc <- renderText({paste0(vb_data()$exp_perc, "%")})
 
-output$scot_exp_text <- renderUI({ # Text
+# Value box text (LDP Standard Part 1; Outcomes by Financial Year)
+output$scot_exp_text <- renderUI({
   HTML(paste(
     "A total of", "<b>",  prettyNum(vb_data()$referrals, big.mark = ","), 
     "</b>", "referrals were made to post-diagnostic support. This is divided by",
@@ -214,29 +231,36 @@ output$scot_exp_text <- renderUI({ # Text
     ))
   })
 
-# Plot
-output$hb_exp_plot_title <- renderUI({ # Title
+# Plot ---------------------------------------
+
+# Plot title (LDP Standard Part 1; Outcomes by Financial Year)
+output$hb_exp_plot_title <- renderUI({ 
   HTML(paste0("Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; ", 
               input$select_year_ldp, ", Scotland and Health Boards"))
   })
 
-hb_exp_chart_data <- reactive({ # Data
+# Plot data (LDP Standard Part 1; Outcomes by Financial Year)
+hb_exp_chart_data <- reactive({
   left_join(
     ldp_data %>% filter(grepl("NHS", ijb), fy == input$select_year_ldp, ldp == "total"),
     ldp_data %>% filter(ijb == "Scotland", ldp == "total") %>% select(fy, exp_perc) %>% rename(scot_exp_perc = exp_perc))
 })
 
-output$hb_exp_plot <- renderPlotly({ # Plot
+# Plot (LDP Standard Part 1; Outcomes by Financial Year)
+output$hb_exp_plot <- renderPlotly({
   plot_bar_perc(hb_exp_chart_data(), measure = exp_perc, scot_measure = scot_exp_perc, legend = "bottom")
 })
 
-# Table
-output$hb_exp_table_title <- renderUI({ # Title
+# Table --------------------------------------
+
+# Table title (LDP Standard Part 1; Outcomes by Financial Year)
+output$hb_exp_table_title <- renderUI({
   HTML(paste0("Number and percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; ", 
               input$select_year_ldp, ", Scotland and Health Boards"))
 })
 
-table_hb_exp_data <- reactive({ # Data
+# Table data (LDP Standard Part 1; Outcomes by Financial Year)
+table_hb_exp_data <- reactive({
   ldp_data %>% 
     filter(fy == input$select_year_ldp) %>%
     filter(grepl("NHS", ijb) | ijb == "Scotland", !is.na(diagnoses)) %>% 
@@ -249,11 +273,14 @@ table_hb_exp_data <- reactive({ # Data
         "Number of People Referred to PDS","Percentage of Estimated Number of People Diagnosed with Dementia Referred to PDS"))
 })
 
-output$table_hb_exp <- DT::renderDataTable({ # Table
+# Table (LDP Standard Part 1; Outcomes by Financial Year)
+output$table_hb_exp <- DT::renderDataTable({
   make_table(table_hb_exp_data(), right_align = 1:3, selected = 1)
 })
 
-# Download data
+# Download data ------------------------------
+
+# Download data (LDP Standard Part 1; Outcomes by Financial Year)
 output$downloadData_ldp1 <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
@@ -261,14 +288,12 @@ output$downloadData_ldp1 <- downloadHandler(
       table_hb_exp_data() %>%
         mutate(across(where(is.factor), ~as.character(.))) %>% 
         mutate(`Financial Year` = input$select_year_ldp, .before = everything()) %>% 
-        # Changes superscript R to in line R for downloaded csv since superscript is not supported 
-        mutate(`Financial Year` = case_when(
+        mutate(`Financial Year` = case_when( # Changes superscript R to in line R for downloaded csv since superscript is not supported 
           `Financial Year` == provisional_year_sup ~paste0(provisional_year,"P"),
           `Financial Year`  == revised_year_sup ~paste0(revised_year,"R"),
           TRUE ~`Financial Year` )) %>% 
-        # Adds revision and provisional note
         rbind(
-          if(input$select_year_ldp == revised_year_sup){
+          if(input$select_year_ldp == revised_year_sup){ # Adds revision and provisional note
             c("Note: R indicates data has been revised. Please see dashboard for further information.",rep("",4))
             } else if (input$select_year_ldp == provisional_year_sup){
               c("Note: P indicates data is provisional. Please see dashboard for further information.",rep("",4))
@@ -281,11 +306,13 @@ output$downloadData_ldp1 <- downloadHandler(
   )
 
 ##############################################.
-# Trends ----
+## Trends ----
 ##############################################.
 
-# Plot
-output$chart_title_trend_part_1 <- renderUI({ # Title
+# Plot ---------------------------------------
+
+# Plot title (LDP Standard Part 1; Trends)
+output$chart_title_trend_part_1 <- renderUI({
   HTML(paste0("Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; Trend, Scotland "),
        if(input$select_hb_trend_part_1 == "Scotland"){""
        } else {
@@ -293,22 +320,27 @@ output$chart_title_trend_part_1 <- renderUI({ # Title
        })
   })
 
-trend_chart_data_part_1 <- reactive({ # Data
+# Plot data (LDP Standard Part 1; Trends)
+trend_chart_data_part_1 <- reactive({
   ldp_data %>%
     filter(ijb == input$select_hb_trend_part_1 | ijb == "Scotland", ldp == "total")
 })
 
-output$trend_plot_part_1 <- renderPlotly({ # Plot
+# Plot (LDP Standard Part 1; Trends)
+output$trend_plot_part_1 <- renderPlotly({
   plot_trend_perc(trend_chart_data_part_1(), exp_perc)
 })
 
-# Table  
-output$table_title_hb_trend_part_1 <- renderUI({ # Title
+# Table --------------------------------------
+
+# Table title (LDP Standard Part 1; Trends)
+output$table_title_hb_trend_part_1 <- renderUI({
   HTML(paste0(
     "Percentage of people estimated to be newly diagnosed with dementia who were referred for PDS; Trend, Scotland and Health Boards"))
   })
 
-table_hb_trend_part_1_data <- reactive({ # Data
+# Table data (LDP Standard Part 1; Trends)
+table_hb_trend_part_1_data <- reactive({ 
   ldp_data %>% 
     filter(grepl("NHS", ijb) | ijb == "Scotland", ldp == "total") %>% 
     select(health_board, fy, exp_perc) %>%
@@ -316,20 +348,22 @@ table_hb_trend_part_1_data <- reactive({ # Data
     rename("Health Board" = "health_board")  
 })
 
-output$table_hb_trend_part_1 <- DT::renderDataTable({ # Table
+# Table (LDP Standard Part 1; Trends)
+output$table_hb_trend_part_1 <- DT::renderDataTable({
   make_table(table_hb_trend_part_1_data() %>% pivot_wider(names_from = fy, values_from = exp_perc),
              right_align = 1:length(included_years), selected = 1)
 })
 
-# Download data
+# Download data ------------------------------
+
+# Download data (LDP Standard Part 1; Trends) 
 output$downloadData_ldp1_trend <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
     write.csv(
       table_hb_trend_part_1_data() %>% 
         mutate(across(where(is.factor), ~as.character(.))) %>% 
-        # Changes superscript R to in line R for downloaded csv since superscript is not supported 
-        mutate(fy = case_when(
+        mutate(fy = case_when( # Changes superscript R to in line R for downloaded csv since superscript is not supported 
           fy == provisional_year_sup ~paste0(provisional_year,"P"),
           fy == revised_year_sup ~paste0(revised_year,"R"),
           TRUE ~fy))  %>% 
@@ -342,41 +376,49 @@ output$downloadData_ldp1_trend <- downloadHandler(
   )
 
 ##############################################.
-# LDP Standard Part 2 ----
+## LDP Standard Part 2 ----
 ##############################################.
 
 ##############################################.
-# Outcomes by Financial Year ----
+## Outcomes by Financial Year ----
 ##############################################.
 
-# Value box
-output$title_part_2 <- renderUI({ # Title
+# Value box ----------------------------------
+
+# Value box title (LDP Standard Part 2; Outcomes by Financial Year)
+output$title_part_2 <- renderUI({
   HTML(paste("Percentage of referrals for PDS who received one year's support; Scotland, ", 
              input$select_year_ldp))
 })
 
-output$scot_pds_perc <- renderText({paste0(vb_data()$percent_met, "%")}) # Value
+# Value box value (LDP Standard Part 2; Outcomes by Financial Year)
+output$scot_pds_perc <- renderText({paste0(vb_data()$percent_met, "%")})
 
-vb_2_data <- reactive({ # Data
+# Value box data (LDP Standard Part 2; Outcomes by Financial Year)
+vb_2_data <- reactive({
   ldp_data %>% 
     filter(health_board == "Scotland", ijb == "Scotland", fy == input$select_year_ldp, ldp != "fail") %>% select(-diagnoses, -exp_perc) %>% 
     pivot_wider(values_from = referrals, names_from = ldp)
   })
 
-output$scot_pds_text <- renderUI({ # Text
+# Value box text (LDP Standard Part 2; Outcomes by Financial Year)
+output$scot_pds_text <- renderUI({
   HTML(paste("<b>", prettyNum(vb_2_data()$complete + vb_2_data()$exempt, big.mark = ","), 
              "</b>", "referrals either met or were exempt from the LDP standard. This is divided by",
              "<b>", prettyNum(vb_2_data()$total - vb_2_data()$ongoing, big.mark = ","), 
              "</b>", "the total number of referrals (excluding those whose support is ongoing)."))
   })
 
-# Plot
-output$perc_met_plot_title <- renderUI({ # Title
+# Plot ---------------------------------------
+
+# Plot title (LDP Standard Part 2; Outcomes by Financial Year)
+output$perc_met_plot_title <- renderUI({
   HTML(paste0("Percentage of people referred for PDS who received a minimum of one year’s support within 12 month's of diagnosis; ", 
               input$select_year_ldp, ", Scotland and ", input$select_hb_ijb))
 })
 
-perc_met_chart_data <- reactive({ # Data
+# Plot data (LDP Standard Part 2; Outcomes by Financial Year)
+perc_met_chart_data <- reactive({
   filtered_annual_data <- ldp_data %>% filter(fy == input$select_year_ldp, ldp == "total")
   left_join(
     if(input$select_hb_ijb == "Health Boards"){
@@ -390,7 +432,8 @@ perc_met_chart_data <- reactive({ # Data
       rename(scot_percent_met = percent_met))
 })
 
-output$perc_met_plot <- renderPlotly({ # Plot
+# Plot (LDP Standard Part 2; Outcomes by Financial Year)
+output$perc_met_plot <- renderPlotly({
   plot_bar_perc(
     perc_met_chart_data(),
     measure = percent_met, 
@@ -398,14 +441,18 @@ output$perc_met_plot <- renderPlotly({ # Plot
     legend = "bottom")
 })
 
-# Table
-output$perc_met_table_title <- renderUI({ # Title
+# Table --------------------------------------
+
+# Table title (LDP Standard Part 2; Outcomes by Financial Year)
+output$perc_met_table_title <- renderUI({
   HTML(paste0("Number and percentage of people referred for PDS who received a minimum of one year’s support within 12 month's of diagnosis; ", 
               input$select_year_ldp, ", Scotland and ", input$select_hb_ijb))
 })
 
-table_ldp2_data <- reactive({ # Data
+# Table data (LDP Standard Part 2; Outcomes by Financial Year)
+table_ldp2_data <- reactive({
   if(input$select_hb_ijb == "Health Boards"){
+    # Health Boards
     ldp_data %>% 
       filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
       filter(fy == input$select_year_ldp) %>%
@@ -420,6 +467,7 @@ table_ldp2_data <- reactive({ # Data
           "Standard Met","Exempt from Standard","PDS Ongoing", 
           "Standard Not Met", "Percentage of LDP standard achieved"))
   }else{
+    # IAA
     ldp_data %>%
       filter(!grepl("NHS", ijb)) %>% 
       filter(fy == input$select_year_ldp) %>%
@@ -437,11 +485,14 @@ table_ldp2_data <- reactive({ # Data
   }
 })
 
-output$perc_met_table <- DT::renderDataTable({ # Table
+# Table (LDP Standard Part 2; Outcomes by Financial Year)
+output$perc_met_table <- DT::renderDataTable({
   make_table(table_ldp2_data(), right_align = 1:6, selected = 1, rows_to_display = 32)
 })
 
-# Download data
+# Download data ------------------------------
+
+# Download data (LDP Standard Part 2; Outcomes by Financial Year)
 output$downloadData_ldp2 <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
@@ -449,8 +500,7 @@ output$downloadData_ldp2 <- downloadHandler(
       table_ldp2_data() %>% 
         mutate(across(where(is.factor), ~as.character(.))) %>% 
         mutate(`Financial Year` = input$select_year_ldp, .before = everything()) %>% 
-        # Changes superscript R to in line R for downloaded csv since superscript is not supported 
-        mutate(`Financial Year`  = case_when(
+        mutate(`Financial Year`  = case_when( # Changes superscript R to in line R for downloaded csv since superscript is not supported 
           `Financial Year`  == provisional_year_sup ~paste0(provisional_year,"P"),
           `Financial Year`  == revised_year_sup ~paste0(revised_year,"R"),
           TRUE ~`Financial Year` )) %>% 
@@ -462,7 +512,7 @@ output$downloadData_ldp2 <- downloadHandler(
           }else{
             rep("",5)
           }
-          ),
+        ),
       file, row.names = FALSE)
   }
 )
@@ -470,8 +520,11 @@ output$downloadData_ldp2 <- downloadHandler(
 ##############################################.
 # Trends ----
 ##############################################.
-# Plot
-output$chart_title_trend_part_2 <- renderUI({ # Title
+
+# Plot ---------------------------------------
+
+# Plot title (LDP Standard Part 2; Trends)
+output$chart_title_trend_part_2 <- renderUI({
   HTML(paste("Percentage of people referred for PDS who received a minimum of one year’s support within 12 months of diagnosis; Trend, Scotland "),
        if(input$select_hb_ijb_trend_part_2 == "Scotland"){""
        }else{
@@ -479,22 +532,28 @@ output$chart_title_trend_part_2 <- renderUI({ # Title
        })
 })
 
-trend_chart_data <- reactive({ # Data
+# Plot data (LDP Standard Part 2; Trends)
+trend_chart_data <- reactive({
   ldp_data %>%
     filter(ijb == input$select_hb_ijb_trend_part_2 | ijb == "Scotland", ldp == "total")
   })
 
-output$trend_plot_part_2 <- renderPlotly({ # Plot
+# Plot (LDP Standard Part 2; Trends)
+output$trend_plot_part_2 <- renderPlotly({
   plot_trend_perc(trend_chart_data(), percent_met)
 })
 
-# Table
-output$table_trend_part_2_title <- renderUI({ # Title
+# Table --------------------------------------
+
+# Table title (LDP Standard Part 2; Trends)
+output$table_trend_part_2_title <- renderUI({
   HTML(paste0("Percentage of people referred for PDS who received a minimum of one year’s support within 12 months of diagnosis; Trend, Scotland and ", input$select_hb_ijb))
 })
 
-table_trend_part_2_data <- reactive({ # Data
+# Table data (LDP Standard Part 2; Trends)
+table_trend_part_2_data <- reactive({
   if(input$select_hb_ijb == "Health Boards"){  
+    # Health Boards
     ldp_data %>% 
       filter(grepl("NHS", ijb) | ijb == "Scotland") %>% 
       select(health_board, fy, percent_met) %>%
@@ -503,6 +562,7 @@ table_trend_part_2_data <- reactive({ # Data
       distinct(health_board, fy, .keep_all = T) %>% 
       rename("Health Board" = "health_board") 
   }else{
+    # IAA
     ldp_data %>% 
       filter(!grepl("NHS", ijb)) %>% 
       select(ijb, fy, percent_met) %>%
@@ -513,12 +573,15 @@ table_trend_part_2_data <- reactive({ # Data
   }
 })
 
-output$table_hb_ijb_trend_part_2 <- DT::renderDataTable({ # Table
+# Table (LDP Standard Part 2; Trends)
+output$table_hb_ijb_trend_part_2 <- DT::renderDataTable({
   make_table(table_trend_part_2_data() %>% pivot_wider(names_from = fy, values_from = percent_met),
              right_align = 1:length(included_years), selected = 1, rows_to_display = 32)
 })
 
-# Download data
+# Download data ------------------------------
+
+# Download data (LDP Standard Part 2; Trends)
 output$downloadData_ldp2_trend <- downloadHandler(
   filename = paste0("pds_data_as_at_", end_date, ".csv"),
   content = function(file) {
@@ -537,4 +600,4 @@ output$downloadData_ldp2_trend <- downloadHandler(
   }
 )
 
-### END OF SCRIPT ###
+################################# END OF SCRIPT ################################.
