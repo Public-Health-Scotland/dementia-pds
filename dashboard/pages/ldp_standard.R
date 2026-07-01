@@ -180,6 +180,9 @@ output$ldp_ui <- renderUI({
           a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
           "page for further information."),
         p("NHS Orkney/Orkney Islands had no referrals in 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2) as they were unable to access a consultant psychiatrist. This will affect the pathway waiting times for NHS Orkney Islands / Orkney Islands for 2022/23 and 2023/24."),
+        p("Due to the effect of the COVID-19 pandemic and staffing issues with their former commissioned PDS service, NHS Dumfries and Galloway's ability to allocate a link worker within 12 months or for the 12-month period has been adversely affected since 2020/21. This will affect the figures for NHS Dumfries and Galloway / Dumfries and Galloway for 2020/21 to 2023/24. See Note 12 on the",
+          a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
+          "page for further information."),
         width = 12,
         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available" # Fix panel so sidebar and navigation bar do not scroll with content
         

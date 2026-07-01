@@ -98,7 +98,13 @@ output$intro_page_ui <-  renderUI({
                         href = "https://www.nrscotland.gov.uk/statistics-and-data/population-migration-and-households/#", target="_blank")),),
             tags$li(p("The COVID-19 pandemic and the infection control measures put in place are likely to have had an impact on the number of people being diagnosed and referred, particularly in 2020/21.")),
             tags$li(p("Some areas have reported difficulties in the COVID-19 pandemic affecting their ability and capacity to update their data systems which are required to provide the dementia PDS dataset, ",
-                      "however it is not anticipated that this has a large impact on the data presented in this report."))
+                      "however it is not anticipated that this has a large impact on the data presented in this report.")),
+            tags$li(p("NHS Dumfries and Galloway have reported that due to the backlog of people waiting for diagnosis created by the COVID-19 pandemic and ",
+                      "their commissioned PDS service provider having problems with staff absences/recruitment, their ability to allocate a link worker within ",
+                      "12 months or for the 12 month period has been affected.  This has affected the percentage of people referred for PDS who received a ", 
+                      "minimum of one year’s support within 12 months of diagnosis since 2020/21.  NHS Dumfries and Galloway have now brought their PDS Service ", 
+                      "in-house and are undertaking further work to improve the PDS Service."))
+            
           ) # tags$ol
         ), # fluidRow
         
