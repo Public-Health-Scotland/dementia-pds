@@ -74,7 +74,7 @@ output$demo_ui <-  renderUI({
 
 # Filter data ----
 data_selected <- reactive({get(input$select_data_demo)})
-data_demo <- reactive({data_selected() %>% filter(fy == input$select_year_demo)})
+data_demo <- reactive({data_selected() %>% filter(fy == input$select_year_demo) %>% mutate(percent_referrals = referrals/sum(referrals)*100)})
 
 ##############################################.
 ## Age / Sex / SIMD ----
@@ -100,7 +100,7 @@ output$plot_demo_referrals <- renderPlotly({
     plot_bar_perc_no_line(
       data_demo(), 
       category = type, 
-      measure = referrals/sum(referrals)*100,
+      measure = percent_referrals,
       x_text_angle = if_else(input$select_data_demo == "data_age", 45, 0), 
       fill = type, 
       ylimit = (max(data_demo()$referrals)/sum(data_demo()$referrals))*100+1)
