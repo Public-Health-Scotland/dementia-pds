@@ -62,17 +62,24 @@ output$rates_ui <-  renderUI({
         ), # conditionalPanel
         
         ##############################################.
-        ## Notes ----
+        ## Notes (Total Referrals) ----
         ##############################################.
-        
+        # Sources
         p("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
           format(end_date, "%d %B %Y")),
-        
+        # Notes
         h4(strong("Notes:")),
+        # Provisional years
         p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
+        # Revised years
         p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final."),),
+        # NHS Grampian / Aberdeen City
         p("Figures for 2018/19, 2019/20 and 2020/21 for Aberdeen City, NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
           a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"), "page for further information."),
+        # NHS Orkney / Orkney Islands
+        p("NHS Orkney/Orkney Islands had no referrals in 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2) as they were unable to access a consultant psychiatrist. This will affect the figures for NHS Orkney Islands / Orkney Islands for 2022/23 and 2023/24. See Note 8 on the",
+          a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"), "page for further information."),
+        # Formatting
         width = 12,
         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available" # Fix panel so sidebar and navigation bar do not scroll with content
         
@@ -135,20 +142,27 @@ output$rates_ui <-  renderUI({
         ), # conditionalPanel
         
         ##############################################.
-        ## Notes ----
+        ## Notes (Rates per 10,000 Population) ----
         ##############################################.
-        
+        # Sources
         p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                  format(end_date, "%d %B %Y"), "; National Records of Scotland (NRS) mid-year population estimates.")),
-        
+        # Notes
         h4(strong("Notes:")),
+        # Provisional years
         p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
+        # Revised years
         p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
+        # Population estimates
         p("Rates are calculated using the NRS mid-year population estimates of the 65 and over age group for each geographical area. See Note 9 on the",
           a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"), "page for further information."),
+        # NHS Grampian / Aberdeen City
         p("Figures for 2018/19, 2019/20 and 2020/21 for Aberdeen City, NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
           a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"), "page for further information."),
-
+        # NHS Orkney/Orkney Islands
+        p("NHS Orkney/Orkney Islands had no referrals in 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2) as they were unable to access a consultant psychiatrist. This will affect the figures for NHS Orkney Islands / Orkney Islands for 2022/23 and 2023/24. See Note 8 on the",
+          a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"), "page for further information."),
+        # Formatting
         width = 12,
         style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available"
       ), # column
