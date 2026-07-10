@@ -24,8 +24,9 @@ appName <- "phs-dementiapds2026-app"
 password_protect_deploy <- "on" 
 #===============================================================================.
 
-# Read in passwords from external file
-source("//conf/dementia/A&I/Outputs/dashboard/passwords.R")
+################################################################################.
+# Check data and password protect ----
+################################################################################.
 
 # Save whether password protect is on or off
 password_protect <- password_protect_deploy
@@ -75,24 +76,41 @@ if (!rstudioapi::showQuestion(title = "Password Protect", message = paste0(check
 #       message(continue_msg)}}}
 # confirm_deployment()
 
+################################################################################.
+# Deploy app ----
+################################################################################.
+
 # Connecting to the shiny.io account.
+# Load token and secret
+source("//conf/dementia/A&I/Outputs/dashboard/passwords.R")
+
+# Load packages
 if (!require('remotes')) install.packages('remotes'); library('remotes')
 if (!require('rsconnect')) install.packages('rsconnect'); library('rsconnect')
+
+# Connect
 options(rsconnect.packrat = TRUE)
 rsconnect::setAccountInfo(name='scotland', token=token, secret=secret)
 
 # Deploy the app
 rsconnect::deployApp(filepath, appName = appName)
 
-# Copy data used in the dashboard to stats drive
+################################################################################.
+# Copy data to stats drive ----
+################################################################################.
+
+# List dashboard data files
 files <- list.files(
   here::here("dashboard", "data"),
   full.names = TRUE)
 
+# Define folder to save files to
 dest_dir <- file.path("/conf", "dementia", "A&I", "Outputs", "dashboard", "data", pub_date)
 
+# Create folders to save files to
 dir.create(dest_dir, recursive = TRUE, showWarnings = FALSE)
 
+# Copy files
 file.copy(files, dest_dir, overwrite = TRUE)
 
 ### END OF SCRIPT ###
