@@ -55,14 +55,14 @@ output$intro_page_ui <-  renderUI({
         fluidRow(
           h3(strong("Notes")),
           tags$ol(
-            # Submission information
+            # 1. Submission information
             tags$li(p(paste0("NHS Boards provide quarterly data submissions to Public Health Scotland (PHS) on individuals ",
                              "diagnosed and referred for post-diagnostic support within their local areas and this dataset forms the basis ",
                              "of the LDP standard calculation. These statistics are derived from quarterly post-diagnostic support data ",
                              "submissions by NHS Boards as at ", format(end_date, "%d %B %Y"),".")),
                     p("Further information regarding the PHS Dementia PDS dataset and submission process can be found on the ", 
                       a("PHS Dementia PDS pages.", href ="https://publichealthscotland.scot/services/data-management/data-management-in-primary-social-and-community-care/dementia-post-diagnostic-support-pds/", target="_blank"))),
-            # Number of people newly diagnosed with dementia
+            # 2. Number of people newly diagnosed with dementia
             tags$li(p("NHS Board level estimates of the number of people newly diagnosed with dementia (incidence) used in Tab 6 for the years 2016/17 to 2020/21, are from the paper ",
                       a('Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020', href = 'https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/', target="_blank"),
                       " published by the Scottish Government in December 2016. Note that these estimations are subject to the limitations detailed within the paper."),
@@ -71,29 +71,29 @@ output$intro_page_ui <-  renderUI({
                       "National Records of Scotland (NRS) Mid-2021, Mid-2022 and Mid-2023 Population Estimates at NHS Board Level."),
                     p("NRS Mid-year population estimates can be found at: ",
                       a("Population, migration and households - National Records of Scotland (NRS)", href = "https://www.nrscotland.gov.uk/statistics-and-data/population-migration-and-households/#", target="_blank"))),
-            # Provisional and revised years
+            # 3. Provisional and revised years
             tags$li(p(paste0("Figures for ", provisional_year, " and ", extra_referrals_year , " are provisional subject to all service users completing their support. Service users for whom it is not yet known if they have met the standard are excluded from the percentage figures."))),
-            # Pre-2016
+            # 4. Pre-2016
             tags$li(p("Information presented in this publication is not comparable to information published for time periods prior to 2016/17.")),
-            # NHS Grampian / Aberdeen City
+            # 5. NHS Grampian / Aberdeen City
             tags$li(p("Aberdeen City Integration Authority Area ceased its contract with Alzheimer Scotland during 2019 and introduced an in-house Dementia Post-Diagnostic Support (PDS) service. ",
                       "This transition resulted in some PDS cases being terminated by Alzheimer Scotland earlier than 12 months and therefore not meeting the LDP standard. As part of the transition, ",
                       "individuals were contacted to ask if they still wanted to receive PDS which was then provided by the in-house service, if required. This should be taken into account when ",
                       "interpreting figures for Aberdeen City in 2018/19. Although figures for 2019/20 and 2020/21 include the total number of people referred to PDS across all Integration Authority Areas ",
                       "in NHS Grampian, data for Aberdeen City is not included in the measurement figures for the LDP standard due to data quality issues and missing dates meaning it is not possible ",
                       "to accurately measure these referrals against the LDP standard.")),
-            # NHS Tayside / Perth & Kinross
+            # 6. NHS Tayside / Perth & Kinross
             tags$li(p("NHS Tayside experienced challenges in capturing and reporting on electronic system data within Perth & Kinross over the period 2018 to 2019. ",
                       "Despite local work undertaken to uncover the missing data, it has not been possible to fill this gap. This should be taken into account when interpreting figures for NHS Tayside and ",
                       "Perth & Kinross for financial years 2018/19 and 2019/20. Subsequent measures put in place have successfully ",
                       "allowed NHS Tayside to improve on data reporting from 2019 onwards.")),
-            # NHS Shetland / Shetland Islands
+            # 7. NHS Shetland / Shetland Islands
             tags$li(p("NHS Shetland did not have a PDS worker in post from 2022/23 Quarter 1 (Q1) to 2023/24 Quarter 3 (Q3). As a result not all people referred to PDS could be allocated or contacted ",
                       "by a PDS worker within 12 months of diagnosis, and they will have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Quarter 4 (Q4) and the ",
                       "PDS service resumed. This will also affect the pathway waiting times for NHS Shetland / Shetland Islands for 2022/23 and 2023/24.")),
-            # NHS Orkney 
+            # 8. NHS Orkney 
             tags$li(p("NHS Orkney had no referrals in 2022/23 (Quarter 3 (Q3) and Quarter 4 (Q4)) and 2023/24 (Quarter 1 (Q1) and Quarter 2 (Q2)) as they were unable to access a consultant psychiatrist.")), 
-            # Population estimates
+            # 9. Population estimates
             tags$li(p("The population estimates used in this report to calculate rates per 10,000 population are from the National Records of Scotland (NRS) ",
                       "Mid-year population estimates. As figures in this report are by financial year, the estimate for the calendar year ",
                       "with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 ",
@@ -105,17 +105,18 @@ output$intro_page_ui <-  renderUI({
                     p("NRS Mid-year population estimates can be found at: ",
                       a("Population, migration and households - National Records of Scotland (NRS)",
                         href = "https://www.nrscotland.gov.uk/statistics-and-data/population-migration-and-households/#", target="_blank")),),
-            # COVID-19 Pandemic
+            # 10. COVID-19 Pandemic (1)
             tags$li(p("The COVID-19 pandemic and the infection control measures put in place are likely to have had an impact on the number of people being diagnosed and referred, particularly in 2020/21.")),
+            # 11. COVID-19 Pandemic (2)
             tags$li(p("Some areas have reported difficulties in the COVID-19 pandemic affecting their ability and capacity to update their data systems which are required to provide the dementia PDS dataset, ",
                       "however it is not anticipated that this has a large impact on the data presented in this report.")),
-            # NHS Dumfries and Galloway
+            # 12. NHS Dumfries and Galloway
             tags$li(p("NHS Dumfries and Galloway have reported that due to the backlog of people waiting for diagnosis created by the COVID-19 pandemic and ",
                       "their commissioned PDS service provider having problems with staff absences/recruitment, their ability to allocate a link worker within ",
                       "12 months or for the 12 month period has been affected. This has affected the percentage of people referred for PDS who received a ", 
                       "minimum of one year’s support within 12 months of diagnosis since 2020/21. NHS Dumfries and Galloway have now brought their PDS Service ", 
                       "in-house and are undertaking further work to improve the PDS Service.")),
-            # NHS Greater Glasgow and Clyde / Renfrewshire
+            # 13. NHS Greater Glasgow and Clyde / Renfrewshire
             tags$li(p("In 2023/24 due to unforeseen circumstances the Renfrewshire the PDS team’s staff capacity was adversely affected. This will have affected ",
                       "the figures reported for Renfrewshire and NHS Greater Glasgow and Clyde in 2023/24."))
             

@@ -29,22 +29,27 @@ output$demo_ui <-  renderUI({
       ##############################################.
       ## Notes ----
       ##############################################.
-      
-      if(input$select_data_demo == "data_simd"){
+      # Sources
+      if(input$select_data_demo == "data_simd"){ # SIMD
         p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                  format(end_date, "%d %B %Y"),"; Scottish Government Scottish Index of Multiple Deprivation (SIMD) 2020."))
-      }else{
+      }else{ # Age / Sex
         p(paste0("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                  format(end_date, "%d %B %Y")))
       },
-      
+      # Notes
       h4(strong("Notes:")),
+      # Provisional years
       p(paste0("ᴾ Figures for ", provisional_year," are provisional subject to all service users completing their support.")),
+      # Revised years
       p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final. ")),
+      # LDP Standard Calculation
       p("For detailed information on how the Percentage LDP Standard Achieved is calculated, and how 'Standard Met', 'Exempt from Standard', 'PDS Ongoing' and 'Standard Not Met' are defined, please see the",
         a(href = "#", "Methodology", onclick = "Shiny.setInputValue('method_link', Math.random()); return false;"), "page."),	
+      # Age
       if (input$select_data_demo == "data_age") {
         p("Age is calculated as at the dementia diagnosis date. There are a small number of records with an incomplete date of birth and therefore the age group is unknown.")
+      # SIMD
       } else if (input$select_data_demo == "data_simd") {
         p("Deprivation is calculated by matching postcode to the Scottish Index of Multiple Deprivation (SIMD) quintiles. Each quintile consists of approximately 20% of the general population living in Scotland, 
           with deprivation quintile 1 indicating the 20% of the population living in the most deprived areas and deprivation quintile 5 indicating the 20% of the population living in the least deprived areas.
@@ -54,13 +59,14 @@ output$demo_ui <-  renderUI({
           br(),
           "There are a small number of records where it was not possible to assign a deprivation category. Possible reasons for not being able to assign a deprivation category are that no postcode was provided 
           or the postcode provided is invalid, not in Scotland, or is a newly added postcode.")
+      # Sex
       } else if (input$select_data_demo == "data_sex") {
         p("There are a small number of records where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’). These records are not reported separately in the tables but are included in the Totals shown.")
       },
-      p("Figures for 2018/19, 2019/20 and 2020/21 are affected by the 
-        change in service provision of PDS within Aberdeen City during 
-        2019. See Note 5 on the",
+      # NHS Grampian / Aberdeen City
+      p("Figures for 2018/19, 2019/20 and 2020/21 are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
         a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"), "page for further information."),
+      # Formatting
       width = 12,
       style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; margin-left: 1px; height:-webkit-fill-available; background-color: white" # Fix panel so sidebar and navigation bar do not scroll with content
       

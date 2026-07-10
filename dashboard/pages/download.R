@@ -172,12 +172,17 @@ output$download_ui <-  renderUI({
       linebreaks(1), 
       
       # Notes ----
+      # Sources
       p(paste0("Sources: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
                format(end_date, "%d %B %Y"), 
                "; Estimated and Projected Diagnosis Rates for Dementia in Scotland paper: 2014-2020; National Records of Scotland (NRS) mid-2021, mid-2022 and mid-2023 population estimates.")),
+      # Notes
       h4(strong("Notes:")),
+      # Provisional years
       p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
+      # Revised years
       p(paste0("ᴿ Figures for ", revised_year," have been revised and are now final.")),
+      # Formatting
       width = 12
       
     )) # column, fluidRow
