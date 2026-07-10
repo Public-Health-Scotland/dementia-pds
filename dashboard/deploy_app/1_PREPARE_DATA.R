@@ -1,10 +1,4 @@
 ################################################################################.
-# SOURCE THIS SCRIPT TO UPDATE DATA FOR DASHBOARD
-# VARIABLES TO UPDATE: "end_date", "pub_date", "last_pub_date"
-# VARIABLES ARE LOCATED IN "code/publication/00_setup-pub-environment.R" 
-################################################################################.
-
-################################################################################.
 # Name of file - 1_PREPARE_DATA.R
 # Original Authors - Jennifer Thom
 # Original Date - June 2023
@@ -12,8 +6,15 @@
 # Updated by Lucy Binsted - Jan 2026
 # Written/run on - RStudio Server
 # Version of R - 4.4.2
-# Description - Prepare PDS data for use in R shiny. 
+# Description - SOURCE THIS SCRIPT TO UPDATE DATA FOR DASHBOARD
 ################################################################################.
+
+#===============================================================================.
+# Manual Variables - TO UPDATE ----
+
+# MANUAL UPDATE: Check "end_date", "pub_date", "last_pub_date" in "code/publication/00_setup-pub-environment.R" are correct
+# MANUAL UPDATE: Check all code for MI report and publication has been run so relevant datasets are available.
+#===============================================================================.
 
 ################################################################################.
 # Load set up and functions ----
