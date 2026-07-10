@@ -42,30 +42,38 @@ output$pathways_ui <-  renderUI({
     ##############################################.
     ## Notes ----
     ##############################################.
-    
+    # Sources
     p(paste0("Source: Public Health Scotland quarterly dementia post-diagnostic support dataset: Data submissions from NHS Boards as at ",
-             format(end_date, "%d %B %Y")
-    )),
-
+             format(end_date, "%d %B %Y"))),
+    # Notes
     h4(strong("Notes:")),
+    # Provisional years
     p(paste0("ᴾ Figures for ", provisional_year, " and ", extra_referrals_year, " are provisional subject to all service users completing their support.")),
+    # Revised years
     p(paste0("ᴿ Figures for ", revised_year, " have been revised and are now final.")),
+    # Diagnosis date
     p("Date of diagnosis is the date recorded for when the service user received a confirmed diagnosis of dementia.
       This diagnosis must be confirmed by a doctor or clinical practitioner with sufficient training and experience in the diagnosis of dementia.", 
       br(), 
+      # Contact date
       "First contact is the date on which an appropriate face to face direct contact took place with the service user by the PDS Practitioner or PDS Team 
       with the knowledge and skills to introduce each model of care. Direct contact can be done in person or by video link and is not restricted to both 
-      parties being in the same room."),					
+      parties being in the same room."),	
+    # NHS Grampian / Aberdeen City
     p("Figures for 2018/19, 2019/20 and 2020/21 for Aberdeen City, NHS Grampian and Scotland are affected by the change in service provision of PDS within Aberdeen City during 2019. See Note 5 on the",
-      a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
-      "page for further information."),
+      a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"), "page for further information."),
+    # NHS Shetland / Shetland Islands
     p("NHS Shetland / Shetland Islands did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. This will affect the pathway waiting times for NHS Shetland / Shetland Islands for 2022/23 and 2023/24. See Note 7 on the",
-      a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
-      "page for further information."),
+      a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"), "page for further information."),
+    # NHS Orkney / Orkney Islands
     p("NHS Orkney/Orkney Islands had no referrals in 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2) as they were unable to access a consultant psychiatrist. This will affect the pathway waiting times for NHS Orkney Islands / Orkney Islands for 2022/23 and 2023/24."),
+    # NHS Dumfries and Galloway / Dumfries and Galloway
     p("Due to the effect of the COVID-19 pandemic and staffing issues with their former commissioned PDS service, NHS Dumfries and Galloway's ability to allocate a link worker within 12 months or for the 12-month period has been adversely affected since 2020/21. This will affect the pathway waiting times for NHS Dumfries and Galloway / Dumfries and Galloway for 2020/21 to 2024/25. See Note 12 on the",
-      a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"),
-      "page for further information."),
+      a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"), "page for further information."),
+    # NHS Glasgow and Clyde / Renfrewshire
+    p("In 2023/24, the capacity in the PDS service in Renfrewshire was affected by staff issues. This will affect the pathway waiting times reported for Renfrewshire and NHS Glasgow and Clyde in 2023/24.  See Note 13 on the",
+      a(href = "#", "Home", onclick = "Shiny.setInputValue('home_link', Math.random()); return false;"), "page for further information."),
+    # Formatting
     width = 12,
     style = "position:fixed; width: -webkit-fill-available; overflow-y: overlay; padding-right: 45px; height:-webkit-fill-available" # Fix panel so sidebar and navigation bar do not scroll with content
     
