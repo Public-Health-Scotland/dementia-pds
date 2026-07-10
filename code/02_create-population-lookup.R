@@ -129,5 +129,8 @@ population_df <- population_df %>%
 ### 4. Save data ----
 ################################################################################.
 
-population_df %>% 
-  write_rds("//conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/population_data.rds")
+if (exists("save_output") && isTRUE(save_output)){
+  population_df %>% 
+    write_rds(paste0(output_path, "error.rds"))
+}
+################################ END OF SCRIPT #################################.

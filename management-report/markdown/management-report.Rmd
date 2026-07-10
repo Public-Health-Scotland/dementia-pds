@@ -8,20 +8,50 @@ output:
 ---
 
 ```{r load-setup, include=FALSE}
+
+################################################################################.
+# Load setup, packages and functions ----
+################################################################################.
+
+# Setup
 source(here::here("code", "00_setup-environment.R"))
-library(crosstalk) # for drop down menus
+
+# Packages
+library(crosstalk) # For drop down menus
 library(htmltools)
+detach("package:tidylog", unload = TRUE) # Remove tidylog
 
-# Remove tidylog
-detach("package:tidylog", unload = TRUE)
-
-# Load functions
+# Functions
 walk(dir(here::here("functions"), full.names = TRUE), source)
 
-# Write numbers with thousands separator
-knit_hooks$set(inline = function(x){
-  if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
-})
+################################################################################.
+# Load data ----
+################################################################################.
+
+# Errors and queries (output from 01_clean-pds-data.R)
+q_err <- read_rds(get_mi_data_path("q_error_data", ext = "rds", test_output = test_output)) %>% 
+  mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
+
+# Queries (2021/22 onward) (output from 01_clean-pds-data.R)
+query <- read_rds(get_mi_data_path("query_data", ext = "rds", test_output = test_output)) %>% 
+  mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
+
+# Errors (2021/22 onward) (output from 01_clean-pds-data.R)
+err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
+  mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
+
+# Populations (output from 02_create-population-lookup)
+population_df <- read_rds("//conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/population_data.rds")
+
+# PDS (output from 03_add-ldp-age-simd.R)
+pds <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output)) 
+
+# Expected Diagnoses 
+exp_df <- read_csv(get_exp_diagnoses_path())
+
+# European Standard Population
+ESP13_df <- read_csv("/conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/european_standard_population_by_sex.csv")
+
 ```
 
 ---
@@ -31,11 +61,34 @@ date: "`r paste('Data as at', format(end_date, '%d %B %Y'))`"
 ```{r setup, include=FALSE}
 
 ################################################################################.
-# Data
+# Prepare Data ----
 ################################################################################.
 
-# LDP Data
-ldp_df <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output)) %>%
+# European Standard Population data
+ESP13_df <- ESP13_df %>%
+  # Convert column names to snake case
+  clean_names() %>%
+  # Remove code
+  mutate(
+    sex = case_when(
+      sex == "Male" ~ "01 Male",
+      sex == "Female" ~ "02 Female"))
+
+# Age groups (created from ESP data)
+age_groups <- ESP13_df %>%
+  # Extract ages in each group and calculate minimum and maximum
+  mutate(
+    nums = str_extract_all(age_group, "\\d+"),
+    min = as.numeric(sapply(nums, `[`, 1)),
+    max = as.numeric(sapply(nums, `[`, 2)),
+    max = ifelse(is.na(max), Inf, max)) %>%
+  # Select columns
+  select(age_group, min, max) %>%
+  # Keep only unique rows
+  distinct()
+
+# LDP data
+pds <- pds %>%
   mutate(
     # Remove health board and ijb codes
     ijb = str_sub(ijb, 11, -1),
@@ -46,28 +99,29 @@ ldp_df <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_
     board = health_board) %>%
   # Put scot, ijb and health board in the same column named geog
   pivot_longer(c(scot, ijb, health_board), values_to = "geog") %>%
-  mutate(board = ifelse(name == "scot", "Scotland", board))
+  mutate(board = ifelse(name == "scot", "Scotland", board)) %>%
+  # Add age groups from ESP13
+  left_join(age_groups, by = join_by(age >= min, age <= max)) %>% 
+  select(-min, -max)
 
-# Population Data
-population_df <- read_rds("//conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/population_data.rds")
+# Population data
+population_df <- population_df %>%
+  # Add age groups from ESP13
+  left_join(age_groups, by = join_by(age >= min, age <= max)) %>% 
+  select(-min, -max)
 
-# European Standard Population Data
-ESP13_df <- read_csv("/conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/european_standard_population_by_sex.csv") %>%
-  clean_names() %>%
-  mutate(
-    sex = case_when(
-      sex == "Male" ~ "01 Male",
-      sex == "Female" ~ "02 Female"))
-
-# Expected Diagnoses Data
-exp_df <- read_csv(get_exp_diagnoses_path()) %>%
-  rename(geog = health_board_label) %>% # Rename health board column to geog to match PDS and population data
-  select(-health_board) # Remove health board code column
+# Expected Diagnoses data
+exp_df <- exp_df %>%
+  # Rename health board column to geog to match PDS and population data
+  rename(geog = health_board_label) %>% 
+  # Remove health board code column
+  select(-health_board) 
 
 ################################################################################.
 # Year Lists
 ################################################################################.
 
+# fy, qt and finalised_years are defined in 00_setup-environment
 provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
                            "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
 
@@ -77,116 +131,12 @@ current_fy <- paste0(substr(fy,1,4),
 last_full_year <- if_else(qt == 4, current_fy, paste0(as.numeric(substr(fy,1,4)) - 1,
                            "/", as.numeric(substr(fy,3,4))))
 
-all_years <- unique(ldp_df$fy)
+all_years <- unique(standardised_rates$fy)
 
-if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
-
-################################################################################.
-# Rates
-################################################################################.
-standardised_rates <- full_join(
-  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age-sex", 
-                     age_cutoff = 65, demographic = c()), 
-  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age", 
-                     age_cutoff = 65, demographic = c()))
-
-standardised_rates_age <- full_join(
-  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age-sex", 
-                     age_cutoff = 65, demographic = c("age_grp_2")), 
-  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age", 
-                     age_cutoff = 65, demographic = c("age_grp_2")))
-
-standardised_rates_sex <- full_join(
-  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age-sex", 
-                     age_cutoff = 65, demographic = c("sex")), 
-  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age", 
-                     age_cutoff = 65, demographic = c("sex")))
-
-standardised_rates_simd <- full_join(
-  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age-sex", 
-                     age_cutoff = 65, demographic = c("simd")), 
-  create_rates_table(ldp_df, population_df, ESP13_df, standardisation = "age", 
-                     age_cutoff = 65, demographic = c("simd")))
-
-################################################################################.
-# Other Measures
-################################################################################.
-measures <- create_measures_table(ldp_df, exp_df, demographic = c())
-measures_age <- create_measures_table(ldp_df, exp_df, demographic = c("age_grp_2"))
-measures_sex <- create_measures_table(ldp_df, exp_df, demographic = c("sex"))
-measures_simd <- create_measures_table(ldp_df, exp_df, demographic = c("simd"))
-```
+full_years <- ifelse(qt == 4, all_years, all_years[-length(all_years)])
 
 
-```{r setup, include=FALSE}
-# Load PDS monthly data
-pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
-  
-  # Remove codes from board and IJB
-  mutate(health_board = str_sub(health_board, 3, -1),
-         ijb          = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
 
-# Load expected diagnoses reference file
-exp <- read_csv(get_exp_diagnoses_path())
-
-
-# Load error and queries summaries
-q_err <- read_rds(get_mi_data_path("q_error_data", ext = "rds", test_output = test_output)) %>% 
-
-  mutate(ijb = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
-
-query <- read_rds(get_mi_data_path("query_data", ext = "rds", test_output = test_output)) %>% 
-
-  mutate(ijb = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
-
-err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
-
-  mutate(ijb = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
-
-# calculate monthly referrals for Scotland and health boards
-pds_ijb <- pds %>% arrange(ijb)
-
-pds_ijb %<>% rename(geog = ijb) 
-
-pds_ijb$geog<- factor(pds_ijb$geog, levels = unique(pds_ijb$geog))
-
-pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>%  summarise(referrals = sum(referrals), .groups = "drop")
-
-pds_scot %<>% rename(geog = ijb) 
-
-pds_scot$geog<- factor(pds_scot$geog, levels = unique(pds_scot$geog))
-
-pds_hb <- pds %>% group_by(health_board, fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>% 
-  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
-
-pds_hb %<>% rename(geog = ijb) 
-
-pds_hb$geog<- factor(pds_hb$geog, levels = unique(pds_hb$geog))
-
-# combine monthly data for ijb, hb and Scotland
-pds_all <- bind_rows(pds_scot, pds_ijb, pds_hb)
-
-pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
-
-#get annual totals for all geogs, hbs, ijbs, scotland
-pds_all_totals <- pds_all %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
-
-pds_ijb_totals <- pds_ijb %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
-
-pds_hb_totals <- pds_hb %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
-
-pds_scot_totals <- pds_scot %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
-
-#load population rates data
-pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
 
 
 #load completion data

@@ -212,10 +212,7 @@ pds <- pds %>%
   # Change health board for Glasgow/Highland duplicates to "H NHS Highland" (from "G NHS Greater Glasgow & Clyde") and IAA to "S37000004 Argyll and Bute"
   mutate(health_board = 
            if_else(ggc_h_dupe == 1, "H NHS Highland", health_board),
-         ijb = if_else(ggc_h_dupe == 1, "S37000004 Argyll and Bute", ijb)) %>%
-  
-  # Remove dupe helper columns
-  select(-contains("dupe"))
+         ijb = if_else(ggc_h_dupe == 1, "S37000004 Argyll and Bute", ijb))
 
 ################################################################################.
 ### 8 - Save data ----
@@ -226,34 +223,36 @@ if (exists("save_output") && isTRUE(save_output)){
   # Save queries + errors for all years
   q_err %>% 
     select(-total_queries, -total_errors) %>%
-    write_file(path = get_mi_data_path("q_error_data", ext = "rds", test_output = test_output))
-  0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
+    #write_file(path = get_mi_data_path("q_error_data", ext = "rds", test_output = test_output))
+    write_rds(paste0(output_path, "q_err.rds"))
+
   # Save queries for 2021/22 onward
   q_err %>% 
     filter(as.integer(substr(fy, 1, 4)) >= 2021) %>% 
     select(-total_q_errors, -total_errors) %>%
-    write_file(path = get_mi_data_path("query_data", ext = "rds", test_output = test_output))
-  0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
+    #write_file(path = get_mi_data_path("query_data", ext = "rds", test_output = test_output))
+    write_rds(paste0(output_path, "query.rds"))
+
   # Save errors for 2021/22 onward
   q_err %>% 
     filter(as.integer(substr(fy, 1, 4)) >= 2021) %>% 
     select(-total_q_errors, -total_queries) %>%
-    write_file(path = get_mi_data_path("error_data", ext = "rds", test_output = test_output))
-  0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+    #write_file(path = get_mi_data_path("error_data", ext = "rds", test_output = test_output))
+    write_rds(paste0(output_path, "error.rds"))
 
   # Save duplicate records
   dupes <- 
     pds %>% 
     filter(dupe == 1) %T>%
-    write_file(path = get_mi_data_path("dupe_data", ext = "csv", test_output = test_output))
-  0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+    #write_file(path = get_mi_data_path("dupe_data", ext = "csv", test_output = test_output))
+    write_rds(paste0(output_path, "duplicates.rds"))
   
   # Save cleaned PDS data
   pds %>% 
-    write_file(path = get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
-  0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+    # Remove dupe helper columns
+    select(-contains("dupe")) %>%
+    #write_file(path = get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
+    write_rds(paste0(output_path, "clean_data.rds"))
 
 }
 

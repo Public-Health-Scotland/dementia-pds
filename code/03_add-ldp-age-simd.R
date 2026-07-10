@@ -23,7 +23,8 @@
 source(here::here("code", "00_setup-environment.R"))
 
 # Cleaned PDS data (output from 01_data-preparation.R)
-pds <- read_rds(get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
+#pds <- read_rds(get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
+pds <- read_rds(paste0(output_path, "clean_data.rds"))
 
 # SIMD data
 simd <- simd()
@@ -236,16 +237,12 @@ pds_grouped <- pds %>%
 if (exists("save_output") && isTRUE(save_output)){
   
   # Save individual PDS data
-  write_file(pds, path = get_mi_data_path("ldp_data", ext = "rds", test_output = test_output))
-  0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
-  write_file(pds, path = get_mi_data_path("ldp_data", ext = "csv", test_output = test_output))
-  0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  #write_file(pds, path = get_mi_data_path("ldp_data", ext = "rds", test_output = test_output))
+  pds %>%
+    write_rds(paste0(output_path, "ldp_data.rds"))
   
   # Save grouped PDS data
-  write_file(pds_grouped, path = get_mi_data_path("final_data", ext = "rds", test_output = test_output))
-  0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
+  #write_file(pds_grouped, path = get_mi_data_path("final_data", ext = "rds", test_output = test_output))
 }
 
 ################################ END OF SCRIPT #################################.

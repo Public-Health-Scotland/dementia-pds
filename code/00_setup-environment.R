@@ -1,4 +1,4 @@
-################################################################################
+################################################################################.
 # Name of file - 00_setup-environment.R
 # Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Alice Byers
@@ -9,18 +9,20 @@
 # Written/run on - R Posit
 # Version of R - 4.1.2
 #
-# Description - Sets up environment required for running quarterly 
-#               management reports. This is the only file 
-#               to be updated everytime the process is run.
-################################################################################
+# Description - 
+#   Sets up environment required for running quarterly management reports. 
+#   This is the only file to be updated every time the process is run.
+################################################################################.
 
-
+################################################################################.
 ### 0 - Manual Variable(s) - TO UPDATE 
+################################################################################.
+
+output_path <- "//conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/"
 
 # UPDATE - TRUE/FALSE for defining a test file path for saving test copies of 
 #           outputs. This is useful for when the DM give us a test run when boards
 #           are still submitting the data or when making changes to the code.
-#
 #           test_report = TRUE - returns the test file path
 #           test_report = FALSE - returns the finalised report for distribution
 test_output <- TRUE
@@ -33,8 +35,14 @@ previous_end_date <- lubridate::dmy(31122025)
 # Need this for set up of some folder structure
 pub_date <- lubridate::dmy(16122025)
 
-### 1 - Load packages ----
+################################################################################.
+### 1 - Load functions and packages ----
+################################################################################.
 
+# Load functions
+source(here::here("functions/setup_directories.R"))
+
+# Load packages
 library(dplyr)         # For data manipulation in the "tidy" way
 library(readr)         # For reading in csv files
 library(janitor)       # For 'cleaning' variable names
@@ -61,8 +69,9 @@ library(officer)       # For adding cover page and toc to report
 library(gluedown)      # For formatting character vectors in markdown
 library(fs)            # For setting up directories 
 
-
+################################################################################.
 ### 2 - Define file paths dependent on whether running on server or desktop ----
+################################################################################.
 
 stats <- case_when(
   sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ "/conf",
@@ -75,8 +84,9 @@ cl_out <- case_when(
   TRUE ~ "//stats/cl-out"
 )
 
-
-### 3 - SIMD Lookup ----
+################################################################################.
+### 3 - SIMD lookup ----
+################################################################################.
 
 simd <- function(){
   simd <- read_rds(get_simd_path()) %>% 
@@ -93,8 +103,9 @@ simd <- function(){
   return(simd)
 }
 
-
+################################################################################.
 ### 4 - Derive dates ----
+################################################################################.
 
 # Latest FY and Quarter
 fy <- extract_fin_year(end_date) %>% substr(1, 4)
@@ -107,7 +118,9 @@ previous_qt <- quarter(previous_end_date, fiscal_start = 4)
 # First date in reporting period 
 start_date <- dmy(01042016)
   
+################################################################################.
 ### 5 - Set output/knitr options ----
+################################################################################.
 
 # Disable scientific notation
 options(scipen = 999)
@@ -116,27 +129,24 @@ options(scipen = 999)
 options(knitr.duplicate.label = "allow")
 
 # Knitr hook to add thousands separator
-knit_hooks$set(inline = function(x) {
-  prettyNum(x, big.mark=",")
+knit_hooks$set(inline = function(x){
+  if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
 })
 
-
+################################################################################.
 ### 6 - Define exempt termination reason codes ----
+################################################################################.
 
 exempt_reasons <- c("03", "04", "05", "06")
 
+################################################################################.
+### 7 - Define finalised years ----
+################################################################################.
 
-### 7 - Create folder structure ----
-
-# Load functions
-source(here::here("functions/setup_directories.R"))
-
-
-#Define years in which data has been made final
+# Define years in which data has been made final
 finalised_years <- 
   list.files(get_final_data_dir()) %>% 
   str_sub(1, 7) %>%
   str_replace("-", "/")
 
-
-### END OF SCRIPT ###
+################################ END OF SCRIPT #################################.
