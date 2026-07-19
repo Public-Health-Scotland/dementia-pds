@@ -20,19 +20,29 @@
 
 output_path <- "//conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/"
 
-# UPDATE - TRUE/FALSE for defining a test file path for saving test copies of 
-#           outputs. This is useful for when the DM give us a test run when boards
-#           are still submitting the data or when making changes to the code.
-#           test_report = TRUE - returns the test file path
-#           test_report = FALSE - returns the finalised report for distribution
+# UPDATE - Used to define a test file path for saving test outputs (TRUE/FALSE)
+# TRUE:  Use this when the Data Management Team provide a test version of the 
+#        collated file and boards are still submitting or correcting data.
+# FALSE: Use this when the Data Management Team provide a finalised version of  
+#        the collated file and no more changes will be made.
 test_output <- TRUE
 
-# UPDATE - Last day in reporting period (ddmmyyyy)
+# UPDATE - Last day in the current reporting period (ddmmyyyy)
+# Mar-MI-release: 311220XX
+# Jun-MI-release: 310320XX
+# Sep-MI-release: 300620XX
+# Dec-MI-release: 300920XX
 end_date <- lubridate::dmy(31032026)
+
+# UPDATE - Last day in the previous reporting period (ddmmyyyy)
+# Mar-MI-release: 310920XX
+# Jun-MI-release: 311220XX
+# Sep-MI-release: 310320XX
+# Dec-MI-release: 310620XX
 previous_end_date <- lubridate::dmy(31122025)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
-# Need this for set up of some folder structure
+# Found in: 00_setup-pub-environment.R
 pub_date <- lubridate::dmy(16122025)
 
 ################################################################################.
@@ -108,18 +118,18 @@ simd <- function(){
 ################################################################################.
 
 # Latest FY and Quarter
-fy <- extract_fin_year(end_date) %>% substr(1, 4)
-qt <- quarter(end_date, fiscal_start = 4)
+fy <- phsmethods::extract_fin_year(end_date) %>% substr(1, 4)
+qt <- lubridate::quarter(end_date, fiscal_start = 4)
 
 # Previous FY and Quarter
-previous_fy <- extract_fin_year(previous_end_date) %>% substr(1, 4)
-previous_qt <- quarter(previous_end_date, fiscal_start = 4)
+previous_fy <- phsmethods::extract_fin_year(previous_end_date) %>% substr(1, 4)
+previous_qt <- lubridate::quarter(previous_end_date, fiscal_start = 4)
 
-# First date in reporting period 
+# First date in reporting period (ddmmyyyy)
 start_date <- dmy(01042016)
   
 ################################################################################.
-### 5 - Set output/knitr options ----
+### 5 - Set output/knitr options for Markdown ----
 ################################################################################.
 
 # Disable scientific notation
