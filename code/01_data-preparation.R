@@ -24,47 +24,83 @@
 # Environment file
 source(here::here("code", "00_setup-environment.R"))
 
+################################################################################.
+### 2 - Read and clean latest submission ----
+################################################################################.
+
 # Collated file for latest submission (output from Data Management)
-pds <- read_csv(get_national_data_path(), col_types = cols(.default = "c"))
-
-# Data for finalised years
-finalised_data <- list.files(get_final_data_dir(), full.names = TRUE) %>%
-  map(read_rds) %>%
-  reduce(bind_rows)
-
-################################################################################.
-### 2 - Clean latest submission ----
-################################################################################.
-
-pds <- pds %>%
+pds <- readr::read_csv(get_national_data_path(), col_types = cols(.default = "c")) %>%
   
   # Convert column names to snake case
-  clean_names() %>%
+  janitor::clean_names() %>%
   
   # Convert dates from character to date format
-  mutate(across(contains("date"), ymd)) %>%
+  dplyr::mutate(dplyr::across(tidyselect::contains("date"), lubridate::ymd)) %>%
   
   # Pad CHI Number to 10 digits
-  mutate(chi_number = chi_pad(chi_number)) %>%
+  dplyr::mutate(chi_number = phsmethods::chi_pad(chi_number)) %>%
   
   # Replace word 'and' with ampersand
-  mutate(health_board = str_replace(health_board, " and ", " & ")) %>%
+  dplyr::mutate(health_board = stringr::str_replace(health_board, " and ", " & ")) %>%
   
   # Remove records with missing diagnosis date or outwith reporting period
-  filter(between(dementia_diagnosis_confirmed_date, start_date, end_date)) %>%
+  dplyr::filter(dplyr::between(dementia_diagnosis_confirmed_date, start_date, end_date))
   
-  # Remove any data for finalised years in latest submission
-  filter(!extract_fin_year(dementia_diagnosis_confirmed_date) %in% finalised_years)
-
 ################################################################################.
-### 3 - Add finalised data ----
+### 2 - Save newly finalised data (Q4 non-test output only) ----
 ################################################################################.
 
-# Add data for finalised years to data for latest submission
+if (qt == 4 && test_output == FALSE){
+  
+  # Name of the new final file
+  new_final_file <- paste0(get_final_data_dir(), "/", str_replace(revised_year, '/', '-'), "_final-data.rds")
+  
+  # Stop if the file already exists
+  if(file.exists(new_final_file)){
+    stop(paste0("A finalised data file for ", revised_year, " already exists at ", new_final_file, "."))
+  
+  # Save if the file does not already exist
+  } else {
+    
+    # Get data for newly finalised years in latest submission
+    new_finalised_data <- pds %>%
+      dplyr::filter(extract_fin_year(dementia_diagnosis_confirmed_date) == revised_year)
+    
+    # Save final file
+    readr::write_rds(new_finalised_data, new_final_file, compress = "gz")
+    
+    # Print message saying the file has been saved
+    message(paste0("File saved to ", new_final_file))
+  }
+}
+
+################################################################################.
+### 3 - Add saved finalised data ----
+################################################################################.
+
+# Read in and bind together data for finalised years if available
+finalised_data <- data.frame()
+for (year in finalised_years){
+  final_file <- paste0(get_final_data_dir(), "/", str_replace(year, '/', '-'), "_final-data.rds")
+  if (file.exists(final_file)){
+    finalised_data <- bind_rows(finalised_data, read_rds(final_file))
+  } else {
+    message(paste0("Final data does not yet exist for ", year, "."))
+  }
+}
+    
+# List all years included in the finalised data
+finalised_data_years <- unique(extract_fin_year(finalised_data$dementia_diagnosis_confirmed_date))
+
+# Remove years included in the finalised data from the current submission
+pds <- pds %>% 
+  dplyr::filter(!extract_fin_year(dementia_diagnosis_confirmed_date) %in% finalised_data_years)
+  
+# Add finalised data to current submission
 pds <- bind_rows(finalised_data, pds)
 
 ################################################################################.
-### 4 - Error and query summaries ----
+### 4 - Create error and query summaries ----
 ################################################################################.
 
 # Queries and errors for all years

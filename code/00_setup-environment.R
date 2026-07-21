@@ -28,22 +28,11 @@ output_path <- "//conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/"
 test_output <- TRUE
 
 # UPDATE - Last day in the current reporting period (ddmmyyyy)
-# Mar-MI-release: 311220XX
-# Jun-MI-release: 310320XX
-# Sep-MI-release: 300620XX
-# Dec-MI-release: 300920XX
+# Sep-MI-release (Q1 data): 300620XX
+# Dec-MI-release (Q2 data): 300920XX
+# Mar-MI-release (Q3 data): 311220XX
+# Jun-MI-release (Q4 data): 310320XX
 end_date <- lubridate::dmy(31032026)
-
-# UPDATE - Last day in the previous reporting period (ddmmyyyy)
-# Mar-MI-release: 310920XX
-# Jun-MI-release: 311220XX
-# Sep-MI-release: 310320XX
-# Dec-MI-release: 310620XX
-previous_end_date <- lubridate::dmy(31122025)
-
-# UPDATE - Most recent Date of publication (ddmmyyyy)
-# Found in: 00_setup-pub-environment.R
-pub_date <- lubridate::dmy(16122025)
 
 ################################################################################.
 ### 1 - Load functions and packages ----
@@ -80,22 +69,61 @@ library(gluedown)      # For formatting character vectors in markdown
 library(fs)            # For setting up directories 
 
 ################################################################################.
-### 2 - Define file paths dependent on whether running on server or desktop ----
+### 2 - Derive dates ----
 ################################################################################.
 
-stats <- case_when(
-  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ "/conf",
-  TRUE ~ "//stats"
+# FY and Quarter for current reporting period
+fy <- phsmethods::extract_fin_year(end_date) %>% substr(1, 4)
+qt <- lubridate::quarter(end_date, fiscal_start = 4)
+
+# FY and Quarter for previous reporting period
+previous_end_date <- ceiling_date(end_date %m-% months(3), "month") - days(1)
+previous_fy <- phsmethods::extract_fin_year(previous_end_date) %>% substr(1, 4)
+previous_qt <- lubridate::quarter(previous_end_date, fiscal_start = 4)
+
+# First date in reporting period (ddmmyyyy)
+start_date <- dmy(01042016)
+
+# Helper function to return current, provisional and revised years
+get_fy <- function(date, modifier = 0){
+  fy <- phsmethods::extract_fin_year(date)
+  fy <- sprintf(
+    "%d/%02d",
+    as.numeric(substr(fy, 1, 4)) - modifier,
+    as.numeric(substr(fy, 6, 7)) - modifier
+  )
+  return(fy)
+}
+current_year <- get_fy(end_date)
+extra_referrals_year <- get_fy(end_date, 1)
+provisional_year <- get_fy(end_date, 2)
+revised_year <- get_fy(end_date, 3)
+
+# Years that have been finalised
+fy_range <- function(start_year, end_year) {
+  sprintf(
+    "%d/%02d",
+    start_year:end_year,
+    (start_year:end_year + 1) %% 100)
+}
+
+finalised_years <- fy_range(
+  as.numeric(substr(get_fy(start_date), 1, 4)),
+  as.numeric(substr(get_fy(end_date, 4), 1, 4))
 )
 
-cl_out <- case_when(
-  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ 
-    "/conf/linkage/output",
-  TRUE ~ "//stats/cl-out"
-)
+if (qt == 4){
+  finalised_years <- c(finalised_years, revised_year)
+}
 
 ################################################################################.
-### 3 - SIMD lookup ----
+### 3 - Define exempt termination reason codes ----
+################################################################################.
+
+exempt_reasons <- c("03", "04", "05", "06")
+
+################################################################################.
+### 4 - SIMD lookup ----
 ################################################################################.
 
 simd <- function(){
@@ -114,22 +142,22 @@ simd <- function(){
 }
 
 ################################################################################.
-### 4 - Derive dates ----
+### 5 - Define file paths dependent on whether running on server or desktop ----
 ################################################################################.
 
-# Latest FY and Quarter
-fy <- phsmethods::extract_fin_year(end_date) %>% substr(1, 4)
-qt <- lubridate::quarter(end_date, fiscal_start = 4)
+stats <- case_when(
+  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ "/conf",
+  TRUE ~ "//stats"
+)
 
-# Previous FY and Quarter
-previous_fy <- phsmethods::extract_fin_year(previous_end_date) %>% substr(1, 4)
-previous_qt <- lubridate::quarter(previous_end_date, fiscal_start = 4)
+cl_out <- case_when(
+  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ 
+    "/conf/linkage/output",
+  TRUE ~ "//stats/cl-out"
+)
 
-# First date in reporting period (ddmmyyyy)
-start_date <- dmy(01042016)
-  
 ################################################################################.
-### 5 - Set output/knitr options for Markdown ----
+### 6 - Set output/knitr options for Markdown ----
 ################################################################################.
 
 # Disable scientific notation
@@ -142,21 +170,5 @@ options(knitr.duplicate.label = "allow")
 knit_hooks$set(inline = function(x){
   if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
 })
-
-################################################################################.
-### 6 - Define exempt termination reason codes ----
-################################################################################.
-
-exempt_reasons <- c("03", "04", "05", "06")
-
-################################################################################.
-### 7 - Define finalised years ----
-################################################################################.
-
-# Define years in which data has been made final
-finalised_years <- 
-  list.files(get_final_data_dir()) %>% 
-  str_sub(1, 7) %>%
-  str_replace("-", "/")
 
 ################################ END OF SCRIPT #################################.
