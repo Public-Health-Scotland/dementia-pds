@@ -605,7 +605,7 @@ c10 <-
     labels = paste0(seq(0, c10_limit, by = 10), "%"),
     expand = c(0, 0)) +
   scale_x_discrete(labels = str_wrap(c10_data$sex, width = 8)) +
-  xlab("Age Group") +
+  xlab("Sex") +
   ylab(str_wrap("Percentage of total referrals", width = 10))
 
 
@@ -645,7 +645,7 @@ c11 <-
   theme_dementia_pub() +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
   scale_x_discrete(labels = str_wrap(c11_data$sex, width = 8)) +
-  xlab("Age Group") +
+  xlab("Sex") +
   ylab(str_wrap("Percentage of Referrals Achieved LDP Standard", width = 10))
 
 # Save chart to output folder
