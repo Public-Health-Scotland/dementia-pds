@@ -21,7 +21,7 @@ filepath <- "/conf/dementia/A&I/Analysts/Lucy/dementia-pds/dashboard"
 appName <- "phs-dementiapds2026-app" 
 
 # MANUAL UPDATE: "on" for pre-release, "off" for general release.
-password_protect_deploy <- "on" 
+password_protect_deploy <- "off" 
 #===============================================================================.
 
 ################################################################################.

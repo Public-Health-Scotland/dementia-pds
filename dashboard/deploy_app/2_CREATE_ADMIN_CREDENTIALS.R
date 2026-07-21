@@ -13,7 +13,7 @@
 # MANUAL UPDATE: Set `user` and `password` in `/conf/dementia/A&I/Outputs/dashboard/passwords.R`
 
 # MANUAL UPDATE: "on" or "off"
-password_protect <- "on" 
+password_protect <- "off" 
 #===============================================================================.
 
 # Sets `user` and `password`
