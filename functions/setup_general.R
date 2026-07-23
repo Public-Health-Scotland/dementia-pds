@@ -1,31 +1,30 @@
-################################################################################
+################################################################################.
 # Name of file - setup_general.R
 # Original Authors - Jennifer Thom
 # Original Date - August 2024
+# Updated By - Lucy Binsted
+# Date - July 2026
 #
 # Written/run on - RStudio Server
 # Version of R - 4.1.2
 #
-# Description - Functions to set up reading files from a working directory. Deals
-#               with checking for read/write permissions. Find latest file function
-#               used for automating the selection of the simd file.
-################################################################################
-
+# Description - Functions to set up reading files from a working directory. 
+#               Deals with checking for read/write permissions. Find latest file 
+#               function used for automating the selection of the SIMD file.
+################################################################################.
 
 #' Find the latest version of a file
 #'
 #' @description
-#' This will return the latest created file matching
-#' the criteria. It uses [fs::dir_info()] to
-#' find the files then picks the one with the latest
-#' `birthtime`.
+#' This will return a file matching the criteria. 
+#' It uses [fs::dir_info()] to find the files then picks one based on the selection method.
 #'
 #' @param directory The directory in which to search.
-#' @param regexp a
-#' [regular expression](https://www.regular-expressions.info/quickstart.html)
+#' @param regexp a [regular expression](https://www.regular-expressions.info/quickstart.html)
 #' passed to [fs::dir_info()] to search for the file.
-#' @param selection_method Valid arguments are "modification_date"
-#' (the default) or "file_name".
+#' @param selection_method Valid arguments are "modification_date" (the default) 
+#' or "file_name".
+#' @param recurse Whether nested files in the directory should also be searched.
 #'
 #' @return the [fs::path()] to the file
 #' @export
@@ -39,65 +38,80 @@
 #' }
 find_latest_file <- function(directory,
                              regexp,
-                             selection_method = "modification_date") {
-  if (selection_method == "modification_date") {
-    latest_file <- fs::dir_info(
-      path = directory,
-      type = "file",
-      regexp = regexp,
-      recurse = TRUE
-    ) %>%
-      dplyr::arrange(
-        dplyr::desc(.data$birth_time),
-        dplyr::desc(.data$modification_time)
-      ) %>%
-      magrittr::extract(1L, )
-    
-    n_matched_files <- nrow(latest_file)
-    
-    if (n_matched_files > 1L) {
-      cli::cli_inform(
-        c(i = "There were {.val {n_matched_files}} files matching the
-                    regexp {.val {regexp}}. {.val {fs::path_file(latest_file$path)}} has been selected,
-                    which was modified on {.val {latest_file$modification_time}}.")
-      )
-    }
-  } else if (selection_method == "file_name") {
-    latest_file <- fs::dir_info(
-      path = directory,
-      type = "file",
-      regexp = regexp,
-      recurse = TRUE
-    ) %>%
-      dplyr::arrange(
-        dplyr::desc(.data$path)
-      ) %>%
-      magrittr::extract(1L, )
-    
-    n_matched_files <- nrow(latest_file)
-    
-    if (n_matched_files > 1L) {
-      cli::cli_inform(
-        c(i = "There were {.val {n_matched_files}} files matching the
-                    regexp {.val {regexp}}. {.val {fs::path_file(latest_file$path)}} has been selected,
-                    as it is first alphabetically.")
-      )
-    }
-  }
+                             selection_method = "modification_date",
+                             recurse = FALSE) {
   
-  if (n_matched_files == 1L) {
-    cli::cli_alert_info("Using {.val {fs::path_file(latest_file$path)}}.")
-  } else {
+  selection_method <- match.arg(
+    selection_method,
+    choices = c("modification_date", "file_name")
+  )
+  
+  # Search the directory for matching files
+  matches <- fs::dir_info(
+    path = directory,
+    type = "file",
+    regexp = regexp,
+    recurse = recurse
+  )
+  
+  # No matches found
+  if (nrow(matches) == 0L) {
     cli::cli_abort(
-      "There was no file in {.path {directory}} that matched the
-        regular expression {.val {regexp}}"
+      "There were no files in {.path {directory}} that matched the regular expression {.val {regexp}}."
     )
   }
   
-  file_path <- latest_file %>%
-    dplyr::pull(.data$path)
+  # One match found
+  if (nrow(matches) == 1L) {
+    cli::cli_inform(
+      "There was one file in {.path {directory}} that matched the regular expression {.val {regexp}}. Using {.file {fs::path_file(matches$path)}}."
+    )
+    return(matches$path)
+  }
   
-  return(file_path)
+  # More than one match found
+  msg <- c("There were {.val {nrow(matches)}} files in {.path {directory}} that matched the regular expression {.val {regexp}}.")
+  
+  # Select by modification date
+  if (selection_method == "modification_date") {
+    matches <- matches %>%
+      dplyr::filter(.data$modification_time == max(.data$modification_time))
+    
+    # Only one file has the latest modification date
+    if (nrow(matches) == 1L) {
+      cli::cli_inform(
+        c(msg, 
+          "i" = "{.file {fs::path_file(matches$path)}} has been selected based on modification date ({.val {matches$modification_time}})."
+        )
+      )
+      return(matches$path)
+    }
+    
+    # Multiple files have the same modification date
+    matches <- matches %>%
+      dplyr::arrange(dplyr::desc(fs::path_file(.data$path))) %>%
+      dplyr::slice(1L)
+    
+    cli::cli_inform(
+      c(msg,
+        "i" = "Multiple files shared the latest modification date.",
+        "i" = "{.file {fs::path_file(matches$path)}} has been selected as it is last alphabetically (typically corresponding to the highest numbered file)."
+      )
+    )
+    return(matches$path)
+  }
+  
+  # Select by file name (last alphabetically)
+  matches <- matches %>%
+    dplyr::arrange(dplyr::desc(fs::path_file(.data$path))) %>%
+    dplyr::slice(1L)
+  
+  cli::cli_inform(
+    c(msg,
+      "i" = "{.file {fs::path_file(matches$path)}} has been selected as it is last alphabetically (typically corresponding to the highest numbered file)."
+    )
+  )
+  return(matches$path)
 }
 
 
