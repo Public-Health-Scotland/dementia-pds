@@ -47,6 +47,7 @@
 #'   regexp = "Scottish_Postcode_Directory_.+?\\.rds"
 #' )
 #' }
+
 find_latest_file <- function(directory,
                              regexp,
                              selection_method = "modification_date",
@@ -83,8 +84,9 @@ find_latest_file <- function(directory,
   }
   
   # If multiple files are found, choose one based on the selection method
+  n_results <- nrow(matches)
   msg <- c(
-    "There were {.val {nrow(matches)}} files in {.path {directory}} that matched the regular expression {.val {regexp}}."
+    "There were {.val {n_results}} files in {.path {directory}} that matched the regular expression {.val {regexp}}."
   )
   
   # If the selection method is `modification_date`, select the files with the latest modification time
@@ -144,6 +146,7 @@ find_latest_file <- function(directory,
 #' @return An [fs::path()] object containing the validated directory path.
 #'
 #' @export
+
 check_dir_path <- function(directory,
                            check_mode = "read",
                            create = FALSE) {
@@ -216,20 +219,22 @@ check_dir_path <- function(directory,
 #'
 #' @family file path functions
 #' @export
+
 check_file_path <- function(directory,
                             file_name = NULL,
                             ext = NULL,
                             check_mode = "read",
                             create_dir = FALSE,
                             file_name_regexp = NULL,
-                            selection_method = "modification_date") {
+                            selection_method = "modification_date",
+                            recurse = FALSE) {
     
     # Check the directory exists with the required permissions, and create it if requested
     directory <- check_dir_path(directory, check_mode, create_dir)
     
     # 1. If both a file name and regular expression are provided, return an error message
     if (!is.null(file_name) && !is.null(file_name_regexp)) {
-      cli::cli_abort(
+      cli::cli_alert_info(
         "Specify only one of {.arg file_name} or {.arg file_name_regexp}."
       )
     }
@@ -248,7 +253,8 @@ check_file_path <- function(directory,
         file_path <- find_latest_file(
           directory,
           regexp = file_name_regexp,
-          selection_method = selection_method
+          selection_method = selection_method,
+          recurse = recurse
         )
       # 3.2. If check mode is not read, return an error message
       } else {
@@ -292,7 +298,7 @@ check_file_path <- function(directory,
           cli::cli_abort(c(
             error_text,
             "i" = "Possible matches:",
-            setNames(as.list(possible_file_name), rep("*", length(possible_file_name)))
+            setNames(possible_file_name, rep("*", length(possible_file_name)))
           ))
         # 5.5. If there were no similar file names, return an error message
         } else {
@@ -314,32 +320,4 @@ check_file_path <- function(directory,
     }
 }
 
-
-#' SIMD File Path
-#'
-#' @description Get the path to the centrally held Scottish Index of Multiple
-#' Deprivation (SIMD) file.
-#'
-#' @inheritParams get_file_path
-#'
-#' @return An [fs::path()] to the SIMD file
-#' @export
-#'
-#' @family lookup file paths
-get_simd_path <- function(file_name = NULL, ext = "rds") {
-  simd_dir <-
-    fs::path("/", "conf", "linkage", "output", "lookups", "Unicode", "Deprivation")
-  
-  simd_path <- get_file_path(
-    directory = simd_dir,
-    file_name = file_name,
-    ext = ext,
-    file_name_regexp = stringr::str_glue(
-      "postcode_\\d\\d\\d\\d_\\d_simd\\d\\d\\d\\d.*?\\.{ext}"
-    )
-  )
-  
-  return(simd_path)
-}
-
-### End of Script ###
+################################ End of Script #################################.
