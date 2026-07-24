@@ -1,17 +1,21 @@
-################################################################################
+################################################################################.
 # Name of file - setup_directories.R
 # Original Authors - Jennifer Thom
 # Original Date - November 2023
 # Update - August 2024
+# Updated By - Lucy Binsted
+# Date - July 2026
 #
 # Written/run on - RStudio Server
 # Version of R - 4.1.2
 #
 # Description - Functions to set up working directory and declare file paths for
 #               use in MI and Publication reports.
-################################################################################
+################################################################################.
 
-## Generic setup ##-------------------------------------------------------------
+################################################################################.
+# Generic setup ----
+################################################################################.
 
 # Use general file path functions
 source(here::here("functions/setup_general.R"))
@@ -22,7 +26,9 @@ source(here::here("functions/write_file.R"))
 # Use render_check function for rendering rmarkdown files
 source(here::here("functions/render_check.R"))
 
-### MI directory setup ###------------------------------------------------------
+################################################################################.
+# MI file path functions ----
+################################################################################.
 
 #' Get the management report root directory
 #'
@@ -34,10 +40,12 @@ source(here::here("functions/render_check.R"))
 #' An [fs::path()] object containing the path to the
 #' `management-report` directory.
 #'
-#' @family management report paths
+#' @family management report file paths
 #' @export
+
 get_mi_dir <- function() {
   mi_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "management-report")
+  
   return(mi_dir)
 }
 
@@ -79,8 +87,9 @@ get_mi_dir <- function() {
 #' @return
 #' A validated [fs::path()] object containing the requested directory path.
 #'
-#' @family management report paths
+#' @family management report file paths
 #' @export
+
 get_mi_year_dir <- function(folder = c("data", "output", "tests"), 
                             fy,
                             qt,
@@ -110,15 +119,16 @@ get_mi_year_dir <- function(folder = c("data", "output", "tests"),
   year <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}")
   qtr <- stringr::str_glue("Q{qt}")
   test <- if (isTRUE(test_output)) "test" else ""
-  year_dir <- fs::path(get_mi_dir(), folder, year, qtr, test)
+  mi_year_dir <- fs::path(get_mi_dir(), folder, year, qtr, test)
   
   # Check the directory path
-  path <- check_dir_path(
-    directory = year_dir, 
+  mi_year_dir <- check_dir_path(
+    directory = mi_year_dir, 
     check_mode = check_mode,
     create = create
   )
-  return(path)
+  
+  return(mi_year_dir)
 }
 
 
@@ -154,8 +164,9 @@ get_mi_year_dir <- function(folder = c("data", "output", "tests"),
 #' @return
 #' A validated [fs::path()] object containing the requested data file path.
 #'
-#' @family management report paths
+#' @family management report file paths
 #' @export
+
 get_mi_data_path <- function(type = c("clean_data",
                                       "comp_data",
                                       "dupe_data",
@@ -244,8 +255,9 @@ get_mi_data_path <- function(type = c("clean_data",
 #' A validated [fs::path()] object containing the path to the final HTML
 #' management report.
 #'
-#' @family management report paths
+#' @family management report file paths
 #' @export
+
 get_mi_output_path <- function(fy,
                                qt,
                                test_output = FALSE,
@@ -285,7 +297,53 @@ get_mi_output_path <- function(fy,
 }
 
 
-### Publication directory setup ###---------------------------------------------
+#' Get the final data directory
+#'
+#' @description
+#' Returns the directory used to store finalised management information
+#' datasets.
+#'
+#' Once a reporting year is finalised, the corresponding files are stored
+#' within this directory as static reference datasets.
+#'
+#' @return
+#' An [fs::path()] object containing the path to the final data directory.
+#'
+#' @family management report file paths
+#' @export
+
+get_final_data_dir <- function() {
+  final_data_dir <- fs::path(get_mi_dir(), "data", "final")
+  
+  return(final_data_dir)
+}
+
+
+#' Get the Aberdeen City LDP data directory
+#'
+#' @description
+#' Returns the directory containing Aberdeen City LDP files for 2019 and 2020.
+#'
+#' The lookup was created to address known data quality issues affecting
+#' Aberdeen City reporting. Refer to the relevant SOP for further details.
+#' 
+#' @return
+#' An [fs::path()] object containing the path to the Aberdeen City LDP
+#' data directory.
+#'
+#' @family management report file paths
+#' @export
+
+get_ac_data_dir <- function() {
+  ac_data_dir <- fs::path(get_mi_dir(), "data", "Aberdeen City ldp files")
+  
+  return(ac_data_dir)
+}
+
+
+################################################################################.
+# Publication file path functions ----
+################################################################################.
 
 #' Get the publication root directory
 #'
@@ -297,8 +355,9 @@ get_mi_output_path <- function(fy,
 #' An [fs::path()] object containing the path to the publication root
 #' directory.
 #'
-#' @family publication paths
+#' @family publication file paths
 #' @export
+
 get_pub_dir <- function() {
   pub_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "publication")
   return(pub_dir)
@@ -343,8 +402,9 @@ get_pub_dir <- function() {
 #' @return
 #' A validated [fs::path()] object containing the requested directory path.
 #'
-#' @family publication paths
+#' @family publication file paths
 #' @export
+
 get_pub_date_dir <- function(folder = c("data", "output", "figures"), 
                              pub_date,
                              test_output = FALSE, 
@@ -373,16 +433,16 @@ get_pub_date_dir <- function(folder = c("data", "output", "figures"),
     sub_folder <- ""
   }
   folder <- if (folder == "figures") "output" else folder
-  date_dir <- fs::path(get_pub_dir(), folder, pub_date, sub_folder)
+  pub_date_dir <- fs::path(get_pub_dir(), folder, pub_date, sub_folder)
   
   # Check the directory path
-  path <- check_dir_path(
-    directory = date_dir, 
+  pub_date_dir <- check_dir_path(
+    directory = pub_date_dir, 
     check_mode = check_mode,
     create = create
   )
   
-  return(path)
+  return(pub_date_dir)
 }
 
 
@@ -414,8 +474,9 @@ get_pub_date_dir <- function(folder = c("data", "output", "figures"),
 #' A validated [fs::path()] object containing the path to the publication
 #' dataset.
 #'
-#' @family publication paths
+#' @family publication file paths
 #' @export
+
 get_pub_data_path <- function(pub_date,
                               test_output = FALSE,
                               check_mode = "read",
@@ -474,8 +535,9 @@ get_pub_data_path <- function(pub_date,
 #' A validated [fs::path()] object containing the requested publication output
 #' file path.
 #'
-#' @family publication paths
+#' @family publication file paths
 #' @export
+
 get_pub_output_path <- function(output_name = c("pub_summary", 
                                                 "pub_report", 
                                                 "excel_tables", 
@@ -540,6 +602,10 @@ get_pub_output_path <- function(output_name = c("pub_summary",
 #'
 #' @return
 #' A validated [fs::path()] object containing the requested figure file path.
+#' 
+#' @family publication file paths
+#' @export
+
 get_pub_figures_path <- function(type = c("c1",
                                           "c2",
                                           "c3",
@@ -603,136 +669,446 @@ get_pub_figures_path <- function(type = c("c1",
 }
 
 
-### Static file paths ###-------------------------------------------------------
+#' Get the Aberdeen City lookup file path
+#'
+#' @description
+#' Constructs and validates the path to the Aberdeen City lookup file used
+#' within the annual publication process.
+#'
+#' The lookup was created to address known data quality issues affecting
+#' Aberdeen City reporting. Refer to the relevant SOP for further details.
+#'
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param create Logical. If `TRUE`, create the directory if it does not
+#' already exist.
+#'
+#' @return
+#' A validated [fs::path()] object containing the path to the Aberdeen City
+#' lookup file.
+#'
+#' @family publication file paths
+#' @export
 
-#' Set up the national directory folder
-#'
-#' @description The national folder is managed by the Data Management team who
-#' produce the collated file for analysis
-#'
-#' @return the path to the national directory
-#' 
-#'
-get_national_dir <- function(){
-  national_dir <- fs::path("/", "conf", "dementia", "03-Outputs", "National")
-  return(national_dir)
-}
-
-
-#' Get the path to the national collated file
-#' 
-#' @description the national collated file is produced by the data management team
-#' for our analysis
-#'
-#' @return the path to the national collated file
-#' 
-#'
-get_national_data_path <- function() {
+get_ac_lookup_path <- function(check_mode = "read",
+                               create_dir = FALSE) {
   
-  file_name <- stringr::str_glue("{fy}-Q{qt}_national.csv")
+  # Construct the directory path
+  lookup_dir <- fs::path(get_pub_dir(), "lookups")
   
-  national_data_path <- get_file_path(
-    directory = get_national_dir(),
-    file_name = file_name
-  )
+  # Get the file name
+  file_name <- "aberdeen_city_lookup.xlsx"
   
-  return(national_data_path)
-}
-
-
-#' Get the path to the Aberdeen City lookup
-#' 
-#' @description Due to data quality issues (see SOP for guidance), a lookup was 
-#' produced for using Aberdeen City figures in the annual publication
-#'
-#' @return the path to the aberdeen city lookup
-#'
-#' 
-get_ac_lookup_path <- function() {
-  
-  file_name <- stringr::str_glue("aberdeen_city_lookup.xlsx")
-  
-  ac_lookup_path <- get_file_path(
-    directory = fs::path(get_pub_dir(), "lookups"),
-    file_name = file_name
+  # Check the file path
+  ac_lookup_path <- check_file_path(
+    directory = lookup_dir,
+    file_name = file_name,
+    check_mode = check_mode,
+    create_dir = create_dir
   )
   
   return(ac_lookup_path)
 }
 
-# Path to 'Finalised data' files
-# When a year becomes final this then becomes a static file
-#' Get the path to the finalised data files 
-#' 
-#' @description When the annual publication produces a final file, this will be 
-#' stored in this directory
-#'
-#' @return the path to the final data files 
-#' 
-#'
-get_final_data_dir <- function() {
-  
-  final_data_dir <- fs::path(get_mi_dir(), "data", "final")
-  
-  return(final_data_dir)
-}
 
+#' Get the Excel template file path
+#'
+#' @description
+#' Constructs and validates the path to the Excel template used to produce
+#' annual publication figures and supporting outputs.
+#'
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param create Logical. If `TRUE`, create the directory if it does not
+#' already exist.
+#'
+#' @return
+#' A validated [fs::path()] object containing the path to the Excel template
+#' file.
+#'
+#' @family publication file paths
+#' @export
 
-#' Get the path to the reference-files directory
-#'
-#' @description The directory for storing the reference files: expected diagnoses 
-#' and excel template.
-#'
-#' @return the path to the reference files directory
-#'
-#' 
-get_ref_files_dir <- function(){
-  ref_files_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "reference-files")
-  return(ref_files_dir)
-}
-
-
-#' Get the path to the expected diagnoses file
-#' 
-#' @description the expected diagnoses file is needed to populate the management
-#' report.
-#'
-#' @return The path to the expected diagnoses file
-#'
-#' 
-get_exp_diagnoses_path <- function() {
+get_excel_template_path <- function(check_mode = "read",
+                                    create = FALSE) {
   
-  file_name <- stringr::str_glue("expected-diagnoses.csv")
+  # Construct the directory path
+  template_dir <- fs::path(get_pub_dir(), "templates")
   
-  exp_diagnoses_path <- get_file_path(
-    directory = get_ref_files_dir(),
-    file_name = file_name
-  )
-  
-  return(exp_diagnoses_path)
-}
-
-
-# excel template file
-#' Get the path to the excel template for the annual publication
-#' 
-#' @description The excel template is needed for producing the figures for the 
-#' annual publication.
-#'
-#' @return the path to the excel template
-#'
-#' 
-get_excel_template_path <- function() {
-  
+  # Get the file name
   file_name <- stringr::str_glue("excel-template.xlsx")
   
-  excel_template_file_path <- get_file_path(
-    directory = fs::path("/", "conf", "dementia", "A&I", "Outputs", "publication", "templates"),
-    file_name = file_name
+  # Check the file path
+  excel_template_file_path <- check_file_path(
+    directory = template_dir,
+    file_name = file_name,
+    check_mode = check_mode,
+    create = create
   )
   
   return(excel_template_file_path)
 }
 
 
-## End of Script ##
+################################################################################.
+# Data Management file path functions ----
+################################################################################.
+
+#' Get the national data directory
+#'
+#' @description
+#' Returns the root directory containing national collated data files produced
+#' by the Data Management team.
+#'
+#' These files are used as the source data for national dementia analysis.
+#'
+#' @return
+#' An [fs::path()] object containing the path to the national data directory.
+#'
+#' @family data management file paths
+#' @export
+
+get_national_dir <- function(){
+  national_dir <- fs::path("/", "conf", "dementia", "03-Outputs", "National")
+  
+  return(national_dir)
+}
+
+
+#' Get the path to a national collated data file
+#'
+#' @description
+#' Constructs and validates the path to a national collated data file for a
+#' specified financial year and quarter.
+#'
+#' The function first searches the National directory. If the file is not found,
+#' it then searches within the corresponding financial year subdirectory.
+#'
+#' Expected file names follow the pattern:
+#'
+#' \preformatted{
+#' <fy>-Q<qt>_national.csv
+#' }
+#'
+#' For example:
+#'
+#' \preformatted{
+#' 2024-Q4_national.csv
+#' }
+#'
+#' @param fy Financial year start as a four-digit character string, e.g.
+#' `"2024"` for financial year 2024-25.
+#' @param qt Quarter number. Must be one of `1`, `2`, `3` or `4`.
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param create Logical. If `TRUE`, create the directory if it does not
+#' already exist.
+#' 
+#' @return
+#' A validated [fs::path()] object containing the path to the national
+#' collated data file.
+#'
+#' @family data management file paths
+#' @export
+
+get_national_data_path <- function(fy, 
+                                   qt,
+                                   check_mode = "read",
+                                   create = FALSE) {
+  
+  # Check fy format
+  if (!is.character(fy) || length(fy) != 1L ||
+      !grepl("^[0-9]{4}$", fy)) {
+    cli::cli_abort(
+      "{.arg fy} must be a four-digit year, e.g. {.val \"2024\"}."
+    )
+  }
+  
+  # Check qt format
+  if (!is.numeric(qt) || length(qt) != 1L || !qt %in% 1:4) {
+    cli::cli_abort(
+      "{.arg qt} must be one of {.val 1}, {.val 2}, {.val 3} or {.val 4}."
+    )
+  }
+  
+  # Construct the directory paths
+  national_dir <- get_national_dir()
+  national_year_dir <- fs::path(national_dir, stringr::str_glue("{fy}-{as.integer(fy)+1}"))
+  
+  # Get the file name
+  file_name <- stringr::str_glue("{fy}-Q{qt}_national.csv")
+  
+  # Check the file path using the top level folder
+  national_data_path <- tryCatch(
+    check_file_path(
+      directory = national_dir,
+      file_name = file_name,
+      check_mode = check_mode,
+      create = create
+    ),
+    # If the file does not exist, check the year sub-folder 
+    error = function(e) {
+      if (!grepl("does not exist in", conditionMessage(e))) {
+        stop(e)
+      }
+      check_file_path(
+        directory = national_year_dir,
+        file_name = file_name,
+        check_mode = check_mode,
+        create = create
+      )
+    }
+  )
+  
+  return(national_data_path)
+}
+
+
+################################################################################.
+# Reference file path functions ----
+################################################################################.
+
+#' Get the reference files directory
+#'
+#' @description
+#' Returns the directory containing reference files used throughout the
+#' reporting and publication processes.
+#'
+#' Examples include expected diagnosis datasets and publication templates.
+#'
+#' @return
+#' An [fs::path()] object containing the path to the reference files directory.
+#'
+#' @family reference file paths
+#' @export
+ 
+get_ref_files_dir <- function(){
+  ref_files_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "reference-files")
+  
+  return(ref_files_dir)
+}
+
+
+#' Get the expected diagnoses file path
+#'
+#' @description
+#' Constructs and validates the path to the expected diagnoses dataset used
+#' to populate management information reports.
+#'
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param create Logical. If `TRUE`, create the directory if it does not
+#' already exist.
+#'
+#' @return
+#' A validated [fs::path()] object containing the path to the expected
+#' diagnoses file.
+#'
+#' @family reference file paths
+#' @export
+
+get_exp_diagnoses_path <- function(check_mode = "read",
+                                   create = FALSE) {
+  # Construct the directory path
+  ref_files_dir <- get_ref_files_dir()
+  
+  # Get the file name
+  file_name <- "expected-diagnoses.csv"
+  
+  # Check the file path
+  exp_diagnoses_path <- check_file_path(
+    directory = ref_files_dir,
+    file_name = file_name,
+    check_mode = check_mode,
+    create = create
+  )
+  
+  return(exp_diagnoses_path)
+}
+
+
+#' Get the European Standard Population file path
+#'
+#' @description
+#' Constructs and validates the path to the European Standard Population
+#' lookup dataset used when calculating age-standardised rates.
+#'
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param create Logical. If `TRUE`, create the directory if it does not
+#' already exist.
+#'
+#' @return
+#' A validated [fs::path()] object containing the path to the European
+#' Standard Population lookup file.
+#'
+#' @family reference file paths
+#' @export
+
+get_esp_path <- function(check_mode = "read",
+                         create_dir = FALSE) {
+  
+  # Construct the directory path
+  ref_files_dir <- get_ref_files_dir()
+  
+  # Get the file name
+  file_name <- "european_standard_population_by_sex.csv"
+
+  # Check the file path
+  esp_path <- check_file_path(
+    directory = ref_files_dir,
+    file_name = file_name,
+    check_mode = check_mode,
+    create_dir = create_dir
+  )
+  
+  return(esp_path)
+}
+
+
+################################################################################.
+# Linkage file path functions ----
+################################################################################.
+
+#' Get the linkage files directory
+#'
+#' @description
+#' Returns the root directory containing centrally managed linkage and
+#' lookup files.
+#'
+#' @return
+#' An [fs::path()] object containing the path to the linkage files
+#' directory.
+#'
+#' @family lookup file paths
+#' @export
+
+get_linkage_files_dir <- function(){
+  linkage_files_dir <-  fs::path("/", "conf", "linkage", "output", "lookups", "Unicode")
+  
+  return(linkage_files_dir)
+}
+
+
+#' Get the SIMD lookup file path
+#'
+#' @description
+#' Locates and validates the centrally held Scottish Index of Multiple
+#' Deprivation (SIMD) lookup file.
+#'
+#' When multiple matching files are found, a single file is selected
+#' according to `selection_method`.
+#'
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param selection_method Method used to select a file when multiple
+#' matches are found. One of `"modification_date"` or `"file_name"`.
+#' @param recurse Logical. Should nested directories also be searched?
+#'
+#' @return
+#' A validated [fs::path()] object containing the selected SIMD lookup file.
+#'
+#' @family lookup file paths
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' get_simd_path()
+#' }
+
+get_simd_path <- function(check_mode = "read",
+                          selection_method = "modification_date",
+                          recurse = FALSE) {
+  
+  # Construct the directory path
+  simd_dir <- fs::path(get_linkage_files_dir(), "Deprivation")
+  
+  # Get the file name regular expression
+  file_name_regexp <- "postcode_\\d\\d\\d\\d_\\d_simd\\d\\d\\d\\d.*?\\.rds$"
+  
+  # Check the file path
+  simd_path <- check_file_path(
+    directory = simd_dir,
+    check_mode = check_mode,
+    create_dir = FALSE,
+    file_name_regexp = file_name_regexp,
+    selection_method = selection_method,
+    recurse = recurse
+  )
+  
+  return(simd_path)
+}
+
+
+#' Get a population estimates file path
+#'
+#' @description
+#' Locates and validates a population estimates dataset for a specified
+#' geography type.
+#'
+#' The function searches for files matching the naming convention:
+#'
+#' \preformatted{
+#' <type><year>_pop_est_<start_year>_<end_year>.rds
+#' }
+#'
+#' For example:
+#'
+#' \preformatted{
+#' HSCP2019_pop_est_1981_2023.rds
+#' }
+#'
+#' @param type Geography type. One of:
+#' \describe{
+#'   \item{`"HB"`}{Health Board population estimates.}
+#'   \item{`"HSCP"`}{Health and Social Care Partnership estimates.}
+#'   \item{`"DataZone"`}{Data Zone population estimates.}
+#' }
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param selection_method Method used to select a file when multiple
+#' matches are found. One of `"modification_date"` or `"file_name"`.
+#' @param recurse Logical. Should nested directories also be searched?
+#'
+#' @return
+#' A validated [fs::path()] object containing the selected population
+#' estimates file.
+#'
+#' @family lookup file paths
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' get_pop_path("HSCP")
+#' }
+
+get_pop_path <- function(type = c("HB", "HSCP", "DataZone"),
+                         check_mode = "read",
+                         selection_method = "modification_date",
+                         recurse = FALSE){
+  
+  # Validate arguments
+  type <- match.arg(type)
+  
+  # Construct the directory path
+  pop_dir <- fs::path(get_linkage_files_dir(), "Populations", "Estimates")
+  
+  # Get the file name regular expression
+  file_name_regexp <- stringr::str_glue(
+    "{type}[0-9]{{4}}_pop_est_[0-9]{{4}}_[0-9]{{4}}\\.rds$"
+  )
+  
+  # Check the file path
+  pop_path <- check_file_path(
+    directory = pop_dir,
+    check_mode = check_mode,
+    create_dir = FALSE,
+    file_name_regexp = file_name_regexp,
+    selection_method = selection_method,
+    recurse = recurse
+  )
+  
+  return(pop_path)
+}
+
+################################ End of Script #################################.
