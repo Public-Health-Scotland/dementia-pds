@@ -29,12 +29,10 @@ source(here::here("functions/render_check.R"))
 #' @description the function will use the fs package to return the file path to
 #' the management-report directory. 
 #'
-#' @return the path to the management report folder.
+#' @return An [fs::path()] to the management report folder.
 #' 
-#'
 get_mi_dir <- function() {
   mi_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "management-report")
-  
   return(mi_dir)
 }
 
@@ -45,40 +43,52 @@ get_mi_dir <- function() {
 #' management report year directory
 #'
 #' @param folder supply the data or output folder 
+#' @param fy
+#' @param qt
+#' @param test_output
+#' @param check_mode
+#' @param create
 #'
-#' @return the path to the management report year specific folder. 
+#'
+#' @return A validated [fs::path()] to the management report folder for a specific year. 
 #' 
-#'
 get_mi_year_dir <- function(folder = c("data", "output", "tests"), 
+                            fy,
+                            qt,
                             test_output = FALSE, 
-                            previous_data = FALSE,
-                            previous_year_to_qt = FALSE) {
+                            check_mode = "read",
+                            create = FALSE) {
   
-  if (previous_data){
-    year <- stringr::str_glue("{previous_fy}-{substr(as.numeric(previous_fy)+1, 3, 4)}")
-    qtr <- stringr::str_glue("Q{previous_qt}")
-    test <- "test"
+  # Validate arguments
+  folder <- match.arg(folder)
+  
+  # Check fy format
+  if (!is.character(fy) || length(fy) != 1L ||
+      !grepl("^[0-9]{4}$", fy)) {
+    cli::cli_abort(
+      "{.arg fy} must be a four-digit year, e.g. {.val \"2024\"}."
+    )
+  }
+  
+  # Check qt format
+  if (!is.numeric(qt) || length(qt) != 1L || !qt %in% 1:4) {
+    cli::cli_abort(
+      "{.arg qt} must be one of {.val 1}, {.val 2}, {.val 3} or {.val 4}."
+    )
+  }
 
-  } else if(previous_year_to_qt){
-      year <- stringr::str_glue("{as.numeric(fy)-1}-{substr(as.numeric(fy), 3, 4)}")
-      qtr <- stringr::str_glue("Q{qt}")
-      test <- "test"
-    
-  } else {
+  # Construct the directory path
   year <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}")
   qtr <- stringr::str_glue("Q{qt}")
-  test <- "test"
-  }
-
-  if ((test_output)){
-    year_dir <- fs::path(get_mi_dir(), {{ folder }}, year, qtr, test)
-  }else{
-    year_dir <- fs::path(get_mi_dir(), {{ folder }}, year, qtr)
-  }
+  test <- if (isTRUE(test_output)) "test" else NULL
+  year_dir <- fs::path(get_mi_dir(), folder, year, qtr, test)
   
-  path <- get_dir_path(directory = year_dir, 
-                       check_mode = "write")
-  
+  # Check the directory path
+  path <- check_dir_path(
+    directory = year_dir, 
+    check_mode = check_mode,
+    create = create
+  )
   return(path)
 }
 
@@ -93,80 +103,62 @@ get_mi_year_dir <- function(folder = c("data", "output", "tests"),
 #'
 #' @return the file path to the data files needed to create the MI report.
 #' 
-get_mi_data_path <- function(type = c("error_data",
+get_mi_data_path <- function(type = c("clean_data",
+                                      "comp_data",
                                       "dupe_data",
-                                      "clean_data",
-                                      "ldp_data",
+                                      "error_data",
                                       "final_data",
-                                      "wait_data",
+                                      "ldp_data",
+                                      "ldp_wait_data",
+                                      "query_error_data",
+                                      "query_data",
                                       "uptake_data",
-                                      "comp_data"),
+                                      "wait_data"
+                                      ),
                              ext = c("rds", "csv"), 
+                             fy,
+                             qt,
                              test_output = FALSE, 
-                             previous_data = FALSE,
-                             previous_year_to_qt = FALSE) {
+                             check_mode = "write",
+                             create_dir = FALSE) {
   
-  if (previous_data){
-    file_name <- dplyr::case_match(
-      type,
-      "error_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_error-summary"),
-      "dupe_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_dupes"),
-      "clean_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_clean-data"),
-      "ldp_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_individuals-with-ldp"),
-      "final_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_final-data"),
-      "ldp_wait_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_ldp_wait-data"),
-      "wait_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_wait-data"),
-      "comp_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_comp-data"),
-      "subtype_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_subtype-data"),
-      "stage_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_stage-data"),
-      "model_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_model-data"),
-      "uptake_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_uptake-data"),
-      "carer_data" ~ stringr::str_glue("{previous_fy}-{previous_qt}_carer-data")
-      )
-      
-  } else if(previous_year_to_qt){
-    file_name <- dplyr::case_match(
-      type,
-      "error_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_error-summary"),
-      "dupe_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_dupes"),
-      "clean_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_clean-data"),
-      "ldp_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_individuals-with-ldp"),
-      "final_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_final-data"),
-      "ldp_wait_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_ldp_wait-data"),
-      "wait_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_wait-data"),
-      "comp_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_comp-data"),
-      "subtype_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_subtype-data"),
-      "stage_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_stage-data"),
-      "model_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_model-data"),
-      "uptake_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_uptake-data"),
-      "carer_data" ~ stringr::str_glue("{as.numeric(fy)-1}-{qt}_carer-data")
-    )   
-      
-  } else {
-    file_name <- dplyr::case_match(
+  # Validate arguments
+  type <- match.arg(type)
+  ext <- match.arg(ext)
+  
+  # Get and validate the management report folder for a specific year
+  mi_year_dir <- get_mi_year_dir(
+    folder = "data", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output, 
+    check_mode = check_mode,
+    create = create_dir
+  )
+    
+  # Get the file name
+  file_name <- dplyr::case_match(
     type,
-    "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
-    "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"),
     "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
-    "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
-    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data"),
-    "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data"),
-    "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data"),
-    "wait_data_2" ~ stringr::str_glue("{fy}-{qt}_wait-data-2"),
     "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data"),
-    "subtype_data" ~ stringr::str_glue("{fy}-{qt}_subtype-data"),
-    "stage_data" ~ stringr::str_glue("{fy}-{qt}_stage-data"),
-    "model_data" ~ stringr::str_glue("{fy}-{qt}_model-data"),
+    "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"),
+    "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
+    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data"),
+    "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
+    "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data"),
+    "query_error_data" ~ stringr::str_glue("{fy}-{qt}_query-error-summary"),
+    "query_data" ~ stringr::str_glue("{fy}-{qt}_query-summary"),
     "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data"),
-    "carer_data" ~ stringr::str_glue("{fy}-{qt}_carer-data")
+    "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data"),
     )
-  }
   
-  mi_data_path <- get_file_path(
-    directory = get_mi_year_dir("data", test_output = test_output, previous_data = previous_data, previous_year_to_qt = previous_year_to_qt),
+  # Check the file path
+  mi_data_path <- check_file_path(
+    directory = mi_year_dir,
     file_name = file_name,
     ext = ext, 
-    check_mode = "write"
+    check_mode = check_mode,
+    create_dir = create_dir
   )
   
   return(mi_data_path)
@@ -181,22 +173,40 @@ get_mi_data_path <- function(type = c("error_data",
 #' @return the file path to the final mi report output in html format.
 #' 
 #' 
-get_mi_output_path <- function(test_output = FALSE, 
-                               previous_data = FALSE,
-                               previous_year_to_qt = FALSE) {
+get_mi_output_path <- function(fy,
+                               qt,
+                               test_output = FALSE,
+                               check_mode = "write",
+                               create_dir = FALSE) {
   
-  if (previous_data){
-  file_name <- stringr::str_glue("{previous_end_date}_management-report.html")    
-  }else if(previous_year_to_qt){
-    file_name <- stringr::str_glue("{end_date - years(1)}_management-report.html")    
-  }else{
-    file_name <- stringr::str_glue("{end_date}_management-report.html")
-  }
+  # Get and validate the management report folder for a specific year
+  mi_year_dir <- get_mi_year_dir(
+    folder = "output", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output, 
+    check_mode = check_mode,
+    create = create_dir
+  )
   
-  mi_output_path <- get_file_path(
-    directory = get_mi_year_dir("output", test_output = test_output, previous_data = previous_data, previous_year_to_qt = previous_year_to_qt),
-    file_name = file_name, 
-    check_mode = "write"
+  # Construct the end date for the fy and qt provided
+  year <- c(rep(as.integer(fy),3), as.integer(fy)+1)[as.integer(qt)]
+  month <- c(6, 9, 12, 3)[as.integer(qt)]
+  
+  end_date <- lubridate::ceiling_date(
+    lubridate::ymd(sprintf("%04d-%02d-01", year, month)),
+    "month") - lubridate::days(1)
+  
+  # Get the file name
+  file_name <- stringr::str_glue("{end_date}_management-report")
+  
+  # Check the file path
+  mi_output_path <- check_file_path(
+    directory = mi_year_dir,
+    file_name = file_name,
+    ext = "html", 
+    check_mode = check_mode,
+    create_dir = create_dir
   )
   
   return(mi_output_path)
@@ -230,7 +240,10 @@ get_pub_dir <- function() {
 #' @return the path to the annual publication date folder
 #'
 #' 
-get_pub_date_dir <- function(folder = c("data", "output"), test_output = FALSE) {
+get_pub_date_dir <- function(folder = c("data", "output"), 
+                             test_output = FALSE,
+                             check_mode = "read",
+                             create = FALSE) {
   
   test <- "test"
   
@@ -242,8 +255,9 @@ get_pub_date_dir <- function(folder = c("data", "output"), test_output = FALSE) 
                              {folder}, {pub_date})  
   }
   
-  path <- get_dir_path(directory = pub_date_dir, 
-                       check_mode = "write")
+  path <- check_dir_path(directory = pub_date_dir, 
+                       check_mode = check_mode,
+                       create = create)
   
   return(path)
 }
