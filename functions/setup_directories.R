@@ -24,34 +24,63 @@ source(here::here("functions/render_check.R"))
 
 ### MI directory setup ###------------------------------------------------------
 
-#' Set up Management Information Directory
-#' 
-#' @description the function will use the fs package to return the file path to
-#' the management-report directory. 
+#' Get the management report root directory
 #'
-#' @return An [fs::path()] to the management report folder.
-#' 
+#' @description
+#' Returns the root directory used to store management report data,
+#' outputs and supporting files.
+#'
+#' @return
+#' An [fs::path()] object containing the path to the
+#' `management-report` directory.
+#'
+#' @family management report paths
+#' @export
 get_mi_dir <- function() {
   mi_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "management-report")
   return(mi_dir)
 }
 
 
-#' Set up the Management Information year directory
+#' Get a management report year directory
 #'
-#' @description The function will use the fs package to return the file path to the
-#' management report year directory
+#' @description
+#' Constructs and validates the path to a management report directory for a
+#' specific financial year and quarter.
 #'
-#' @param folder supply the data or output folder 
-#' @param fy
-#' @param qt
-#' @param test_output
-#' @param check_mode
-#' @param create
+#' The directory structure follows:
 #'
+#' \preformatted{
+#' management-report/
+#'   <folder>/
+#'     <financial year>/
+#'       Q<quarter>/
+#' }
 #'
-#' @return A validated [fs::path()] to the management report folder for a specific year. 
-#' 
+#' When `test_output = TRUE`, an additional `test` subdirectory is appended.
+#'
+#' @param folder Character string specifying which management report folder to
+#' return. One of:
+#' \describe{
+#'   \item{`"data"`}{Directory containing intermediate data files.}
+#'   \item{`"output"`}{Directory containing final report outputs.}
+#'   \item{`"tests"`}{Directory containing test files.}
+#' }
+#' @param fy Financial year start as a four-digit character string, e.g.
+#' `"2025"` for financial year 2025-26.
+#' @param qt Quarter number. Must be one of `1`, `2`, `3` or `4`.
+#' @param test_output Logical. If `TRUE`, return the path to the `test`
+#' subdirectory.
+#' @param check_mode Access mode passed to [check_dir_path()]. One of
+#' `"read"`, `"write"` or `"exists"`.
+#' @param create Logical. If `TRUE`, create the directory (and any missing
+#' parent directories) if it does not already exist.
+#'
+#' @return
+#' A validated [fs::path()] object containing the requested directory path.
+#'
+#' @family management report paths
+#' @export
 get_mi_year_dir <- function(folder = c("data", "output", "tests"), 
                             fy,
                             qt,
@@ -93,16 +122,40 @@ get_mi_year_dir <- function(folder = c("data", "output", "tests"),
 }
 
 
-#' Get the path to the MI data outputs
+#' Get the path to a management report data file
 #'
-#' @description The function will return the file path to the data files needed
-#' to create the MI report. 
+#' @description
+#' Constructs and validates the path to a management report data file for a
+#' specified financial year and quarter.
 #'
-#' @param type Supply the type of data output
-#' @param ext Supply the file extension
+#' @param type Character string specifying the required data file:
+#' \describe{
+#'   \item{`"clean_data"`}{Cleaned source data.}
+#'   \item{`"comp_data"`}{Comparator data.}
+#'   \item{`"dupe_data"`}{Duplicate records report.}
+#'   \item{`"error_data"`}{Error summary data.}
+#'   \item{`"final_data"`}{Final analysis dataset.}
+#'   \item{`"ldp_data"`}{Individuals with LDP data.}
+#'   \item{`"ldp_wait_data"`}{LDP waiting list data.}
+#'   \item{`"query_data"`}{Query summary data.}
+#'   \item{`"query_error_data"`}{Query error summary data.}
+#'   \item{`"uptake_data"`}{Uptake analysis data.}
+#'   \item{`"wait_data"`}{Waiting list data.}
+#' }
+#' @param ext File extension. One of `"rds"` or `"csv"`.
+#' @param fy Financial year start as a four-digit character string.
+#' @param qt Quarter number. Must be one of `1`, `2`, `3` or `4`.
+#' @param test_output Logical. If `TRUE`, use the test directory.
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param create_dir Logical. If `TRUE`, create the required directory if it
+#' does not already exist.
 #'
-#' @return the file path to the data files needed to create the MI report.
-#' 
+#' @return
+#' A validated [fs::path()] object containing the requested data file path.
+#'
+#' @family management report paths
+#' @export
 get_mi_data_path <- function(type = c("clean_data",
                                       "comp_data",
                                       "dupe_data",
@@ -165,14 +218,35 @@ get_mi_data_path <- function(type = c("clean_data",
 }
 
 
-#' Get the path to the management report final output.
-#' 
-#' @description The function will return the path to the final management report 
-#' html document for distribution
+#' Get the path to the final management report output
 #'
-#' @return the file path to the final mi report output in html format.
-#' 
-#' 
+#' @description
+#' Constructs and validates the path to the final management report HTML file
+#' for a specified financial year and quarter.
+#'
+#' The output file name is based on the quarter end date. For example:
+#'
+#' \preformatted{
+#' 2026-03-31_management-report.html
+#' }
+#'
+#' for financial year `"2025"` quarter `4`.
+#'
+#' @param fy Financial year start as a four-digit character string.
+#' @param qt Quarter number. Must be one of `1`, `2`, `3` or `4`.
+#' @param test_output Logical. If `TRUE`, return a path within the test output
+#' directory.
+#' @param check_mode Access mode required for the file. One of `"read"` or
+#' `"write"`.
+#' @param create_dir Logical. If `TRUE`, create the output directory if it does
+#' not already exist.
+#'
+#' @return
+#' A validated [fs::path()] object containing the path to the final HTML
+#' management report.
+#'
+#' @family management report paths
+#' @export
 get_mi_output_path <- function(fy,
                                qt,
                                test_output = FALSE,
@@ -190,7 +264,7 @@ get_mi_output_path <- function(fy,
   )
   
   # Construct the end date for the fy and qt provided
-  year <- c(rep(as.integer(fy),3), as.integer(fy)+1)[as.integer(qt)]
+  year <- as.integer(fy) + (as.integer(qt) == 4L)
   month <- c(6, 9, 12, 3)[as.integer(qt)]
   
   end_date <- lubridate::ceiling_date(
@@ -225,7 +299,6 @@ get_mi_output_path <- function(fy,
 #'
 get_pub_dir <- function() {
   pub_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "publication")
-  
   return(pub_dir)
 }
 
@@ -239,25 +312,25 @@ get_pub_dir <- function() {
 #'
 #' @return the path to the annual publication date folder
 #'
-#' 
 get_pub_date_dir <- function(folder = c("data", "output"), 
-                             test_output = FALSE,
+                             pub_date,
+                             test_output = FALSE, 
                              check_mode = "read",
                              create = FALSE) {
   
-  test <- "test"
+  # Validate arguments
+  folder <- match.arg(folder)
   
-  if ((test_output)){
-    pub_date_dir <- fs::path("/","conf","dementia","A&I","Outputs","publication", 
-                             {folder}, {pub_date}, test)
-  }else{
-    pub_date_dir <- fs::path("/","conf","dementia","A&I","Outputs","publication", 
-                             {folder}, {pub_date})  
-  }
+  # Construct the directory path
+  test <- if (isTRUE(test_output)) "test" else NULL
+  date_dir <- fs::path(get_pub_dir(), folder, pub_date, test)
   
-  path <- check_dir_path(directory = pub_date_dir, 
-                       check_mode = check_mode,
-                       create = create)
+  # Check the directory path
+  path <- check_dir_path(
+    directory = date_dir, 
+    check_mode = check_mode,
+    create = create
+  )
   
   return(path)
 }
