@@ -5,7 +5,7 @@ output:
     fig_caption: no
     cover_page: "/conf/dementia/A&I/Outputs/publication/templates/phs-offstats-cover.docx"
     cover_title: "Dementia Post-Diagnostic Support Statistics"
-    cover_subtitle: "Performance against the Local Delivery Plan Standard 2023/24"
+    cover_subtitle: "Performance against the Local Delivery Plan Standard, 2023/24"
     cover_date: "21  July 2026"
     toc_depth: 3
 ---
@@ -475,18 +475,55 @@ hb <- hb %>%
     select(health_board, referrals, complete, exempt, 
          ongoing, fail, perc)
 
+# Boards with the maximum percentage- used to find multiple hbs with same top percentage
+top_hb <- top3_hb %>%
+  filter(calc == max(calc))
+
+top_text <- if (nrow(top_hb) > 1) {
+  
+  # Joint highest
+  glue(
+    "{glue_collapse(top_hb$health_board, sep = ' and ')} had the highest ",
+    "percentage of people receiving a minimum of one year's post-diagnostic ",
+    "support ({top_hb$perc[1]}) followed by ",
+    "{top3_hb$health_board[nrow(top_hb) + 1]} ",
+    "({top3_hb$perc[nrow(top_hb) + 1]})."
+  )
+  
+} else {
+  
+  # Single highest
+  glue(
+    "{top3_hb$health_board[1]} had the highest percentage of people receiving ",
+    "a minimum of one year's post-diagnostic support ",
+    "({top3_hb$perc[1]}) followed by ",
+    "{top3_hb$health_board[2]} ({top3_hb$perc[2]}) and ",
+    "{top3_hb$health_board[3]} ({top3_hb$perc[3]})."
+  )
+}
+
 # Commentary for latest year HB 12m PDS
 text_hb <- glue(
-  "In Scotland, {hb %>% filter(health_board == 'Scotland') %>% ",
-  "pull(perc)} of those people referred for dementia post-diagnostic ",
-  "support received a minimum of one year's support. ",
-  "{top3_hb$health_board[1]} had the highest percentage of people receiving ",
-  "a minimum of one year's post-diagnostic support ",
-  "({top3_hb$perc[1]}) followed by {top3_hb$health_board[2]} ",
-  "({top3_hb$perc[2]}) and {top3_hb$health_board[3]} ({top3_hb$perc[3]}). ",
+  "In Scotland, {hb %>% filter(health_board == 'Scotland') %>% pull(perc)} ",
+  "of those people referred for dementia post-diagnostic support received ",
+  "a minimum of one year's support. ",
+  "{top_text} ",
   "{glue_collapse(bot2_hb$health_board, sep = ' and ')} had the lowest ",
   "percentages with {glue_collapse(bot2_hb$perc, sep = ' and ')} respectively."
 )
+
+##old version of text_hb
+# text_hb <- glue(
+#   "In Scotland, {hb %>% filter(health_board == 'Scotland') %>% ",
+#   "pull(perc)} of those people referred for dementia post-diagnostic ",
+#   "support received a minimum of one year's support. ",
+#   "{top3_hb$health_board[1]} had the highest percentage of people receiving ",
+#   "a minimum of one year's post-diagnostic support ",
+#   "({top3_hb$perc[1]}) followed by {top3_hb$health_board[2]} ",
+#   "({top3_hb$perc[2]}) and {top3_hb$health_board[3]} ({top3_hb$perc[3]}). ",
+#   "{glue_collapse(bot2_hb$health_board, sep = ' and ')} had the lowest ",
+#   "percentages with {glue_collapse(bot2_hb$perc, sep = ' and ')} respectively."
+# )
 
 # Latest year 12m PDS by IJB
 ijb <-
@@ -507,6 +544,12 @@ ijb_rank <- ijb %>%
     calc = as.numeric(sub("%", "", perc))
   )
 
+## ranking ijbs
+ijb_rank <- ijb %>%
+  mutate(
+    calc = as.numeric(sub("%", "", perc))
+  )
+
 top2_ijb <- ijb_rank %>%
   arrange(desc(calc)) %>%
   slice(1:3)
@@ -515,8 +558,38 @@ bot2_ijb <- ijb_rank %>%
   arrange(calc) %>%
   slice(1:2)
 
+# IJBs sharing the highest percentage
+top_ijb <- top2_ijb %>%
+  filter(calc == max(calc))
+
+top_text <- if (nrow(top_ijb) > 1) {
+
+  glue(
+    "{glue_collapse(top_ijb$ijb, sep = ' and ')} Integration Authority areas ",
+    "had the highest percentage of people receiving a minimum of one year's ",
+    "post-diagnostic support ({top_ijb$perc[1]})."
+  )
+
+} else {
+
+  glue(
+    "{top2_ijb$ijb[1]} Integration Joint Board had the highest percentage ",
+    "of people receiving a minimum of one year's post-diagnostic support ",
+    "({top2_ijb$perc[1]}), followed by {top2_ijb$ijb[2]} ",
+    "({top2_ijb$perc[2]})."
+  )
+
+}
 
 # Commentary for latest year IJB 12m PDS
+text_ijb <- glue(
+  "In {latest_fy}, {top_text} ",
+  "{glue_collapse(bot2_ijb$ijb, sep = ' and ')} ",
+  "had the lowest percentages with {glue_collapse(bot2_ijb$perc, ",
+  "sep = ' and ')} respectively."
+)
+
+##older version commentary for IJB 12m PDS
 text_ijb <- glue(
   "In {latest_fy}, {top2_ijb$ijb[1]} Integration Joint Board had the highest ",
   "percentage of people receiving a minimum of one year's post-diagnostic ",
@@ -563,16 +636,27 @@ trend_comm <-
   mutate(perc = format_perc(perc)) %>%
   arrange(perc)
 
+#To get last five year trend for Scotland
+trend_comm <-
+  hb_trend %>%
+  filter(health_board == "Scotland") %>%
+  arrange(fy) %>%
+  slice_tail(n = 5) %>%     # latest 5 years
+  arrange(perc)
+
+min_row <- trend_comm %>% slice_min(perc, n = 1)
+max_row <- trend_comm %>% slice_max(perc, n = 1)
+
 # Commentary for Scotland trend
 scot_trend_text <- glue(
   "The percentage of people in Scotland referred for post-diagnostic support ",
-  "who received a minimum of one year's support has fluctuated slightly in the ",
+  "who received a minimum of one year's support has fluctuated slightly in the five-year period, ",
  "{paste0(as.numeric(substr(latest_fy, 1, 4)) - 4, '/',
            substr(as.numeric(substr(latest_fy, 1, 4)) - 3, 3, 4))} ",
   "to {latest_fy}, presented in Table 4." ,
   "During this time period the percentage of people receiving a minimum of one year's ",
-  "PDS ranged from {first(trend_comm$perc)} in {first(trend_comm$fy)} to ",
-  "{last(trend_comm$perc)} in {last(trend_comm$fy)}. ",
+  "PDS ranged from {format_perc(min_row$perc)} in {min_row$fy} to ",
+ "{format_perc(max_row$perc)} in {max_row$fy}.",
   "The effects of measures relating to the COVID-19 pandemic are likely to have ",
   "affected the 2019/20 and 2020/21 figures. They will also have impacted on the ",
   "number of people referred in these years."
@@ -734,10 +818,10 @@ ldp_top_ref <-
   mutate(ldp = format_perc(ldp))
 
 age_ldp_text <- glue(
-  "In {latest_fy}, the percentage of referrals receiving a minimum of one ",
+  "In {latest_fy}, the percentage of people referred who received a minimum of one ",
   "year's post-diagnostic support ranged from {first(age_ldp$ldp)} for those ",
   "aged {first(age_ldp$age_text)}, to {last(age_ldp$ldp)} for those aged ",
-  "{last(age_ldp$age_text)}. The percentage for those {ldp_top_ref$age_text} ",
+  "{last(age_ldp$age_text)}. The percentage for those aged between {ldp_top_ref$age_text} ",
   "(age group with the highest number of referrals) was {ldp_top_ref$ldp}."
 )
 
@@ -760,7 +844,7 @@ simd_ref_bot <- simd_data %>% filter(ref_dist == min(ref_dist))
 
 simd_referrals_text <- glue(
   "Of those people referred to post-diagnostic support in {latest_fy} people living in communities in ",
-  "deprivation quintile {simd_ref_top$simd} had the highest percentage of referrals.",
+  "deprivation quintile {simd_ref_top$simd} had the highest percentage of referrals ",
   "({simd_ref_top$ref_dist}). People living in communities in    deprivation quintile {simd_ref_bot$simd} had ",
   "the lowest percentage of referrals ({simd_ref_bot$ref_dist})."
 )
@@ -772,7 +856,7 @@ simd_ldp_text <- glue(
   "Of those people referred to post-diagnostic support in {latest_fy} people living in communities in ",
   "deprivation quintile {simd_ldp_top$simd} had the highest percentage of ",
   "referrals who received a minimum of one year's support ({simd_ldp_top$ldp}).",
-  "People living in communities in deprivation quintile {simd_ldp_bot$simd} had the ",
+  " People living in communities in deprivation quintile {simd_ldp_bot$simd} had the ",
   "lowest percentage of referrals who received a minimum of one year's ",
   "support ({simd_ldp_bot$ldp})."
 )
@@ -860,7 +944,7 @@ prov_footnote <-
         "service users completing their support.")
 
 prov_revised_footnote <- 
-  paste("Figures for", latest_fy, "are provisional subject to all",
+  paste("Figures for", latest_fy, "are provisional(^P^) subject to all",
         "service users completing their support. ",
         "Figures for", revised_fy, "have been revised (^R^) and are",
         "now final.")
@@ -893,7 +977,7 @@ a_city_footnote_ijb <-
         "the total number of people referred to PDS in Aberdeen City is known, due to ",
         "data quality issues it is not possible to calculate the percentage of people that ",
         "received a minimum of one year’s support. ",
-        "See [Appendix 1](#reporting) for further information.")
+        "See [Appendix 1Appendix 1 - Background information](#reporting) for further information.")
 
  
 # a_city_footnote_general <-
@@ -912,10 +996,12 @@ shet_footnote <- paste0("NHS Shetland did not have a PDS worker in post from 202
 orkney_footnote <- paste0("NHS Orkney had no referrals in 2023/24 (Quarter 1 and Quarter 2)",
     " as they were unable to access a consultant psychiatrist.")
 
+orkney_footnote_2 <- paste0("NHS Orkney had no referrals in 2022/23 (Quarter 3 and Quarter 4) and 2023/24 (Quarter 1 and Quarter 2) as they were unable to access a consultant psychiatrist.")
+
 dumfries_galloway_footnote <- paste0(
   "Due to the effect of the COVID-19 pandemic and staffing issues with ",
   "their former commissioned PDS service, NHS Dumfries and Galloway's ",
-  "ability to allocate a Link Worker within 12 months or for the full ",
+  "ability to allocate a link worker within 12 months or for the  ",
   "12-month period has been adversely affected since 2020/21. This has ",
   "resulted in an increase in the number of people recorded as not having ",
   "met the standard. See [Appendix 1](#appendix1) for further information.")
@@ -944,7 +1030,7 @@ incidence_footnote_trend <-
 method_footnote <-
   paste("For detailed information on how the percentage of LDP standard",
         "achieved is calculated, ",
-        "please see [Appendix 1](#reporting) of this report.")
+        "please see the [Background Information](#reporting) section of this report.")
 
 interpret_footnote <-
   paste("When interpreting this information consideration should also be",
@@ -992,10 +1078,10 @@ incidence_footnote_trend_updated <-
     "to calculate the 2019/20 and 2020/21 figures were taken from the ",
     "[Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020]",
     "(https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) publication. ",
-    "For calender years 2021/22, 2022/23 and ", latest_fy,
+    "For calendar years 2021/22, 2022/23 and ", latest_fy,
     " the estimated number of people newly diagnosed with dementia has been ",
-    "calculated using the rates referenced in the publication and National ",
-    "Records of Scotland (NRS) mid-",
+    "calculated using the rates referenced in the publication and the National ",
+    "Records of Scotland (NRS), mid-",
     as.character(as.numeric(str_sub(latest_fy, 1, 4)) - 2),
     ", mid-",
     as.character(as.numeric(str_sub(latest_fy, 1, 4)) - 1),
@@ -1078,7 +1164,7 @@ The COVID-19 pandemic and the infection control measures put in place are likely
 have had an impact on the number of people being diagnosed and referred, 
 particularly in 2020/21.
 
-Some areas have reported difficulties in the COVID-19 pandemic affecting their 
+Some areas reported difficulties in the COVID-19 pandemic affecting their 
 ability and capacity to update their data systems which are required to provide the dementia PDS dataset. This issue has only had an impact on the data provided by one Integration Authority Area, Aberdeen City (see [data quality](#data-quality) section for more information).
 
 \newpage
@@ -1123,7 +1209,7 @@ include_graphics(fig_c8)
 
 <Div custom-style="Body Text">
 
-Figure 2 below presents the number of people referred for dementia post-diagnostic support as a rate per 10,000 population (aged 65 and over). The referral rate has also shown an overall increase between `r fy_in_pub[1]` and `r next_fy` with fluctuating referral rates in between these years. The rate started at `r format(rate_2020_21, nsmall = 1)` per 10,000 in 2020/21(due to the measures relating to the COVID-19 pandemic), then rose to `r format(rate_latest, nsmall = 1)` per 10,000 in `r latest_fy` before decreasing slightly to `r format(rate_next, nsmall = 1)` per 10,000 in `r next_fy`. The increase in the rate of referral for dementia post diagnosis support of `r rate_change_pct`% between `r fy_in_pub[1]` and `r next_fy` is less than the `r pop_change_pct`% increase in the population aged 65 and over in the same period.
+Figure 2 below presents the number of people referred for dementia post-diagnostic support as a rate per 10,000 population (aged 65 and over). The referral rate has also shown an overall increase between `r fy_in_pub[1]` and `r next_fy` with fluctuating referral rates in between these years. The rate started at `r format(rate_start, nsmall = 1)` per 10,000 in `r fy_in_pub[1]`, fell to `r format(rate_2020_21, nsmall = 1)` per 10,000 in 2020/21(due to the measures relating to the COVID-19 pandemic), then rose to `r format(rate_latest, nsmall = 1)` per 10,000 in `r latest_fy` before decreasing slightly to `r format(rate_next, nsmall = 1)` per 10,000 in `r next_fy`. The increase in the rate of referral for dementia post diagnosis support of `r rate_change_pct`% between `r fy_in_pub[1]` and `r next_fy` is less than the `r pop_change_pct`% increase in the population aged 65 and over in the same period.
 <Div custom-style = "Table or chart caption">Figure 2: Number of people diagnosed with dementia and referred for post-diagnostic support per 10,000 population (65+); Scotland, `r fy_in_pub[1]` to `r next_fy`^1^</Div> 
 <Div custom-style = "Figure_Style">
 
@@ -1184,6 +1270,7 @@ Table 1 presents the number and percentage of people referred for dementia post-
 ```{r table-1, echo = FALSE, ft.align = "center"}
 inc %>%
  # mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
+  mutate(health_board = if_else(health_board == "NHS Orkney","NHS Orkney³",health_board)) %>% 
   flextable() %>%
   ft_dementia_style() %>%
     set_header_labels(
@@ -1198,8 +1285,7 @@ inc %>%
     align(j = 4, align = "right", part = "body") %>%
     height(height = 0.3, part = "body") %>%
     hrule(rule = "atleast", part = "body") %>%
-    width(width = 1.55)
-  
+    width(width = 1.55) 
 
 ```
 
@@ -1212,7 +1298,6 @@ inc %>%
 <Div custom-style="Body Text">
 
 `r inc_text`
-
 NHS Orkney's figures will have been affected by the fact that there was no consultant psychiatrist available to diagnose people with dementia in Quarters 1 and 2 of 2023/24, therefore no referrals were made to the service in this period.
 
 Figure 4 presents the percentage of people referred for dementia post-diagnostic support compared to the estimated number of people newly diagnosed with dementia by NHS Board in `r latest_fy`.
@@ -1234,7 +1319,7 @@ include_graphics(fig_c1)
 
 <Div custom-style="Body Text">
 
-Table 2 presents the five-year trend in the percentage of estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) for financial years `r fy_in_pub[1]` to `r latest_fy` by NHS Board.The trend for all years `r fy_in_pub[1]` to `r latest_fy` is available in the [dashboard](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/dashboard/) that accompanies this [publication](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/).
+Table 2 presents the five-year trend in the percentage of the estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) for financial years 2019/20 to `r latest_fy` by NHS Board. The trend for all years `r fy_in_pub[1]` to `r latest_fy` is available in the [dashboard](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/dashboard/) that accompanies this [publication](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/).
 
 <Div custom-style = "Table or chart caption">Table 2: Trend - Percentage of the estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board ^1,2,3^ </Div>
 
@@ -1250,6 +1335,7 @@ inc_trend_table_short <- inc_trend_table %>%
     `2023/24`)
 
 inc_trend_table_short %>%
+  mutate(health_board = if_else(health_board == "NHS Orkney","NHS Orkney³",health_board)) %>% 
   flextable() %>%
   ft_dementia_style() %>%
   set_header_labels(
@@ -1298,18 +1384,18 @@ inc_trend_table_short %>%
 <Div custom-style = "Footnote Text">
 1. `r prov_revised_footnote`
 2. `r incidence_footnote_trend_updated`
-3. `r orkney_footnote`
+3. `r orkney_footnote_2`
 </Div>
 
 ## 4.2. Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support
 
 <Div custom-style="Body Text">
 
-This part of LDP standard reports on the number of people referred for dementia post-diagnostic support who received a minimum of one year’s support. Figures presented in this section are available by NHS Board and Integration Authority area and should be interpreted in conjunction with the first part of the LDP standard [section 1](#section1).
+This part of LDP standard reports on the number of people referred for dementia post-diagnostic support who received a minimum of one year’s support. Figures presented in this section are available by NHS Board and Integration Authority area and should be interpreted in conjunction with the first part of the LDP standard (see [section 4.1](#section41)).
 
 The criteria used to define this part of the LDP standard is detailed in [Appendix 1](#background).
 
-### 4.2.1 NHS Board
+### 4.2.1. NHS Board
 
 <Div custom-style="Body Text">
 
@@ -1325,6 +1411,13 @@ names(hb_headers) <-  names(hb %>%
 
 hb %>%
  # mutate(across(where(is.numeric), ~ na_if(., 0))) %>%
+    mutate(health_board = case_when(
+      health_board == "NHS Orkney" ~ "NHS Orkney⁵",
+      health_board == "NHS Shetland" ~ "NHS Shetland⁴",
+      health_board == "NHS Dumfries & Galloway" ~ "NHS Dumfries & Galloway⁶",
+      health_board == "NHS Greater Glasgow & Clyde" ~ "NHS Greater Glasgow & Clyde⁷",
+      TRUE ~ health_board
+    )) %>%
   flextable() %>% 
   ft_dementia_style() %>%
   set_header_labels(values = hb_headers) %>% 
@@ -1352,7 +1445,7 @@ hb %>%
 
 `r text_hb`
 
-<Div custom-style = "Table or chart caption">Figure 5: Percentage of the estimated number of people newly diagnosed with dementia referred for post-diagnostic support (PDS) by NHS Board; `r latest_fy`^1,2,3,4,5,6,7^</Div> 
+<Div custom-style = "Table or chart caption">Figure 5: Percentage of referrals who received a minimum of one year's post-diagnostic support by NHS Board; `r latest_fy`^1,2,3,4,5,6,7^</Div> 
 <Div custom-style = "Figure_Style">
 ```{r fig-5, echo= FALSE, fig.cap= `f10_alt_text`, out.width = 600}
 # Figure 5
@@ -1373,7 +1466,7 @@ include_graphics(fig_c2)
 
 <Div custom-style="Body Text">
 
-Table 4 presents the five-year trend in the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for financial years 2019/20 to `r latest_fy` by NHS Board.The trend for all years `r fy_in_pub[1]` to `r latest_fy` is available in the [dashboard](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/dashboard/) that accompanies this [publication](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/).
+Table 4 presents the five-year trend in the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for the financial years 2019/20 to `r latest_fy` by NHS Board. The trend for all years `r fy_in_pub[1]` to `r latest_fy` is available in the [dashboard](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/dashboard/) that accompanies this [publication](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/).
 
 <Div custom-style = "Table or chart caption">Table 4: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by NHS Board ^1,2,3,4,5,6,7,8^ </Div>
 
@@ -1387,7 +1480,17 @@ hb_trend_table_short <- hb_trend_table %>%
     `2021/22`,
     `2022/23`,
     `2023/24`)
+
+
 hb_trend_table_short %>%
+  mutate(health_board = case_when(
+      health_board == "NHS Grampian" ~ "NHS Grampian⁴",
+      health_board == "NHS Orkney" ~ "NHS Orkney⁶",
+      health_board == "NHS Shetland" ~ "NHS Shetland⁵",
+      health_board == "NHS Dumfries & Galloway" ~ "NHS Dumfries & Galloway⁷",
+      health_board == "NHS Greater Glasgow & Clyde" ~ "NHS Greater Glasgow & Clyde⁸",
+      TRUE ~ health_board
+    )) %>%
   flextable() %>%
   ft_dementia_style() %>%
   set_header_labels(
@@ -1446,12 +1549,12 @@ hb_trend_table_short %>%
 </Div>
 
 <Div custom-style = "Footnote Text">
-1. `r prov_footnote`
+1. `r prov_revised_footnote`
 2. `r method_footnote`
 3. `r interpret_footnote`
 4. `r a_city_footnote_hb`   
 4. `r shet_footnote`
-5. `r orkney_footnote`
+5. `r orkney_footnote_2`
 6. `r dumfries_galloway_footnote`
 7. `r renfrewshire_footnote`
 </Div>
@@ -1464,7 +1567,7 @@ Figures for `r fy_in_pub[1]` to `r latest_fy` are available in the [dashboard](h
 
 `r hb_trend_text`
 
-### 4.2.2 Integration Authority area
+### 4.2.2. Integration Authority area
 
 Table 5 presents the number and percentage of people referred for post-diagnostic support who received a minimum of one year’s support by Integration Authority area. The percentage by Integration Authority area is also shown in Figure 6.
 
@@ -1525,7 +1628,7 @@ include_graphics(fig_c3)
 6. `r renfrewshire_footnote`
 </Div>
 
-Table 6 presents the five-year trend in the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for financial years 2019/20 to `r latest_fy` by  Integration Authority Area.The trend for all years `r fy_in_pub[1]` to `r latest_fy` is available in the [dashboard](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/dashboard/) that accompanies this [publication](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/).
+Table 6 presents the five-year trend in the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for the financial years 2019/20 to `r latest_fy` by  Integration Authority Area. The full trend for all years `r fy_in_pub[1]` to `r latest_fy` is available in the [dashboard](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/dashboard/) that accompanies this [publication](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/).
 
 
 <Div custom-style = "Table or chart caption">Table 6: Trend - Percentage of people referred for dementia post-diagnostic support (PDS) who received a minimum of one year’s support by Integration Authority area ^1,2,3,4,5,6,7^</Div>
@@ -1582,7 +1685,7 @@ ijb_trend_table_short %>%
 ```
 
 <Div custom-style = "Footnote Text">
-1. `r prov_footnote`
+1. `r prov_revised_footnote`
 2. `r method_footnote`
 3. `r a_city_footnote_ijb`
 4. `r shet_footnote`
@@ -1613,7 +1716,7 @@ include_graphics(fig_c10)
 1. `r prov_footnote`
 </Div>
 
-<Div custom-style = "Table or chart caption">Figure 8: Percentage of referrals who received a minimum of one year’s post-diagnostic support by age group; `r latest_fy`^1^</Div>
+<Div custom-style = "Table or chart caption">Figure 8: Percentage of referrals who received a minimum of one year’s post-diagnostic support by sex; `r latest_fy`^1^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-8, echo=FALSE, fig.cap= f12_alt_text, out.width = 600}
@@ -1632,7 +1735,7 @@ include_graphics(fig_c11)
 
 Figure 9 presents the age distribution of those referred for dementia post-diagnostic support in Scotland for `r latest_fy`.
 
-<Div custom-style = "Table or chart caption">Figure 9: Age distribution of referrals for dementia post-diagnostic support; `r latest_fy`^1,2^</Div>
+<Div custom-style = "Table or chart caption">Figure 9: Age distribution of people referred for dementia post-diagnostic support; `r latest_fy`^1,2^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-9, echo=FALSE, fig.cap= `f4_alt_text`, out.width = 600}
@@ -1648,9 +1751,9 @@ include_graphics(fig_c4)
 
 `r age_referrals_text`
 
-Figure 10 presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by age group for `r latest_fy`. 
+Figure 10 presents the percentage of those people referred for dementia post-diagnostic support who received a minimum of one year’s support by age group for `r latest_fy`. 
 
-<Div custom-style = "Table or chart caption">Figure 10: Percentage of referrals who received a minimum of one year’s post-diagnostic support by age group; `r latest_fy`^1,2^</Div>
+<Div custom-style = "Table or chart caption">Figure 10: Percentage of people referred who received a minimum of one year’s post-diagnostic support by age group; `r latest_fy`^1,2^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-10, echo=FALSE, fig.cap= f5_alt_text, out.width = 600}
@@ -1670,9 +1773,9 @@ include_graphics(fig_c5)
 
 ### 5.3 Deprivation
 
-Figure 11 presents the distribution of people referrred for dementia post-diagnostic support by deprivation quintile for `r latest_fy`. Each deprivation quintile indicates the level of deprivation using a scale of 1 (20% most deprived communities) to 5 (20% least deprived communities). At Scotland level, approximately one fifth of the general population are within each deprivation quintile.
+Figure 11 presents the distribution of people referred for dementia post-diagnostic support by deprivation quintile for `r latest_fy`. Each deprivation quintile indicates the level of deprivation using a scale of 1 (20% most deprived communities) to 5 (20% least deprived communities). At Scotland level, approximately one fifth of the general population are within each deprivation quintile.
 
-<Div custom-style = "Table or chart caption">Figure 11: Distribution of referrals to dementia post-diagnostic support by deprivation quintile; `r latest_fy`^1,2^</Div>
+<Div custom-style = "Table or chart caption">Figure 11: Distribution of people referred to dementia post-diagnostic support by deprivation quintile; `r latest_fy`^1,2^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-6, echo=FALSE, fig.cap= `f6_alt_text`, out.width = 600}
@@ -1689,9 +1792,9 @@ include_graphics(fig_c6)
 
 `r simd_referrals_text`
 
-Figure 12 presents the percentage of those referred for dementia post-diagnostic support who received a minimum of one year’s support by deprivation quintile for `r latest_fy`. 
+Figure 12 presents the percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support by deprivation quintile for `r latest_fy`. 
 
-<Div custom-style = "Table or chart caption">Figure 12: Percentage of referrals who received a minimum of one year’s post-diagnostic support by deprivation quintile; `r latest_fy`^1,2^</Div>
+<Div custom-style = "Table or chart caption">Figure 12: Percentage of people referred who received a minimum of one year’s post-diagnostic support by deprivation quintile; `r latest_fy`^1,2^</Div>
 
 <Div custom-style = "Figure_Style">
 ```{r fig-12, echo=FALSE, fig.cap= f7_alt_text, out.width = 600}
@@ -2010,7 +2113,7 @@ NHS Dumfries and Galloway have reported that due to the backlog of people waitin
 Dementia Post-Diagnostic Support Statistics, Performance against the Local Delivery Plan Standard, `r latest_fy`
 
 **Description**  
-This publication reports on the dementia post diagnosis support referrals and [LDP standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) that those people newly diagnosed with dementia should receive a minimum of one year's post-diagnostic support.
+This publication reports on the dementia post diagnosis support referrals and the [LDP standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) that those people newly diagnosed with dementia should receive a minimum of one year's post-diagnostic support.
 
 **Theme**  
 Health and Social Care
@@ -2259,7 +2362,7 @@ NHS board chief executives
 
 NHS board communication leads
 
-Chief Officers of Integrated Joint Boards formed under the [Public Bodies (Joint Working) (Scotland) Act 2014](https://www.legislation.gov.uk/asp/2014/9/contents/enacted)(external website)
+Chief Officers of Integrated Joint Boards formed under the [Public Bodies (Joint Working) (Scotland) Act 2014](https://www.legislation.gov.uk/asp/2014/9/contents/enacted) (external website)
 
 \newpage
 
