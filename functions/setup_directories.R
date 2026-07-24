@@ -109,7 +109,7 @@ get_mi_year_dir <- function(folder = c("data", "output", "tests"),
   # Construct the directory path
   year <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}")
   qtr <- stringr::str_glue("Q{qt}")
-  test <- if (isTRUE(test_output)) "test" else NULL
+  test <- if (isTRUE(test_output)) "test" else ""
   year_dir <- fs::path(get_mi_dir(), folder, year, qtr, test)
   
   # Check the directory path
@@ -192,24 +192,23 @@ get_mi_data_path <- function(type = c("clean_data",
   # Get the file name
   file_name <- dplyr::case_match(
     type,
-    "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
-    "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data"),
-    "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"),
-    "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
-    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data"),
-    "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
-    "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data"),
-    "query_error_data" ~ stringr::str_glue("{fy}-{qt}_query-error-summary"),
-    "query_data" ~ stringr::str_glue("{fy}-{qt}_query-summary"),
-    "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data"),
-    "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data"),
+    "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data.rds"),
+    "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data.rds"),
+    "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes.csv"),
+    "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary.rds"),
+    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data.rds"),
+    "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp.rds"),
+    "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data.rds"),
+    "query_error_data" ~ stringr::str_glue("{fy}-{qt}_query-error-summary.rds"),
+    "query_data" ~ stringr::str_glue("{fy}-{qt}_query-summary.rds"),
+    "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data.rds"),
+    "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data.rds"),
     )
   
   # Check the file path
   mi_data_path <- check_file_path(
     directory = mi_year_dir,
     file_name = file_name,
-    ext = ext, 
     check_mode = check_mode,
     create_dir = create_dir
   )
@@ -272,13 +271,12 @@ get_mi_output_path <- function(fy,
     "month") - lubridate::days(1)
   
   # Get the file name
-  file_name <- stringr::str_glue("{end_date}_management-report")
+  file_name <- stringr::str_glue("{end_date}_management-report.html")
   
   # Check the file path
   mi_output_path <- check_file_path(
     directory = mi_year_dir,
     file_name = file_name,
-    ext = "html", 
     check_mode = check_mode,
     create_dir = create_dir
   )
@@ -289,30 +287,65 @@ get_mi_output_path <- function(fy,
 
 ### Publication directory setup ###---------------------------------------------
 
-#' Set up the Publication Directory
-#' 
-#' @description the function will use the fs package to return the file path to
-#' the annual publication directory
+#' Get the publication root directory
 #'
-#' @return the path to the publication folder
-#' 
+#' @description
+#' Returns the root directory used to store annual publication data,
+#' outputs and supporting files.
 #'
+#' @return
+#' An [fs::path()] object containing the path to the publication root
+#' directory.
+#'
+#' @family publication paths
+#' @export
 get_pub_dir <- function() {
   pub_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "publication")
   return(pub_dir)
 }
 
 
-#' Set up the publication date directory
+#' Get a publication date directory
+#'
+#' @description
+#' Constructs and validates the path to a publication directory for a
+#' specified publication date.
+#'
+#' The directory structure follows:
+#'
+#' \preformatted{
+#' publication/
+#'   <folder>/
+#'     <publication date>/
+#' }
+#'
+#' When `test_output = TRUE`, an additional `test` subdirectory is appended.
+#'
+#' @param folder Character string specifying which publication folder to
+#' return. One of:
+#' \describe{
+#'   \item{`"data"`}{Directory containing publication datasets.}
+#'   \item{`"output"`}{Directory containing publication outputs.}
+#' }
+#' @param pub_date A Date object representing the publication date.
+#' For example:
 #' 
-#' @description The function will use the fs package to return the file path to the
-#' publication date directory
+#' \preformatted{
+#' lubridate::dmy("30062026")
+#' }
+#' @param test_output Logical. If `TRUE`, return the path to the `test`
+#' subdirectory.
+#' @param check_mode Access mode passed to [check_dir_path()]. One of
+#' `"read"`, `"write"` or `"exists"`.
+#' @param create Logical. If `TRUE`, create the directory (and any missing
+#' parent directories) if it does not already exist.
 #'
-#' @param folder supply the data or output folder 
+#' @return
+#' A validated [fs::path()] object containing the requested directory path.
 #'
-#' @return the path to the annual publication date folder
-#'
-get_pub_date_dir <- function(folder = c("data", "output"), 
+#' @family publication paths
+#' @export
+get_pub_date_dir <- function(folder = c("data", "output", "figures"), 
                              pub_date,
                              test_output = FALSE, 
                              check_mode = "read",
@@ -321,9 +354,26 @@ get_pub_date_dir <- function(folder = c("data", "output"),
   # Validate arguments
   folder <- match.arg(folder)
   
+  # Check pub_date format
+  if (!inherits(pub_date, "Date")) {
+    cli::cli_abort(
+      "{.arg pub_date} must be a Date object, e.g. {.code lubridate::dmy(\"30062026\")}."
+    )
+  }
+  
   # Construct the directory path
-  test <- if (isTRUE(test_output)) "test" else NULL
-  date_dir <- fs::path(get_pub_dir(), folder, pub_date, test)
+  if (isTRUE(test_output) && folder == "figures"){
+    cli::cli_alert_info("Test folder is not available for figures. Returning non-test folder.")
+    sub_folder <- "figures"
+  } else if (folder == "figures"){
+    sub_folder <- "figures"
+  } else if(isTRUE(test_output)){
+    sub_folder <- "test"
+  } else {
+    sub_folder <- ""
+  }
+  folder <- if (folder == "figures") "output" else folder
+  date_dir <- fs::path(get_pub_dir(), folder, pub_date, sub_folder)
   
   # Check the directory path
   path <- check_dir_path(
@@ -336,40 +386,118 @@ get_pub_date_dir <- function(folder = c("data", "output"),
 }
 
 
-#' Return the file path to the finalised publication data 
+#' Get the publication data file path
+#'
+#' @description
+#' Constructs and validates the path to the final publication dataset used
+#' to produce the annual publication.
+#'
+#' The expected file name follows the pattern:
+#'
+#' \preformatted{
+#' <pub_date>_pub-data.rds
+#' }
+#'
+#' @param pub_date A Date object representing the publication date.
+#' For example:
 #' 
-#' @description The publication data file is use to produce the annual publication
+#' \preformatted{
+#' lubridate::dmy("30062026")
+#' }
+#' @param test_output Logical. If `TRUE`, use the test data directory.
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param create_dir Logical. If `TRUE`, create the required directory if it
+#' does not already exist.
 #'
-#' @return the path to the finalised publication data
+#' @return
+#' A validated [fs::path()] object containing the path to the publication
+#' dataset.
 #'
-#'
-get_pub_data_path <- function(test_output = FALSE) {
-  file_name <- stringr::str_glue("{pub_date}_pub-data")
+#' @family publication paths
+#' @export
+get_pub_data_path <- function(pub_date,
+                              test_output = FALSE,
+                              check_mode = "read",
+                              create_dir = FALSE) {
   
-  pub_data_path <- get_file_path(
-    directory = get_pub_date_dir("data", test_output = test_output),
+  # Get and validate the publication folder for a specific date
+  pub_date_dir <- get_pub_date_dir(
+    folder = "data", 
+    pub_date = pub_date,
+    test_output = test_output, 
+    check_mode = check_mode,
+    create = create_dir
+  )
+  
+  # Get the file name
+  file_name <- stringr::str_glue("{pub_date}_pub-data.rds")
+  
+  # Check the file path
+  pub_data_path <- check_file_path(
+    directory = pub_date_dir,
     file_name = file_name,
-    ext = "rds", 
-    check_mode = "write"
+    check_mode = check_mode,
+    create_dir = create_dir
   )
   
   return(pub_data_path)
 }
 
 
-#' Get the path to the final annual publication outputs
-#' 
-#' @description The output files are used for the publication: publication summary, 
-#' publication report, excel tables and discovery data
+#' Get the path to a publication output file
 #'
-#' @param output_name Supply the output name
+#' @description
+#' Constructs and validates the path to an output file produced as part of the
+#' annual publication.
 #'
-#' @return the path to the output produced for the annual publication
+#' @param output_name Character string specifying the required output file:
+#' \describe{
+#'   \item{`"pub_summary"`}{Publication summary document.}
+#'   \item{`"pub_report"`}{Publication report document.}
+#'   \item{`"excel_tables"`}{Publication Excel tables.}
+#'   \item{`"discovery_data"`}{Discovery dataset.}
+#' }
+#' @param pub_date A Date object representing the publication date.
+#' For example:
 #'
-#' 
-get_pub_output_path <- function(output_name = c("pub_summary", "pub_report", 
-                                                "excel_tables", "discovery_data"),
-                                test_output = FALSE) {
+#' \preformatted{
+#' lubridate::dmy("30062026")
+#' }
+#' @param test_output Logical. If `TRUE`, use the test output directory.
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param create_dir Logical. If `TRUE`, create the required directory if it
+#' does not already exist.
+#'
+#' @return
+#' A validated [fs::path()] object containing the requested publication output
+#' file path.
+#'
+#' @family publication paths
+#' @export
+get_pub_output_path <- function(output_name = c("pub_summary", 
+                                                "pub_report", 
+                                                "excel_tables", 
+                                                "discovery_data"),
+                                pub_date,
+                                test_output = FALSE,
+                                check_mode = "read",
+                                create_dir = FALSE) {
+  
+  # Validate arguments
+  output_name <- match.arg(output_name)
+
+  # Get and validate the publication folder for a specific date
+  pub_date_dir <- get_pub_date_dir(
+    folder = "output", 
+    pub_date = pub_date,
+    test_output = test_output, 
+    check_mode = check_mode,
+    create = create_dir
+  )
+  
+  # Get the file name
   file_name <- dplyr::case_match(
     output_name,
     "pub_summary" ~ stringr::str_glue("{pub_date}_dementia-pds_summary.docx"),
@@ -378,26 +506,40 @@ get_pub_output_path <- function(output_name = c("pub_summary", "pub_report",
     "discovery_data" ~ stringr::str_glue("{pub_date}_ldp-data.csv")
   )
   
-  pub_output_path <- get_file_path(
-    directory = get_pub_date_dir("output", test_output = test_output),
-    file_name = file_name, 
-    check_mode = "write"
+  # Check the file path
+  pub_output_path <- check_file_path(
+    directory = pub_date_dir,
+    file_name = file_name,
+    check_mode = check_mode,
+    create_dir = create_dir
   )
   
   return(pub_output_path)
 }
 
 
-#' Get the path to the final annual publication figures
-#' 
-#' @description These png files are used throughout the annual publication report
-#' and summary document
+#' @param type Character string specifying the required figure:
+#' \describe{
+#'   \item{`"c1"`}{Incidence by Health Board.}
+#'   \item{`"c2"`}{12 month trend by Health Board.}
+#'   ...
+#'   \item{`"c14"`}{Waiting times trend chart.}
+#'   \item{`"summary"`}{Summary infographic chart.}
+#'   \item{`"twitter"`}{Social media summary chart.}
+#' }
 #'
-#' @param type The type of chart to return
+#' @param pub_date A Date object representing the publication date.
 #'
-#' @return the path to the figures used for the annual publication
+#' @param test_output Logical. If `TRUE`, use the test figures directory.
 #'
-#' 
+#' @param check_mode Access mode required for the file. One of
+#' `"read"` or `"write"`.
+#'
+#' @param create_dir Logical. If `TRUE`, create the required directory
+#' if it does not already exist.
+#'
+#' @return
+#' A validated [fs::path()] object containing the requested figure file path.
 get_pub_figures_path <- function(type = c("c1",
                                           "c2",
                                           "c3",
@@ -413,8 +555,23 @@ get_pub_figures_path <- function(type = c("c1",
                                           "c13",
                                           "c14",
                                           "summary"), 
-                                 test_output = FALSE) {
+                                 pub_date,
+                                 test_output = FALSE,
+                                 check_mode = "read",
+                                 create_dir = FALSE) {
+  # Validate arguments
+  type <- match.arg(type)
   
+  # Get and validate the publication folder for a specific date
+  pub_date_dir <- get_pub_date_dir(
+    folder = "figures", 
+    pub_date = pub_date,
+    test_output = test_output, 
+    check_mode = check_mode,
+    create = create_dir
+  )
+  
+  # Get the file name
   file_name <- dplyr::case_match(
     type,
     "c1" ~ stringr::str_glue("{pub_date}_incidence-hb.png"),
@@ -431,17 +588,18 @@ get_pub_figures_path <- function(type = c("c1",
     "c12" ~ stringr::str_glue("{pub_date}_wait-times-hb.png"),
     "c13" ~ stringr::str_glue("{pub_date}_wait-times-ijb.png"),
     "c14" ~ stringr::str_glue("{pub_date}_wait-times-trend.png"),
-    "summary" ~ stringr::str_glue("{pub_date}_summary-chart.png"), 
-    "twitter" ~ stringr::str_glue("{pub_date}_dementia-pds_twitter-chart.png")
+    "summary" ~ stringr::str_glue("{pub_date}_summary-chart.png")
   )
   
-  pub_output_path <- get_file_path(
-    directory = fs::path(get_pub_date_dir("output", test_output = test_output), "figures"),
-    file_name = file_name, 
-    check_mode = "write"
+  # Check the file path
+  pub_fig_path <- check_file_path(
+    directory = pub_date_dir,
+    file_name = file_name,
+    check_mode = check_mode,
+    create_dir = create_dir
   )
   
-  return(pub_output_path)
+  return(pub_fig_path)
 }
 
 
@@ -456,9 +614,7 @@ get_pub_figures_path <- function(type = c("c1",
 #' 
 #'
 get_national_dir <- function(){
-  
   national_dir <- fs::path("/", "conf", "dementia", "03-Outputs", "National")
-  
   return(national_dir)
 }
 
