@@ -38,6 +38,7 @@
 #'
 #' @return An [fs::path()] object containing the selected file path.
 #'
+#' @family general file path functions
 #' @export
 #'
 #' @examples
@@ -145,6 +146,7 @@ find_latest_file <- function(directory,
 #'
 #' @return An [fs::path()] object containing the validated directory path.
 #'
+#' @family general file path functions
 #' @export
 
 check_dir_path <- function(directory,
@@ -217,7 +219,7 @@ check_dir_path <- function(directory,
 #'
 #' @return An [fs::path()] object containing the validated file path.
 #'
-#' @family file path functions
+#' @family general file path functions
 #' @export
 
 check_file_path <- function(directory,
