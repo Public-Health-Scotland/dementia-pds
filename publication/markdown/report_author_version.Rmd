@@ -1091,26 +1091,26 @@ incidence_footnote_trend_updated <-
   )
 
 ## Figure paths for report
-fig_dir <- file.path(
-  get_pub_date_dir("output", test_output = test_output),
-  "figures"
-)
-
-fig_c1 <- file.path(fig_dir, paste0(pub_date, "_incidence-hb.png"))
-fig_c2 <- file.path(fig_dir, paste0(pub_date, "_12-months-hb.png"))
-fig_c3 <- file.path(fig_dir, paste0(pub_date, "_12-months-ijb.png"))
-fig_c4 <- file.path(fig_dir, paste0(pub_date, "_age-dist.png"))
-fig_c5 <- file.path(fig_dir, paste0(pub_date, "_12-months-age.png"))
-fig_c6 <- file.path(fig_dir, paste0(pub_date, "_simd-dist.png"))
-fig_c7 <- file.path(fig_dir, paste0(pub_date, "_12-months-simd.png"))
-fig_c8 <- file.path(fig_dir, paste0(pub_date, "_total_referrals_trend.png"))
-fig_c9 <- file.path(fig_dir, paste0(pub_date, "_rate_trend.png"))
-fig_c10 <- file.path(fig_dir, paste0(pub_date, "_sex-dist.png"))
-fig_c11 <- file.path(fig_dir, paste0(pub_date, "_12-months-sex.png"))
-fig_c12 <- file.path(fig_dir, paste0(pub_date, "_wait-times-hb.png"))
-fig_c13 <- file.path(fig_dir, paste0(pub_date, "_wait-times-ijb.png"))
-fig_c14 <- file.path(fig_dir, paste0(pub_date, "_wait-times-trend.png"))
-fig_summary <- file.path(fig_dir, paste0(pub_date, "_summary-chart.png"))
+# fig_dir <- file.path(
+#   get_pub_date_dir("output", test_output = test_output),
+#   "figures"
+# )
+# 
+# fig_c1 <- file.path(fig_dir, paste0(pub_date, "_incidence-hb.png"))
+# fig_c2 <- file.path(fig_dir, paste0(pub_date, "_12-months-hb.png"))
+# fig_c3 <- file.path(fig_dir, paste0(pub_date, "_12-months-ijb.png"))
+# fig_c4 <- file.path(fig_dir, paste0(pub_date, "_age-dist.png"))
+# fig_c5 <- file.path(fig_dir, paste0(pub_date, "_12-months-age.png"))
+# fig_c6 <- file.path(fig_dir, paste0(pub_date, "_simd-dist.png"))
+# fig_c7 <- file.path(fig_dir, paste0(pub_date, "_12-months-simd.png"))
+# fig_c8 <- file.path(fig_dir, paste0(pub_date, "_total_referrals_trend.png"))
+# fig_c9 <- file.path(fig_dir, paste0(pub_date, "_rate_trend.png"))
+# fig_c10 <- file.path(fig_dir, paste0(pub_date, "_sex-dist.png"))
+# fig_c11 <- file.path(fig_dir, paste0(pub_date, "_12-months-sex.png"))
+# fig_c12 <- file.path(fig_dir, paste0(pub_date, "_wait-times-hb.png"))
+# fig_c13 <- file.path(fig_dir, paste0(pub_date, "_wait-times-ijb.png"))
+# fig_c14 <- file.path(fig_dir, paste0(pub_date, "_wait-times-trend.png"))
+# fig_summary <- file.path(fig_dir, paste0(pub_date, "_summary-chart.png"))
 
 ```
 
@@ -1196,7 +1196,8 @@ The trend shows that between `r fy_in_pub[1]` to `r next_fy` the number of peopl
 
 ```{r fig-c8, echo= FALSE, fig.cap= `f8_alt_text`, out.width = 600}
 # Figure summary
-include_graphics(fig_c8)
+#include_graphics(fig_c8)
+include_graphics(get_pub_figures_path(type = "c8"))
 
 ```
 </Div>
@@ -1215,8 +1216,8 @@ Figure 2 below presents the number of people referred for dementia post-diagnost
 
 ```{r fig-c9, echo= FALSE, fig.cap= `f9_alt_text`, out.width = 600}
 # Figure summary
-include_graphics(fig_c9)
-
+#include_graphics(fig_c9)
+include_graphics(get_pub_figures_path(type = "c9"))
 ```
 </Div>
 <Div custom-style = "Footnote Text">
@@ -1237,7 +1238,8 @@ Note, the median time includes all people who were contacted by PDS services and
 <Div custom-style = "Figure_Style">
 ```{r fig-c14 , echo= FALSE, fig.cap= `f6_alt_text`, out.width = 600}
 # Figure summary
-include_graphics(fig_c14)
+#include_graphics(fig_c14)
+include_graphics(get_pub_figures_path(type = "c14"))
 
 ```
 </Div>
@@ -1306,7 +1308,8 @@ Figure 4 presents the percentage of people referred for dementia post-diagnostic
 <Div custom-style = "Figure_Style">
 ```{r fig-4, echo= FALSE, fig.cap= `f9_alt_text`, out.width = 600}
 # Figure 4
-include_graphics(fig_c1)
+#include_graphics(fig_c1)
+include_graphics(get_pub_figures_path(type = "c1"))
 
 ```
 </Div>
@@ -1449,7 +1452,8 @@ hb %>%
 <Div custom-style = "Figure_Style">
 ```{r fig-5, echo= FALSE, fig.cap= `f10_alt_text`, out.width = 600}
 # Figure 5
-include_graphics(fig_c2)
+#include_graphics(fig_c2)
+include_graphics(get_pub_figures_path(type = "summary"))
 
 ```
 </Div>
@@ -1613,7 +1617,8 @@ In `r latest_fy`, the capacity in PDS services in both Renfrewshire and Dumfries
 <Div custom-style = "Figure_Style">
 ```{r fig-3, echo=FALSE, fig.cap= `f3_alt_text`, out.width = 420}
 # Figure 6 
-include_graphics(fig_c3)
+#include_graphics(fig_c3)
+include_graphics(get_pub_figures_path(type = "c3"))
 
 ```
 
@@ -1708,7 +1713,9 @@ Figure 7 below shows that in `r latest_fy` females accounted for nearly 3 out of
 <Div custom-style = "Figure_Style">
 ```{r fig-7, echo=FALSE, fig.cap= `f11_alt_text`, out.width = 600}
 # Figure 7 
-include_graphics(fig_c10)
+#include_graphics(fig_c10)
+include_graphics(get_pub_figures_path(type = "c10"))
+
 ```
 </Div>
 
@@ -1721,7 +1728,9 @@ include_graphics(fig_c10)
 <Div custom-style = "Figure_Style">
 ```{r fig-8, echo=FALSE, fig.cap= f12_alt_text, out.width = 600}
 # Figure 8 
-include_graphics(fig_c11)
+#include_graphics(fig_c11)
+include_graphics(get_pub_figures_path(type = "c11"))
+
 ```
 </Div>
 
@@ -1740,7 +1749,9 @@ Figure 9 presents the age distribution of those referred for dementia post-diagn
 <Div custom-style = "Figure_Style">
 ```{r fig-9, echo=FALSE, fig.cap= `f4_alt_text`, out.width = 600}
 # Figure 9 
-include_graphics(fig_c4)
+#include_graphics(fig_c4)
+include_graphics(get_pub_figures_path(type = "c4"))
+
 ```
 </Div>
 
@@ -1758,7 +1769,9 @@ Figure 10 presents the percentage of those people referred for dementia post-dia
 <Div custom-style = "Figure_Style">
 ```{r fig-10, echo=FALSE, fig.cap= f5_alt_text, out.width = 600}
 # Figure 10 
-include_graphics(fig_c5)
+#include_graphics(fig_c5)
+include_graphics(get_pub_figures_path(type = "c5"))
+
 ```
 </Div>
 
@@ -1780,7 +1793,8 @@ Figure 11 presents the distribution of people referred for dementia post-diagnos
 <Div custom-style = "Figure_Style">
 ```{r fig-6, echo=FALSE, fig.cap= `f6_alt_text`, out.width = 600}
 # Figure 11
-include_graphics(fig_c6)
+#include_graphics(fig_c6)
+include_graphics(get_pub_figures_path(type = "c6"))
 
 ```
 </Div>
@@ -1799,7 +1813,8 @@ Figure 12 presents the percentage of people referred for dementia post-diagnosti
 <Div custom-style = "Figure_Style">
 ```{r fig-12, echo=FALSE, fig.cap= f7_alt_text, out.width = 600}
 # Figure 12 
-include_graphics(fig_c7)
+#include_graphics(fig_c7)
+include_graphics(get_pub_figures_path(type = "c7"))
 ```
 </Div>
 
