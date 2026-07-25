@@ -14,17 +14,34 @@
 ################################################################################.
 
 ################################################################################.
-# Generic setup ----
+# Load general file path functions ----
 ################################################################################.
 
-# Use general file path functions
 source(here::here("functions/setup_general.R"))
 
-# Use write file function for writing files to disk and setting correct permissions
-source(here::here("functions/write_file.R"))
+################################################################################.
+# Root file path ----
+################################################################################.
 
-# Use render_check function for rendering rmarkdown files
-source(here::here("functions/render_check.R"))
+#' Get the root directory
+#'
+#' @description
+#' Returns the root directory used to store outputs and supporting files.
+#' Remove "/" to make the path relative. This will save outputs in your own 
+#' dementia-pds folder for testing code.
+#'
+#' @return
+#' An [fs::path()] object containing the path to the
+#' `dementia/A&I/Outputs` directory.
+#'
+#' @export
+
+get_root_dir <- function() {
+  root_dir <- fs::path("conf", "dementia", "A&I", "Outputs")
+  
+  return(root_dir)
+}
+
 
 ################################################################################.
 # MI file path functions ----
@@ -44,7 +61,7 @@ source(here::here("functions/render_check.R"))
 #' @export
 
 get_mi_dir <- function() {
-  mi_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "management-report")
+  mi_dir <- fs::path(get_root_dir(), "management-report")
   
   return(mi_dir)
 }
@@ -313,7 +330,7 @@ get_mi_output_path <- function(fy,
 #' @export
 
 get_final_data_dir <- function() {
-  final_data_dir <- fs::path(get_mi_dir(), "data", "final")
+  final_data_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", "final")
   
   return(final_data_dir)
 }
@@ -335,7 +352,7 @@ get_final_data_dir <- function() {
 #' @export
 
 get_ac_data_dir <- function() {
-  ac_data_dir <- fs::path(get_mi_dir(), "data", "Aberdeen City ldp files")
+  ac_data_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", "Aberdeen City ldp files")
   
   return(ac_data_dir)
 }
@@ -359,7 +376,7 @@ get_ac_data_dir <- function() {
 #' @export
 
 get_pub_dir <- function() {
-  pub_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "publication")
+  pub_dir <- fs::path(get_root_dir(), "publication")
   return(pub_dir)
 }
 
@@ -694,7 +711,7 @@ get_ac_lookup_path <- function(check_mode = "read",
                                create_dir = FALSE) {
   
   # Construct the directory path
-  lookup_dir <- fs::path(get_pub_dir(), "lookups")
+  lookup_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "publication", "lookups")
   
   # Get the file name
   file_name <- "aberdeen_city_lookup.xlsx"
@@ -730,10 +747,10 @@ get_ac_lookup_path <- function(check_mode = "read",
 #' @export
 
 get_excel_template_path <- function(check_mode = "read",
-                                    create = FALSE) {
+                                    create_dir = FALSE) {
   
   # Construct the directory path
-  template_dir <- fs::path(get_pub_dir(), "templates")
+  template_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "publication", "templates")
   
   # Get the file name
   file_name <- stringr::str_glue("excel-template.xlsx")
@@ -743,7 +760,7 @@ get_excel_template_path <- function(check_mode = "read",
     directory = template_dir,
     file_name = file_name,
     check_mode = check_mode,
-    create = create
+    create_dir = create_dir
   )
   
   return(excel_template_file_path)
@@ -813,8 +830,7 @@ get_national_dir <- function(){
 
 get_national_data_path <- function(fy, 
                                    qt,
-                                   check_mode = "read",
-                                   create = FALSE) {
+                                   check_mode = "read") {
   
   # Check fy format
   if (!is.character(fy) || length(fy) != 1L ||
@@ -844,7 +860,7 @@ get_national_data_path <- function(fy,
       directory = national_dir,
       file_name = file_name,
       check_mode = check_mode,
-      create = create
+      create_dir = FALSE
     ),
     # If the file does not exist, check the year sub-folder 
     error = function(e) {
@@ -855,7 +871,7 @@ get_national_data_path <- function(fy,
         directory = national_year_dir,
         file_name = file_name,
         check_mode = check_mode,
-        create = create
+        create_dir = FALSE
       )
     }
   )
@@ -908,7 +924,7 @@ get_ref_files_dir <- function(){
 #' @export
 
 get_exp_diagnoses_path <- function(check_mode = "read",
-                                   create = FALSE) {
+                                   create_dir = FALSE) {
   # Construct the directory path
   ref_files_dir <- get_ref_files_dir()
   
@@ -920,7 +936,7 @@ get_exp_diagnoses_path <- function(check_mode = "read",
     directory = ref_files_dir,
     file_name = file_name,
     check_mode = check_mode,
-    create = create
+    create_dir = create_dir
   )
   
   return(exp_diagnoses_path)
