@@ -128,9 +128,14 @@ exempt_reasons <- c("03", "04", "05", "06")
 
 ### 7 - Create folder structure ----
 
-# Load functions
+# Load file path functions
 source(here::here("functions/setup_directories.R"))
 
+# Use write file function for writing files to disk and setting correct permissions
+source(here::here("functions/write_file.R"))
+
+# Use render_check function for rendering rmarkdown files
+source(here::here("functions/render_check.R"))
 
 #Define years in which data has been made final
 finalised_years <- 
