@@ -9,7 +9,7 @@ output:
 
 ```{r load-setup, include=FALSE}
 source(here::here("code", "00_setup-environment.R"))
-library(crosstalk) # for drop down menus
+library(crosstalk) # For drop down menus
 library(htmltools)
 
 # Write numbers with thousands separator
@@ -47,49 +47,59 @@ pds <- read_rds(get_mi_data_path(
 # Load expected diagnoses reference file
 exp <- read_csv(get_exp_diagnoses_path())
 
-
 # Load error and queries summaries
-q_err <- read_rds(get_mi_data_path("q_error_data", ext = "rds", test_output = test_output)) %>% 
+q_err <- read_rds(get_mi_data_path(
+  type = "query_error_data", 
+  ext = "rds", 
+  fy = fy,
+  qt = qt,
+  test_output = test_output
+)) %>%
+  mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
 
-  mutate(ijb = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
+query <- read_rds(get_mi_data_path(
+  type = "query_data", 
+  ext = "rds", 
+  fy = fy,
+  qt = qt,
+  test_output = test_output
+)) %>%
+  mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
 
-query <- read_rds(get_mi_data_path("query_data", ext = "rds", test_output = test_output)) %>% 
+err <- read_rds(get_mi_data_path(
+  type = "error_data", 
+  ext = "rds", 
+  fy = fy,
+  qt = qt,
+  test_output = test_output
+)) %>%
+  mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
 
-  mutate(ijb = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
-
-err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
-
-  mutate(ijb = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
-
-# calculate monthly referrals for Scotland and health boards
-pds_ijb <- pds %>% arrange(ijb)
-
-pds_ijb %<>% rename(geog = ijb) 
-
+# Calculate monthly referrals for Scotland and health boards
+pds_ijb <- pds %>% 
+  arrange(ijb) %>%
+  rename(geog = ijb) 
 pds_ijb$geog<- factor(pds_ijb$geog, levels = unique(pds_ijb$geog))
 
-pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>%  summarise(referrals = sum(referrals), .groups = "drop")
-
-pds_scot %<>% rename(geog = ijb) 
-
+pds_scot <- pds %>% 
+  group_by(
+    health_board = "Scotland", 
+    ijb = "Scotland", 
+    fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>%  
+  summarise(referrals = sum(referrals), .groups = "drop") %>%
+  rename(geog = ijb) 
 pds_scot$geog<- factor(pds_scot$geog, levels = unique(pds_scot$geog))
 
-pds_hb <- pds %>% group_by(health_board, fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>% 
-  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
-
-pds_hb %<>% rename(geog = ijb) 
+pds_hb <- pds %>% 
+  group_by(health_board, fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% 
+  mutate(ijb = health_board, .before = fy) %>%
+  rename(geog = ijb) 
 
 pds_all <- bind_rows(pds_scot, pds_ijb, pds_hb)
 pds_all$geog <- factor(pds_all$geog, levels = unique(pds_all$geog))
 
 # Get annual totals for all geogs, hbs, ijbs, scotland
-
 pds_all_totals <- pds_all %>% 
   group_by(geog, fy, age_grp_2 = "All") %>% 
   summarise(total_referrals = sum(referrals))
@@ -134,7 +144,11 @@ last_full_year <- if_else(
 
 all_years <- unique(pds_all$fy)
 
-full_years <- ifelse(qt == 4, all_years, all_years[-length(all_years)])
+if (qt == 4) {
+  full_years <- all_years
+} else {
+  full_years <- all_years[-length(all_years)]
+}
 
 # Load completion data
 comp_data <- read_rds(get_mi_data_path(

@@ -89,8 +89,16 @@ q_err <- pds %>%
   ) %>%
   ungroup() %>%
   arrange(fy, health_board, ijb) %T>%
-  write_file(path = get_mi_data_path("q_error_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  write_file(
+    path = get_mi_data_path(
+      type = "query_error_data", 
+      ext = "rds", 
+      fy = fy, 
+      qt = qt, 
+      test_output = test_output,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 #queries for 2021/22 onward
 query <- pds %>% filter(dementia_diagnosis_confirmed_date >= dmy(01042021)) %>% 
@@ -111,8 +119,16 @@ query <- pds %>% filter(dementia_diagnosis_confirmed_date >= dmy(01042021)) %>%
   ) %>%
   ungroup() %>%
   arrange(fy, health_board, ijb) %T>%
-  write_file(path = get_mi_data_path("query_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  write_file(
+    path = get_mi_data_path(
+      type = "query_data", 
+      ext = "rds", 
+      fy = fy, 
+      qt = qt, 
+      test_output = test_output,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 #errors for 2021/23 onward
 err <- pds %>% filter(dementia_diagnosis_confirmed_date >= dmy(01042021)) %>% 
