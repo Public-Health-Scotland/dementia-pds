@@ -11,22 +11,36 @@
 ################################################################################
 
 render_check <- function(input, output_file, menu_input = 2, ...) {
-  if (file.size(output_file) != 0) {
-    menu_input <- menu(c("yes, overwrite the file (enter 0 to abort)"), title = cli::cli_alert_info("The file {.file {fs::path_file(output_file)}} already exists, are you sure you want to overwrite the file?"))
+  
+  # If the file already exists, display a warning message asking for user input (1 to overwrite or 0 to abort)
+  if (fs::file_exists(output_file)) {
+    # If the file was not created by the current user, add this information to the warning
+    if (fs::file_info(output_file)$user != Sys.getenv("USER")){
+      input <- menu(
+        c("yes, overwrite the file (enter 0 to abort)"), 
+        title = cli::cli_alert_info("The file {.file {fs::path_file(output_file)}} already exists and was created by another user, are you sure you want to overwrite the file?")
+      )
+    }
+    input <- menu(
+      c("yes, overwrite the file (enter 0 to abort)"), 
+      title = cli::cli_alert_info("The file {.file {fs::path_file(output_file)}} already exists, are you sure you want to overwrite the file?")
+    )
   }
-  if (file.size(output_file) == 0 | menu_input == 1) {
+  
+  # If the file does not exist or user input is 1, render the report
+  if (!fs::file_exists(output_file) | menu_input == 1) {
     rmarkdown::render(
       input = input,
       output_file = output_file)
   }
-  if (menu_input == 1) {
+  
+  # If the user input is 1, display a message to say the file has been overwritten
+  if (input == 1) {
     cli::cli_alert_info("The file {.file {fs::path_file(output_file)}} has been overwritten.")
-      }
-  if (menu_input == 2) {
-      }
-  if (menu_input == 0) {
-    cli::cli_abort(message =
-       "The file {.file {fs::path_file(output_file)}} already exists and has NOT been overwritten. Re-run the section above and enter 1 in the console to overwrite file."
+  # If the user input is 0, return an error message
+  } else if (input == 0) {
+    cli::cli_abort(
+      message = "The file {.file {fs::path_file(output_file)}} already exists and has NOT been overwritten. Re-run the section above and enter 1 in the console to overwrite file."
     )
   }
 }
