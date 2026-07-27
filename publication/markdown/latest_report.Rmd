@@ -1036,7 +1036,7 @@ interpret_footnote <-
   paste("When interpreting this information consideration should also be",
         "taken of the percentage of people estimated to be newly diagnosed",
         "with dementia being referred to post-diagnostic support",
-        "(see [section 4.1](#section41).)")
+        "(see [section 4.1](#section41)).")
 
 #number of unknown simds in provisional year
 
