@@ -12,23 +12,40 @@
 # Description - Knit markdown documents to create summary and report.
 #########################################################################
 
-
-### 1 - Load environment file and load functions then knit SUMMARY ----
+################################################################################.
+### 0 - Load environment file
+################################################################################.
 
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
+
+################################################################################.
+### 1 - Knit SUMMARY ----
+################################################################################.
 
 render_check(
   input = here("publication", "markdown", "summary.Rmd"),
-  output_file = get_pub_output_path(output_name = "pub_summary", test_output = test_output)
+  output_file = get_pub_output_path(
+    output_name = "pub_summary", 
+    pub_date = pub_date,
+    test_output = test_output,
+    check_mode = "write",
+    create_dir = TRUE
+  )
 )
 
-### 2 - load environment file and load functions then knit REPORT ----
-
-source(here::here("code", "publication", "00_setup-pub-environment.R"))
+################################################################################.
+### 2 - Knit REPORT ----
+################################################################################.
 
 render_check(
   input = here("publication", "markdown", "report.Rmd"),
-  output_file = get_pub_output_path(output_name = "pub_report", test_output = test_output)
+  output_file = get_pub_output_path(
+    output_name = "pub_report", 
+    pub_date = pub_date,
+    test_output = test_output,
+    check_mode = "write",
+    create_dir = TRUE
+  )
 )
 
-### END OF SCRIPT ###
+################################ END OF SCRIPT #################################.

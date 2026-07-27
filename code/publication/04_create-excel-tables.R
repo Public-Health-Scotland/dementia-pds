@@ -1,4 +1,4 @@
-#########################################################################
+################################################################################.
 # Name of file - 04_create-excel-tables.R
 # Data release - Annual Dementia PDS Publication
 # Original Authors - Alice Byers
@@ -8,68 +8,64 @@
 # Version of R - 3.6.1
 #
 # Description - Restructure data and save to tab in excel template
-#########################################################################
+################################################################################.
 
-
+################################################################################.
 ### 1 - Load environment file ----
+################################################################################.
 
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
-
+################################################################################.
 ### 2 - Load data ----
+################################################################################.
 
-pds <- read_rds(get_pub_data_path(test_output = test_output))
+pds <-read_rds(
+  get_pub_data_path(
+    pub_date = pub_date,
+    test_output = test_output))
 
 expected <- read_csv(get_exp_diagnoses_path()) %>%
   select(-health_board)
 
-
+################################################################################.
 ### 3 - Restructure data ----
+################################################################################.
 
-excel_data <-
-  
-  bind_rows(
-    
-    # Health Board
-    pds %>%
-      group_by(fy, category = "geog", category_split = health_board) %>%
-      summarise(across(complete:denominator, sum), .groups = "drop"),
-
-    # IJB
-    pds %>%
-      group_by(fy, category = "geog", category_split = ijb) %>%
-      summarise(across(complete:denominator, sum), .groups = "drop"),
-    
-    # Scotland
-    pds %>% 
-      group_by(fy, category = "geog", category_split = "Scotland") %>%
-      summarise(across(complete:denominator, sum), .groups = "drop"),
-    
-    # Age Group
-    pds %>% 
-      group_by(fy, category = "age", category_split = age_grp) %>%
-      summarise(across(complete:denominator, sum), .groups = "drop"),
-    
-    # SIMD
-    pds %>% 
-      group_by(fy, category = "simd", category_split = simd) %>%
-      summarise(across(complete:denominator, sum), .groups = "drop")
-    
+excel_data <- bind_rows(
+  # Health Board
+  pds %>%
+    group_by(fy, category = "geog", category_split = health_board) %>%
+    summarise(across(complete:denominator, sum), .groups = "drop"),
+  # IJB
+  pds %>%
+    group_by(fy, category = "geog", category_split = ijb) %>%
+    summarise(across(complete:denominator, sum), .groups = "drop"),
+  # Scotland
+  pds %>% 
+    group_by(fy, category = "geog", category_split = "Scotland") %>%
+    summarise(across(complete:denominator, sum), .groups = "drop"),
+  # Age Group
+  pds %>% 
+    group_by(fy, category = "age", category_split = age_grp) %>%
+    summarise(across(complete:denominator, sum), .groups = "drop"),
+  # SIMD
+  pds %>% 
+    group_by(fy, category = "simd", category_split = simd) %>%
+    summarise(across(complete:denominator, sum), .groups = "drop")
   ) %>%
-
   # Add rate column
   mutate(rate = numerator / denominator) %>%
   select(-c(numerator:denominator)) %>%
-  
   # Add expected diagnoses
   left_join(expected, by = c("fy", "category_split" = "health_board_label")) %>%
   mutate(exp_rate = referrals / diagnoses) %>%
-  
   # Add lookup column
   mutate(lookup = paste0(fy, category, category_split), .before = everything())
 
-
+################################################################################.
 ### 4 - Save data to excel template ----
+################################################################################.
 
 wb <- loadWorkbook(get_excel_template_path())
 
@@ -85,8 +81,7 @@ fy_lookup <-
   mutate(sup = case_when(
     n == max(n) ~ paste0(fy_in_pub, "ᴾ"),
     n == max(n) - 1 ~ paste0(fy_in_pub, "ᴿ"),
-    TRUE ~ fy_in_pub
-  ))
+    TRUE ~ fy_in_pub))
 
 # Add some lookup values to calculation tab
 writeData(
@@ -96,8 +91,7 @@ writeData(
     startCol = "A",
     startRow = 2,
     colNames = FALSE,
-    name = "fy"
-  )
+    name = "fy")
 
 writeData(
   wb,
@@ -106,32 +100,28 @@ writeData(
   startCol = "D",
   startRow = 2,
   colNames = FALSE,
-  name = "fy_dropdown"
-)
+  name = "fy_dropdown")
 
 writeData(
   wb,
   "calculation",
   as.character(glue_collapse(fy_in_pub, sep = ", ", last = " and ")),
   startCol = "G",
-  startRow = 2
-)
+  startRow = 2)
 
 writeData(
   wb,
   "calculation",
   format(end_date, "'%d %B %Y"),
   startCol = "G",
-  startRow = 3
-)
+  startRow = 3)
 
 writeData(
   wb,
   "calculation",
   max(fy_in_pub),
   startCol = "G",
-  startRow = 4
-)
+  startRow = 4)
 
 # Add publication link to Notes page
 link <- 
@@ -153,10 +143,12 @@ addStyle(wb = wb,
          sheet = "Notes", 
          cols = "C",
          rows = 21,
-         style = createStyle(fontName = "Arial", fontColour = "#0000ff",
-                             textDecoration = "underline"))
+         style = createStyle(
+           fontName = "Arial",
+           fontColour = "#0000ff",
+           textDecoration = "underline"))
 
-# Add text re estimates used for each year
+# Add text RE estimates used for each year
 estimates_year <- paste0(
   "Estimates are used as follows: ",
   glue_collapse(
@@ -172,31 +164,34 @@ writeData(
   "Tab 6",
   estimates_year,
   startCol = "B",
-  startRow = 31
-)
+  startRow = 31)
 
 writeData(
   wb,
   "Tab 7",
   estimates_year,
   startCol = "B",
-  startRow = 29
-)
+  startRow = 29)
 
 # Add embargo text
-writeData(wb,
-          "Notes",
-          paste("RESTRICTED STATISTICS: embargoed to 09:30", 
-                format(pub_date, "%d/%m/%Y")),
-          startCol = "B",
-          startRow = 1)
+writeData(
+  wb,
+  "Notes",
+  paste("RESTRICTED STATISTICS: embargoed to 09:30", format(pub_date, "%d/%m/%Y")),
+  startCol = "B",
+  startRow = 1)
 
 # Hide data sheets and calculation sheet
 sheetVisibility(wb)[10:11] <- "hidden"
 
-saveWorkbook(wb,
-             get_pub_output_path(output_name = "excel_tables", test_output = test_output),
-             overwrite = TRUE)
+saveWorkbook(
+  wb,
+  get_pub_output_path(
+    output_name = "excel_tables", 
+    pub_date = pub_date,
+    test_output = test_output,
+    check_mode = "write",
+    create_dir = TRUE),
+  overwrite = TRUE)
 
-
-### END OF SCRIPT ###
+################################ END OF SCRIPT #################################.
