@@ -67,9 +67,12 @@ est_date1 <- dmy(01042021)
 est_date2 <- dmy(01042022)
 est_date3 <- dmy(01042023)
 est_date4 <- dmy(01042024)
+est_date5 <- dmy(01042025)
 
   est_text <-  
-    case_when(sel_fy == extract_fin_year(est_date1) | sel_fy == extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == extract_fin_year(est_date4) ~
+    case_when(sel_fy ==
+extract_fin_year(est_date1) | sel_fy ==
+extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == extract_fin_year(est_date4) | sel_fy == extract_fin_year(est_date5) ~
       paste0("",
              "**Please note:** ",
              "In December 2016, the Scottish Government published a report: ",
@@ -77,7 +80,7 @@ est_date4 <- dmy(01042024)
              "For financial years *2021/22*, *2022/23*, *2023/24*, and *2024/25* the rates referenced in ", 
              "the report were used to create national, age specific rates of dementia incidence ",
              "per 1,000 population which were then applied to the National Records of ",
-             "Scotland (NRS) Mid-2021 Population Estimates to obtain the incidence estimates."),
+             "Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates."),
       TRUE ~ paste0(""))
   
 
@@ -87,20 +90,24 @@ est_date4 <- dmy(01042024)
 
   ac_text <-  
     case_when(sel_fy == extract_fin_year(ac_date1) | sel_fy == extract_fin_year(ac_date2) ~
-      paste0(" ",
-             "**Please note:** ",
-             "*Aberdeen City Health & Social Care Partnership changed ",
-             "to provide PDS in 2019 to an inhouse hybrid model. ",
-             "This change in model, and process of receiving referrals and recording, ",
-             "resulted in data quality issues for financial years 2019/20 and 2020/21. ",
-             "This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*"),
+                paste0(" ",
+                "**Please note:** ",
+                "*Aberdeen City Health & Social Care Partnership changed ",
+                "to provide PDS in 2019 to an inhouse hybrid model. ",
+                "This change in model, and process of receiving referrals and recording, ",
+                "resulted in data quality issues for financial years 2019/20 and 2020/21. ",
+                "This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*"),
               TRUE ~ paste0(""))
+  
+  
+  
   
      # Data quality notes - Perth & Kinross
   tay_date1 <- dmy(01042018)
   tay_date2 <- dmy(01042019)
   tay_date3 <- dmy(01042023)
   tay_date4 <- dmy(01042024)
+  tay_date5 <- dmy(01042025)
   
   tay_text <-  
     case_when(sel_fy == extract_fin_year(tay_date1) |
@@ -113,13 +120,15 @@ est_date4 <- dmy(01042024)
            "possible to fill this gap. Subsequent measures put in place have successfully ", 
            "allowed NHS Tayside to improve on data reporting from 2019 onwards.*"),
               sel_fy == extract_fin_year(tay_date3)|
-              sel_fy == extract_fin_year(tay_date4)~
+              sel_fy == extract_fin_year(tay_date4)|
+              sel_fy == extract_fin_year(tay_date5)~
         paste0(" ", 
-            "**Please note:** ",
-              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24 ", 
-              "and 2024/25, which has resulted in some records showing as incorrectly having met the standard. ",
+           "**Please note:** ",
+              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ", 
+              "2024/25 and 2025/26, which has resulted in some records showing as incorrectly having met the standard. ",
               "NHS Tayside has informed PHS that these data issues will be rectified once they have completed the ", 
-              "migration to a new IT system. This is likely to be completed by the end of the year.*"), 
+              "migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from ",
+              "all areas for 2025/26 Q3 and Q4.*"), 
     TRUE ~ paste0(""))
   
   
@@ -157,22 +166,25 @@ est_date4 <- dmy(01042024)
               "not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the ",
               "PDS service in Shetland has resumed.*"), 
             TRUE ~ paste0(""))
-   
     
-    # Data quality notes - inconsistent first contact dates
-   fc_date <- dmy(01042024)
-      
-   fc_text <- 
-    case_when(sel_fy == extract_fin_year(fc_date) ~
-              paste0(" ", 
-              "**Please note:** ",
-              "*PHS have identified some records submitted by NHS Lanarkshire, NHS Borders and NHS Fife ", 
-              "for 2024/25 that show inconsistent dates. The reported dates resulted in these records ",
-              "showing as having met the standard. PHS have queried the ", 
-              "dates with the Health Boards and are expecting these to be rectified in future submissions.*"), 
-            TRUE ~ paste0(""))
-
-
+    
+    
+    # Data quality notes - Grampian
+    gramp_date1 <- dmy(01042023)
+    gramp_date2 <- dmy(01042024)
+    gramp_date3 <- dmy(01042025)
+  
+    gramp_text <- case_when(
+      sel_fy == extract_fin_year(gramp_date1) |
+        sel_fy == extract_fin_year(gramp_date2) |
+        sel_fy == extract_fin_year(gramp_date3) ~
+        paste0(" ", 
+               "**Please note:** ",
+               "*In 2025/26 Q4 submission the numbers reported for  2023/24, 2024/25 and 2025/26 by ", 
+               "NHS Grampian are lower than those reported than in previous quarters. ", 
+               "PHS are working with the Board to investigate and resolve this.*"), 
+      TRUE ~ paste0(""))
+    
 ```
 
 
@@ -253,7 +265,7 @@ Row
 
 `r shet_text`
 
-`r fc_text`
+`r gramp_text`
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
 ----------------------------------------------------------------------

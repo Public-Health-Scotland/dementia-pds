@@ -31,7 +31,7 @@ previous_end_date <- lubridate::dmy(31122025)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure
-pub_date <- lubridate::dmy(25072026)
+pub_date <- lubridate::dmy(16122025)
 
 ### 1 - Load packages ----
 
