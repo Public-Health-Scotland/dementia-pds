@@ -27,8 +27,7 @@ source(here::here("functions/setup_general.R"))
 #'
 #' @description
 #' Returns the root directory used to store outputs and supporting files.
-#' Remove "/" to make the path relative. This will save outputs in your own 
-#' dementia-pds folder for testing code.
+#' This can be changed to save outputs in your own folder for testing code.
 #'
 #' @return
 #' An [fs::path()] object containing the path to the
@@ -37,7 +36,8 @@ source(here::here("functions/setup_general.R"))
 #' @export
 
 get_root_dir <- function() {
-  root_dir <- fs::path("conf", "dementia", "A&I", "Outputs")
+  #root_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs")
+  root_dir <- fs::path("/", "conf", "dementia", "A&I", "Analysts", "Lucy", "test")
   
   return(root_dir)
 }
@@ -200,7 +200,7 @@ get_mi_data_path <- function(type = c("clean_data",
                              fy,
                              qt,
                              test_output = FALSE, 
-                             check_mode = "write",
+                             check_mode = "read",
                              create_dir = FALSE) {
   
   # Validate arguments
@@ -220,23 +220,24 @@ get_mi_data_path <- function(type = c("clean_data",
   # Get the file name
   file_name <- dplyr::case_match(
     type,
-    "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data.rds"),
-    "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data.rds"),
-    "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes.csv"),
-    "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary.rds"),
+    "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
+    "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data"),
+    "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"),
+    "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
     "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data.rds"),
-    "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp.rds"),
-    "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data.rds"),
-    "query_error_data" ~ stringr::str_glue("{fy}-{qt}_query-error-summary.rds"),
-    "query_data" ~ stringr::str_glue("{fy}-{qt}_query-summary.rds"),
-    "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data.rds"),
-    "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data.rds"),
+    "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
+    "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data"),
+    "query_error_data" ~ stringr::str_glue("{fy}-{qt}_query-error-summary"),
+    "query_data" ~ stringr::str_glue("{fy}-{qt}_query-summary"),
+    "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data"),
+    "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data"),
     )
   
   # Check the file path
   mi_data_path <- check_file_path(
     directory = mi_year_dir,
     file_name = file_name,
+    ext = ext,
     check_mode = check_mode,
     create_dir = create_dir
   )
@@ -278,7 +279,7 @@ get_mi_data_path <- function(type = c("clean_data",
 get_mi_output_path <- function(fy,
                                qt,
                                test_output = FALSE,
-                               check_mode = "write",
+                               check_mode = "read",
                                create_dir = FALSE) {
   
   # Get and validate the management report folder for a specific year
@@ -314,6 +315,47 @@ get_mi_output_path <- function(fy,
 }
 
 
+#' Get the processed population file paths
+#'
+#' @description
+#' Constructs and validates the path to the processed population files used
+#' within the management report process.
+#'
+#' @param simd Logical. If `TRUE`, returns the DataZone population with SIMD information.
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param create Logical. If `TRUE`, create the directory if it does not
+#' already exist.
+#'
+#' @return
+#' A validated [fs::path()] object containing the path to the population
+#' lookup file.
+#'
+#' @family management report file paths
+#' @export
+
+get_pop_lookup_path <- function(simd = FALSE,
+                                check_mode = "read",
+                                create_dir = FALSE) {
+  
+  # Construct the directory path
+  lookup_dir <- fs::path(get_mi_dir(), "lookups")
+  
+  # Get the file name
+  file_name <- ifelse(simd, "simd_pop_data.rds", "pop_data.rds")
+  
+  # Check the file path
+  pop_lookup_path <- check_file_path(
+    directory = lookup_dir,
+    file_name = file_name,
+    check_mode = check_mode,
+    create_dir = create_dir
+  )
+  
+  return(pop_lookup_path)
+}
+
+
 #' Get the final data directory
 #'
 #' @description
@@ -329,21 +371,89 @@ get_mi_output_path <- function(fy,
 #' @family management report file paths
 #' @export
 
-get_final_data_dir <- function() {
-  final_data_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", "final")
+get_finalised_data_dir <- function() {
+  finalised_data_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", "final")
   
-  return(final_data_dir)
+  return(finalised_data_dir)
+}
+
+
+#' Get the path to a finalised management information dataset
+#'
+#' @description
+#' Constructs and validates the path to a finalised management information
+#' dataset for a specified financial year.
+#'
+#' Once a reporting year has been finalised, the corresponding dataset is
+#' stored as a static reference file within the final data directory.
+#'
+#' Expected file names follow the pattern:
+#'
+#' \preformatted{
+#' <financial year>_final-data.rds
+#' }
+#'
+#' For example:
+#'
+#' \preformatted{
+#' 2024-25_final-data.rds
+#' }
+#'
+#' @param fy Financial year start as a four-digit character string, e.g.
+#' `"2024"` for financial year 2024-25.
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param create_dir Logical. If `TRUE`, create the directory if it does not
+#' already exist.
+#'
+#' @return
+#' A validated [fs::path()] object containing the path to the finalised
+#' management information dataset.
+#'
+#' @family management report file paths
+#' @export
+
+get_finalised_data_path <- function(fy,
+                                    check_mode = "read",
+                                    create_dir = FALSE) {
+  
+  # Check fy format
+  if (!is.character(fy) || length(fy) != 1L ||
+      !grepl("^[0-9]{4}$", fy)) {
+    cli::cli_abort(
+      "{.arg fy} must be a four-digit year, e.g. {.val \"2024\"}."
+    )
+  }
+  
+  # Construct the directory path
+  finalised_data_dir <- get_finalised_data_dir()
+  
+  # Get the file name
+  file_name <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}_final-data.rds")
+  
+  # Check the file path
+  finalised_data_path <- check_file_path(
+    directory = finalised_data_dir,
+    file_name = file_name,
+    check_mode = check_mode,
+    create_dir = create_dir
+  )
+  
+  return(finalised_data_path)
 }
 
 
 #' Get the Aberdeen City LDP data directory
 #'
 #' @description
-#' Returns the directory containing Aberdeen City LDP files for 2019 and 2020.
+#' Returns the directory containing Aberdeen City Local Delivery Plan (LDP)
+#' dementia post-diagnostic support datasets for financial years 2019-20 and
+#' 2020-21.
 #'
-#' The lookup was created to address known data quality issues affecting
-#' Aberdeen City reporting. Refer to the relevant SOP for further details.
-#' 
+#' These files were created to support reporting for Aberdeen City and to
+#' address known data quality issues affecting the management information
+#' process. Refer to the relevant SOP for further details.
+#'
 #' @return
 #' An [fs::path()] object containing the path to the Aberdeen City LDP
 #' data directory.
@@ -355,6 +465,75 @@ get_ac_data_dir <- function() {
   ac_data_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs", "management-report", "data", "Aberdeen City ldp files")
   
   return(ac_data_dir)
+}
+
+
+#' Get the path to an Aberdeen City LDP dataset
+#'
+#' @description
+#' Constructs and validates the path to an Aberdeen City Local Delivery Plan
+#' (LDP) dementia post-diagnostic support dataset for a specified financial
+#' year.
+#'
+#' These files were created to support reporting for Aberdeen City and to
+#' address known data quality issues affecting the management information
+#' process. Refer to the relevant SOP for further details.
+#'
+#' Expected file names follow the pattern:
+#'
+#' \preformatted{
+#' <financial year>_individuals-with-ldp_aberdeen-city.csv
+#' }
+#'
+#' For example:
+#'
+#' \preformatted{
+#' 2019-20_individuals-with-ldp_aberdeen-city.csv
+#' }
+#'
+#' @param fy Financial year start as a four-digit character string, e.g.
+#' `"2019"` for financial year 2019-20.
+#' @param check_mode Access mode required for the file. Passed to
+#' [check_file_path()]. One of `"read"` or `"write"`.
+#' @param create_dir Logical. If `TRUE`, create the directory if it does not
+#' already exist.
+#'
+#' @return
+#' A validated [fs::path()] object containing the path to the Aberdeen City
+#' LDP dataset.
+#'
+#' @family management report file paths
+#' @export
+
+get_ac_data_path <- function(fy,
+                             ext = "rds",
+                             check_mode = "read",
+                             create_dir = FALSE) {
+  
+  # Check fy format
+  if (!is.character(fy) || length(fy) != 1L ||
+      !grepl("^[0-9]{4}$", fy)) {
+    cli::cli_abort(
+      "{.arg fy} must be a four-digit year, e.g. {.val \"2024\"}."
+    )
+  }
+  
+  # Construct the directory path
+  ac_data_dir <- get_ac_data_dir()
+
+  # Get the file name
+  file_name <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}_individuals-with-ldp_aberdeen-city")
+  
+  # Check the file path
+  ac_data_path <- check_file_path(
+    directory = ac_data_dir,
+    file_name = file_name,
+    ext = ext,
+    check_mode = check_mode,
+    create_dir = create_dir
+  )
+  
+  return(ac_data_path)
 }
 
 
