@@ -33,8 +33,10 @@ format_perc <- function(x, dp = 1){
 # Read in data ----
 
 # LDP Dataset
-pds <- 
-  read_rds(get_pub_data_path()) %>%
+pds <- read_rds(
+  get_pub_data_path(
+    pub_date = pub_date,
+    test_output = test_output)) %>%
   filter(ijb != "Unknown" & referrals > 0)
 
 # Expected Diagnoses (Incidence)
@@ -42,11 +44,15 @@ exp <- read_csv(get_exp_diagnoses_path()) %>%
   select(fy, health_board = health_board_label, diagnoses)
 
 # Error rates 
-err <- 
-  read_rds(get_mi_data_path(type = "error_data", ext = "rds")) %>% 
+err <- read_rds(
+  get_mi_data_path(
+    type = "error_data", 
+    ext = "rds",
+    fy = fy,
+    qt = qt,
+    test_output = test_output)) %>% 
   filter(health_board == "Scotland" & fy %in% fy_in_pub) %>%
-  mutate(perc = format_perc(total_errors / records * 100)
-  ) %>%
+  mutate(perc = format_perc(total_errors / records * 100)) %>%
   select(fy, perc) %>%
   mutate(text = glue("for {fy} was {perc}"))
 ```
@@ -86,7 +92,11 @@ This release by Public Health Scotland (PHS) reports on the Scottish Governmentâ
 <Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one yearâ€™s post-diagnostic support by NHS Board; `r latest_fy`^1^</Div>
 
 ```{r chart, fig.width=7.18, fig.height=3.31, fig.cap=fig_alttext}
-include_graphics(get_pub_figures_path(type = "summary"))
+include_graphics(get_pub_figures_path(
+  type = "summary",
+  pub_date = pub_date,
+  test_output = test_output
+))
 ```
 
 <Div custom-style = "Footnote Text">

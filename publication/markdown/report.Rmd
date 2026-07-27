@@ -31,8 +31,10 @@ format_perc <- function(x, dp = 1){
 # Read in data ----
 
 # LDP Dataset
-pds <- 
-  read_rds(get_pub_data_path(test_output = test_output)) %>% 
+pds <- read_rds(
+  get_pub_data_path(
+    pub_date = pub_date,
+    test_output = test_output)) %>%
   filter(ijb != "Unknown" & referrals > 0)
 
 # Expected Diagnoses (Incidence)
@@ -40,11 +42,15 @@ exp <- read_csv(get_exp_diagnoses_path()) %>%
   select(fy, health_board = health_board_label, diagnoses)
 
 # Error rates 
-err <- 
-  read_rds(get_mi_data_path(type = "error_data", ext = "rds", test_output = test_output)) %>% 
+err <- read_rds(
+  get_mi_data_path(
+    type = "error_data", 
+    ext = "rds",
+    fy = fy,
+    qt = qt,
+    test_output = test_output)) %>% 
   filter(health_board == "Scotland" & fy %in% fy_in_pub) %>%
-  mutate(perc = format_perc(total_errors / records * 100)
-  ) %>%
+  mutate(perc = format_perc(total_errors / records * 100)) %>%
   select(fy, perc) %>%
   mutate(text = glue("for {fy} was {perc}"))
 
@@ -659,8 +665,11 @@ the data presented in this report.
 <Div custom-style = "Figure_Style">
 ```{r fig-summary, echo= FALSE, fig.cap= `f2_alt_text`, out.width = 600}
 # Figure summary
-include_graphics(get_pub_figures_path(type = "c2"))
-
+include_graphics(get_pub_figures_path(
+  type = "c2",
+  pub_date = pub_date,
+  test_output = test_output
+))
 ```
 </Div>
 
@@ -719,8 +728,11 @@ Figure 1 presents the percentage of people referred for dementia post-diagnostic
 <Div custom-style = "Figure_Style">
 ```{r fig-1, echo= FALSE, fig.cap= `f1_alt_text`, out.width = 600}
 # Figure 1
-include_graphics(get_pub_figures_path(type = "c1"))
-
+include_graphics(get_pub_figures_path(
+  type = "c1",
+  pub_date = pub_date,
+  test_output = test_output
+))
 ```
 </Div>
 
@@ -812,8 +824,11 @@ hb %>%
 <Div custom-style = "Figure_Style">
 ```{r fig-2, echo=FALSE, fig.cap= `f2_alt_text`, out.width = 600}
 # Figure 2 
-include_graphics(get_pub_figures_path(type = "c2"))
-
+include_graphics(get_pub_figures_path(
+  type = "c2",
+  pub_date = pub_date,
+  test_output = test_output
+))
 ```
 </Div>
 
@@ -906,8 +921,11 @@ ijb %>%
 <Div custom-style = "Figure_Style">
 ```{r fig-3, echo=FALSE, fig.cap= `f3_alt_text`, out.width = 420}
 # Figure 3 
-include_graphics(get_pub_figures_path(type = "c3"))
-
+include_graphics(get_pub_figures_path(
+  type = "c3",
+  pub_date = pub_date,
+  test_output = test_output
+))
 ```
 </Div>
 
@@ -967,7 +985,11 @@ Figure 4 presents the age distribution of those referred for dementia post-diagn
 <Div custom-style = "Figure_Style">
 ```{r fig-4, echo=FALSE, fig.cap= `f4_alt_text`, out.width = 600}
 # Figure 4 
-include_graphics(get_pub_figures_path(type = "c4"))
+include_graphics(get_pub_figures_path(
+  type = "c4",
+  pub_date = pub_date,
+  test_output = test_output
+))
 ```
 </Div>
 
@@ -986,7 +1008,11 @@ Figure 5 presents the percentage of those referred for dementia post-diagnostic 
 <Div custom-style = "Figure_Style">
 ```{r fig-5, echo=FALSE, fig.cap= f5_alt_text, out.width = 600}
 # Figure 5 
-include_graphics(get_pub_figures_path(type = "c5"))
+include_graphics(get_pub_figures_path(
+  type = "c5",
+  pub_date = pub_date,
+  test_output = test_output
+))
 ```
 </Div>
 
@@ -1009,8 +1035,11 @@ Figure 6 presents the distribution of referrals for dementia post-diagnostic sup
 <Div custom-style = "Figure_Style">
 ```{r fig-6, echo=FALSE, fig.cap= `f6_alt_text`, out.width = 600}
 # Figure 6
-include_graphics(get_pub_figures_path(type = "c6"))
-
+include_graphics(get_pub_figures_path(
+  type = "c6",
+  pub_date = pub_date,
+  test_output = test_output
+))
 ```
 </Div>
 
@@ -1029,7 +1058,11 @@ Figure 7 presents the percentage of those referred for dementia post-diagnostic 
 <Div custom-style = "Figure_Style">
 ```{r fig-7, echo=FALSE, fig.cap= f7_alt_text, out.width = 600}
 # Figure 7 
-include_graphics(get_pub_figures_path(type = "c7"))
+include_graphics(get_pub_figures_path(
+  type = "c7",
+  pub_date = pub_date,
+  test_output = test_output
+))
 ```
 </Div>
 
