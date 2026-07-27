@@ -27,57 +27,47 @@ create_final_data <- function(fy_final, collated_file){
     stop("fy_final is not a valid financial year.")
   }
   
-  start_final <- lubridate::dmy(paste0("0104", 
-                                       stringr::str_sub(fy_final, 1, 4)))
-  end_final   <- lubridate::dmy(paste0("310320", 
-                                       stringr::str_sub(fy_final, 6, 7)))
+  start_final <- lubridate::dmy(paste0("0104", stringr::str_sub(fy_final, 1, 4)))
+  end_final   <- lubridate::dmy(paste0("310320", stringr::str_sub(fy_final, 6, 7)))
   
-  pds <-
-    
-    readr::read_csv(collated_file, col_types = cols(.default = "c")) %>%
-    
+  pds <- readr::read_csv(collated_file, col_types = cols(.default = "c")) %>%
     janitor::clean_names() %>%
-    
-    # Convert dates from character to date format
-    dplyr::mutate(dplyr::across(tidyselect::contains("date"), 
-                                lubridate::ymd)) %>%
-    
-    # Pad CHI Number to 10 digits
-    dplyr::mutate(chi_number = phsmethods::chi_pad(chi_number)) %>%
-    
-    # Replace word 'and' with ampersand
-    dplyr::mutate(health_board = 
-                    stringr::str_replace(health_board, " and ", " & ")) %>%
-    
+    dplyr::mutate(
+      # Convert dates from character to date format
+      dplyr::across(tidyselect::contains("date"), lubridate::ymd),
+      # Pad CHI Number to 10 digits
+      chi_number = phsmethods::chi_pad(chi_number),
+      # Replace word 'and' with ampersand
+      health_board = stringr::str_replace(health_board, " and ", " & ")
+    ) %>%
     # Extract records with diagnosis date before start date
-    dplyr::filter(dplyr::between(dementia_diagnosis_confirmed_date, 
-                                 start_final, end_final))
+    dplyr::filter(dplyr::between(
+      dementia_diagnosis_confirmed_date, 
+      start_final, end_final
+    ))
   
-  final_file <- paste0(get_final_data_dir(), "/", glue::glue("{stringr::str_replace(fy_final, '/', '-')}",
-                          "_final-data.rds"))
+  final_file <- get_finalised_data_path(
+    fy = stringr::str_sub(fy_final, 1, 4),
+    check_mode = "write",
+    create_dir = TRUE
+  )
   
   # Check if file already exists
   if(file.exists(final_file)){
-    
-    stop(glue::glue("A finalised data file for {fy_final} already exists at ",
-               "{final_file}."))
-    
+    stop(glue::glue(
+      "A finalised data file for {fy_final} already exists at ",
+      "{final_file}."
+    ))
   }else{
-    
-    print(glue("Saving final file for {fy_final}..."))
-    
     # Save final file
+    print(glue("Saving final file for {fy_final}..."))
     readr::write_rds(
       pds,
       final_file,
       compress = "gz"
     )
-    
     print(glue::glue("File saved to {final_file}"))
-    
   }
-    
 }
-
 
 ### END OF SCRIPT ###

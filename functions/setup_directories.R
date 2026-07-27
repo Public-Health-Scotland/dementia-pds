@@ -426,7 +426,7 @@ get_finalised_data_path <- function(fy,
   }
   
   # Construct the directory path
-  finalised_data_dir <- get_finalised_data_dir()
+  finalised_data_dir <- fs::path(get_mi_dir(), "data", "final")
   
   # Get the file name
   file_name <- stringr::str_glue("{fy}-{substr(as.numeric(fy)+1, 3, 4)}_final-data.rds")
@@ -816,7 +816,8 @@ get_pub_figures_path <- function(type = c("c1",
                                           "c12",
                                           "c13",
                                           "c14",
-                                          "summary"), 
+                                          "summary",
+                                          "twitter"), 
                                  pub_date,
                                  test_output = FALSE,
                                  check_mode = "read",
@@ -850,7 +851,8 @@ get_pub_figures_path <- function(type = c("c1",
     "c12" ~ stringr::str_glue("{pub_date}_wait-times-hb.png"),
     "c13" ~ stringr::str_glue("{pub_date}_wait-times-ijb.png"),
     "c14" ~ stringr::str_glue("{pub_date}_wait-times-trend.png"),
-    "summary" ~ stringr::str_glue("{pub_date}_summary-chart.png")
+    "summary" ~ stringr::str_glue("{pub_date}_summary-chart.png"),
+    "twitter" ~ stringr::str_glue("{pub_date}_dementia-pds_twitter-chart.png")
   )
   
   # Check the file path
