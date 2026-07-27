@@ -260,7 +260,7 @@ Row `r if(complete_year == FALSE)"{.hidden}"`
 
 `r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
 ```{r Expected Value Box, include = complete_year}
-valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
+flexdashboard::valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
          caption = glue("of people estimated to be newly diagnosed with ",
                         "dementia were referred for post-diagnostic support."))
 ```
@@ -274,7 +274,7 @@ Row `r if(complete_year == FALSE)"{.hidden}"`
 
 `r ifelse(complete_year == TRUE, "### 12 Months Value Box", "")`
 ```{r 12 Months Value Box, include = complete_year}
-valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
+flexdashboard::valueBox(paste0(round_half_up(pds_rate, 1), "%"), 
          caption = glue("of those referred for post-diagnostic support ",
                         "received a minimum of 12 months of support."))
 ```

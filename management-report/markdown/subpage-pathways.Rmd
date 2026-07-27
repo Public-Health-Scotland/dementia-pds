@@ -3,21 +3,30 @@ PDS Pathways
 
 ```{r data-setup-pathways, include=FALSE}
 
-#load pathways data
-wait_data <- read_rds(get_mi_data_path("wait_data", ext = "rds", test_output = test_output))
+# Load pathways data
+wait_data <- read_rds(get_mi_data_path(
+  type = "wait_data", 
+  ext = "rds", 
+  fy = fy,
+  qt = qt,
+  test_output = test_output
+)) %>%
+  mutate(
+    health_board = as.factor(health_board),
+    fy = as.factor(fy),
+    simd = as.factor(simd),
+    sex = as.factor(sex),
+    ijb = as.factor(ijb)
+  )
 
-# term_data_contact <- read_rds(get_mi_data_path("wait_data_2", ext = "rds", test_output = test_output))
+# Load uptake decision data
+uptake_data <- read_rds(get_mi_data_path(
+  type = "uptake_data", 
+  ext = "rds", 
+  fy = fy, 
+  qt = qt,
+  test_output = test_output))
 
-wait_data$health_board <- as.factor(wait_data$health_board)
-wait_data$fy <- as.factor(wait_data$fy)
-wait_data$simd <- as.factor(wait_data$simd)
-wait_data$sex <- as.factor(wait_data$sex)
-wait_data$ijb <- as.factor(wait_data$ijb)
-
-#load uptake decision data
-uptake_data <- read_rds(get_mi_data_path("uptake_data", ext = "rds", test_output = test_output))
-
- 
 ```
 
 Sidebar - waiting times {.sidebar}

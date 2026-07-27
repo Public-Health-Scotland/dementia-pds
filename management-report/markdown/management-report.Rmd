@@ -30,107 +30,149 @@ detach("package:tidylog", unload = TRUE)
 # Load functions
 walk(dir(here::here("functions"), full.names = TRUE), source)
 
-
 # Load PDS monthly data
-pds <- read_rds(get_mi_data_path("final_data", ext = "rds", test_output = test_output)) %>% 
-  
+pds <- read_rds(get_mi_data_path(
+  type = "final_data", 
+  ext = "rds", 
+  fy = fy,
+  qt = qt,
+  test_output = test_output
+)) %>%
   # Remove codes from board and IJB
-  mutate(health_board = str_sub(health_board, 3, -1),
-         ijb          = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
+  mutate(
+    health_board = str_sub(health_board, 3, -1),
+    ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1))
+  )
 
 # Load expected diagnoses reference file
 exp <- read_csv(get_exp_diagnoses_path())
 
-
 # Load error summary
-err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
+err <- read_rds(get_mi_data_path(
+  type = "error_data", 
+  ext = "rds", 
+  fy = fy,
+  qt = qt,
+  test_output = test_output
+)) %>%
+  mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
 
-  mutate(ijb = if_else(is.na(ijb),
-                                "Unknown",
-                                str_sub(ijb, 11, -1)))
+# Calculate monthly referrals for Scotland and health boards
 
-# calculate monthly referrals for Scotland and health boards
-pds_ijb <- pds %>% arrange(ijb)
+pds_ijb <- pds %>% 
+  arrange(ijb) %>%
+  rename(geog = ijb) 
+pds_ijb$geog <- factor(pds_ijb$geog, levels = unique(pds_ijb$geog))
 
-pds_ijb %<>% rename(geog = ijb) 
+pds_scot <- pds %>% 
+  group_by(
+    health_board = "Scotland", 
+    ijb = "Scotland", 
+    fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex
+  ) %>%
+  summarise(referrals = sum(referrals), .groups = "drop") %>%
+  rename(geog = ijb) 
+pds_scot$geog <- factor(pds_scot$geog, levels = unique(pds_scot$geog))
 
-pds_ijb$geog<- factor(pds_ijb$geog, levels = unique(pds_ijb$geog))
+pds_hb <- pds %>% 
+  group_by(
+    health_board, 
+    fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex
+  ) %>% 
+  summarise(referrals = sum(referrals), .groups = "drop") %>% 
+  mutate(ijb = health_board, .before = fy) %>%
+  rename(geog = ijb) 
+pds_hb$geog <- factor(pds_hb$geog, levels = unique(pds_hb$geog))
 
-pds_scot <- pds %>% group_by(health_board = "Scotland", ijb = "Scotland", fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>%  summarise(referrals = sum(referrals), .groups = "drop")
+# Combine monthly data for ijb, hb and Scotland
 
-pds_scot %<>% rename(geog = ijb) 
-
-pds_scot$geog<- factor(pds_scot$geog, levels = unique(pds_scot$geog))
-
-pds_hb <- pds %>% group_by(health_board, fy, month, ldp_full, ldp, age_grp_2, age_grp, simd, sex) %>% 
-  summarise(referrals = sum(referrals), .groups = "drop") %>% mutate(ijb = health_board, .before = fy)
-
-pds_hb %<>% rename(geog = ijb) 
-
-pds_hb$geog<- factor(pds_hb$geog, levels = unique(pds_hb$geog))
-
-# combine monthly data for ijb, hb and Scotland
 pds_all <- bind_rows(pds_scot, pds_ijb, pds_hb)
+pds_all$geog <- factor(pds_all$geog, levels = unique(pds_all$geog))
 
-pds_all$geog<- factor(pds_all$geog, levels = unique(pds_all$geog))
+# Get annual totals for all geogs, hbs, ijbs, scotland
 
-#get annual totals for all geogs, hbs, ijbs, scotland
-pds_all_totals <- pds_all %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
+pds_all_totals <- pds_all %>% 
+  group_by(geog, fy, age_grp_2 = "All") %>% 
+  summarise(total_referrals = sum(referrals))
 
-pds_ijb_totals <- pds_ijb %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
+pds_ijb_totals <- pds_ijb %>% 
+  group_by(geog, fy, age_grp_2 = "All") %>% 
+  summarise(total_referrals = sum(referrals))
 
-pds_hb_totals <- pds_hb %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
+pds_hb_totals <- pds_hb %>% 
+  group_by(geog, fy, age_grp_2 = "All") %>% 
+  summarise(total_referrals = sum(referrals))
 
-pds_scot_totals <- pds_scot %>% group_by(geog, fy, age_grp_2 = "All") %>% summarise(total_referrals = sum(referrals))
+pds_scot_totals <- pds_scot %>% 
+  group_by(geog, fy, age_grp_2 = "All") %>% 
+  summarise(total_referrals = sum(referrals))
 
-#load population rates data
-pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
+# Load population rates data
+pop_data <- read_rds(get_pop_lookup_path())
 
-#create year lists
-provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
-                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
+# Create year lists
+provisional_year <- paste0(
+  as.numeric(substr(last(finalised_years),1,4)) + 1,
+  "/", 
+  as.numeric(substr(last(finalised_years),6,7)) + 1
+)
 
-current_fy <- paste0(substr(fy,1,4),
-                           "/", as.numeric(substr(fy,3,4)) + 1)
+current_fy <- paste0(
+  substr(fy,1,4),
+  "/", 
+  as.numeric(substr(fy,3,4)) + 1
+)
 
-last_full_year <- if_else(qt == 4, current_fy, paste0(as.numeric(substr(fy,1,4)) - 1,
-                           "/", as.numeric(substr(fy,3,4))))
+last_full_year <- if_else(
+  qt == 4, 
+  current_fy, 
+  paste0(
+    as.numeric(substr(fy,1,4)) - 1, 
+    "/", 
+    as.numeric(substr(fy,3,4))
+  )
+)
 
 all_years <- unique(pds_all$fy)
 
-if(qt == 4){full_years = all_years}else{full_years = all_years[-length(all_years)]}
+full_years <- ifelse(qt == 4, all_years, all_years[-length(all_years)])
 
-#load completion data
-comp_data <- read_rds(get_mi_data_path("comp_data", ext = "rds", test_output = test_output))
+# Load completion data
+comp_data <- read_rds(get_mi_data_path(
+  type = "comp_data", 
+  ext = "rds", 
+  fy = fy,
+  qt = qt,
+  test_output = test_output
+))
 
-#glossary calculations
+# Glossary calculations
 over_65_and_total <- left_join(
-
-scot_65_plus_total <- pds_scot %>% filter(age_grp != "59 and Under", age_grp != "60 to 64") %>% 
-  group_by(geog) %>% summarise(over_65_referrals = sum(referrals)),
-
-
-scot_overall_total <- pds_scot %>% group_by(geog) %>% summarise(total_referrals = sum(referrals))
-
+  scot_65_plus_total <- pds_scot %>% 
+    filter(age_grp != "59 and Under", age_grp != "60 to 64") %>% 
+    group_by(geog) %>% 
+    summarise(over_65_referrals = sum(referrals)),
+  scot_overall_total <- pds_scot %>% 
+    group_by(geog) %>% 
+    summarise(total_referrals = sum(referrals))
 )
 
-perc_65_plus<-round(over_65_and_total[2]/over_65_and_total[3]*100,1)
+perc_65_plus <- round(over_65_and_total[2]/over_65_and_total[3]*100,1)
 
-
-age_unknown_all_years <- pds_scot %>% filter(age_grp == "Unknown")
+age_unknown_all_years <- pds_scot %>% 
+  filter(age_grp == "Unknown")
 
 age_unknown <- sum(age_unknown_all_years$referrals)
 
-sex_unknown_all_years <- pds_scot %>% filter(sex != "01 Male", sex != "02 Female")
+sex_unknown_all_years <- pds_scot %>% 
+  filter(sex != "01 Male", sex != "02 Female")
 
 sex_unknown <- sum(sex_unknown_all_years$referrals)
 
-simd_unknown_all_years <- pds_scot %>% filter(simd == "Unknown")
+simd_unknown_all_years <- pds_scot %>% 
+  filter(simd == "Unknown")
 
 simd_unknown <- sum(simd_unknown_all_years$referrals)
-
 
 ```
 
