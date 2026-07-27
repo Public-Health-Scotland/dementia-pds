@@ -1,3 +1,8 @@
+
+
+
+
+
 ---
 output: 
   phstemplates::phs_report_docx:    
@@ -977,7 +982,7 @@ a_city_footnote_ijb <-
         "the total number of people referred to PDS in Aberdeen City is known, due to ",
         "data quality issues it is not possible to calculate the percentage of people that ",
         "received a minimum of one year’s support. ",
-        "See [Appendix 1Appendix 1 - Background information](#reporting) for further information.")
+        "See [Appendix 1 - Background information](#reporting) for further information.")
 
  
 # a_city_footnote_general <-
@@ -1197,6 +1202,7 @@ The trend shows that between `r fy_in_pub[1]` to `r next_fy` the number of peopl
 ```{r fig-c8, echo= FALSE, fig.cap= `f8_alt_text`, out.width = 600}
 # Figure summary
 include_graphics(fig_c8)
+#include_graphics(get_pub_figures_path(type = "c8"))
 
 ```
 </Div>
@@ -1216,7 +1222,7 @@ Figure 2 below presents the number of people referred for dementia post-diagnost
 ```{r fig-c9, echo= FALSE, fig.cap= `f9_alt_text`, out.width = 600}
 # Figure summary
 include_graphics(fig_c9)
-
+#include_graphics(get_pub_figures_path(type = "c9"))
 ```
 </Div>
 <Div custom-style = "Footnote Text">
@@ -1238,6 +1244,7 @@ Note, the median time includes all people who were contacted by PDS services and
 ```{r fig-c14 , echo= FALSE, fig.cap= `f6_alt_text`, out.width = 600}
 # Figure summary
 include_graphics(fig_c14)
+#include_graphics(get_pub_figures_path(type = "c14"))
 
 ```
 </Div>
@@ -1307,6 +1314,7 @@ Figure 4 presents the percentage of people referred for dementia post-diagnostic
 ```{r fig-4, echo= FALSE, fig.cap= `f9_alt_text`, out.width = 600}
 # Figure 4
 include_graphics(fig_c1)
+#include_graphics(get_pub_figures_path(type = "c1"))
 
 ```
 </Div>
@@ -1449,7 +1457,8 @@ hb %>%
 <Div custom-style = "Figure_Style">
 ```{r fig-5, echo= FALSE, fig.cap= `f10_alt_text`, out.width = 600}
 # Figure 5
-include_graphics(fig_c2)
+#include_graphics(fig-c2)
+include_graphics(get_pub_figures_path(type = "summary"))
 
 ```
 </Div>
@@ -1614,6 +1623,7 @@ In `r latest_fy`, the capacity in PDS services in both Renfrewshire and Dumfries
 ```{r fig-3, echo=FALSE, fig.cap= `f3_alt_text`, out.width = 420}
 # Figure 6 
 include_graphics(fig_c3)
+#include_graphics(get_pub_figures_path(type = "c3"))
 
 ```
 
@@ -1709,6 +1719,8 @@ Figure 7 below shows that in `r latest_fy` females accounted for nearly 3 out of
 ```{r fig-7, echo=FALSE, fig.cap= `f11_alt_text`, out.width = 600}
 # Figure 7 
 include_graphics(fig_c10)
+#include_graphics(get_pub_figures_path(type = "c10"))
+
 ```
 </Div>
 
@@ -1722,6 +1734,8 @@ include_graphics(fig_c10)
 ```{r fig-8, echo=FALSE, fig.cap= f12_alt_text, out.width = 600}
 # Figure 8 
 include_graphics(fig_c11)
+#include_graphics(get_pub_figures_path(type = "c11"))
+
 ```
 </Div>
 
@@ -1741,6 +1755,8 @@ Figure 9 presents the age distribution of those referred for dementia post-diagn
 ```{r fig-9, echo=FALSE, fig.cap= `f4_alt_text`, out.width = 600}
 # Figure 9 
 include_graphics(fig_c4)
+#include_graphics(get_pub_figures_path(type = "c4"))
+
 ```
 </Div>
 
@@ -1759,6 +1775,8 @@ Figure 10 presents the percentage of those people referred for dementia post-dia
 ```{r fig-10, echo=FALSE, fig.cap= f5_alt_text, out.width = 600}
 # Figure 10 
 include_graphics(fig_c5)
+#include_graphics(get_pub_figures_path(type = "c5"))
+
 ```
 </Div>
 
@@ -1781,6 +1799,7 @@ Figure 11 presents the distribution of people referred for dementia post-diagnos
 ```{r fig-6, echo=FALSE, fig.cap= `f6_alt_text`, out.width = 600}
 # Figure 11
 include_graphics(fig_c6)
+#include_graphics(get_pub_figures_path(type = "c6"))
 
 ```
 </Div>
@@ -1800,6 +1819,7 @@ Figure 12 presents the percentage of people referred for dementia post-diagnosti
 ```{r fig-12, echo=FALSE, fig.cap= f7_alt_text, out.width = 600}
 # Figure 12 
 include_graphics(fig_c7)
+#include_graphics(get_pub_figures_path(type = "c7"))
 ```
 </Div>
 
@@ -2394,3 +2414,4 @@ phs.otherformats@phs.scot or 0131 314 5300.
 
 This publication is licensed for re-use under the [Open Government Licence v3.0](http://www.nationalarchives.gov.uk/doc/open-government-licence/). For more information, visit [www.publichealthscotland.scot/ogl](http://www.publichealthscotland.scot/ogl)
 </Div>
+
