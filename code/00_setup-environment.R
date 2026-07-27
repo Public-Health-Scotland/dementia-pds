@@ -26,12 +26,12 @@
 test_output <- FALSE
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(31122025)
-previous_end_date <- lubridate::dmy(30092025)
+end_date <- lubridate::dmy(31032026)
+previous_end_date <- lubridate::dmy(31122025)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure
-pub_date <- lubridate::dmy(16122025)
+pub_date <- lubridate::dmy(25072026)
 
 ### 1 - Load packages ----
 
@@ -137,9 +137,9 @@ source(here::here("functions/write_file.R"))
 # Use render_check function for rendering rmarkdown files
 source(here::here("functions/render_check.R"))
 
-#Define years in which data has been made final
+# Define years in which data has been made final
 finalised_years <- 
-  list.files(get_final_data_dir()) %>% 
+  list.files(get_finalised_data_dir()) %>% 
   str_sub(1, 7) %>%
   str_replace("-", "/")
 
