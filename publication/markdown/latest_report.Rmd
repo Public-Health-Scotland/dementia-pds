@@ -975,14 +975,14 @@ a_city_footnote_hb <-
         "affected by a change in service provision of PDS during 2019 that ",
         "has resulted in data quality issues. Due to these data issues the performance for Aberdeen City   against the LDP standard cannot be measured. This will impact on the figures ",
         "for NHS Grampian and Scotland.",
-        "See [Appendix 1](#reporting) for further information.")
+        "See [Appendix 1](#reportingabd) for further information.")
 
 a_city_footnote_ijb <-
   paste("Aberdeen City figures for 2019/20 and 2020/21 are not available. Although ",
         "the total number of people referred to PDS in Aberdeen City is known, due to ",
         "data quality issues it is not possible to calculate the percentage of people that ",
         "received a minimum of one year’s support. ",
-        "See [Appendix 1 - Background information](#reporting) for further information.")
+        "See [Appendix 1](#reportingabd) for further information.")
 
  
 # a_city_footnote_general <-
@@ -996,7 +996,7 @@ shet_footnote <- paste0("NHS Shetland did not have a PDS worker in post from 202
   "be allocated or contacted by a PDS worker within 12 months of diagnosis, ",
   "and they will have been recorded as not having met the standard. ",
   "A PDS worker was assigned in 2023/24 Quarter 4 and the PDS service resumed. ",
-  "See [Appendix 1](#reporting) for further information.")
+  "See [Appendix 1](#reportingshet) for further information.")
 
 orkney_footnote <- paste0("NHS Orkney had no referrals in 2023/24 (Quarter 1 and Quarter 2)",
     " as they were unable to access a consultant psychiatrist.")
@@ -1009,7 +1009,7 @@ dumfries_galloway_footnote <- paste0(
   "ability to allocate a link worker within 12 months or for the  ",
   "12-month period has been adversely affected since 2020/21. This has ",
   "resulted in an increase in the number of people recorded as not having ",
-  "met the standard. See [Appendix 1](#appendix1) for further information.")
+  "met the standard. See [Appendix 1](#reportingdum) for further information.")
 
 renfrewshire_footnote <- paste0(
   "In 2023/24 due to unforeseen circumstances the Renfrewshire the PDS ",
@@ -1041,7 +1041,7 @@ interpret_footnote <-
   paste("When interpreting this information consideration should also be",
         "taken of the percentage of people estimated to be newly diagnosed",
         "with dementia being referred to post-diagnostic support",
-        "(see [section 4.1](#section41)).")
+        "(see [section 4.1](#section41).)")
 
 #number of unknown simds in provisional year
 
@@ -1260,7 +1260,7 @@ The trend seen in the median time is similar to the trend in number and rate of 
 Trend data by Integration Authority Area and by Health Board are available in the [dashboard](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/dashboard/) accompanying this report. The times presented will be reflective of how local services and systems are set up e.g. in some areas if PDS services and dementia diagnostic services are co-located then a person may have their contact with PDS at the time of diagnosis. Therefore comparing times across areas should be done with caution. 
 
 ## 4.The LDP Standard
-## 4.1 Number and percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support
+## 4.1 Number and percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support {#section41}
 
 <Div custom-style="Body Text">
 
@@ -1401,7 +1401,7 @@ inc_trend_table_short %>%
 
 This part of LDP standard reports on the number of people referred for dementia post-diagnostic support who received a minimum of one year’s support. Figures presented in this section are available by NHS Board and Integration Authority area and should be interpreted in conjunction with the first part of the LDP standard (see [section 4.1](#section41)).
 
-The criteria used to define this part of the LDP standard is detailed in [Appendix 1](#background).
+The criteria used to define this part of the LDP standard is detailed in [Appendix 1](#appendix1).
 
 ### 4.2.1. NHS Board
 
@@ -1457,8 +1457,8 @@ hb %>%
 <Div custom-style = "Figure_Style">
 ```{r fig-5, echo= FALSE, fig.cap= `f10_alt_text`, out.width = 600}
 # Figure 5
-#include_graphics(fig-c2)
-include_graphics(get_pub_figures_path(type = "summary"))
+include_graphics(fig_c2)
+#include_graphics(get_pub_figures_path(type = "summary"))
 
 ```
 </Div>
@@ -1883,7 +1883,7 @@ Let us know what you think about this publication via. the link at the bottom of
 \newpage
 
 # Appendices
-## Appendix 1 - Background information
+## Appendix 1 - Background information {#appendix1}
 To effectively monitor performance of post-diagnostic support delivery, a national [Local Delivery Plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced in January 2015 for all people newly diagnosed with dementia to receive a minimum of one year’s post-diagnostic support.
 
 The LDP standard is defined and calculated as follows:
@@ -1911,7 +1911,7 @@ People for whom it is not yet known if they have met the standard as their PDS i
 Information presented in this publication is not comparable to dementia post-diagnostic support LDP standard information published for time periods prior to 2016/17. This is due to a combination of a change in data definitions and reporting, 
 and improvements to data quality which are detailed below.
 
-### Data Definitions and Reporting{#reporting}
+### Data Definitions and Reporting {#reporting}
 
 NHS Boards provide quarterly data submissions to PHS on individuals diagnosed with dementia and referred for post-diagnostic support within their local areas and this dataset forms the basis of the LDP standard calculation. 
 
@@ -2095,11 +2095,11 @@ There also exists a Service Level Agreement between NHS Highland and NHS Greater
 
 Some areas reported difficulties in the COVID-19 pandemic affecting their ability and capacity to update their data systems which are required to provide the dementia PDS dataset. This issue has only had an impact on the data provided by one Integration Authority Area, Aberdeen City (see below for more information).
 
-### Data Quality – Shetland Islands 
+### Data Quality – Shetland Islands {#reportingshet}
 
 NHS Shetland did not have a PDS worker in post from 2022/23 Quarter 1 (April to June) through to 2023/24 Quarter 3 (October to December). As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis. This means they will have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Quarter 4 (January to March) and the PDS service in Shetland has resumed. This will affect the outcomes and the waiting times for NHS Shetland and Shetland Islands Integrated Authority for 2022/23 and 2023/24.
 
-### Data Quality - Aberdeen City
+### Data Quality - Aberdeen City {#reportingabd}
 
 Aberdeen City Health & Social Care Partnership ceased its contract with Alzheimer 
 Scotland during 2019 and introduced an in-house Dementia Post-Diagnostic Support 
@@ -2121,7 +2121,7 @@ systems data within Perth & Kinross over the period April 2018 to December
 possible to fill this data gap. Subsequent measures put in place have successfully 
 allowed NHS Tayside to improve on data reporting from 2019 onwards.
 
-### Data Quality - Dumfries and Galloway
+### Data Quality - Dumfries and Galloway {#reportingdum}
 
 NHS Dumfries and Galloway have reported that due to the backlog of people waiting for diagnosis created by the COVID-19 pandemic and their commissioned PDS service provider having problems with staff absences/recruitment, their ability to allocate a link worker within 12 months or for the 12-month period has been affected.  This has affected the percentage of people referred for PDS who received a minimum of one year’s support within 12 months of diagnosis since 2020/21.  NHS Dumfries and Galloway have now brought their PDS Service in-house and are undertaking further work to improve the PDS Service. 
 
