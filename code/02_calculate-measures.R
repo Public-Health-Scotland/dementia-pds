@@ -22,7 +22,12 @@ source(here::here("code", "00_setup-environment.R"))
 
 ### 2 - Load data ----
 
-pds <- read_rds(get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
+pds <- read_rds(get_mi_data_path(
+  type = "clean_data", 
+  ext = "rds", 
+  fy = fy,
+  qt = qt,
+  test_output = test_output))
   
 
 ### 3 - Add FY and months labels ----
@@ -168,15 +173,14 @@ pds %<>%
   mutate(simd = replace_na(simd, "Unknown")) 
 
 # Add Aberdeen City data for 2019/20 and 2020/21 and update simd
-### read in Aberdeen data and append ----
 
-Ab_19_20 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2019-20_individuals-with-ldp_aberdeen-city.rds") %>%
+Ab_19_20 <- readRDS(get_ac_data_path(fy = "2019", ext = "rds")) %>%
   select(-simd) %>% 
   mutate(postcode = format_postcode(postcode)) %>%
   left_join(simd(), by = c("postcode" = "pc7")) %>%
   mutate(simd = replace_na(simd, "Unknown")) 
 
-Ab_20_21 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2020-21_individuals-with-ldp_aberdeen-city.rds") %>%
+Ab_20_21 <- readRDS(get_ac_data_path(fy = "2020", ext = "rds")) %>%
   select(-simd) %>% 
   mutate(postcode = format_postcode(postcode)) %>%
   left_join(simd(), by = c("postcode" = "pc7")) %>%
@@ -195,7 +199,7 @@ pds_Ab_dupe_flag <- pds_Ab %>%
   
   ungroup()
 
-# records from Ab_19_20 and Ab_20_21 are marked as "Aberdeen City Exemption" in ldp column. 
+# Records from Ab_19_20 and Ab_20_21 are marked as "Aberdeen City Exemption" in ldp column. 
 # This line removes those records if they are duplicated in the most up to date ldp file.
 pds <- pds_Ab_dupe_flag %>% filter(dupe == 1 & ldp != "Aberdeen City Exemption" | dupe != 1)
 
@@ -211,12 +215,28 @@ pds %<>% # add broad age groups
 
 ### 7 - Save individual level file for checking ----
 pds %>% 
-write_file(path = get_mi_data_path("ldp_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  write_file(
+    path = get_mi_data_path(
+      type = "ldp_data", 
+      ext = "rds", 
+      fy = fy, 
+      qt = qt, 
+      test_output = test_output,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
              
 pds %>% 
-write_file(path = get_mi_data_path("ldp_data", ext = "csv", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  write_file(
+    path = get_mi_data_path(
+      type = "ldp_data", 
+      ext = "csv", 
+      fy = fy, 
+      qt = qt, 
+      test_output = test_output,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
 ### 8 - Create final output file ----
@@ -233,7 +253,7 @@ inc_months <-
 pds %<>%
   
   # Aggregate to create minimal tidy dataset
-  group_by(health_board, ijb, fy, month, age_grp_2, age_grp, simd, sex, ldp) %>% #updated to include age groups, gender and simd
+  group_by(health_board, ijb, fy, month, age_grp_2, age_grp, simd, sex, ldp) %>% # Updated to include age groups, gender and simd
   summarise(referrals = n(), .groups = "drop") %>%
   
 
@@ -256,11 +276,18 @@ pds %<>%
            (substr(fy, 1, 4) == year(end_date) & 
               month %in% inc_months))
   
-# write final data
+# Write final data
 pds %>% 
-write_file(path = get_mi_data_path("final_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  write_file(
+    path = get_mi_data_path(
+      type = "final_data", 
+      ext = "rds", 
+      fy = fy, 
+      qt = qt, 
+      test_output = test_output,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 
 ### END OF SCRIPT ###
-

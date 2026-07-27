@@ -20,7 +20,7 @@ source(here::here("code", "00_setup-environment.R"))
 
 ### 2 - Read and clean collated file ----
 
-pds <- read_csv(get_national_data_path(),
+pds <- read_csv(get_national_data_path(fy, qt),
                 col_types = cols(.default = "c")
                 )%>%
   
@@ -36,27 +36,26 @@ pds <- read_csv(get_national_data_path(),
   mutate(health_board = str_replace(health_board, " and ", " & ")) %>%
   
   # Remove records with missing diag date or outwith reporting period
-  filter(between(dementia_diagnosis_confirmed_date, start_date, end_date)) #%>% 
+  filter(between(dementia_diagnosis_confirmed_date, start_date, end_date)) %>% 
 
-  ## If including this, remove the comments
-  # Recode NA for NHS Lothian 
-  # One case originally submitted Edi_city for IJB and in their resub this showed NA
-  # We are recoding this as a once off. 
-  # mutate(ijb = if_else(health_board == "S NHS Lothian" & is.na(ijb), 
-  #                    "S37000012 Edinburgh City", ijb))
+  # Remove rows with unknown IAA
+  filter(!is.na(ijb))
 
+# Remove chi numbers where health board does not match IAA
+pds <- pds %>%
+  filter(!chi_number %in% (pds %>% filter(health_board == "V NHS Forth Valley", ijb == "S37000033 Perth and Kinross"))$chi_number)
 
 ### 3 - Add finalised data ----
 
 finalised_years <- 
-  list.files(get_final_data_dir()) %>% 
+  list.files(get_finalised_data_dir()) %>% 
   str_sub(1, 7) %>%
   str_replace("-", "/")
 
 pds <-
   
   # Read in and bind all previous finalised years data
-  list.files(get_final_data_dir(), full.names = TRUE) %>%
+  list.files(get_finalised_data_dir(), full.names = TRUE) %>%
   map(read_rds) %>%
   reduce(bind_rows) %>%
   
@@ -89,8 +88,16 @@ err <- pds %>%
   ) %>%
   ungroup() %>%
   arrange(fy, health_board, ijb) %T>%
-  write_file(path = get_mi_data_path("error_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  write_file(
+    path = get_mi_data_path(
+      type = "error_data", 
+      ext = "rds", 
+      fy = fy, 
+      qt = qt, 
+      test_output = test_output,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 ### 5 - Recode Lanarkshire IJB records ----
 
@@ -179,8 +186,16 @@ pds %<>%
 dupes <- 
   pds %>% 
   filter(dupe == 1) %T>%
-  write_file(path = get_mi_data_path("dupe_data", ext = "csv", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  write_file(
+    path = get_mi_data_path(
+      type = "dupe_data", 
+      ext = "csv", 
+      fy = fy, 
+      qt = qt, 
+      test_output = test_output,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 ### 7 - Remove duplicate records ----
 pds %<>%
@@ -198,7 +213,15 @@ pds %<>%
 ### 8 - Save data ----
 
 pds %>% 
-write_file(path = get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  write_file(
+    path = get_mi_data_path(
+      type = "clean_data", 
+      ext = "rds", 
+      fy = fy, 
+      qt = qt, 
+      test_output = test_output,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 ### END OF SCRIPT ###

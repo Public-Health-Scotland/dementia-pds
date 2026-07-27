@@ -7,22 +7,18 @@
 # Written/run on - R Posit
 # Version of R - 4.1.2
 #
-# Description - Create population lookup files. ONLY RUN WHEN UPDATES ARE AVAILABLE.
+# Description - Create population lookup files.
 ################################################################################
-
 
 ### 1 - Load environment file ----
 
 source(here::here("code", "00_setup-environment.R"))
 
-
 ### 2 - Create population file from mid-year estimates ----
 
 # Creating population for IJB
-#UPDATE path when new file is available
 
-la_pop <- read_rds(glue("{cl_out}/lookups/Unicode/Populations/Estimates/",
-                        "HSCP2019_pop_est_1981_2023.rds"))%>% 
+la_pop <- read_rds(get_pop_path(type = "HSCP", selection_method = "modification_date")) %>% 
   filter(year >= 2016, age >= 18)
 
 la_pop %<>%
@@ -39,7 +35,7 @@ la_pop %<>%
            )) %>% 
    mutate(age_grp_2 = 
            case_when(
-             age %in% 65:79 ~ "79 and Under", #this is used for calculating rates where denominator is only 65 and over population
+             age %in% 65:79 ~ "79 and Under", # This is used for calculating rates where denominator is only 65 and over population
              age %in% 80:84 ~ "80 to 84",
              age >= 85     ~ "85+"
            )) %>%
@@ -54,7 +50,6 @@ la_pop %<>%
 la_pop_data <-
   
   bind_rows(
-    
     
     la_pop %>%
       group_by(geog=hscp2019name, year, age_grp_2, age_grp = "All", sex) %>%
@@ -114,10 +109,8 @@ la_pop_data %<>%
             ))
 
 # Creating population for HB
-#UPDATE path when new file is available
 
-hb_pop <- read_rds(glue("{cl_out}/lookups/Unicode/Populations/Estimates/",
-                        "HB2019_pop_est_1981_2023.rds"))%>%
+hb_pop <- read_rds(get_pop_path(type = "HB", selection_method = "modification_date"))%>%
   filter(year >= 2016, age >= 18)
 
 hb_pop %<>%
@@ -134,7 +127,7 @@ hb_pop %<>%
            )) %>% 
   mutate(age_grp_2 = 
            case_when(
-             age %in% 65:79 ~ "79 and Under", #this is used for calculating rates where denominator is only 65 and over population
+             age %in% 65:79 ~ "79 and Under", # This is used for calculating rates where denominator is only 65 and over population
              age %in% 80:84 ~ "80 to 84",
              age >= 85     ~ "85+"
            )) %>%
@@ -187,41 +180,33 @@ hb_pop_data %<>%
 # Merge LA and HB pops
 pop_data <-bind_rows(la_pop_data, hb_pop_data)
 
+# Add missing years until the current year by duplicating the latest year in pop_data
+while(max(pop_data$year) < fy){
+  pop_data %<>% rbind((pop_data %>% filter(year == max(year)) %>% mutate(year = max(year) + 1)))
+}
 
-# Add 2024 populations from 2023
-# UPDATE when rolling over to new financial year
-
-pop_data %<>%
-  
-  bind_rows(
-    
-    pop_data %>%
-      filter(year == 2023) %>%
-      mutate(year = 2024)
-  ) 
-
-#check
+# Check
 tabyl(pop_data$geog)
 
 pop_data %>% 
-  write_file(path = "//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  write_file(
+    path = get_pop_lookup_path(
+      check_mode = "write",
+      create_dir = TRUE))
+0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
+### 3 - Read in SIMD population file ---- 
 
+simd_pop <- read_rds(get_pop_path(type = "DataZone", selection_method = "modification_date")) %>% 
+  filter(year >= 2016)
+  
+simd_pop_la <- simd_pop %>%
+  select(geog = hscp2019name, year, simd = simd2020v2_sc_quintile, sex, 5:95) 
 
-### 3 - read in simd pop file ---- 
-#UPDATE path when new file is available
-
-simd_pop_la <- read_rds(glue("{cl_out}/lookups/Unicode/Populations/Estimates/",
-                             "DataZone2011_pop_est_2011_2022.rds")) %>% filter(year >= 2016) %>%
-select(geog = hscp2019name, year, simd = simd2020v2_sc_quintile, sex, 5:95) 
-
-simd_pop_hb <- read_rds(glue("{cl_out}/lookups/Unicode/Populations/Estimates/",
-                             "DataZone2011_pop_est_2011_2022.rds")) %>% filter(year >= 2016) %>%
+simd_pop_hb <- simd_pop %>%
   select(geog = hb2019name, year, simd = simd2020v2_sc_quintile, sex, 5:95)
 
 simd_pop_16_22 <- bind_rows(simd_pop_la,simd_pop_hb)
-
 
 simd_pop_16_22 %<>% pivot_longer(cols = 5:95,
                                  names_to = "age",
@@ -237,8 +222,6 @@ simd_pop_16_22 %<>% mutate(simd = case_when(
   simd == 5 ~ "5 - Least Deprived"
 ))
 
-
-
 simd_pop_data <- bind_rows(
   simd_pop_16_22 %>% group_by(year, geog, simd, sex, age) %>% 
    summarise(pop = sum(pop), .groups = "drop"),
@@ -248,7 +231,6 @@ simd_pop_data <- bind_rows(
     summarise(pop = sum(pop), .groups = "drop"),
   simd_pop_16_22 %>% filter(grepl("NHS", geog)) %>% group_by(year, geog = "Scotland", simd, sex = "All", age) %>% 
     summarise(pop = sum(pop), .groups = "drop"))
-
 
 simd_pop_data %<>% mutate(age_grp = 
                             case_when(
@@ -263,7 +245,7 @@ simd_pop_data %<>% mutate(age_grp =
                             )) %>% 
   mutate(age_grp_2 = 
            case_when(
-             age %in% 65:79 ~ "79 and Under", #this is used for calculating rates where denominator is only 65 and over population
+             age %in% 65:79 ~ "79 and Under", # This is used for calculating rates where denominator is only 65 and over population
              age %in% 80:84 ~ "80 to 84",
              age >= 85     ~ "85+"
            )) %>%
@@ -275,7 +257,6 @@ simd_pop_data %<>% mutate(age_grp =
            ))
 
 simd_pop_data %<>% group_by(geog, year, age_grp_2, age_grp, sex, simd) %>% summarise(pop = sum(pop), .groups = "drop")
-
 
 simd_pop_summary <- bind_rows(simd_pop_data,
                               
@@ -305,26 +286,20 @@ simd_pop_summary %<>% mutate (geog =
                                  TRUE ~ geog
                                ))
 
-# copy 2022 to latest years
-# UPDATE when rolling over to new financial year
+# Add missing years until the current year by duplicating the latest year in pop_data
+while(max(simd_pop_summary$year) < fy){
+  simd_pop_summary %<>% rbind((simd_pop_summary %>% filter(year == max(year)) %>% mutate(year = max(year) + 1)))
+}
 
-simd_pop_data_final <- 
-  bind_rows(simd_pop_summary,
-            
-   simd_pop_summary %>%
-      filter(year == 2022) %>%
-      mutate(year = 2023),
-    
-    simd_pop_summary %>%
-      filter(year == 2022) %>%
-      mutate(year = 2024)) %>% 
+simd_pop_data_final <- simd_pop_summary %>%
   complete(nesting(year, geog, age_grp, age_grp_2, sex), simd, fill = list(pop = 0)) 
 
-
-
 simd_pop_data_final %>% 
-  write_file(path = "//conf/dementia/A&I/Outputs/management-report/lookups/simd_pop_data.rds")
-0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  write_file(
+    path = get_pop_lookup_path(
+      simd = TRUE,
+      check_mode = "write",
+      create_dir = TRUE))
+0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-
-### END OF SCRIPT
+### END OF SCRIPT ###

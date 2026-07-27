@@ -23,9 +23,18 @@ source(here::here("code", "00_setup-environment.R"))
 # if a file already exists, permission must be given via the console to overwrite the file
 
 render_check(
-  input = here("management-report", "markdown", 
-               "management-report.Rmd"),
-  output_file = get_mi_output_path(test_output = test_output))
-
+  input = here(
+    "management-report", 
+    "markdown", 
+    "management-report.Rmd"
+  ),
+  output_file = get_mi_output_path(
+    fy = fy,
+    qt = qt,
+    test_output = test_output,
+    check_mode = "write",
+    create_dir = TRUE
+  )
+)
 
 ### END OF SCRIPT ###
