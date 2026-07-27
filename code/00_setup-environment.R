@@ -1,4 +1,4 @@
-################################################################################
+################################################################################.
 # Name of file - 00_setup-environment.R
 # Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Alice Byers
@@ -12,10 +12,11 @@
 # Description - Sets up environment required for running quarterly 
 #               management reports. This is the only file 
 #               to be updated every time the process is run.
-################################################################################
+################################################################################.
 
-
+################################################################################.
 ### 0 - Manual Variable(s) - TO UPDATE 
+################################################################################.
 
 # UPDATE - TRUE/FALSE for defining a test file path for saving test copies of 
 #           outputs. This is useful for when the DM give us a test run when boards
@@ -26,14 +27,16 @@
 test_output <- FALSE
 
 # UPDATE - Last day in reporting period (ddmmyyyy)
-end_date <- lubridate::dmy(31032026)
-previous_end_date <- lubridate::dmy(31122025)
+end_date <- lubridate::dmy(31122025)
+previous_end_date <- lubridate::dmy(30092025)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure
 pub_date <- lubridate::dmy(16122025)
 
+################################################################################.
 ### 1 - Load packages ----
+################################################################################.
 
 library(dplyr)         # For data manipulation in the "tidy" way
 library(readr)         # For reading in csv files
@@ -61,8 +64,22 @@ library(officer)       # For adding cover page and toc to report
 library(gluedown)      # For formatting character vectors in markdown
 library(fs)            # For setting up directories 
 
+################################################################################.
+### 2 - Load functions ----
+################################################################################.
 
-### 2 - Define file paths dependent on whether running on server or desktop ----
+# Load file path functions
+source(here::here("functions/setup_directories.R"))
+
+# Use write file function for writing files to disk and setting correct permissions
+source(here::here("functions/write_file.R"))
+
+# Use render_check function for rendering rmarkdown files
+source(here::here("functions/render_check.R"))
+
+################################################################################.
+### 3 - Define file paths dependent on whether running on server or desktop ----
+################################################################################.
 
 stats <- case_when(
   sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ "/conf",
@@ -75,8 +92,9 @@ cl_out <- case_when(
   TRUE ~ "//stats/cl-out"
 )
 
-
-### 3 - SIMD Lookup ----
+################################################################################.
+### 4 - SIMD Lookup ----
+################################################################################.
 
 simd <- function(){
   simd <- read_rds(get_simd_path()) %>% 
@@ -93,8 +111,9 @@ simd <- function(){
   return(simd)
 }
 
-
-### 4 - Derive dates ----
+################################################################################.
+### 5 - Derive dates ----
+################################################################################.
 
 # Latest FY and Quarter
 fy <- extract_fin_year(end_date) %>% substr(1, 4)
@@ -107,7 +126,18 @@ previous_qt <- quarter(previous_end_date, fiscal_start = 4)
 # First date in reporting period 
 start_date <- dmy(01042016)
   
-### 5 - Set output/knitr options ----
+# Define years in which data has been made final
+finalised_years <- 
+  list.files(get_finalised_data_dir()) %>% 
+  str_sub(1, 7) %>%
+  str_replace("-", "/")
+
+finalised_years_referrals <- finalised_years [-c((length(finalised_years)-1), length(finalised_years))]
+finalised_years_demographics <- finalised_years [-c((length(finalised_years)-2), (length(finalised_years)-1), length(finalised_years))]
+
+################################################################################.
+### 6 - Set output/knitr options ----
+################################################################################.
 
 # Disable scientific notation
 options(scipen = 999)
@@ -120,30 +150,10 @@ knit_hooks$set(inline = function(x) {
   if(!is.character(x)) {prettyNum(x, big.mark=",")} else {x}
 })
 
-### 6 - Define exempt termination reason codes ----
+################################################################################.
+### 7 - Define exempt termination reason codes ----
+################################################################################.
 
 exempt_reasons <- c("03", "04", "05", "06")
 
-
-### 7 - Create folder structure ----
-
-# Load file path functions
-source(here::here("functions/setup_directories.R"))
-
-# Use write file function for writing files to disk and setting correct permissions
-source(here::here("functions/write_file.R"))
-
-# Use render_check function for rendering rmarkdown files
-source(here::here("functions/render_check.R"))
-
-# Define years in which data has been made final
-finalised_years <- 
-  list.files(get_finalised_data_dir()) %>% 
-  str_sub(1, 7) %>%
-  str_replace("-", "/")
-
-finalised_years_referrals <- finalised_years [-c((length(finalised_years)-1), length(finalised_years))]
- 
-finalised_years_demographics <- finalised_years [-c((length(finalised_years)-2), (length(finalised_years)-1), length(finalised_years))]
-
-### END OF SCRIPT ###
+################################ END OF SCRIPT #################################.
