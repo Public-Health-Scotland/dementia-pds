@@ -11,7 +11,9 @@
 # Description - Produce tests for ldp standard
 ################################################################################.
 
-### 1 - Load environment file, functions and data ------------------------------
+################################################################################.
+### 1 - Load environment file, functions and data ----
+################################################################################.
 
 source(here::here("code", "00_setup-environment.R"))
 walk(dir(here::here("functions"), full.names = TRUE), source)
@@ -25,6 +27,14 @@ latest_data <- read_rds(get_mi_data_path(
   test_output = test_output)) %>%
   # Remove codes from board and IJB
   clean_geog_codes()
+
+# Read latest LDP data
+ldp <- read_rds(get_mi_data_path(
+  type = "ldp_data", 
+  ext = "rds", 
+  fy = fy,
+  qt = qt,
+  test_output = test_output)) 
 
 # Load PDS data for previous year up to current quarter
 pds_previous_year_to_qt <- read_rds(get_mi_data_path(
@@ -46,15 +56,9 @@ previous_data <- read_rds(get_mi_data_path(
   # Remove codes from board and IJB
   clean_geog_codes()
 
-# Read latest LDP data
-ldp <- read_rds(get_mi_data_path(
-  type = "ldp_data", 
-  ext = "rds", 
-  fy = fy,
-  qt = qt,
-  test_output = test_output)) 
-
-### 2 - Produce comparison to previous year to current quarter -----------------
+################################################################################.
+### 2 - Produce comparison to previous year to current quarter ----
+################################################################################.
 
 # Get current year in YYYY/YY format
 current_fy <- paste0(
@@ -105,7 +109,9 @@ names(quarter_comparison)[ncol(quarter_comparison)] <- paste0(
   qt
 )
 
-### 3 - Produce cross year tests -----------------------------------------------
+################################################################################.
+### 3 - Produce cross year tests ----
+################################################################################.
 
 # Create a cross year comparison - Health Board level
 cross_yr_comparison_hb <- cross_year_measures(latest_data, var = health_board)
@@ -113,7 +119,9 @@ cross_yr_comparison_hb <- cross_year_measures(latest_data, var = health_board)
 # Create a cross year comparison - IJB level
 cross_yr_comparison_ijb <- cross_year_measures(latest_data, var = ijb) 
 
-###  4 - Produce comparison to previous quarter submission ---------------------
+################################################################################.
+###  4 - Produce comparison to previous quarter submission ----
+################################################################################.
 
 # Health Board
 hb_comparison <- produce_test_comparison(
@@ -141,7 +149,9 @@ ijb_comparison <- produce_test_comparison(
 ) %>% 
   arrange(fy, measure)
 
+################################################################################.
 ### 5 Analysing those with contact before diagnosis and ldp classification complete in latest submission ----
+################################################################################.
 
 # Read in latest individual data file
 ldp <- ldp %>% 
@@ -228,7 +238,9 @@ final <- contact_before_diagnosis_ldp_complete %>%
     same_ldp, contact_on_or_after_referral, contact_on_or_after_allocation
   )
 
-### 6 Write tests to workbook --------------------------------------------------
+################################################################################.
+### 6 Write tests to workbook ----
+################################################################################.
 
 quarter_comparison %>% 
   write_tests_xlsx(sheet_name = "IJB_qt_on_qt")
@@ -248,4 +260,4 @@ ijb_comparison %>%
 final %>% 
   write_tests_xlsx(sheet_name = "contact_b4_diag_met_stan")
 
-### END OF SCRIPT ###
+################################ END OF SCRIPT #################################.
