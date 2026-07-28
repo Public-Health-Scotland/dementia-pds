@@ -23,7 +23,7 @@ source(here::here("code", "publication", "00_setup-pub-environment.R"))
 ################################################################################.
 
 render_check(
-  input = here("publication", "markdown", "summary.Rmd"),
+  input = here("publication", "markdown", "latest_summary.Rmd"),
   output_file = get_pub_output_path(
     output_name = "pub_summary", 
     pub_date = pub_date,
@@ -38,7 +38,7 @@ render_check(
 ################################################################################.
 
 render_check(
-  input = here("publication", "markdown", "report.Rmd"),
+  input = here("publication", "markdown", "latest_report.Rmd"),
   output_file = get_pub_output_path(
     output_name = "pub_report", 
     pub_date = pub_date,
