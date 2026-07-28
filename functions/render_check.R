@@ -28,10 +28,15 @@ render_check <- function(input, output_file, menu_input = 2, ...) {
   }
   
   # If the file does not exist or user input is 1, render the report
+  # The report is first rendered to /conf/dementia as a work-around since phs_report_docx errors when the file path contains "&"
   if (!fs::file_exists(output_file) | menu_input == 1) {
     rmarkdown::render(
       input = input,
-      output_file = output_file)
+      output_file = "/conf/dementia/temp.docx")
+    fs::file_move(
+      "/conf/dementia/temp.docx",
+      output_file
+    )
   }
   
   # If the user input is 1, display a message to say the file has been overwritten
