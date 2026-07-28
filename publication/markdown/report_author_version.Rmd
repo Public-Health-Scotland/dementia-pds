@@ -1205,6 +1205,16 @@ include_graphics(get_pub_figures_path(type = "c8"))
 <Div custom-style = "Footnote Text">
 
 1. `r provisional_revised_footnote`</Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="0" w:line="1" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 ## 2. Trend in the rate of people referred for post-diagnostic support per 10,000 population (aged 65 and over)
 
@@ -1222,6 +1232,17 @@ include_graphics(get_pub_figures_path(type = "c9"))
 </Div>
 <Div custom-style = "Footnote Text">
 1. `r provisional_revised_footnote`</Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="0" w:line="1" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
+
 Trend data by Integration Authority Area and by Health Board are available in the [dashboard](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/dashboard/) accompanying this report.
 
 ## 3. Trend in the average (median) time from diagnosis to first contact by PDS practitioner
@@ -1245,6 +1266,17 @@ include_graphics(get_pub_figures_path(type = "c14"))
 </Div>
 <Div custom-style = "Footnote Text">
 1. `r provisional_revised_footnote`</Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
+
 
 <Div custom-style="Body Text">
 
@@ -1296,6 +1328,16 @@ inc %>%
 2. `r incidence_footnote`
 3. `r orkney_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 <Div custom-style="Body Text">
 
@@ -1319,6 +1361,16 @@ include_graphics(get_pub_figures_path(type = "c1"))
 2. `r incidence_footnote`
 3. `r orkney_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 <Div custom-style="Body Text">
 
@@ -1389,6 +1441,16 @@ inc_trend_table_short %>%
 2. `r incidence_footnote_trend_updated`
 3. `r orkney_footnote_2`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 ## 4.2. Number and percentage of people referred for dementia post-diagnostic support who received a minimum of one year’s support
 
@@ -1445,6 +1507,16 @@ hb %>%
 6. `r dumfries_galloway_footnote`
 7. `r renfrewshire_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 `r text_hb`
 
@@ -1467,6 +1539,16 @@ include_graphics(get_pub_figures_path(type = "summary"))
 6. `r dumfries_galloway_footnote`
 7. `r renfrewshire_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 <Div custom-style="Body Text">
 
@@ -1557,11 +1639,21 @@ hb_trend_table_short %>%
 2. `r method_footnote`
 3. `r interpret_footnote`
 4. `r a_city_footnote_hb`   
-4. `r shet_footnote`
-5. `r orkney_footnote_2`
-6. `r dumfries_galloway_footnote`
-7. `r renfrewshire_footnote`
+5. `r shet_footnote`
+6. `r orkney_footnote_2`
+7. `r dumfries_galloway_footnote`
+8. `r renfrewshire_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 <Div custom-style="Body Text">
 
@@ -1607,6 +1699,16 @@ ijb %>%
 5. `r dumfries_galloway_footnote`
 6. `r renfrewshire_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 `r text_ijb` Dundee City was the mainland Integration Authority area with the highest percentage (99.5%). 
 In `r latest_fy`, the capacity in PDS services in both Renfrewshire and Dumfries & Galloway were affected by staff issues which will have impacted on the figures reported.
@@ -1632,6 +1734,16 @@ include_graphics(get_pub_figures_path(type = "c3"))
 5. `r dumfries_galloway_footnote`
 6. `r renfrewshire_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 Table 6 presents the five-year trend in the percentage of people referred for post-diagnostic support who received a minimum of one year’s support for the financial years 2019/20 to `r latest_fy` by  Integration Authority Area. The full trend for all years `r fy_in_pub[1]` to `r latest_fy` is available in the [dashboard](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/dashboard/) that accompanies this [publication](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/).
 
@@ -1698,6 +1810,16 @@ ijb_trend_table_short %>%
 6. `r dumfries_galloway_footnote`
 7. `r renfrewshire_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 \newpage
 
@@ -1722,6 +1844,16 @@ include_graphics(get_pub_figures_path(type = "c10"))
 <Div custom-style = "Footnote Text">
 1. `r prov_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 <Div custom-style = "Table or chart caption">Figure 8: Percentage of referrals who received a minimum of one year’s post-diagnostic support by sex; `r latest_fy`^1^</Div>
 
@@ -1737,6 +1869,16 @@ include_graphics(get_pub_figures_path(type = "c11"))
 <Div custom-style = "Footnote Text">
 1. `r prov_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 \newpage
 
@@ -1759,6 +1901,16 @@ include_graphics(get_pub_figures_path(type = "c4"))
 1. `r prov_footnote`
 2. `r age_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 `r age_referrals_text`
 
@@ -1779,6 +1931,16 @@ include_graphics(get_pub_figures_path(type = "c5"))
 1. `r prov_footnote`
 2. `r age_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 `r age_ldp_text` 
 
@@ -1803,6 +1965,16 @@ include_graphics(get_pub_figures_path(type = "c6"))
 1. `r prov_footnote`
 2. `r simd_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 `r simd_referrals_text`
 
@@ -1822,6 +1994,16 @@ include_graphics(get_pub_figures_path(type = "c7"))
 1. `r prov_footnote`
 2. `r simd_footnote`
 </Div>
+```{=openxml}
+<w:p>
+  <w:pPr>
+  <w:spacing w:before="0" w:after="60" w:line="60" w:lineRule="exact"/>
+    <w:pBdr>
+      <w:bottom w:val="single" w:sz="4" w:space="1" w:color="AC4AA7"/>
+    </w:pBdr>
+  </w:pPr>
+</w:p>
+```
 
 `r simd_ldp_text`
 
