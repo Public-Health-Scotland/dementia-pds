@@ -6,19 +6,22 @@ output:
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, dpi = 300)
-library(ggplot2)
-```
 
-```{r set-up, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+# Setup ----
+
+knitr::opts_chunk$set(echo = FALSE, dpi = 300)
+
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
-pub_date_url <- 
-  paste0("https://publichealthscotland.scot/publications/",
-         "dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-",
-         (latest_fy))
+pub_date_url <- paste0(
+  "https://publichealthscotland.scot/publications/",
+  "dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-",
+  (latest_fy)
+)
 
-fig_alttext <- glue("Bar chart showing percentage of referrals who received a minimum of one year's post-diagnostic support by NHS Board in financial year {latest_fy}.")
+fig_alttext <- glue(
+  "Bar chart showing percentage of referrals who received a minimum of one year's post-diagnostic support by NHS Board in financial year {latest_fy}."
+)
 
 # Function to format percentages
 format_perc <- function(x, dp = 1){
@@ -29,38 +32,71 @@ format_perc <- function(x, dp = 1){
     trimws()
 }
 
+```
+
+```{r set-up, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+
 # Read in data ----
 
-# LDP Dataset
-pds <- 
-  read_rds(get_pub_data_path()) %>%
+# Publication data
+pds <- read_rds(
+  get_pub_data_path(
+    pub_date = pub_date,
+    test_output = test_output)) %>%
   filter(ijb != "Unknown" & referrals > 0)
 
 # Expected Diagnoses (Incidence)
-exp <- read_csv(get_exp_diagnoses_path()) %>%
+exp <- read_csv(
+  get_exp_diagnoses_path()) %>%
   select(fy, health_board = health_board_label, diagnoses)
 
-# Error rates 
-err <- 
-  read_rds(get_mi_data_path(type = "error_data", ext = "rds")) %>% 
+# MI error data 
+err <- read_rds(
+  get_mi_data_path(
+    type = "error_data", 
+    ext = "rds", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output)) %>% 
   filter(health_board == "Scotland" & fy %in% fy_in_pub) %>%
-  mutate(perc = format_perc(total_errors / records * 100)
-  ) %>%
+  mutate(perc = format_perc(total_errors / records * 100)) %>%
   select(fy, perc) %>%
   mutate(text = glue("for {fy} was {perc}"))
 
-# Waiting times data
-data_wait <-
-  read_rds(
-    get_mi_data_path(
-      type = "wait_data",
-      ext = "rds",
-      test_output = test_output
-    )
-  )
+# MI waiting times data
+data_wait <- read_rds(
+  get_mi_data_path(
+    type = "wait_data",
+    ext = "rds",
+    fy = fy,
+    qt = qt,
+    test_output = test_output))
 
-#load population rates data --- to be checked
-pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
+# MI final data
+dash_pds <- read_rds(
+  get_mi_data_path(
+    type = "final_data", 
+    ext = "rds",
+    fy = fy,
+    qt = qt,
+    test_output = test_output))
+
+# Population data
+pop_data <- read_rds(
+  get_pop_lookup_path())
+
+# Set next financial year
+next_fy <- paste0(
+  as.numeric(substr(latest_fy, 1, 4)) + 1,
+  "/",
+  substr(as.numeric(substr(latest_fy, 1, 4)) + 2, 3, 4))
+
+```
+
+```{r summary-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+
+# Prepare data ----
+
 # Create 65+ population denominators
 pop_data_trends <- pop_data %>%
   filter(
@@ -108,10 +144,7 @@ pds_all_rates <- pds %>%
     )
   )
 
-dash_pds <- read_rds(
-  get_mi_data_path("final_data", ext = "rds")
-)
-
+# dash_rates
 dash_rates <- dash_pds %>%
   group_by(fy) %>%
   summarise(
@@ -140,16 +173,8 @@ dash_rates <- dash_pds %>%
     )
   )
 
-```
-
-```{r summary-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
-next_fy <- paste0(
-  as.numeric(substr(latest_fy, 1, 4)) + 1,
-  "/",
-  substr(as.numeric(substr(latest_fy, 1, 4)) + 2, 3, 4))
-
-summary <-
-  pds %>%
+# summary 
+summary <- pds %>%
   filter(fy %in% c(revised_fy, latest_fy)) %>%
   group_by(fy) %>%
   summarise(across(referrals:denominator, sum), .groups = "drop") %>%
@@ -164,15 +189,13 @@ summary <-
   mutate(across(contains("perc"),
                 ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")))
 
-dash_pds <- read_rds(
-  get_mi_data_path("final_data", ext = "rds")
-)
-
+# referrals_next_fy
 referrals_next_fy <- dash_pds %>%
   filter(fy == next_fy) %>%
   summarise(referrals = sum(referrals), .groups = "drop") %>%
   pull(referrals)
 
+# perc_65_plus
 perc_65_plus <- dash_pds %>%
   filter(
     fy %in% c("2016/17","2017/18","2018/19","2019/20","2020/21","2021/22","2022/23","2023/24","2024/25")
@@ -234,9 +257,12 @@ Figures presented in this release for `r latest_fy` and `r next_fy` are provisio
 <Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1,2,3,4,5^</Div>
 
 ```{r chart, fig.width=7.18, fig.height=3.31, fig.cap=fig_alttext}
+
 knitr::include_graphics(
-  "/conf/dementia/A&I/Outputs/publication/output/2026-07-21/figures/2026-07-21_summary-chart.png"
-)
+  get_pub_figures_path(
+    type = "summary",
+    pub_date = pub_date,
+    test_output = test_output))
 
 ```
 
