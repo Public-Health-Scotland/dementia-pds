@@ -11,13 +11,15 @@ output:
 ---
 ```{r TableData, include = FALSE}
 
+# Setup ----
+
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
 source(here("functions", "flextable_style.R"))
 
-pub_date_url <- 
-  paste0("https://publichealthscotland.scot/publications/",
-         "dementia-post-diagnostic-support- /dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-",
-         (latest_fy))
+pub_date_url <- paste0(
+  "https://publichealthscotland.scot/publications/",
+  "dementia-post-diagnostic-support-/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-",
+  (latest_fy))
 
 # Function to format percentages
 format_perc <- function(x, dp = 1){
@@ -28,56 +30,127 @@ format_perc <- function(x, dp = 1){
     trimws()
 }
 
-# Read in data ----
-
-# LDP Dataset
-pds <- 
-  read_rds(get_pub_data_path(test_output = test_output)) %>% 
-  filter(ijb != "Unknown" & referrals > 0)
-
-# Expected Diagnoses (Incidence)
-exp <- read_csv(get_exp_diagnoses_path()) %>%
-  select(fy, health_board = health_board_label, diagnoses)
-
-# Error rates 
-err <- 
-  read_rds(get_mi_data_path(type = "error_data", ext = "rds", test_output = test_output)) %>% 
-  filter(health_board == "Scotland" & fy %in% fy_in_pub) %>%
-  mutate(perc = format_perc(total_errors / records * 100)
-  ) %>%
-  select(fy, perc) %>%
-  mutate(text = glue("for {fy} was {perc}"))
-
-
-#aberdeen city note
-a_city_statement <-
-  paste("Aberdeen City Health & Social Care Partnership ceased its contract ", 
-        "with Alzheimer Scotland during 2019 and introduced an in-house ", 
-        "Dementia Post-Diagnostic Support (PDS) service. This transition ", 
-        "resulted in some PDS cases being terminated by Alzheimer Scotland ", 
-        "earlier than 12 months and therefore not meeting the LDP standard.", 
-        "As part of the transition, individuals were contacted to ask if they ", 
-        "still wanted to receive PDS which was then provided by the in-house ", 
-        "service, if required. This should be taken into account when ", 
-        "interpreting figures for Aberdeen City in 2018/19. Although figures ", 
-        "for 2019/20 and 2020/21 include the total number of people referred ", 
-        "to PDS across all Integration Authority areas in NHS Grampian, data ", 
-        "for Aberdeen City is not included in the measurement figures for the ",
-        "LDP standard. This is due to data quality issues and missing dates ", 
-        "meaning it is not possible to accurately measure these referrals ", 
-        "against the LDP standard.")
-        
+# Aberdeen city note
+a_city_statement <- paste(
+  "Aberdeen City Health & Social Care Partnership ceased its contract ", 
+  "with Alzheimer Scotland during 2019 and introduced an in-house ", 
+  "Dementia Post-Diagnostic Support (PDS) service. This transition ", 
+  "resulted in some PDS cases being terminated by Alzheimer Scotland ", 
+  "earlier than 12 months and therefore not meeting the LDP standard.", 
+  "As part of the transition, individuals were contacted to ask if they ", 
+  "still wanted to receive PDS which was then provided by the in-house ", 
+  "service, if required. This should be taken into account when ", 
+  "interpreting figures for Aberdeen City in 2018/19. Although figures ", 
+  "for 2019/20 and 2020/21 include the total number of people referred ", 
+  "to PDS across all Integration Authority areas in NHS Grampian, data ", 
+  "for Aberdeen City is not included in the measurement figures for the ",
+  "LDP standard. This is due to data quality issues and missing dates ", 
+  "meaning it is not possible to accurately measure these referrals ", 
+  "against the LDP standard.")
   
 ```
 
-```{r summary-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+```{r read-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+
+# Read in data ----
+
+# Publication data
+pds <- read_rds(
+  get_pub_data_path(
+    pub_date = pub_date,
+    test_output = test_output)) %>% 
+  filter(ijb != "Unknown" & referrals > 0)
+
+# Expected Diagnoses (Incidence)
+exp <- read_csv(
+  get_exp_diagnoses_path()) %>%
+  select(fy, health_board = health_board_label, diagnoses)
+
+# MI error data
+error_data <- read_rds(
+  get_mi_data_path(
+    type = "error_data", 
+    ext = "rds",
+    fy = fy,
+    qt = qt,
+    test_output = test_output))
+
+# MI query data
+query_data <- read_rds(
+  get_mi_data_path(
+    type = "query_data", 
+    ext = "rds",
+    fy = fy,
+    qt = qt,
+    test_output = test_output))
+
+# MI combined query and error data
+query_error_data <- read_rds(
+  get_mi_data_path(
+    type = "query_error_data", 
+    ext = "rds",
+    fy = fy,
+    qt = qt,
+    test_output = test_output))
+
+# MI waiting times data
+data_wait <- read_rds(
+  get_mi_data_path(
+    type = "wait_data",
+    ext = "rds",
+    fy = fy,
+    qt = qt,
+    test_output = test_output))
+
+# MI final data
+dash_pds <- read_rds(
+  get_mi_data_path(
+    type = "final_data", 
+    ext = "rds",
+    fy = fy,
+    qt = qt,
+    test_output = test_output))
+
+# Population data
+pop_data <- read_rds(
+  get_pop_lookup_path())
+
+# Set next financial year
 next_fy <- paste0(
   as.numeric(substr(latest_fy, 1, 4)) + 1,
   "/",
   substr(as.numeric(substr(latest_fy, 1, 4)) + 2, 3, 4))
 
-summary <-
-  pds %>%
+```
+
+```{r load-figs, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+
+# Load figures ----
+
+fig_c1 <- get_pub_figures_path(type = "c1", pub_date = pub_date, test_output = test_output)
+fig_c2 <- get_pub_figures_path(type = "c2", pub_date = pub_date, test_output = test_output)
+fig_c3 <- get_pub_figures_path(type = "c3", pub_date = pub_date, test_output = test_output)
+fig_c4 <- get_pub_figures_path(type = "c4", pub_date = pub_date, test_output = test_output)
+fig_c5 <- get_pub_figures_path(type = "c5", pub_date = pub_date, test_output = test_output)
+fig_c6 <- get_pub_figures_path(type = "c6", pub_date = pub_date, test_output = test_output)
+fig_c7 <- get_pub_figures_path(type = "c7", pub_date = pub_date, test_output = test_output)
+fig_c8 <- get_pub_figures_path(type = "c8", pub_date = pub_date, test_output = test_output)
+fig_c9 <- get_pub_figures_path(type = "c9", pub_date = pub_date, test_output = test_output)
+fig_c10 <- get_pub_figures_path(type = "c10", pub_date = pub_date, test_output = test_output)
+fig_c11 <- get_pub_figures_path(type = "c11", pub_date = pub_date, test_output = test_output)
+fig_c12 <- get_pub_figures_path(type = "c12", pub_date = pub_date, test_output = test_output)
+fig_c13 <- get_pub_figures_path(type = "c13", pub_date = pub_date, test_output = test_output)
+fig_c14 <- get_pub_figures_path(type = "c14", pub_date = pub_date, test_output = test_output)
+fig_summary <- get_pub_figures_path(type = "summary", pub_date = pub_date, test_output = test_output)
+
+```
+
+```{r prep-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+
+# Prepare data ----
+
+# summary
+summary <- pds %>%
   filter(fy %in% c(latest_fy, revised_fy)) %>%
   group_by(fy) %>%
   summarise(across(referrals:denominator, sum), .groups = "drop") %>%
@@ -92,20 +165,18 @@ summary <-
   mutate(across(contains("perc"),
                 ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")))
 
-##to create total referrals trends for each fy
+# Create total referrals trends for each fy
 summary_referrals <- pds %>%
   group_by(fy) %>%
   summarise(referrals = sum(referrals), .groups = "drop")
-dash_pds <- read_rds(
-  get_mi_data_path("final_data", ext = "rds")
-)
 
-##for year 2024/25 use dashboard data to create referrals
+# For year 2024/25 use dashboard data to create referrals
 referrals_next_fy <- dash_pds %>%
   filter(fy == next_fy) %>%
   summarise(referrals = sum(referrals), .groups = "drop") %>%
   pull(referrals)
 
+# perc_65_plus
 perc_65_plus <- dash_pds %>%
   filter(
     fy %in% c("2016/17","2017/18","2018/19","2019/20","2020/21","2021/22","2022/23","2023/24","2024/25")
@@ -119,9 +190,7 @@ perc_65_plus <- dash_pds %>%
   ) %>%
   pull(perc)
 
-
 # Referrals
-
 referrals_start <- summary_referrals %>%
   filter(fy == first(fy_in_pub)) %>%
   pull(referrals)
@@ -149,7 +218,7 @@ referrals_increase_pct <- round(
   1
 )
 
-##to get largest referrals in a fy
+# Get largest referrals in a fy
 peak_referrals <- max(
   c(summary_referrals$referrals, referrals_next_fy)
 )
@@ -159,13 +228,8 @@ peak_referrals_year <- c(
   next_fy
 )[which.max(c(summary_referrals$referrals, referrals_next_fy))]
 
+# Rates per 10,000 population
 
-##Rates per 10,000 population
-
-# Rates
-
-#load population rates data --- to be checked
-pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
 # Create 65+ population denominators
 pop_data_trends <- pop_data %>%
   filter(
@@ -177,7 +241,6 @@ pop_data_trends <- pop_data %>%
   ) %>%
   group_by(geog, year) %>%
   summarise(pop_est = sum(pop_est), .groups = "drop")
-
 
 # Scotland referral rates per 10,000 population (65+)
 pds_all_rates <- pds %>%
@@ -214,10 +277,7 @@ pds_all_rates <- pds %>%
     )
   )
 
-dash_pds <- read_rds(
-  get_mi_data_path("final_data", ext = "rds")
-)
-
+# dash_rates
 dash_rates <- dash_pds %>%
   group_by(fy) %>%
   summarise(
@@ -245,6 +305,8 @@ dash_rates <- dash_pds %>%
       1
     )
   )
+
+# Rates
 rate_start <- pds_all_rates %>%
   filter(fy == first(fy_in_pub)) %>%
   pull(pop_rate_10000)
@@ -276,7 +338,6 @@ rate_change_pct <- round(
 )
 
 # Population aged 65+ in first and next year
-
 pop_start <- pop_data_trends %>%
   filter(
     geog == "Scotland",
@@ -296,27 +357,19 @@ pop_change_pct <- round(
   1
 )
 
-# percentage over 65
+# Percentage over 65
 over_65_and_total <- left_join(
-
-scot_65_plus_total <- pds %>% filter(age_grp != "59 and Under", age_grp != "60 to 64") %>% 
-  group_by(geog = "Scotland") %>% summarise(over_65_referrals = sum(referrals)),
-
-
-scot_overall_total <- pds %>% group_by(geog = "Scotland") %>% summarise(total_referrals = sum(referrals)))
+  scot_65_plus_total <- pds %>% 
+    filter(age_grp != "59 and Under", age_grp != "60 to 64") %>% 
+    group_by(geog = "Scotland") %>% 
+    summarise(over_65_referrals = sum(referrals)),
+  scot_overall_total <- pds %>% 
+    group_by(geog = "Scotland") %>% 
+    summarise(total_referrals = sum(referrals)))
 
 perc_65_plus<-round(over_65_and_total[2]/over_65_and_total[3]*100,1)
 
 # Waiting times data
-data_wait <-
-  read_rds(
-    get_mi_data_path(
-      type = "wait_data",
-      ext = "rds",
-      test_output = test_output
-    )
-  )
-
 wait_scotland <- data_wait %>%
   filter(
     health_board == "Scotland",
@@ -356,7 +409,6 @@ wait_2023_24 <- wait_scotland %>%
 wait_2024_25 <- wait_scotland %>%
   filter(fy == next_fy) %>%
   pull(median_diagnosis_to_contact)
-
 
 ```
 
@@ -929,8 +981,6 @@ f12_alt_text <- glue(
   "financial year {latest_fy}."
 )
 
-
-
 ```
 
 ```{r footnotes, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
@@ -1090,28 +1140,6 @@ incidence_footnote_trend_updated <-
     " population estimates."
   )
 
-## Figure paths for report
-fig_dir <- file.path(
-  get_pub_date_dir("output", test_output = test_output),
-  "figures"
-)
-
-fig_c1 <- file.path(fig_dir, paste0(pub_date, "_incidence-hb.png"))
-fig_c2 <- file.path(fig_dir, paste0(pub_date, "_12-months-hb.png"))
-fig_c3 <- file.path(fig_dir, paste0(pub_date, "_12-months-ijb.png"))
-fig_c4 <- file.path(fig_dir, paste0(pub_date, "_age-dist.png"))
-fig_c5 <- file.path(fig_dir, paste0(pub_date, "_12-months-age.png"))
-fig_c6 <- file.path(fig_dir, paste0(pub_date, "_simd-dist.png"))
-fig_c7 <- file.path(fig_dir, paste0(pub_date, "_12-months-simd.png"))
-fig_c8 <- file.path(fig_dir, paste0(pub_date, "_total_referrals_trend.png"))
-fig_c9 <- file.path(fig_dir, paste0(pub_date, "_rate_trend.png"))
-fig_c10 <- file.path(fig_dir, paste0(pub_date, "_sex-dist.png"))
-fig_c11 <- file.path(fig_dir, paste0(pub_date, "_12-months-sex.png"))
-fig_c12 <- file.path(fig_dir, paste0(pub_date, "_wait-times-hb.png"))
-fig_c13 <- file.path(fig_dir, paste0(pub_date, "_wait-times-ijb.png"))
-fig_c14 <- file.path(fig_dir, paste0(pub_date, "_wait-times-trend.png"))
-fig_summary <- file.path(fig_dir, paste0(pub_date, "_summary-chart.png"))
-
 ```
 
 # Introduction
@@ -1197,8 +1225,6 @@ The trend shows that between `r fy_in_pub[1]` to `r next_fy` the number of peopl
 ```{r fig-c8, echo= FALSE, fig.cap= `f8_alt_text`, out.width = 600}
 # Figure summary
 include_graphics(fig_c8)
-#include_graphics(get_pub_figures_path(type = "c8"))
-
 ```
 </Div>
 
@@ -1217,7 +1243,6 @@ Figure 2 below presents the number of people referred for dementia post-diagnost
 ```{r fig-c9, echo= FALSE, fig.cap= `f9_alt_text`, out.width = 600}
 # Figure summary
 include_graphics(fig_c9)
-#include_graphics(get_pub_figures_path(type = "c9"))
 ```
 </Div>
 <Div custom-style = "Footnote Text">
@@ -1239,8 +1264,6 @@ Note, the median time includes all people who were contacted by PDS services and
 ```{r fig-c14 , echo= FALSE, fig.cap= `f6_alt_text`, out.width = 600}
 # Figure summary
 include_graphics(fig_c14)
-#include_graphics(get_pub_figures_path(type = "c14"))
-
 ```
 </Div>
 <Div custom-style = "Footnote Text">
@@ -1309,8 +1332,6 @@ Figure 4 presents the percentage of people referred for dementia post-diagnostic
 ```{r fig-4, echo= FALSE, fig.cap= `f9_alt_text`, out.width = 600}
 # Figure 4
 include_graphics(fig_c1)
-#include_graphics(get_pub_figures_path(type = "c1"))
-
 ```
 </Div>
 
@@ -1453,8 +1474,6 @@ hb %>%
 ```{r fig-5, echo= FALSE, fig.cap= `f10_alt_text`, out.width = 600}
 # Figure 5
 include_graphics(fig_c2)
-#include_graphics(get_pub_figures_path(type = "summary"))
-
 ```
 </Div>
 
@@ -1618,8 +1637,6 @@ In `r latest_fy`, the capacity in PDS services in both Renfrewshire and Dumfries
 ```{r fig-3, echo=FALSE, fig.cap= `f3_alt_text`, out.width = 420}
 # Figure 6 
 include_graphics(fig_c3)
-#include_graphics(get_pub_figures_path(type = "c3"))
-
 ```
 
 </Div>
@@ -1714,8 +1731,6 @@ Figure 7 below shows that in `r latest_fy` females accounted for nearly 3 out of
 ```{r fig-7, echo=FALSE, fig.cap= `f11_alt_text`, out.width = 600}
 # Figure 7 
 include_graphics(fig_c10)
-#include_graphics(get_pub_figures_path(type = "c10"))
-
 ```
 </Div>
 
@@ -1729,8 +1744,6 @@ include_graphics(fig_c10)
 ```{r fig-8, echo=FALSE, fig.cap= f12_alt_text, out.width = 600}
 # Figure 8 
 include_graphics(fig_c11)
-#include_graphics(get_pub_figures_path(type = "c11"))
-
 ```
 </Div>
 
@@ -1750,8 +1763,6 @@ Figure 9 presents the age distribution of those referred for dementia post-diagn
 ```{r fig-9, echo=FALSE, fig.cap= `f4_alt_text`, out.width = 600}
 # Figure 9 
 include_graphics(fig_c4)
-#include_graphics(get_pub_figures_path(type = "c4"))
-
 ```
 </Div>
 
@@ -1770,8 +1781,6 @@ Figure 10 presents the percentage of those people referred for dementia post-dia
 ```{r fig-10, echo=FALSE, fig.cap= f5_alt_text, out.width = 600}
 # Figure 10 
 include_graphics(fig_c5)
-#include_graphics(get_pub_figures_path(type = "c5"))
-
 ```
 </Div>
 
@@ -1794,8 +1803,6 @@ Figure 11 presents the distribution of people referred for dementia post-diagnos
 ```{r fig-6, echo=FALSE, fig.cap= `f6_alt_text`, out.width = 600}
 # Figure 11
 include_graphics(fig_c6)
-#include_graphics(get_pub_figures_path(type = "c6"))
-
 ```
 </Div>
 
@@ -1814,7 +1821,6 @@ Figure 12 presents the percentage of people referred for dementia post-diagnosti
 ```{r fig-12, echo=FALSE, fig.cap= f7_alt_text, out.width = 600}
 # Figure 12 
 include_graphics(fig_c7)
-#include_graphics(get_pub_figures_path(type = "c7"))
 ```
 </Div>
 
@@ -1920,151 +1926,47 @@ PHS undertake data quality checks and feedback data errors and queries to each H
 As at the `r format(end_date, "%d %B %Y")` data submission, the Scotland level error rate in each financial year from `r fy_in_pub[1]` to `r next_fy` was:
 
 
-```{r error-table-1, echo=FALSE,message=FALSE, warning=FALSE,ft.align = "center"}
+```{r error-table-1, echo=FALSE, message=FALSE, warning=FALSE,ft.align = "center"}
 
-# error_table <- pds %>%
-#   mutate(fy = extract_fin_year(dementia_diagnosis_confirmed_date)) %>%
-#   filter(fy %in% c(fy_in_pub, next_fy)) %>%
-#   group_by(fy) %>%
-#   summarise(
-#     err_rate = round_half_up(
-#       sum(as.integer(error_flag)) / n() * 100,
-#       1
-#     ),
-#     .groups = "drop"
-#   ) %>%
-#   mutate(
-#     err_rate = paste0(err_rate, "%")
-#   ) %>%
-#   rename(
-#     `Financial Year` = fy,
-#     `Query/Error rate` = err_rate
-#   )
-# 
-# 
-# error_table %>%
-#   flextable() %>%
-#   ft_dementia_style() %>%
-#   set_header_labels(
-#     fy = "Financial Year",
-#     err_rate = "Query/Error rate"
-#   ) %>%
-#   align(j = 2, align = "right", part = "body") %>%
-#   bold(i = nrow(error_table), bold = FALSE, part = "body") %>%
-#   set_table_properties(layout = "autofit")
+# Combined query and error summary (pre-2021)
+query_error_table <- query_error_data %>% 
+  filter(health_board == "Scotland") %>%
+  mutate(q_err_rate = round_half_up(total_q_errors / records * 100, 1)) %>%
+  select(fy, q_err_rate)
 
-# Read Q3 error and query summaries
-error_data <- read_rds(
-  "/conf/dementia/A&I/Outputs/management-report/data/2025-26/Q3/2025-3_error-summary.rds"
-)
+# Query summary (2021 onwards)
+query_table <- query_data %>% 
+  filter(health_board == "Scotland") %>%
+  mutate(query_rate = round_half_up(total_queries) / records * 100, 1) %>%
+  select(fy, query_rate)
 
-query_data <- read_rds(
-  "/conf/dementia/A&I/Outputs/management-report/data/2025-26/Q3/2025-3_query-summary.rds"
-)
-
-##use MI data for older fys
-pds_mr <- read_csv(get_national_data_path(),
-                 col_types = cols(.default = "c")
-                 )%>%
-
-   clean_names() %>%
-
-   # Convert dates from character to date format
-   mutate(across(contains("date"), ymd)) %>%
-#
-#   # Pad CHI Number to 10 digits
-   mutate(chi_number = chi_pad(chi_number)) %>%
-#
-#   # Replace word 'and' with ampersand
-   mutate(health_board = str_replace(health_board, " and ", " & ")) %>%
-#
-#   # Remove records with missing diag date or outwith reporting period
-   filter(between(dementia_diagnosis_confirmed_date, start_date, end_date)) #%>%
-
-  
-### 3 - Add finalised data ----
-
-finalised_years <-
-   list.files(get_final_data_dir()) %>%
-   str_sub(1, 7) %>%
-   str_replace("-", "/")
-
-
-pds_mr <-
-  list.files(get_final_data_dir(), full.names = TRUE) %>%
-  map(read_rds) %>%
-  reduce(bind_rows) %>%
-  bind_rows(
-    pds_mr %>%
-      filter(
-        !extract_fin_year(dementia_diagnosis_confirmed_date) %in%
-          finalised_years
-      )
-  )
-
-
-# Create Scotland query/error rate table
-# Historical years from PDS (2016/17 to 2020/21)
-err_old <- pds_mr %>%
- mutate(fy = extract_fin_year(dementia_diagnosis_confirmed_date)) %>%
-  filter(fy %in% c(
-    "2016/17",
-    "2017/18",
-    "2018/19",
-    "2019/20",
-    "2020/21"
-  )) %>%
-  group_by(fy) %>%
-  summarise(
-    err_rate = round_half_up(
-      sum(as.integer(error_flag)) / n() * 100,
-      1
-    ),
-    .groups = "drop"
-  )
-
-# Query + error summaries (2021/22 onwards)
-err_new <- query_data %>%
-  filter(
-    health_board == "Scotland",
-    fy %in% c(
-      "2021/22",
-      "2022/23",
-      "2023/24",
-      "2024/25"
-    )
-  ) %>%
-  select(fy, total_queries, records) %>%
-  left_join(
-    error_data %>%
-      filter(health_board == "Scotland") %>%
-      select(fy, total_errors),
-    by = "fy"
-  ) %>%
-  mutate(
-    err_rate = floor(
-      ((total_queries + total_errors) / records * 100) * 10
-    ) / 10
-  ) %>%
+# Error summary (2021 onwards)
+error_table <- error_data %>% 
+  filter(health_board == "Scotland") %>%
+  mutate(err_rate = round_half_up(total_errors) / records * 100, 1) %>%
   select(fy, err_rate)
 
 # Combine
-error_table <- bind_rows(err_old, err_new) %>%
+combined_error_table <- full_join(error_table, query_table, by = "fy") %>%
+  full_join(query_error_table, by = "fy") %>%
   arrange(fy) %>%
   mutate(
-    err_rate = sprintf("%.1f%%", err_rate)
+    q_err_rate = ifelse(is.na(q_err_rate), "-", sprintf("%.1f%%", q_err_rate)),
+    query_rate = ifelse(is.na(query_rate), "-", sprintf("%.1f%%", query_rate)),
+    err_rate = ifelse(is.na(err_rate), "-", sprintf("%.1f%%", err_rate))
   )
 
 # Display table
-error_table %>%
+combined_error_table <- combined_error_table %>%
   flextable() %>%
   ft_dementia_style() %>%
   set_header_labels(
     fy = "Financial Year",
-    err_rate = "Query/Error rate"
-  ) %>%
+    q_err_rate = "Query/Error Rate",
+    err_rate = "Error Rate",
+    query_rate = "Query Rate") %>%
   align(
-    j = 2,
+    j = c(2, 3, 4),
     align = "right",
     part = "body"
   ) %>%
@@ -2074,6 +1976,9 @@ error_table %>%
     part = "body"
   ) %>%
   set_table_properties(layout = "autofit")
+
+combined_error_table
+
 ```
 
 
@@ -2186,128 +2091,7 @@ NHS Boards have the responsibility of gathering and submitting information on th
 As at the `r format(end_date, '%d %B %Y')` data submission, the Scotland level error rate in each financial year from `r fy_in_pub[1]` to `r next_fy` was:
 
 ```{r error-table-2, echo=FALSE,message=FALSE, warning=FALSE,ft.align = "center"}
-
-
-# Read Q3 error and query summaries
-error_data <- read_rds(
-  "/conf/dementia/A&I/Outputs/management-report/data/2025-26/Q3/2025-3_error-summary.rds"
-)
-
-query_data <- read_rds(
-  "/conf/dementia/A&I/Outputs/management-report/data/2025-26/Q3/2025-3_query-summary.rds"
-)
-
-##use MI data for older fys
-pds_mr <- read_csv(get_national_data_path(),
-                 col_types = cols(.default = "c")
-                 )%>%
-
-   clean_names() %>%
-
-   # Convert dates from character to date format
-   mutate(across(contains("date"), ymd)) %>%
-#
-#   # Pad CHI Number to 10 digits
-   mutate(chi_number = chi_pad(chi_number)) %>%
-#
-#   # Replace word 'and' with ampersand
-   mutate(health_board = str_replace(health_board, " and ", " & ")) %>%
-#
-#   # Remove records with missing diag date or outwith reporting period
-   filter(between(dementia_diagnosis_confirmed_date, start_date, end_date)) #%>%
-
-  
-### 3 - Add finalised data ----
-
- finalised_years <-
-   list.files(get_final_data_dir()) %>%
-   str_sub(1, 7) %>%
-   str_replace("-", "/")
-
-# Create Scotland query/error rate table
-# Historical years from PDS (2016/17 to 2020/21)
-
-pds_mr <-
-  list.files(get_final_data_dir(), full.names = TRUE) %>%
-  map(read_rds) %>%
-  reduce(bind_rows) %>%
-  bind_rows(
-    pds_mr %>%
-      filter(
-        !extract_fin_year(dementia_diagnosis_confirmed_date) %in%
-          finalised_years
-      )
-  )
-
-err_old <- pds_mr %>%
-  mutate(fy = extract_fin_year(dementia_diagnosis_confirmed_date)) %>%
-  filter(fy %in% c(
-    "2016/17",
-    "2017/18",
-    "2018/19",
-    "2019/20",
-    "2020/21"
-  )) %>%
-  group_by(fy) %>%
-  summarise(
-    err_rate = round_half_up(
-      sum(as.integer(error_flag)) / n() * 100,
-      1
-    ),
-    .groups = "drop"
-  )
-
-# Query + error summaries (2021/22 onwards)
-err_new <- query_data %>%
-  filter(
-    health_board == "Scotland",
-    fy %in% c(
-      "2021/22",
-      "2022/23",
-      "2023/24",
-      "2024/25"
-    )
-  ) %>%
-  select(fy, total_queries, records) %>%
-  left_join(
-    error_data %>%
-      filter(health_board == "Scotland") %>%
-      select(fy, total_errors),
-    by = "fy"
-  ) %>%
-  mutate(
-    err_rate = floor(
-      ((total_queries + total_errors) / records * 100) * 10
-    ) / 10
-  ) %>%
-  select(fy, err_rate)
-
-# Combine
-error_table <- bind_rows(err_old, err_new) %>%
-  arrange(fy) %>%
-  mutate(
-    err_rate = sprintf("%.1f%%", err_rate)
-  )
-
-# Display table
-error_table %>%
-  flextable() %>%
-  ft_dementia_style() %>%
-  set_header_labels(
-    fy = "Financial Year",
-    err_rate = "Query/Error rate"
-  ) %>%
-  align(
-    j = 2,
-    align = "right",
-    part = "body"
-  ) %>%
-  bold(
-    i = nrow(error_table),
-    bold = FALSE,
-    part = "body"
-  ) %>%
-  set_table_properties(layout = "autofit")
+combined_error_table
 ```
 
 
