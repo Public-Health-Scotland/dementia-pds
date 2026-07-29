@@ -116,7 +116,7 @@ summary <- pds %>%
 # Total referrals for each year in the publication and the year after
 summary_referrals <- dash_pds %>%
   group_by(fy) %>%
-  summarise(total_referrals = sum(referrals), .groups = "drop")
+  summarise(referrals = sum(referrals), .groups = "drop")
 
 # Population estimates (65+) for each year and health board/IJB
 pop_65 <- pop_data %>%
@@ -138,7 +138,7 @@ pds_all_rates <- summary_referrals %>%
     by = "year") %>%
   mutate(
     pop_rate_10000 = round_half_up(
-      total_referrals / pop_est * 10000, 1
+      referrals / pop_est * 10000, 1
     )
   )
 
