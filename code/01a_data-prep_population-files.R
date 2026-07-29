@@ -38,7 +38,7 @@ la_pop_path <- get_pop_path(type = "HSCP", selection_method = "modification_date
 la_pop <- read_rds(la_pop_path) %>% 
   filter(year >= 2016, age >= 18)
 
-geog_col_ijb <- paste0("hscp", get_pop_est_year(la_pop_path))
+geog_col_ijb <- paste0("hscp", get_pop_est_year(la_pop_path), "name")
 
 # Create a new column with age in 8 groups
 la_pop %<>%
@@ -133,7 +133,7 @@ hb_pop_path <- get_pop_path(type = "HB", selection_method = "modification_date")
 hb_pop <- read_rds(hb_pop_path) %>%
   filter(year >= 2016, age >= 18)
 
-geog_col_hb <- paste0("hb", get_pop_est_year(hb_pop_path))
+geog_col_hb <- paste0("hb", get_pop_est_year(hb_pop_path), "name")
 
 # Create a new column with age in 8 groups
 hb_pop %<>%
@@ -229,10 +229,10 @@ simd_pop <- read_rds(simd_pop_path) %>%
   filter(year >= 2016)
   
 simd_pop_la <- simd_pop %>%
-  select(geog = !!sym(paste0(geog_col_ijb, "name")), year, simd = simd2020v2_sc_quintile, sex, 5:95) 
+  select(geog = !!sym(geog_col_ijb), year, simd = simd2020v2_sc_quintile, sex, 5:95) 
 
 simd_pop_hb <- simd_pop %>%
-  select(geog = !!sym(paste0(geog_col_hb, "name")), year, simd = simd2020v2_sc_quintile, sex, 5:95)
+  select(geog = !!sym(geog_col_hb), year, simd = simd2020v2_sc_quintile, sex, 5:95)
 
 simd_pop_16_22 <- bind_rows(simd_pop_la,simd_pop_hb)
 
