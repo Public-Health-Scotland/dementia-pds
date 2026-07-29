@@ -97,83 +97,7 @@ next_fy <- paste0(
 
 # Prepare data ----
 
-# Create 65+ population denominators
-pop_data_trends <- pop_data %>%
-  filter(
-    age_grp != "All",
-    age_grp != "59 and Under",
-    age_grp != "60 to 64",
-    age_grp_2 == "All",
-    sex == "All"
-  ) %>%
-  group_by(geog, year) %>%
-  summarise(pop_est = sum(pop_est), .groups = "drop")
-
-# Scotland referral rates per 10,000 population (65+)
-pds_all_rates <- pds %>%
-  group_by(fy) %>%
-  summarise(
-    total_referrals = sum(referrals),
-    .groups = "drop"
-  ) %>%
-  mutate(
-    geog = "Scotland",
-    year = as.numeric(substr(fy, 1, 4))
-  ) %>%
-  left_join(
-    pop_data %>%
-      filter(
-        geog == "Scotland",
-        age_grp != "All",
-        age_grp != "59 and Under",
-        age_grp != "60 to 64",
-        age_grp_2 == "All",
-        sex == "All"
-      ) %>%
-      group_by(year) %>%
-      summarise(
-        pop_est = sum(pop_est),
-        .groups = "drop"
-      ),
-    by = "year"
-  ) %>%
-  mutate(
-    pop_rate_10000 = round_half_up(
-      total_referrals / pop_est * 10000,
-      1
-    )
-  )
-
-# dash_rates
-dash_rates <- dash_pds %>%
-  group_by(fy) %>%
-  summarise(
-    total_referrals = sum(referrals),
-    .groups = "drop"
-  ) %>%
-  mutate(year = as.numeric(substr(fy, 1, 4))) %>%
-  left_join(
-    pop_data %>%
-      filter(
-        geog == "Scotland",
-        age_grp != "All",
-        age_grp != "59 and Under",
-        age_grp != "60 to 64",
-        age_grp_2 == "All",
-        sex == "All"
-      ) %>%
-      group_by(year) %>%
-      summarise(pop_est = sum(pop_est), .groups = "drop"),
-    by = "year"
-  ) %>%
-  mutate(
-    pop_rate_10000 = round_half_up(
-      total_referrals / pop_est * 10000,
-      1
-    )
-  )
-
-# summary 
+# Percentage of expected diagnoses referred for PDS in the provisional and revised years
 summary <- pds %>%
   filter(fy %in% c(revised_fy, latest_fy)) %>%
   group_by(fy) %>%
@@ -189,25 +113,49 @@ summary <- pds %>%
   mutate(across(contains("perc"),
                 ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")))
 
-# referrals_next_fy
-referrals_next_fy <- dash_pds %>%
+# Total referrals for each year in the publication and the year after
+summary_referrals <- dash_pds %>%
+  group_by(fy) %>%
+  summarise(total_referrals = sum(referrals), .groups = "drop")
+
+# Population estimates (65+) for each year and health board/IJB
+pop_65 <- pop_data %>%
+  filter(
+    age_grp != "All",
+    age_grp != "59 and Under",
+    age_grp != "60 to 64",
+    age_grp_2 == "All",
+    sex == "All"
+  ) %>%
+  group_by(geog, year) %>%
+  summarise(pop_est = sum(pop_est), .groups = "drop")
+
+# Referral rates per 10,000 population (65+) for each year
+pds_all_rates <- summary_referrals %>%
+  mutate(year = as.numeric(substr(fy, 1, 4))) %>%
+  left_join(
+    pop_65 %>% filter(geog == "Scotland"),
+    by = "year") %>%
+  mutate(
+    pop_rate_10000 = round_half_up(
+      total_referrals / pop_est * 10000, 1
+    )
+  )
+
+# Total referrals for the year after the last in the publication
+referrals_next_fy <- summary_referrals %>%
   filter(fy == next_fy) %>%
-  summarise(referrals = sum(referrals), .groups = "drop") %>%
   pull(referrals)
 
-# perc_65_plus
-perc_65_plus <- dash_pds %>%
-  filter(
-    fy %in% c("2016/17","2017/18","2018/19","2019/20","2020/21","2021/22","2022/23","2023/24","2024/25")
-  ) %>%
+# Percentage of referrals aged over 65 in publication years
+perc_65_plus <- dash_pds %>% 
+  filter(fy %in% fy_in_pub) %>%
   summarise(
     over65 = sum(referrals[!(age_grp %in% c("59 and Under", "60 to 64"))]),
     total = sum(referrals)
   ) %>%
-  mutate(
-    perc = round_half_up(over65 / total * 100, 0)
-  ) %>%
-  pull(perc)
+  mutate(perc_65 = round(over65/total * 100, 1)) %>%
+  pull(perc_65)
 
 ```
 
@@ -244,7 +192,7 @@ Figures presented in this release for `r latest_fy` and `r next_fy` are provisio
 
 <Div custom-style = "Bullet 1">In `r next_fy` there were `r  referrals_next_fy` people newly diagnosed with dementia who were referred for dementia post-diagnostic support compared to `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` in `r latest_fy` and `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.</Div>
 
-<Div custom-style = "Bullet 1">The rate of referral in `r next_fy` was `r  dash_rates %>% filter(fy == next_fy) %>% pull(pop_rate_10000)` per 10,000 population (aged 65 and over). In `r latest_fy` and `r next_fy` the rate of referral was `r pds_all_rates %>% filter(fy == latest_fy) %>% pull(pop_rate_10000)` and `r pds_all_rates %>% filter(fy == revised_fy) %>% pull(pop_rate_10000)` respectively.</Div>
+<Div custom-style = "Bullet 1">The rate of referral in `r next_fy` was `r  pds_all_rates %>% filter(fy == next_fy) %>% pull(pop_rate_10000)` per 10,000 population (aged 65 and over). In `r latest_fy` and `r next_fy` the rate of referral was `r pds_all_rates %>% filter(fy == latest_fy) %>% pull(pop_rate_10000)` and `r pds_all_rates %>% filter(fy == revised_fy) %>% pull(pop_rate_10000)` respectively.</Div>
 
 <Div custom-style = "Bullet 1">The average (median) time from diagnosis to first contact by a PDS practitioner was `r data_wait %>% filter(health_board == "Scotland",fy == next_fy,sex=="All", simd == "All") %>% pull(median_diagnosis_to_contact)` days in `r next_fy` compared to `r data_wait %>% filter(health_board == "Scotland",fy == latest_fy,sex=="All", simd == "All") %>% pull(median_diagnosis_to_contact)` days in `r latest_fy` and `r data_wait %>% filter(health_board == "Scotland",fy == revised_fy,sex=="All", simd == "All") %>% pull(median_diagnosis_to_contact)` days in `r revised_fy`.</Div>
 
