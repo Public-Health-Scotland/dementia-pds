@@ -6,7 +6,7 @@ output:
     cover_page: "/conf/dementia/A&I/Outputs/publication/templates/phs-offstats-cover.docx"
     cover_title: "Dementia Post-Diagnostic Support Statistics"
     cover_subtitle: "Performance against the Local Delivery Plan Standard, 2023/24"
-    cover_date: "21  July 2026"
+    cover_date: "21 July 2026"
     toc_depth: 3
 ---
 
@@ -50,6 +50,7 @@ a_city_statement <- paste(
   "against the LDP standard.")
   
 ```
+
 
 ```{r read-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 
@@ -124,6 +125,7 @@ next_fy <- paste0(
 
 ```
 
+
 ```{r load-figs, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 
 # Load figures ----
@@ -146,11 +148,12 @@ fig_summary <- get_pub_figures_path(type = "summary", pub_date = pub_date, test_
 
 ```
 
-```{r prep-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 
-# Prepare data ----
+```{r referrals, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 
-# summary
+# Referrals ----
+
+# Percentage of expected diagnoses referred for PDS in the provisional and revised years
 summary <- pds %>%
   filter(fy %in% c(latest_fy, revised_fy)) %>%
   group_by(fy) %>%
@@ -166,73 +169,38 @@ summary <- pds %>%
   mutate(across(contains("perc"),
                 ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")))
 
-# Create total referrals trends for each fy
-summary_referrals <- pds %>%
+# Total referrals for each year in the publication and the year after (data frame)
+summary_referrals <- dash_pds %>%
   group_by(fy) %>%
   summarise(referrals = sum(referrals), .groups = "drop")
 
-# For year 2024/25 use dashboard data to create referrals
-referrals_next_fy <- dash_pds %>%
-  filter(fy == next_fy) %>%
-  summarise(referrals = sum(referrals), .groups = "drop") %>%
-  pull(referrals)
+# Total referrals for each year in the publication and the year after (named list)
+referrals <- list()
+for (y in c(fy_in_pub, next_fy)) {
+  referrals[[y]] <- summary_referrals %>%
+    filter(fy == y) %>%
+    pull(referrals)
+}
 
-# perc_65_plus
-perc_65_plus <- dash_pds %>%
-  filter(
-    fy %in% c("2016/17","2017/18","2018/19","2019/20","2020/21","2021/22","2022/23","2023/24","2024/25")
-  ) %>%
-  summarise(
-    over65 = sum(referrals[!(age_grp %in% c("59 and Under", "60 to 64"))]),
-    total = sum(referrals)
-  ) %>%
-  mutate(
-    perc = round_half_up(over65 / total * 100, 0)
-  ) %>%
-  pull(perc)
+# Change in referrals from the first year in the publication to the year after the latest year in the publication
+referrals_increase <- referrals[[next_fy]] - referrals[[1]]
 
-# Referrals
-referrals_start <- summary_referrals %>%
-  filter(fy == first(fy_in_pub)) %>%
-  pull(referrals)
-
-referrals_2019_20 <- summary_referrals %>%
-  filter(fy == "2019/20") %>%
-  pull(referrals)
-
-referrals_2020_21 <- summary_referrals %>%
-  filter(fy == "2020/21") %>%
-  pull(referrals)
-
-referrals_2021_22 <- summary_referrals %>%
-  filter(fy == "2021/22") %>%
-  pull(referrals)
-
-referrals_latest <- summary %>%
-  filter(fy == latest_fy) %>%
-  pull(referrals)
-
-referrals_increase <- referrals_next_fy - referrals_start
-
+# Percentage change in referrals from the first year in the publication to the year after the latest year in the publication
 referrals_increase_pct <- round(
-  referrals_increase / referrals_start * 100,
-  1
+  referrals_increase / referrals[[1]] * 100, 1
 )
 
-# Get largest referrals in a fy
-peak_referrals <- max(
-  c(summary_referrals$referrals, referrals_next_fy)
-)
+# Year with the highest referrals
+peak_referrals_year <- names(which.max(unlist(referrals)))
+peak_referrals <- max(unlist(referrals))
 
-peak_referrals_year <- c(
-  summary_referrals$fy,
-  next_fy
-)[which.max(c(summary_referrals$referrals, referrals_next_fy))]
+```
 
-# Rates per 10,000 population
 
-# Create 65+ population denominators
-pop_data_trends <- pop_data %>%
+```{r population, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+
+# Population estimates (65+) for each year and health board/IJB
+pop_65 <- pop_data %>%
   filter(
     age_grp != "All",
     age_grp != "59 and Under",
@@ -243,134 +211,70 @@ pop_data_trends <- pop_data %>%
   group_by(geog, year) %>%
   summarise(pop_est = sum(pop_est), .groups = "drop")
 
-# Scotland referral rates per 10,000 population (65+)
-pds_all_rates <- pds %>%
-  group_by(fy) %>%
-  summarise(
-    total_referrals = sum(referrals),
-    .groups = "drop"
-  ) %>%
-  mutate(
-    geog = "Scotland",
-    year = as.numeric(substr(fy, 1, 4))
-  ) %>%
-  left_join(
-    pop_data %>%
-      filter(
-        geog == "Scotland",
-        age_grp != "All",
-        age_grp != "59 and Under",
-        age_grp != "60 to 64",
-        age_grp_2 == "All",
-        sex == "All"
-      ) %>%
-      group_by(year) %>%
-      summarise(
-        pop_est = sum(pop_est),
-        .groups = "drop"
-      ),
-    by = "year"
-  ) %>%
-  mutate(
-    pop_rate_10000 = round_half_up(
-      total_referrals / pop_est * 10000,
-      1
-    )
-  )
-
-# dash_rates
-dash_rates <- dash_pds %>%
-  group_by(fy) %>%
-  summarise(
-    total_referrals = sum(referrals),
-    .groups = "drop"
-  ) %>%
-  mutate(year = as.numeric(substr(fy, 1, 4))) %>%
-  left_join(
-    pop_data %>%
-      filter(
-        geog == "Scotland",
-        age_grp != "All",
-        age_grp != "59 and Under",
-        age_grp != "60 to 64",
-        age_grp_2 == "All",
-        sex == "All"
-      ) %>%
-      group_by(year) %>%
-      summarise(pop_est = sum(pop_est), .groups = "drop"),
-    by = "year"
-  ) %>%
-  mutate(
-    pop_rate_10000 = round_half_up(
-      total_referrals / pop_est * 10000,
-      1
-    )
-  )
-
-# Rates
-rate_start <- pds_all_rates %>%
-  filter(fy == first(fy_in_pub)) %>%
-  pull(pop_rate_10000)
-
-rate_2020_21 <- pds_all_rates %>%
-  filter(fy == "2019/20") %>%
-  pull(pop_rate_10000)
-
-rate_2020_21 <- pds_all_rates %>%
-  filter(fy == "2020/21") %>%
-  pull(pop_rate_10000)
-
-rate_2020_22 <- pds_all_rates %>%
-  filter(fy == "2022/22") %>%
-  pull(pop_rate_10000)
-
-rate_latest <- pds_all_rates %>%
-  filter(fy == latest_fy) %>%
-  pull(pop_rate_10000)
-
-rate_next <- dash_rates %>%
-  filter(fy == next_fy) %>%
-  pull(pop_rate_10000)
-
-# Rate change between first year and next_fy
-rate_change_pct <- round(
-  (rate_next - rate_start) / rate_start * 100,
-  1
-)
-
-# Population aged 65+ in first and next year
-pop_start <- pop_data_trends %>%
+# Total population aged 65+ in first year in the publication
+pop_start <- pop_65 %>%
   filter(
     geog == "Scotland",
     year == as.numeric(substr(fy_in_pub[1], 1, 4))
   ) %>%
   pull(pop_est)
 
-pop_next <- pop_data_trends %>%
+# Total population aged 65+ in the year after the latest year in the publication
+pop_next <- pop_65 %>%
   filter(
     geog == "Scotland",
     year == as.numeric(substr(next_fy, 1, 4))
   ) %>%
   pull(pop_est)
 
+# Change in total population aged 65+ from the first year in the publication to  the year after the latest year in the publication
 pop_change_pct <- round(
-  (pop_next - pop_start) / pop_start * 100,
-  1
+  (pop_next - pop_start) / pop_start * 100, 1)
+
+# Percentage of referrals aged over 65 in publication years
+perc_65_plus <- dash_pds %>% 
+  filter(fy %in% fy_in_pub) %>%
+  summarise(
+    over65 = sum(referrals[!(age_grp %in% c("59 and Under", "60 to 64"))]),
+    total = sum(referrals)
+  ) %>%
+  mutate(perc_65 = round(over65/total * 100, 1)) %>%
+  pull(perc_65)
+
+```
+
+
+```{r rates, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+
+# Referral rates per 10,000 population (65+) for each year (data frame)
+pds_all_rates <- summary_referrals %>%
+  mutate(year = as.numeric(substr(fy, 1, 4))) %>%
+  left_join(
+    pop_65 %>% filter(geog == "Scotland"),
+    by = "year") %>%
+  mutate(
+    pop_rate_10000 = round_half_up(
+      referrals / pop_est * 10000, 1))
+
+# Referral rates for each year in the publication and the year after (named list)
+rates <- list()
+for (y in c(fy_in_pub, next_fy)) {
+  rates[[y]] <- pds_all_rates %>%
+    filter(fy == y) %>%
+    pull(pop_rate_10000)
+}
+
+# Change in rate from the first year in the publication to the year after the latest year in the publication
+rate_change_pct <- round(
+  (rates[[next_fy]] - rates[[1]]) / rates[[1]] * 100, 1
 )
 
-# Percentage over 65
-over_65_and_total <- left_join(
-  scot_65_plus_total <- pds %>% 
-    filter(age_grp != "59 and Under", age_grp != "60 to 64") %>% 
-    group_by(geog = "Scotland") %>% 
-    summarise(over_65_referrals = sum(referrals)),
-  scot_overall_total <- pds %>% 
-    group_by(geog = "Scotland") %>% 
-    summarise(total_referrals = sum(referrals)))
+```
 
-perc_65_plus<-round(over_65_and_total[2]/over_65_and_total[3]*100,1)
 
-# Waiting times data
+```{r wait-times, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+
+# Median diagnosis to contact time for each year (data frame)
 wait_scotland <- data_wait %>%
   filter(
     health_board == "Scotland",
@@ -379,39 +283,16 @@ wait_scotland <- data_wait %>%
   ) %>%
   select(fy, median_diagnosis_to_contact)
 
-wait_2016_17 <- wait_scotland %>%
-  filter(fy == fy_in_pub[1]) %>%
-  pull(median_diagnosis_to_contact)
-
-wait_2018_19 <- wait_scotland %>%
-  filter(fy == "2018/19") %>%
-  pull(median_diagnosis_to_contact)
-
-wait_2019_20 <- wait_scotland %>%
-  filter(fy == "2019/20") %>%
-  pull(median_diagnosis_to_contact)
-
-wait_2020_21 <- wait_scotland %>%
-  filter(fy == "2020/21") %>%
-  pull(median_diagnosis_to_contact)
-
-wait_2021_22 <- wait_scotland %>%
-  filter(fy == "2021/22") %>%
-  pull(median_diagnosis_to_contact)
-
-wait_2022_23 <- wait_scotland %>%
-  filter(fy == "2022/23") %>%
-  pull(median_diagnosis_to_contact)
-
-wait_2023_24 <- wait_scotland %>%
-  filter(fy == latest_fy) %>%
-  pull(median_diagnosis_to_contact)
-
-wait_2024_25 <- wait_scotland %>%
-  filter(fy == next_fy) %>%
-  pull(median_diagnosis_to_contact)
+# Median diagnosis to contact time for each year (named list)
+wait <- list()
+for (y in c(fy_in_pub, next_fy)) {
+  wait[[y]] <- wait_scotland %>%
+    filter(fy == y) %>%
+    pull(median_diagnosis_to_contact)
+}
 
 ```
+
 
 ```{r incidence-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 
@@ -1199,9 +1080,9 @@ ability and capacity to update their data systems which are required to provide 
 \newpage
 
 # Main Points
-<Div custom-style = "Bullet 1">In `r next_fy` there were `r  referrals_next_fy` people newly diagnosed with dementia who were referred for dementia post-diagnostic support compared to `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` in `r latest_fy` and `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.</Div>
+<Div custom-style = "Bullet 1">In `r next_fy` there were `r  referrals[[next_fy]]` people newly diagnosed with dementia who were referred for dementia post-diagnostic support compared to `r referrals[[latest_fy]]` in `r latest_fy` and `r referrals[[revised_fy]]` in `r revised_fy`.</Div>
 
-<Div custom-style = "Bullet 1">The rate of referral in `r next_fy` was `r  dash_rates %>% filter(fy == next_fy) %>% pull(pop_rate_10000)` per 10,000 population (aged 65 and over). In `r latest_fy` and `r revised_fy` the rate of referral was `r pds_all_rates %>% filter(fy == latest_fy) %>% pull(pop_rate_10000)` and `r pds_all_rates %>% filter(fy == revised_fy) %>% pull(pop_rate_10000)` respectively.</Div>
+<Div custom-style = "Bullet 1">The rate of referral in `r next_fy` was `r  rates[[next_fy]]` per 10,000 population (aged 65 and over). In `r latest_fy` and `r revised_fy` the rate of referral was `r rates[[latest_fy]]` and `r rates[[revised_fy]]` respectively.</Div>
 
 <Div custom-style = "Bullet 1">The average (median) time from diagnosis to first contact by a PDS practitioner was `r data_wait %>% filter(health_board == "Scotland",fy == next_fy,sex=="All", simd == "All") %>% pull(median_diagnosis_to_contact)` days in `r next_fy` compared to `r data_wait %>% filter(health_board == "Scotland",fy == latest_fy,sex=="All", simd == "All") %>% pull(median_diagnosis_to_contact)` days in `r latest_fy` and `r data_wait %>% filter(health_board == "Scotland",fy == revised_fy,sex=="All", simd == "All") %>% pull(median_diagnosis_to_contact)` days in `r revised_fy`.</Div>
 
@@ -1218,7 +1099,7 @@ ability and capacity to update their data systems which are required to provide 
 
 Figure 1 below illustrates the trend in the number of people newly diagnosed with dementia and referred to post diagnostic support (PDS) services. Note this analysis provides data up to and including `r next_fy` to provide the most up to date information on the number of people referred. However, the PDS LDP standard cannot be reported for `r next_fy` as it is still ongoing. The `r latest_fy` and `r next_fy` figures are provisional and are subject to revision in future publications.
 
-The trend shows that between `r fy_in_pub[1]` to `r next_fy` the number of people referred to PDS services across Scotland increased from `r format(referrals_start, big.mark = ",")` to `r format(referrals_next_fy, big.mark = ",")`, an increase of `r format(referrals_increase, big.mark = ",")` (`r referrals_increase_pct`%). The trend has generally been increasing although there was a notable decline between 2019/20 (`r format(referrals_2019_20, big.mark = ",")`) and 2020/21 (`r format(referrals_2020_21, big.mark = ",")`). This was due to the effect of measures introduced during the COVID-19 pandemic. Referrals increased steeply between 2020/21 and 2021/22 (`r format(referrals_2021_22, big.mark = ",")`) and then rose to `r format(referrals_next_fy, big.mark = ",")` in `r next_fy`. The largest number of referrals occurred in `r peak_referrals_year` (`r format(peak_referrals, big.mark = ",")`). 
+The trend shows that between `r fy_in_pub[1]` to `r next_fy` the number of people referred to PDS services across Scotland increased from `r format(referrals[[1]], big.mark = ",")` to `r format(referrals[[next_fy]], big.mark = ",")`, an increase of `r format(referrals_increase, big.mark = ",")` (`r referrals_increase_pct`%). The trend has generally been increasing although there was a notable decline between 2019/20 (`r format(referrals[["2019_20"]], big.mark = ",")`) and 2020/21 (`r format(referrals[["2020_21"]], big.mark = ",")`). This was due to the effect of measures introduced during the COVID-19 pandemic. Referrals increased steeply between 2020/21 and 2021/22 (`r format(referrals[["2021_22"]], big.mark = ",")`) and then rose to `r format(referrals[[next_fy]], big.mark = ",")` in `r next_fy`. The largest number of referrals occurred in `r peak_referrals_year` (`r format(peak_referrals, big.mark = ",")`). 
 
 <Div custom-style = "Table or chart caption">Figure 1: Number of people diagnosed with dementia and referred for post-diagnostic support; Scotland, `r fy_in_pub[1]` to `r next_fy`^1^</Div> 
 <Div custom-style = "Figure_Style">
@@ -1247,7 +1128,7 @@ include_graphics(fig_c8)
 
 <Div custom-style="Body Text">
 
-Figure 2 below presents the number of people referred for dementia post-diagnostic support as a rate per 10,000 population (aged 65 and over). The referral rate has also shown an overall increase between `r fy_in_pub[1]` and `r next_fy` with fluctuating referral rates in between these years. The rate started at `r format(rate_start, nsmall = 1)` per 10,000 in `r fy_in_pub[1]`, fell to `r format(rate_2020_21, nsmall = 1)` per 10,000 in 2020/21(due to the measures relating to the COVID-19 pandemic), then rose to `r format(rate_latest, nsmall = 1)` per 10,000 in `r latest_fy` before decreasing slightly to `r format(rate_next, nsmall = 1)` per 10,000 in `r next_fy`. The increase in the rate of referral for dementia post diagnosis support of `r rate_change_pct`% between `r fy_in_pub[1]` and `r next_fy` is less than the `r pop_change_pct`% increase in the population aged 65 and over in the same period.
+Figure 2 below presents the number of people referred for dementia post-diagnostic support as a rate per 10,000 population (aged 65 and over). The referral rate has also shown an overall increase between `r fy_in_pub[1]` and `r next_fy` with fluctuating referral rates in between these years. The rate started at `r format(rates[[1]], nsmall = 1)` per 10,000 in `r fy_in_pub[1]`, fell to `r format(rates[["2020_21"]], nsmall = 1)` per 10,000 in 2020/21(due to the measures relating to the COVID-19 pandemic), then rose to `r format(rates[[latest_fy]], nsmall = 1)` per 10,000 in `r latest_fy` before decreasing slightly to `r format(rate_next, nsmall = 1)` per 10,000 in `r next_fy`. The increase in the rate of referral for dementia post diagnosis support of `r rate_change_pct`% between `r fy_in_pub[1]` and `r next_fy` is less than the `r pop_change_pct`% increase in the population aged 65 and over in the same period.
 <Div custom-style = "Table or chart caption">Figure 2: Number of people diagnosed with dementia and referred for post-diagnostic support per 10,000 population (65+); Scotland, `r fy_in_pub[1]` to `r next_fy`^1^</Div> 
 <Div custom-style = "Figure_Style">
 
@@ -1304,7 +1185,7 @@ include_graphics(fig_c14)
 
 <Div custom-style="Body Text">
 
-Figure 3 shows that between `r fy_in_pub[1]` and 2018/19 the median time from diagnosis to the first contact by a PDS practitioner rose from `r wait_2016_17` days to `r wait_2018_19`  days. The time then decreased in 2019/20 (`r wait_2019_20` days) and 2020/21 (`r wait_2020_21` days). The impact of measures relating to the COVID-19 pandemic will have contributed to the drop. From 2020/21 the median time rose in 2021/22 (`r wait_2021_22`  days), 2022/23 (`r wait_2022_23` days) and `r latest_fy` (`r wait_2023_24` days) before falling in `r next_fy` (`r wait_2024_25` days). 
+Figure 3 shows that between `r fy_in_pub[1]` and 2018/19 the median time from diagnosis to the first contact by a PDS practitioner rose from `r wait[["2016_17"]]` days to `r wait[["2018_19"]]`  days. The time then decreased in 2019/20 (`r wait[["2019_20"]]` days) and 2020/21 (`r wait[["2020_21"]]` days). The impact of measures relating to the COVID-19 pandemic will have contributed to the drop. From 2020/21 the median time rose in 2021/22 (`r wait[["2021_22"]]`  days), 2022/23 (`r wait[["2022_23"]]` days) and `r latest_fy` (`r wait[["2023_24"]]` days) before falling in `r next_fy` (`r wait[[next_fy]]` days). 
 
 The trend seen in the median time is similar to the trend in number and rate of people referred and suggests that the time taken for PDS services to contact people is affected by the number of people being referred. 
 
