@@ -1,4 +1,4 @@
-create_rates_table <- function(ldp_df, population_df, ESP13_df, standardisation = "age-sex", age_cutoff = 65, demographic = c()){
+create_rates_table <- function(ldp_df, population_df, ESP13_df, standardisation = "age-sex", age_cutoff = 18, demographic = c()){
   
   # Prepare ESP13 data ----
   ESP13 <- ESP13_df %>%
