@@ -1985,6 +1985,12 @@ Revised [data definitions](https://publichealthscotland.scot/media/20921/2023-12
 
 PHS undertake data quality checks and feedback data errors and queries to each Health Board, relating to the Dementia Post-Diagnostic Support dataset, following each data submission.
 
+A query is sent by PHS to the data submitters when the data submitted requires further checking to ensure accuracy. An example of a query is ‘ First Contact Date is missing but Diagnosis Date is more than 6 months ago and there is no Termination Date’.
+
+An error is flagged to the data submitters by PHS when data is inaccurate or missing. Examples of an error are ‘ First Contact Date is before Diagnosis Date. Please check both dates.’ and ‘ Termination Date is missing but Termination Reason is provided.’
+
+For submissions prior to 2021/22 it has not been possible to differentiate between the queries and errors reported back to the Health Boards. Therefore data from 2016/17 to 2020/21 is provided as a combined figure and figures for 2021/22 onwards are reported separately as well as a combined figure." 
+
 As at the `r format(end_date, "%d %B %Y")` data submission, the Scotland level error rate in each financial year from `r fy_in_pub[1]` to `r next_fy` was:
 
 
@@ -2149,6 +2155,12 @@ The data presented in this release supports the Scottish Government’s LDP stan
 This is an Official Statistics publication and the UK Statistics Authority’s Code of Practice has been followed throughout.
 
 NHS Boards have the responsibility of gathering and submitting information on the delivery of Dementia post-diagnostic support for all Integration Joint Boards to support the measurement of the LDP standard. It is expected by PHS that quality assurance methods and measures are in place locally and implemented to ensure information is accurate and correct. PHS conduct quality checks upon receipt of data and feedback data queries to NHS Boards. 
+
+A query is sent by PHS to the data submitters when the data submitted requires further checking to ensure accuracy. An example of a query is ‘ First Contact Date is missing but Diagnosis Date is more than 6 months ago and there is no Termination Date’.
+
+An error is flagged to the data submitters by PHS when data is inaccurate or missing. Examples of an error are ‘ First Contact Date is before Diagnosis Date. Please check both dates.’ and ‘ Termination Date is missing but Termination Reason is provided.’
+
+For submissions prior to 2021/22 it has not been possible to differentiate between the queries and errors reported back to the Health Boards. Therefore data from 2016/17 to 2020/21 is provided as a combined figure and figures for 2021/22 onwards are reported separately as well as a combined figure." 
 
 As at the `r format(end_date, '%d %B %Y')` data submission, the Scotland level error rate in each financial year from `r fy_in_pub[1]` to `r next_fy` was:
 
