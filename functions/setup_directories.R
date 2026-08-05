@@ -28,6 +28,7 @@ source(here::here("functions/setup_general.R"))
 #' @description
 #' Returns the root directory used to store outputs and supporting files.
 #' This can be changed to save outputs in your own folder for testing code.
+#' E.g. root_dir <- fs::path("/", "conf", "dementia", "A&I", "Analysts", "Lucy", "test")
 #'
 #' @return
 #' An [fs::path()] object containing the path to the
@@ -36,9 +37,8 @@ source(here::here("functions/setup_general.R"))
 #' @export
 
 get_root_dir <- function() {
-  #root_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs")
-  root_dir <- fs::path("/", "conf", "dementia", "A&I", "Analysts", "Lucy", "test")
-  
+  root_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs")
+
   return(root_dir)
 }
 
