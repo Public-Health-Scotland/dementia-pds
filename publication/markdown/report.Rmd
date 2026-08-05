@@ -452,10 +452,13 @@ sex_trend <- glue(
 # Demographics - Age -----------------------------------------------------------
 
 # Referrals by age in Scotland for the latest publication year
-age <- create_list(age_data, age_group, rate, fy == latest_fy)
+age <- create_list(age_data, age_group, rate, fy == latest_fy, age_group != "Unknown")
+
+# Referrals by SIMD in Scotland for the latest publication year including unknowns
+age_2 <- create_list(age_data, age_group, rate, fy == latest_fy)
 
 # Referrals receiving 12 months PDS in Scotland by age for the latest publication year
-age_ldp <- create_list(age_data, age_group, ldp, fy == latest_fy)
+age_ldp <- create_list(age_data, age_group, ldp, fy == latest_fy, age_group != "Unknown")
 
 # Age trend (Scotland; Latest year; Referrals) ---------------------------------
 
@@ -478,6 +481,9 @@ age_ldp_trend <- glue(
 
 # Referrals by SIMD in Scotland for the latest publication year
 simd <- create_list(simd_data, simd, rate, fy == latest_fy, simd != "Unknown")
+
+# Referrals by SIMD in Scotland for the latest publication year including unknowns
+simd_2 <- create_list(simd_data, simd, rate, fy == latest_fy)
 
 # Referrals receiving 12 months PDS in Scotland by SIMD for the latest publication year
 simd_ldp <- create_list(simd_data, simd, ldp, fy == latest_fy, simd != "Unknown")
@@ -743,14 +749,14 @@ interpret_footnote <-
 "When interpreting this information consideration should also be taken of the percentage of people estimated to be newly diagnosed with dementia being referred to post-diagnostic support (see [section 4.1](#section41))."
 
 simd_footnote_unknowns <- glue(
-"Deprivation is calculated by matching postcodes to the Scottish Index of Multiple Deprivation (SIMD) quintiles. There are a small number of records ({simd[['Unknown']]}) where it was not possible to assign deprivation category based on the postcode information available."
+"Deprivation is calculated by matching postcodes to the Scottish Index of Multiple Deprivation (SIMD) quintiles. There are a small number of records ({simd_2[['Unknown']]}) where it was not possible to assign deprivation category based on the postcode information available."
 )
 
 simd_footnote <-
 "In Scotland the Scottish Index of Multiple Deprivation (SIMD) is used to measure deprivation. Deprivation is calculated by matching postcodes to the SIMD quintiles. There are a small number of records (3) where it was not possible to assign a deprivation quintile based on the postcode information available."
 
 age_footnote <- if_else(
-  "Unknown" %in% names(age), 
+  "Unknown" %in% names(age_2), 
   glue("Age is calculated as at the dementia diagnosis date. There are a small number of records with an incomplete date of birth and therefore the age is unknown."), 
   "Age is calculated as at the dementia diagnosis date.")
 
