@@ -6,7 +6,7 @@
 #'
 #' @return a workbook containing tests for the MI report data.
 #' @export
-#'
+
 write_tests_xlsx <- function(comparison_data, 
                              sheet_name) {
   
@@ -15,9 +15,20 @@ write_tests_xlsx <- function(comparison_data,
   
   workbook_name <- stringr::str_glue("{year}_{qtr}_mi_report_tests")
   
-  tests_workbook_path <- fs::path(get_mi_year_dir("tests"), 
-                                  workbook_name, 
-                                  ext = "xlsx")
+  tests_workbook_dir <- get_mi_year_dir(
+    folder = "tests",
+    fy = fy,
+    qt = qt,
+    test_output = test_output, 
+    check_mode = "write",
+    create = TRUE
+  )
+  
+  tests_workbook_path <- fs::path(
+    tests_workbook_dir, 
+    workbook_name, 
+    ext = "xlsx"
+  )
   
   if (fs::file_exists(tests_workbook_path)) {
     # Load the data from the existing workbook
@@ -27,7 +38,7 @@ write_tests_xlsx <- function(comparison_data,
     wb <- openxlsx::createWorkbook()
   }
   
-  # add a new sheet with date 
+  # Add a new sheet with date 
   date_today <- format(Sys.Date(), "%d_%b")
   date_today <- stringr::str_to_lower(date_today)
   
@@ -41,7 +52,7 @@ write_tests_xlsx <- function(comparison_data,
   # Add new worksheet
   openxlsx::addWorksheet(wb, sheet_name_dated)
   
-  # write test comparison output to the new sheet
+  # Write test comparison output to the new sheet
   # Style it as a Data table for nice formatting
   openxlsx::writeDataTable(
     wb = wb,
@@ -99,7 +110,6 @@ write_tests_xlsx <- function(comparison_data,
     widths = 15L
   )
   
-
   # Write workbook to disk -----------------------------------------------------
   
   # Reorder the sheets alphabetically
@@ -109,22 +119,21 @@ write_tests_xlsx <- function(comparison_data,
   openxlsx::worksheetOrder(wb) <- names(sort(sheet_names))
   
   # Write the data to the workbook on disk
-  openxlsx::saveWorkbook(wb,
-                         tests_workbook_path,
-                         overwrite = TRUE
+  openxlsx::saveWorkbook(
+    wb,
+    tests_workbook_path,
+    overwrite = TRUE
   )
   
   if (fs::file_info(tests_workbook_path)$user == Sys.getenv("USER")) {
     # Set the correct permissions
     fs::file_chmod(path = tests_workbook_path, mode = "770")
     fs::file_chown(path = tests_workbook_path, group_id = 3182)
-    
   }
   
   cli::cli_alert_success(
     "The tests for {workbook_name} were written to {.file {fs::path_file(tests_workbook_path)}}"
   )
-  
 }
 
 

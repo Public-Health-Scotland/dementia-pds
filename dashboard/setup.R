@@ -1,106 +1,225 @@
-####################### Setup #######################
-# load setup environment
-source(here::here("code", "publication", "00_setup-pub-environment.R"))
+################################################################################.
+# Name of file - setup.R
+# Original Authors - Zaineb
+# Updated by Abram McCormick - Sep 2024
+# Updated by Lucy Binsted - Jan 2026
+# Written/run on - RStudio Server
+# Version of R - 4.4.2
+# Description - Setup for shiny dashboard.
+#               NOTE: finalised_years, finalised_years_demographics and finalised_years_extra_referrals are defined in code/00_setup-environment.R
+################################################################################.
 
-# Shiny packages ----
+################################################################################.
+# Load packages ----
+################################################################################.
+
+# Shiny packages
 library(shiny)
 library(shinyWidgets)
 library(shinydashboard)
 library(shinycssloaders)
 library(bslib)
 library(DT)
+library(shinymanager)
 
-# PHS styling packages ----
+# Other packages
+library(dplyr)
+library(tidyr)
+library(readr)
+library(lubridate)
+library(english)
+library(readxl)
+library(plotly)
+library(stringr)
+library(purrr)
+library(magrittr)
+
+# PHS styling packages
 library(phsstyles)
 
+################################################################################.
 # Load functions ----
-source(here("dashboard/functions/core_functions.R"))
-source(here("dashboard/functions/plot_functions.R"))
+################################################################################.
 
-# LOAD IN DATA ----
+source("functions/core_functions.R")
+source("functions/plot_functions.R")
 
-source(here("dashboard/data_setup/data_load_shiny.R"))
+################################################################################.
+# Load data ----
+################################################################################.
 
-# selections lists
+load("data/dashboard_variables.RData")
+annual_table_data <- read_rds("data/annual_table_data.rds")
+data_wait <- read_rds("data/data_wait.rds")
+data_age <- read_rds("data/data_age.rds")
+data_simd <- read_rds("data/data_simd.rds")
+data_sex <- read_rds("data/data_sex.rds")
+data_rates <- read_rds("data/data_rates.rds")
+download_data_scotland <- read_rds("data/download_data_scotland.rds")
+download_data_hb <- read_rds("data/download_data_hb.rds")
+download_data_ijb <- read_rds("data/download_data_ijb.rds")
 
-#adds a superscript r to indicate revisions added in 2025 publication due to Aberdeen City data issues
-#revised_201920_sup <- paste0("2019/20", "ʳ")  #REMOVE from 2026 onward
+################################################################################.
+# Define provisional and revised years (with and without superscripts) ----
+################################################################################.
 
-#revised_202021_sup <- paste0("2020/21", "ʳ") #REMOVE from 2026 onward
+# Helper function to take the last year in finalised_years (YYYY/YY) and return the year-range advanced by modifier (e.g. "2023/24" -> "2024/25")
+create_new_year <- function(finalised_years, modifier){
+  return(paste0(as.numeric(substr(last(finalised_years),1,4)) + modifier,
+                "/", as.numeric(substr(last(finalised_years),6,7)) + modifier))}
 
-#adds superscript R to year which was provisional in previous publication
+# Provisional - the two years after the last finalised year
+provisional_year <- create_new_year(finalised_years, 1)
+extra_referrals_year <- create_new_year(finalised_years, 2)
+
+# Revised - last finalised year
+revised_year <- create_new_year(finalised_years, 0)
+
+# Add superscripts
+provisional_year_sup <- paste0(provisional_year,"ᴾ")
+extra_referrals_year_sup <- paste0(extra_referrals_year,"ᴾ")
 revised_year_sup <- paste0(revised_year,"ᴿ")
 
-#adds superscript P to provisional data
-provisional_year_sup <- paste0(provisional_year,"ᴾ")
+################################################################################.
+# Define year lists ----
+################################################################################.
 
-extra_referrals_year_sup <- paste0(extra_referrals_year,"ᴾ")
+# Helper function to take the finalised_years list, add superscripts to revised years and add provisional years with superscripts
+create_year_list <- function(finalised_years, revised_years, provisional_years) {
+  years <- as.character(finalised_years)
+  years[years %in% revised_years] <- paste0(years[years %in% revised_years], "ᴿ")
+  c(years, paste0(provisional_years, "ᴾ"))
+}
 
-# year list with no superscript R for data that was not included in 2024 publication
-included_years_sup <- c(finalised_years, provisional_year_sup) #REMOVE from 2026 onward
+# Years for LDP Standard (finalised + one provisional)
+included_years <- create_year_list(
+  finalised_years, 
+  revised_years = c(revised_year), 
+  provisional_years = c(provisional_year))
 
-#list of included years for ldp standard, demographics and pathways data
-included_years <- c(finalised_years[-length(finalised_years)],
-                        revised_year_sup,
-                        provisional_year_sup)
+# Years for Referrals (finalised + two provisional)
+included_years_extra_referrals <- create_year_list(
+  finalised_years, 
+  revised_years = c(revised_year), 
+  provisional_years = c(provisional_year, extra_referrals_year))
 
-#list of included years for referrals and rates page
-included_years_extra_referrals <- c(finalised_years[-length(finalised_years)], revised_year_sup, provisional_year_sup, extra_referrals_year_sup)
+################################################################################.
+# Add superscripts to data frames ----
+################################################################################.
 
+# Lookup
+superscript_lookup <- setNames(included_years_extra_referrals, gsub("[ᴾᴿ]", "", included_years_extra_referrals))
 
-#sidebar buttons for home page
-home_list <- c("About" = "about",
-               "Using the Dashboard" = "use",
-               "Further Information" = "info",
-               #"Data Definitions" = "defs",
-               "Accessibility" = "access")
+# Download data
+for (df_name in c("download_data_scotland", "download_data_hb", "download_data_ijb")) {
+  assign(df_name, get(df_name) %>% 
+           mutate(financial_year = coalesce(superscript_lookup[financial_year], financial_year)))
+}
 
+# LDP, Pathways, Demographics and Rates data
+for (df_name in c("annual_table_data", "data_wait", "data_age", "data_sex", "data_simd", "data_rates")) {
+  assign(df_name, get(df_name) %>% 
+           mutate(fy = coalesce(superscript_lookup[fy], fy)))
+}
 
-#tabs for ldp standard page
-ldp_tab_list <- c("LDP Standard Part 1" = "ldp_part_1",
-              "LDP Standard Part 2" = "ldp_part_2"
-                 )
+################################################################################.
+# Set factor levels in data frames ----
+################################################################################.
 
-#sidebar buttons for ldp standard page
-ldp_sidebar_list <- c("Outcomes by Financial Year" = "outcomes",
-                      "Trends" = "trends"
-                      )
+# Helper function to set health board, ijb, and other specified columns as factors
+set_factors <- function(data, cols, custom_levels = list()) {
+  data$ijb <- factor(data$ijb, levels = unique(annual_table_data$ijb))
+  data$health_board <- factor(data$health_board, levels = unique(annual_table_data$health_board))
+  for (col in cols) {
+    if (col %in% names(custom_levels)) {
+      levels <- custom_levels[[col]] # Use custom levels if specified
+    } else {
+      levels <- sort(unique(data[[col]])) # Default: alphabetical order of unique values
+    }
+    data[[col]] <- factor(data[[col]], levels = levels)
+  }
+  return(data)
+}
 
-#tabs for rates and referrals page
-RandR_tab_list <- c("Total Referrals" = "RandR_part_1",
-                    "Rates per 10,000 population" = "RandR_part_2"
-)
+annual_table_data <- set_factors(annual_table_data, cols = c("ldp", "fy"))
+data_wait <- set_factors(data_wait, cols = "fy")
+data_age <- set_factors(data_age, cols = c("type", "fy"))
+data_sex <- set_factors(data_sex, cols = c("type", "fy"), custom_levels = list(type = c("Male", "Female", "Not Specified", "Unknown")))
+data_simd <- set_factors(data_simd, cols = c("type", "fy"))
+data_rates <- set_factors(data_rates, cols = "fy")
 
-#sidebar buttons for rates and referrals page
-RandR_sidebar_list <- c("Referrals by Financial Year" = "RandRreferrals",
-                        "Trends" = "RandRtrends"
-)
+################################################################################.
+# Create data frame for sex with Scotland totals and no unknowns ----
+################################################################################.
 
-#sidebar buttons for demographics page
-demographics_list <- c("Gender" = "data_sex",
-                       "Age" = "data_age",
-                       "Deprivation (SIMD)" = "data_simd")
+all_data_sex <- data_sex %>% 
+  group_by(health_board, ijb, fy) %>% 
+  summarize(
+    type = "Scotland", referrals = sum(referrals), complete = sum(complete), exempt = sum(exempt), 
+    ongoing = sum(ongoing), not_met = sum(not_met), percent_met = (sum(complete+exempt)/referrals)) %>%
+  merge(data_sex %>% filter(!(type %in% c("Not Specified", "Unknown"))), all = T) %>% 
+  mutate(type = factor(type, levels = c("Male", "Female","Scotland")))
 
-#sidebar buttons for pathways page
-pathways_list <- c("Waiting Times by Financial Year" = "wait",
-                      "Trends" = "trends"
-)
+################################################################################.
+# Define buttons, tabs and dropdowns ----
+################################################################################.
 
-#tabs for methodology page
-method_list <- c("LDP Classification" = "ldp_class",
-                       "Number of Expected Diagnoses" = "exp_diag",
-                       "Removal of Duplicate Records" = "duplicates") 
+# Sidebar buttons for home page
+home_list <- c(
+  "About" = "about",
+  "Using the Dashboard" = "use",
+  "Glossary" = "glossary",
+  "Accessibility" = "access",
+  "Contact" = "contact")
 
-#dropdown selection for download page
-download_list <- c("Scotland" = "download_data_scotland",
-                  "Health Boards" = "download_data_hb",
-                  "Integration Authority Areas" = "download_data_ijb")
+# Tabs for ldp standard page
+ldp_tab_list <- c(
+  "LDP Standard Part 1" = "ldp_part_1",
+  "LDP Standard Part 2" = "ldp_part_2")
 
-#list of health boards and integration authority areas
+# Sidebar buttons for ldp standard page
+ldp_sidebar_list <- c(
+  "Outcomes by Financial Year" = "outcomes",
+  "Trends" = "trends")
+
+# Tabs for rates and referrals page
+RandR_tab_list <- c(
+  "Total Referrals" = "RandR_totals",
+  "Rates per 10,000 Population" = "RandR_rates")
+
+# Sidebar buttons for rates and referrals page
+RandR_sidebar_list <- c(
+  "Referrals by Financial Year" = "referrals",
+  "Trends" = "trends")
+
+# Sidebar buttons for demographics page
+demographics_list <- c(
+  "Sex" = "data_sex",
+  "Age" = "data_age",
+  "Deprivation (SIMD)" = "data_simd")
+
+# Sidebar buttons for pathways page
+pathways_list <- c(
+  "Time to first contact by Financial Year" = "wait",
+  "Trends" = "trends")
+
+# Tabs for methodology page
+method_list <- c(
+  "LDP Classification" = "ldp_class",
+  "Number of Expected Diagnoses" = "exp_diag",
+  "Removal of Duplicate Records" = "duplicates") 
+
+# Dropdown selection for download page
+download_list <- c(
+  "Scotland" = "download_data_scotland",
+  "Health Boards" = "download_data_hb",
+  "Integration Authority Areas" = "download_data_ijb")
+
+################################################################################.
+# List of health boards and integration authority areas ----
+################################################################################.
+
 boards <- as.character(sort(unique(filter(annual_table_data, health_board != "Scotland")$health_board)))
 ijb_list <- as.character(sort(unique(filter(annual_table_data, ijb != "Scotland", !grepl("NHS", ijb))$ijb)))
-
-simd_list <- as.character(sort(unique(filter(data_simd, type != "Unknown")$type)))
-
 
 ### END OF SCRIPT----

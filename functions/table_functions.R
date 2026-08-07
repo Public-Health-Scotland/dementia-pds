@@ -1,4 +1,4 @@
-#creates table for outcomes sections for integration authority areas
+#creates table for outcomes sections for integration authority areas in subpage-demographics.Rmd
 ijb_table_ldp <- function(data, measure){
 
 perc <- data %>% filter(!grepl("NHS", geog)) %>% 
@@ -29,7 +29,7 @@ table <- bind_rows(totals, perc) %>%
 return(table)}
 
 
-#creates table for outcomes sections for health boards
+#creates table for outcomes sections for health boards subpage-demographics.Rmd
 hb_table_ldp <- function(data, measure){
   
   perc <- data %>% filter(geog == "Scotland" | grepl("NHS", geog)) %>% 
@@ -61,7 +61,7 @@ hb_table_ldp <- function(data, measure){
   
   return(table)}
 
-#creates table for outcomes sections for trends
+#creates table for outcomes sections for trends subpage-demographics.Rmd
 trend_table_ldp <- function(data, measure){
 
 perc <- data %>% filter(!is.na(perc_met)) %>%
