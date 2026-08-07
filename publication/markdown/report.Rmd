@@ -415,7 +415,7 @@ ldp_ijb_trend1 <- ifelse(
 )
 
 ldp_ijb_trend2 <- glue(
-"Dundee City was the mainland Integration Authority Area with the highest percentage ({ijb_ldp[['Dundee City']]})."
+"Dundee City was the mainland Integration Authority Area with the highest percentage ({format_perc(ijb_ldp[['Dundee City']])})."
 )
 
 ldp_ijb_trend3 <- glue(
@@ -621,32 +621,22 @@ create_table_data <- function(
 # Prepare table data -----------------------------------------------------------
 
 table1 <- create_table_data(
-  data = base_data %>% mutate(geog = if_else(geog == "NHS Orkney", "NHS Orkney³", geog)), 
+  data = base_data,
   table_type = "incidence", 
   geography = "hb")
 
 table2 <- create_table_data(
-  data = base_data %>% mutate(geog = if_else(geog == "NHS Orkney", "NHS Orkney³", geog)), 
+  data = base_data,
   table_type = "incidence_trend", 
   geography = "hb")
 
 table3 <- create_table_data(
-  data = base_data %>% mutate(geog = case_when(
-    geog == "NHS Orkney" ~ "NHS Orkney⁵",
-    geog == "NHS Shetland" ~ "NHS Shetland⁴",
-    geog == "NHS Dumfries & Galloway" ~ "NHS Dumfries & Galloway⁶",
-    geog == "NHS Greater Glasgow & Clyde" ~ "NHS Greater Glasgow & Clyde⁷",
-    TRUE ~ geog)),
+  data = base_data,
   table_type = "ldp", 
   geography = "hb")
 
 table4 <- create_table_data(
-  data = base_data %>% mutate(geog = case_when(
-    geog == "NHS Orkney" ~ "NHS Orkney⁵",
-    geog == "NHS Shetland" ~ "NHS Shetland⁴",
-    geog == "NHS Dumfries & Galloway" ~ "NHS Dumfries & Galloway⁶",
-    geog == "NHS Greater Glasgow & Clyde" ~ "NHS Greater Glasgow & Clyde⁷",
-    TRUE ~ geog)),
+  data = base_data,
   table_type = "ldp_trend", 
   geography = "hb")
 
@@ -693,31 +683,29 @@ error_table <- create_error_table(query_error_data, total_q_errors, q_err_rate) 
 
 # Footnotes --------------------------------------------------------------------
 
-source_footnote <- glue(
-"Source: Public Health Scotland quarterly dementia post-diagnostic support dataset. Data submissions from NHS Boards as at {format(end_date, '%d %B %Y')}."
-)
-
 prov_footnote <- glue(
 "Figures for {latest_fy} are provisional subject to all service users completing their support."
 )
 
-prov_revised_footnote <- glue(
+provisional_revised_footnote1 <- glue(
 "Figures for {latest_fy} are provisional (ᴾ) subject to all service users completing their support. Figures for {revised_fy} have been revised (ᴿ) and are now final."
 )
 
-revised_footnote <- glue(
-"Figures for {revised_fy} have been revised (ᴿ) and are now final."
-)
-
-provisional_revised_footnote <- glue(
+provisional_revised_footnote2 <- glue(
 "The figure for {revised_fy} has been revised (ᴿ). Figures for {latest_fy} and {next_fy} are provisional (ᴾ) and subject to future revision."
 )
+
+method_footnote <- 
+"For detailed information on how the percentage of LDP standard achieved is calculated, please see the [Background Information](#reporting) section of this report."
+
+interpret_footnote <-
+"When interpreting this information consideration should also be taken of the percentage of people estimated to be newly diagnosed with dementia being referred to post-diagnostic support (see [section 4.1](#section41))."
 
 a_city_footnote_hb <- 
 "The 2019/20 and 2020/21 figures do not include Aberdeen City. Their figures are affected by a change in service provision of PDS during 2019 that has resulted in data quality issues. Due to these data issues the performance for Aberdeen City against the LDP standard cannot be measured. This will impact on the figures for NHS Grampian and Scotland. See [Appendix 1](#reportingabd) for further information."
 
 a_city_footnote_ijb <- 
-"Aberdeen City figures for 2019/20 and 2020/21 are not available. Although the total number of people referred to PDS in Aberdeen City is known, due to data quality issues it is not possible to calculate the percentage of people that received a minimum of one year’s support. See [Appendix 1](#reportingabd) for further information."
+"Aberdeen City figures for 2019/20 and 2020/21 are not available. Although the total number of people referred to PDS in Aberdeen City is known, due to data quality issues it is not possible to calculate the percentage of people that received a minimum of one year’s support. See [Appendix 1 - Background Information](#reportingabd) for further information."
 
 shet_footnote <- 
 "NHS Shetland did not have a PDS worker in post from 2022/23 Quarter 1 to 2023/24 Quarter 3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, and they will have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Quarter 4 and the PDS service resumed. See [Appendix 1](#reportingshet) for further information."
@@ -725,7 +713,7 @@ shet_footnote <-
 orkney_footnote <- 
 "NHS Orkney had no referrals in 2023/24 (Quarter 1 and Quarter 2) as they were unable to access a consultant psychiatrist."
 
-orkney_footnote_2 <- 
+orkney_footnote2 <- 
 "NHS Orkney had no referrals in 2022/23 (Quarter 3 and Quarter 4) and 2023/24 (Quarter 1 and Quarter 2) as they were unable to access a consultant psychiatrist."
 
 dumfries_galloway_footnote <- 
@@ -738,35 +726,24 @@ incidence_footnote <- glue(
 "The estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) publication and National Records of Scotland (NRS) mid-{str_sub(latest_fy, 1, 4)} population estimates."
 )
 
+c_years <- fy_in_pub[match("2021/22", fy_in_pub):length(fy_in_pub)]
+mid_years <- paste0("mid-", sub("/.*", "", c_years))
+
+c_years_str <- paste0(paste(c_years[-length(c_years)], collapse = ", "), " and ", c_years[length(c_years)])
+mid_years_str <- paste0(paste(mid_years[-length(mid_years)], collapse = ", "), " and ", mid_years[length(mid_years)])
+
 incidence_footnote_trend <- glue(
-"The estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) publication and National Records of Scotland (NRS) mid-{as.character(as.numeric(str_sub(latest_fy, 1, 4))-1)} and mid-{str_sub(latest_fy, 1, 4)} population estimates."
+"Estimates of the number of people newly diagnosed with dementia used to calculate the 2019/20 and 2020/21 figures were taken from the [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) publication. For calendar years {c_years_str} the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the publication and the National Records of Scotland (NRS), {mid_years_str} population estimates."
 )
 
-method_footnote <- 
-"For detailed information on how the percentage of LDP standard achieved is calculated, please see the [Background Information](#reporting) section of this report."
-
-interpret_footnote <-
-"When interpreting this information consideration should also be taken of the percentage of people estimated to be newly diagnosed with dementia being referred to post-diagnostic support (see [section 4.1](#section41))."
-
-simd_footnote_unknowns <- glue(
-"Deprivation is calculated by matching postcodes to the Scottish Index of Multiple Deprivation (SIMD) quintiles. There are a small number of records ({simd_2[['Unknown']]}) where it was not possible to assign deprivation category based on the postcode information available."
+simd_footnote <- glue(
+"In Scotland the Scottish Index of Multiple Deprivation (SIMD) is used to measure deprivation. Deprivation is calculated by matching postcodes to the SIMD quintiles. There are a small number of records ({simd_2[['Unknown']]}) where it was not possible to assign a deprivation quintile based on the postcode information available."
 )
-
-simd_footnote <-
-"In Scotland the Scottish Index of Multiple Deprivation (SIMD) is used to measure deprivation. Deprivation is calculated by matching postcodes to the SIMD quintiles. There are a small number of records (3) where it was not possible to assign a deprivation quintile based on the postcode information available."
 
 age_footnote <- if_else(
   "Unknown" %in% names(age_2), 
   glue("Age is calculated as at the dementia diagnosis date. There are a small number of records with an incomplete date of birth and therefore the age is unknown."), 
   "Age is calculated as at the dementia diagnosis date.")
-
-source_footnote_simd <- glue(
-"Source: Public Health Scotland quarterly dementia post-diagnostic support dataset. Data submissions from NHS Boards as at {format(end_date, '%d %B %Y')}. Scottish Index of Multiple Deprivation (SIMD) 2020v2."
-)
-
-incidence_footnote_trend_updated <- glue(
-"Estimates of the number of people newly diagnosed with dementia used to calculate the 2019/20 and 2020/21 figures were taken from the [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) publication. For calendar years 2021/22, 2022/23 and {latest_fy} the estimated number of people newly diagnosed with dementia has been calculated using the rates referenced in the publication and the National Records of Scotland (NRS), mid-{as.character(as.numeric(str_sub(latest_fy, 1, 4)) - 2)}, mid-{as.character(as.numeric(str_sub(latest_fy, 1, 4)) - 1)} and mid-{str_sub(latest_fy, 1, 4)} population estimates."
-)
 
 ```
 
@@ -871,7 +848,7 @@ include_graphics(fig_c8)
 </Div>
 
 <Div custom-style = "Footnote Text">1. 
-`r provisional_revised_footnote`
+`r provisional_revised_footnote2`
 </Div>
 
 ```{=openxml}
@@ -902,7 +879,7 @@ include_graphics(fig_c9)
 </Div>
 
 <Div custom-style = "Footnote Text">
-1. `r provisional_revised_footnote`
+1. `r provisional_revised_footnote2`
 </Div>
 
 ```{=openxml}
@@ -939,7 +916,7 @@ include_graphics(fig_c14)
 </Div>
 
 <Div custom-style = "Footnote Text">
-1. `r provisional_revised_footnote`
+1. `r provisional_revised_footnote2`
 </Div>
 
 ```{=openxml}
@@ -974,13 +951,18 @@ Table 1: Estimated number of people newly diagnosed with dementia referred for p
 ```{r table-1, echo = FALSE, ft.align = "center"}
 
 table1 %>%
-    flextable() %>%
-    ft_dementia_style() %>%
-    align(j = 2, align = "right", part = "body") %>%
-    align(j = 4, align = "right", part = "body") %>%
-    height(height = 0.3, part = "body") %>%
-    hrule(rule = "atleast", part = "body") %>%
-    width(width = 1.55) 
+  # Set superscripts
+  mutate(`NHS Board` = case_when(
+    `NHS Board` == "NHS Orkney" ~ "NHS Orkney³", 
+    TRUE ~ `NHS Board`)) %>%
+  # Format table
+  flextable() %>%
+  ft_dementia_style() %>%
+  align(j = 2, align = "right", part = "body") %>%
+  align(j = 4, align = "right", part = "body") %>%
+  height(height = 0.3, part = "body") %>%
+  hrule(rule = "atleast", part = "body") %>%
+  width(width = 1.55) 
 
 ```
 
@@ -1041,6 +1023,11 @@ Table 2: Trend - Percentage of the estimated number of people newly diagnosed wi
 ```{r table-2, echo = FALSE, ft.align = "center"}
 
 table2 %>%
+  # Set superscripts
+  mutate(`NHS Board` = case_when(
+    `NHS Board` == "NHS Orkney" ~ "NHS Orkney³", 
+    TRUE ~ `NHS Board`)) %>%
+  # Format table
   flextable() %>%
   ft_dementia_style() %>%
   align(
@@ -1063,9 +1050,9 @@ table2 %>%
 ```
 
 <Div custom-style = "Footnote Text">
-1. `r prov_revised_footnote`
-2. `r incidence_footnote_trend_updated`
-3. `r orkney_footnote_2`
+1. `r provisional_revised_footnote1`
+2. `r incidence_footnote_trend`
+3. `r orkney_footnote2`
 </Div>
 
 ```{=openxml}
@@ -1096,6 +1083,14 @@ Table 3: Number and percentage of people referred for dementia post-diagnostic s
 ```{r table-3, echo = FALSE, ft.align = "center"}
 
 table3 %>%
+  # Set superscripts
+  mutate(`NHS Board` = case_when(
+    `NHS Board` == "NHS Dumfries & Galloway" ~ "NHS Dumfries & Galloway⁶",
+    `NHS Board` == "NHS Greater Glasgow & Clyde" ~ "NHS Greater Glasgow & Clyde⁷",
+    `NHS Board` == "NHS Orkney" ~ "NHS Orkney⁵",
+    `NHS Board` == "NHS Shetland" ~ "NHS Shetland⁴",
+    TRUE ~ `NHS Board`)) %>%
+  # Format table
   flextable() %>% 
   ft_dementia_style() %>%
   padding(j = 2:6, part = "body", padding.right = 15) %>%
@@ -1173,6 +1168,15 @@ Table 4: Trend - Percentage of people referred for dementia post-diagnostic supp
 ```{r table-4, echo = FALSE, ft.align = "center"}
 
 table4 %>%
+  # Set superscripts
+  mutate(`NHS Board` = case_when(
+    `NHS Board` == "NHS Dumfries & Galloway" ~ "NHS Dumfries & Galloway⁷",
+    `NHS Board` == "NHS Grampian" ~ "NHS Grampian⁴",
+    `NHS Board` == "NHS Greater Glasgow & Clyde" ~ "NHS Greater Glasgow & Clyde⁸",
+    `NHS Board` == "NHS Orkney" ~ "NHS Orkney⁶",
+    `NHS Board` == "NHS Shetland" ~ "NHS Shetland⁵",
+    TRUE ~ `NHS Board`)) %>%
+  # Format table
   flextable() %>%
   ft_dementia_style() %>%
   align(
@@ -1195,12 +1199,12 @@ table4 %>%
 ```
 
 <Div custom-style = "Footnote Text">
-1. `r prov_revised_footnote`
+1. `r provisional_revised_footnote1`
 2. `r method_footnote`
 3. `r interpret_footnote`
-4. `r a_city_footnote_hb`   
+4. `r a_city_footnote_hb`
 5. `r shet_footnote`
-6. `r orkney_footnote_2`
+6. `r orkney_footnote2`
 7. `r dumfries_galloway_footnote`
 8. `r renfrewshire_footnote`
 </Div>
@@ -1233,16 +1237,24 @@ Table 5: Number and percentage of people referred for dementia post-diagnostic s
 ```{r table-5, echo = FALSE, ft.align = "center"}
 
 table5 %>%
+  # Set superscripts
+  mutate(`Integration Authority Area` = case_when(
+    `Integration Authority Area` == "Dumfries and Galloway" ~ "Dumfries and Galloway⁵",
+    `Integration Authority Area` == "Orkney Islands" ~ "Orkney Islands⁴",
+    `Integration Authority Area` == "Renfrewshire" ~ "Renfrewshire⁶",
+    `Integration Authority Area` == "Shetland Islands" ~ "Shetland Islands³",
+    TRUE ~ `Integration Authority Area`)) %>%
+  # Format table
   flextable() %>% 
   ft_dementia_style() %>% 
-  padding(j = 2:6, part = "body", padding.right = 15) %>%
+  padding(j = 2:6, part = "body", padding.right = 5) %>%
   align(j = ncol(table5), part = "body", align = "right") %>%
-  width(j = 1, width = 2.2) %>%
-  width(j = 2:(ncol(table5) - 1), width = 0.8) %>%
+  width(j = 1, width = 1.8) %>%
+  width(j = 2:(ncol(table5) - 1), width = 0.9) %>%
   width(j = ncol(table5), width = 1) %>%
   fontsize(size = 11, part = "header") %>% 
   fontsize(size = 12, part = "body") %>% 
-  set_table_properties(layout = "autofit")
+  set_table_properties(layout = "fixed")
 
 ```
 
@@ -1311,6 +1323,15 @@ Table 6: Trend - Percentage of people referred for dementia post-diagnostic supp
 ```{r table-6, echo = FALSE, ft.align = "center"}
 
 table6 %>%
+  # Set superscripts
+  mutate(`Integration Authority Area` = case_when(
+    `Integration Authority Area` == "Aberdeen City" ~ "Aberdeen City³",
+    `Integration Authority Area` == "Dumfries and Galloway" ~ "Dumfries and Galloway⁶",
+    `Integration Authority Area` == "Orkney Islands" ~ "Orkney Islands⁵",
+    `Integration Authority Area` == "Renfrewshire" ~ "Renfrewshire⁷",
+    `Integration Authority Area` == "Shetland Islands" ~ "Shetland Islands⁴",
+    TRUE ~ `Integration Authority Area`)) %>%
+  # Format table
   flextable() %>%
   ft_dementia_style() %>%
   align(
@@ -1333,7 +1354,7 @@ table6 %>%
 ```
 
 <Div custom-style = "Footnote Text">
-1. `r prov_revised_footnote`
+1. `r provisional_revised_footnote1`
 2. `r method_footnote`
 3. `r a_city_footnote_ijb`
 4. `r shet_footnote`
@@ -1648,11 +1669,11 @@ Revised [data definitions](https://publichealthscotland.scot/media/20921/2023-12
 
 PHS undertake data quality checks and feedback data errors and queries to each Health Board, relating to the Dementia Post-Diagnostic Support dataset, following each data submission.
 
-A query is sent by PHS to the data submitters when the data submitted requires further checking to ensure accuracy. An example of a query is ‘ First Contact Date is missing but Diagnosis Date is more than 6 months ago and there is no Termination Date’.
+A query is sent by PHS to the data submitters when the data submitted requires further checking to ensure accuracy. An example of a query is ‘First Contact Date is missing but Diagnosis Date is more than 6 months ago and there is no Termination Date’.
 
-An error is flagged to the data submitters by PHS when data is inaccurate or missing. Examples of an error are ‘ First Contact Date is before Diagnosis Date. Please check both dates.’ and ‘ Termination Date is missing but Termination Reason is provided.’
+An error is flagged to the data submitters by PHS when data is inaccurate or missing. Examples of an error are ‘First Contact Date is before Diagnosis Date. Please check both dates.’ and ‘Termination Date is missing but Termination Reason is provided.’
 
-For submissions prior to 2021/22 it has not been possible to differentiate between the queries and errors reported back to the Health Boards. Therefore data from 2016/17 to 2020/21 is provided as a combined figure and figures for 2021/22 onwards are reported separately as well as a combined figure." 
+For submissions prior to 2021/22 it has not been possible to differentiate between the queries and errors reported back to the Health Boards. Therefore data from 2016/17 to 2020/21 is provided as a combined figure and figures for 2021/22 onwards are reported separately as well as a combined figure.
 
 As at the `r format(end_date, "%d %B %Y")` data submission, the Scotland level error rate in each financial year from `r first_fy` to `r next_fy` was:
 
