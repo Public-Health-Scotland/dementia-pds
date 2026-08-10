@@ -18,8 +18,6 @@
 ### 0 - Manual Variable(s) - TO UPDATE 
 ################################################################################.
 
-output_path <- "//conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/"
-
 # UPDATE - Used to define a test file path for saving test outputs (TRUE/FALSE)
 # TRUE:  Use this when the Data Management Team provide a test version of the 
 #        collated file and boards are still submitting or correcting data.
@@ -35,13 +33,9 @@ test_output <- TRUE
 end_date <- lubridate::dmy(31032026)
 
 ################################################################################.
-### 1 - Load functions and packages ----
+### 1 - Load packages ----
 ################################################################################.
 
-# Load functions
-source(here::here("functions/setup_directories.R"))
-
-# Load packages
 library(dplyr)         # For data manipulation in the "tidy" way
 library(readr)         # For reading in csv files
 library(janitor)       # For 'cleaning' variable names
@@ -69,7 +63,20 @@ library(gluedown)      # For formatting character vectors in markdown
 library(fs)            # For setting up directories 
 
 ################################################################################.
-### 2 - Derive dates ----
+### 2 - Load functions ----
+################################################################################.
+
+# Load file path functions
+source(here::here("functions/setup_directories.R"))
+
+# Use write file function for writing files to disk and setting correct permissions
+source(here::here("functions/write_file.R"))
+
+# Use render_check function for rendering rmarkdown files
+source(here::here("functions/render_check.R"))
+
+################################################################################.
+### 3 - Derive dates ----
 ################################################################################.
 
 # FY and Quarter for current reporting period
@@ -117,13 +124,13 @@ if (qt == 4){
 }
 
 ################################################################################.
-### 3 - Define exempt termination reason codes ----
+### 4 - Define exempt termination reason codes ----
 ################################################################################.
 
 exempt_reasons <- c("03", "04", "05", "06")
 
 ################################################################################.
-### 4 - SIMD lookup ----
+### 5 - SIMD lookup ----
 ################################################################################.
 
 simd <- function(){
@@ -142,7 +149,7 @@ simd <- function(){
 }
 
 ################################################################################.
-### 5 - Define file paths dependent on whether running on server or desktop ----
+### 6 - Define file paths dependent on whether running on server or desktop ----
 ################################################################################.
 
 stats <- case_when(
@@ -157,7 +164,7 @@ cl_out <- case_when(
 )
 
 ################################################################################.
-### 6 - Set output/knitr options for Markdown ----
+### 7 - Set output/knitr options for Markdown ----
 ################################################################################.
 
 # Disable scientific notation
