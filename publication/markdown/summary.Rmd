@@ -1,25 +1,27 @@
 ---
-title: "Dementia Post-Diagnostic Support"
-output: 
+output:
   word_document:
     reference_docx: "/conf/dementia/A&I/Outputs/publication/templates/phs-offstats-summary.docx"
     fig_caption: no
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, dpi = 300)
-library(ggplot2)
-```
 
-```{r set-up, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+# Setup ----
+
+knitr::opts_chunk$set(echo = FALSE, dpi = 300)
+
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
-pub_date_url <- 
-  paste0("https://publichealthscotland.scot/publications/",
-         "dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-",
-         (latest_fy))
+pub_date_url <- paste0(
+  "https://publichealthscotland.scot/publications/",
+  "dementia-post-diagnostic-support/dementia-post-diagnostic-support-local-delivery-plan-standard-figures-to-",
+  (latest_fy)
+)
 
-fig_alttext <- glue("Bar chart showing percentage of referrals who received a minimum of one year's post-diagnostic support by NHS Board in financial year {latest_fy}.")
+fig_alttext <- glue(
+  "Bar chart showing percentage of referrals who received a minimum of one year's post-diagnostic support by NHS Board in financial year {latest_fy}."
+)
 
 # Function to format percentages
 format_perc <- function(x, dp = 1){
@@ -30,31 +32,74 @@ format_perc <- function(x, dp = 1){
     trimws()
 }
 
+```
+
+```{r set-up, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+
 # Read in data ----
 
-# LDP Dataset
-pds <- 
-  read_rds(get_pub_data_path()) %>%
+# Publication data
+pds <- read_rds(
+  get_pub_data_path(
+    pub_date = pub_date,
+    test_output = test_output)) %>%
   filter(ijb != "Unknown" & referrals > 0)
 
 # Expected Diagnoses (Incidence)
-exp <- read_csv(get_exp_diagnoses_path()) %>%
+exp <- read_csv(
+  get_exp_diagnoses_path()) %>%
   select(fy, health_board = health_board_label, diagnoses)
 
-# Error rates 
-err <- 
-  read_rds(get_mi_data_path(type = "error_data", ext = "rds")) %>% 
+# MI error data 
+err <- read_rds(
+  get_mi_data_path(
+    type = "error_data", 
+    ext = "rds", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output)) %>% 
   filter(health_board == "Scotland" & fy %in% fy_in_pub) %>%
-  mutate(perc = format_perc(total_errors / records * 100)
-  ) %>%
+  mutate(perc = format_perc(total_errors / records * 100)) %>%
   select(fy, perc) %>%
   mutate(text = glue("for {fy} was {perc}"))
+
+# MI waiting times data
+data_wait <- read_rds(
+  get_mi_data_path(
+    type = "wait_data",
+    ext = "rds",
+    fy = fy,
+    qt = qt,
+    test_output = test_output))
+
+# MI final data
+dash_pds <- read_rds(
+  get_mi_data_path(
+    type = "final_data", 
+    ext = "rds",
+    fy = fy,
+    qt = qt,
+    test_output = test_output))
+
+# Population data
+pop_data <- read_rds(
+  get_pop_lookup_path())
+
+# Set next financial year
+next_fy <- paste0(
+  as.numeric(substr(latest_fy, 1, 4)) + 1,
+  "/",
+  substr(as.numeric(substr(latest_fy, 1, 4)) + 2, 3, 4))
+
 ```
 
 ```{r summary-data, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
-summary <-
-  pds %>%
-  filter(fy %in% c(latest_fy, revised_fy)) %>%
+
+# Prepare data ----
+
+# Percentage of expected diagnoses referred for PDS in the provisional and revised years
+summary <- pds %>%
+  filter(fy %in% c(revised_fy, latest_fy)) %>%
   group_by(fy) %>%
   summarise(across(referrals:denominator, sum), .groups = "drop") %>%
   left_join(
@@ -67,50 +112,137 @@ summary <-
   ) %>%
   mutate(across(contains("perc"),
                 ~ paste0(format(round_half_up(., 1), nsmall = 1), "%")))
+
+# Total referrals for each year in the publication and the year after
+summary_referrals <- dash_pds %>%
+  group_by(fy) %>%
+  summarise(referrals = sum(referrals), .groups = "drop")
+
+# Population estimates (65+) for each year and health board/IJB
+pop_65 <- pop_data %>%
+  filter(
+    age_grp != "All",
+    age_grp != "59 and Under",
+    age_grp != "60 to 64",
+    age_grp_2 == "All",
+    sex == "All"
+  ) %>%
+  group_by(geog, year) %>%
+  summarise(pop_est = sum(pop_est), .groups = "drop")
+
+# Referral rates per 10,000 population (65+) for each year
+pds_all_rates <- summary_referrals %>%
+  mutate(year = as.numeric(substr(fy, 1, 4))) %>%
+  left_join(
+    pop_65 %>% filter(geog == "Scotland"),
+    by = "year") %>%
+  mutate(
+    pop_rate_10000 = round_half_up(
+      referrals / pop_est * 10000, 1
+    )
+  )
+
+# Total referrals for the year after the last in the publication
+referrals_next_fy <- summary_referrals %>%
+  filter(fy == next_fy) %>%
+  pull(referrals)
+
+# Percentage of referrals aged over 65 in publication years
+perc_65_plus <- dash_pds %>% 
+  filter(fy %in% fy_in_pub) %>%
+  summarise(
+    over65 = sum(referrals[!(age_grp %in% c("59 and Under", "60 to 64"))]),
+    total = sum(referrals)
+  ) %>%
+  mutate(perc_65 = round(over65/total * 100, 1)) %>%
+  pull(perc_65)
+
 ```
 
-<Div custom-style = "Publication subtitle">Local Delivery Plan Standard; Figures to `r latest_fy`</Div>
+<Div custom-style = "Publication Title">Dementia Post-Diagnostic Support Statistics</Div>
+<Div custom-style = "Publication subtitle">Performance against the Local Delivery Plan Standard, `r latest_fy`</Div>
 <Div custom-style = "Stats designation">An Official statistics release for Scotland</Div>
 <Div custom-style = "Publication date">Publication date: `r format(pub_date, "%d %B %Y")`</Div>
 <Div custom-style = "Restricted Stats">RESTRICTED STATISTICS: embargoed to 09:30 `r format(pub_date, "%d/%m/%Y")`</Div>
 
 # About this release
-This release by Public Health Scotland (PHS) reports on the Scottish Government’s Local Delivery Plan (LDP) standard that everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link Worker, including the building of a person-centred support plan. Performance is reported in two parts: 1. The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support. 2. The percentage of people referred who received a minimum of one year’s support coordinated by a link worker, including the building of a person-centred support plan. This report presents finalised figures for `r glue_collapse(setdiff(fy_in_pub, latest_fy), sep = ", ", last = " and ")` and provisional figures for `r latest_fy` which are subject to some service users completing their support.
+This annual release by Public Health Scotland (PHS) provides information on dementia post-diagnostic support (PDS). In Scotland, people newly diagnosed with dementia are entitled to at least one year's worth of PDS. The purpose of PDS is to equip people living with dementia, and those who care for them, with the tools, connections, resources and plans they need to live as well as possible and prepare for the future.
+
+In order to effectively monitor the delivery of PDS a national [local delivery plan (LDP) standard](https://www.gov.scot/publications/nhsscotland-performance-against-ldp-standards/pages/dementia-post-diagnostic-support/) was introduced in January 2015. The LDP standard is that people newly diagnosed with dementia will be offered a minimum of one year's post-diagnostic support, coordinated by a named link worker. There are two elements to measuring performance against the standard:
+
+1. The percentage of people estimated to be newly diagnosed with dementia who were referred for post-diagnostic support.
+2. The percentage of people referred who received a minimum of one year's support coordinated by a link worker, including the building of a person-centred support plan.
+
+This release presents finalised statistics on performance against the two elements of the LDP standard for `r paste0(min(setdiff(fy_in_pub, latest_fy)), " to ", max(setdiff(fy_in_pub, latest_fy)))` and provisional figures for `r latest_fy`, as it can take up to two years from the date of diagnosis for some service users to complete their support.
+
+Details on how the two elements are calculated are available in the full [publication report](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/).
+
+For additional contextual information about PDS the publication includes the following information:
+
+<Div custom-style = "Bullet 1">trend in the number of people referred to PDS </Div>
+<Div custom-style = "Bullet 1">referral rates to PDS per 10,000 population</Div>
+<Div custom-style = "Bullet 1">average time from diagnosis to contact with PDS </Div>
+
+People should be referred for PDS within twelve months of diagnosis, therefore data for these measures have been provided for the financial years 2016/17 to `r next_fy`.
+
+The Data Quality section of the [publication report](https://publichealthscotland.scot/publications/dementia-post-diagnostic-support/dementia-post-diagnostic-support-performance-against-the-local-delivery-plan-standard-202324/) provides information on any local issues that have affected the numbers reported in this release.
 
 # Main Points
+Figures presented in this release for `r latest_fy` and `r next_fy` are provisional and subject to revision in future publications.
 
-<Div custom-style = "Bullet 1">There were `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` people diagnosed and referred for dementia post-diagnostic support in `r latest_fy`, compared to `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.</Div>
+<Div custom-style = "Bullet 1">In `r next_fy` there were `r  referrals_next_fy` people newly diagnosed with dementia who were referred for dementia post-diagnostic support compared to `r summary %>% filter(fy == latest_fy) %>% pull(referrals)` in `r latest_fy` and `r summary %>% filter(fy == revised_fy) %>% pull(referrals)` in `r revised_fy`.</Div>
 
-<Div custom-style = "Bullet 1">Of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year's support. In `r revised_fy`, the percentage was `r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`.</Div>
+<Div custom-style = "Bullet 1">The rate of referral in `r next_fy` was `r  pds_all_rates %>% filter(fy == next_fy) %>% pull(pop_rate_10000)` per 10,000 population (aged 65 and over). In `r latest_fy` and `r next_fy` the rate of referral was `r pds_all_rates %>% filter(fy == latest_fy) %>% pull(pop_rate_10000)` and `r pds_all_rates %>% filter(fy == revised_fy) %>% pull(pop_rate_10000)` respectively.</Div>
 
-<Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1^</Div>
+<Div custom-style = "Bullet 1">The average (median) time from diagnosis to first contact by a PDS practitioner was `r data_wait %>% filter(health_board == "Scotland",fy == next_fy,sex=="All", simd == "All") %>% pull(median_diagnosis_to_contact)` days in `r next_fy` compared to `r data_wait %>% filter(health_board == "Scotland",fy == latest_fy,sex=="All", simd == "All") %>% pull(median_diagnosis_to_contact)` days in `r latest_fy` and `r data_wait %>% filter(health_board == "Scotland",fy == revised_fy,sex=="All", simd == "All") %>% pull(median_diagnosis_to_contact)` days in `r revised_fy`.</Div>
+
+<Div custom-style = "Bullet 1">For element one of the LDP standard, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of people estimated to be newly diagnosed with dementia in Scotland in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)`  in `r revised_fy`. </Div>
+
+<Div custom-style = "Bullet 1">For element two of the LDP standard, of those referred in `r latest_fy` for post-diagnostic support, `r summary %>% filter(fy == latest_fy) %>% pull(year_perc)` received a minimum of one year’s support. This is similar to the percentage (`r summary %>% filter(fy == revised_fy) %>% pull(year_perc)`) achieved in `r revised_fy`.</Div>
+
+\newpage
+
+<Div custom-style = "Table or chart caption">Percentage of referrals who received a minimum of one year’s post-diagnostic support by NHS Board; `r latest_fy`^1,2,3,4,5^</Div>
 
 ```{r chart, fig.width=7.18, fig.height=3.31, fig.cap=fig_alttext}
-include_graphics(get_pub_figures_path(type = "summary"))
+
+knitr::include_graphics(
+  get_pub_figures_path(
+    type = "summary",
+    pub_date = pub_date,
+    test_output = test_output))
+
 ```
 
 <Div custom-style = "Footnote Text">
 **Notes**
 
 1. Figures for `r latest_fy` are provisional subject to all service users completing their support.
+
+2. NHS Shetland did not have a PDS worker in post from 2022/23 Quarter 1 to 2023/24 Quarter 3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, and they will have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Quarter 4 and the PDS service resumed.
+
+3. NHS Orkney had no referrals in 2023/24 (Quarter 1 and Quarter 2) as they were unable to access a consultant psychiatrist.
+
+4. Due to the effect of the COVID-19 pandemic and staffing issues with their former commissioned PDS service, NHS Dumfries and Galloway's ability to allocate a link worker within 12 months or for the 12-month period has been adversely affected since 2020/21. This has resulted in an increase in the number of people recorded as not having met the standard.
+
+5. In 2023/24 due to unforeseen circumstances the Renfrewshire the PDS team’s staff capacity was adversely affected.  This will have affected the figures reported for Renfrewshire and NHS Greater Glasgow and Clyde in 2023/24.
 </div>
 
-<Div custom-style = "Bullet 1">In Scotland, `r summary %>% filter(fy == latest_fy) %>% pull(inc_perc)` of those people estimated to be newly diagnosed with dementia in `r latest_fy` were referred for post-diagnostic support, compared to `r summary %>% filter(fy == revised_fy) %>% pull(inc_perc)` in `r revised_fy`.</Div>
 
 # Background
 
-The Scottish Government published their [new dementia strategy for Scotland: Everyone's Story](https://www.gov.scot/publications/new-dementia-strategy-scotland-everyones-story/) in May 2023. This strategy builds on previous strategies and continues to recognise the importance of dementia post-diagnostic support and the outcomes for people living with dementia.
+The Scottish Government and the Convention of Scottish Local Authorities (COSLA) co-published their [new dementia strategy for Scotland: Everyone's Story](https://www.gov.scot/publications/new-dementia-strategy-scotland-everyones-story/) in May 2023. This strategy builds on previous strategies and continues to recognise the importance of dementia post-diagnostic support and the outcomes for people living with dementia.
+
+In order to effectively monitor the delivery of PDS a national local delivery plan (LDP) standard was introduced in January 2015. This release reports on the LDP standard. Data are presented by financial year of diagnosis 2016/17 to 2023/24, on people diagnosed with dementia who were referred for dementia post diagnosis support and of these how many people received up to 12 months support.
 <!-- This included the commitment to extend and embed dementia post-diagnostic support (PDS). In order to effectively monitor the delivery of PDS a national [local delivery plan (LDP) standard](https://www.gov.scot/About/Performance/scotPerforms/NHSScotlandperformance/Dementia-LDP) was introduced for all people newly diagnosed with dementia to receive a minimum of one year’s PDS.  -->
 
-
-This release by Public Health Scotland (PHS) reports on the Scottish Government’s LocalvDelivery Plan (LDP) standard that everyone newly diagnosed with dementia will be offered a minimum of one year’s post-diagnostic support, coordinated by an appropriately trained Link 
-Worker, including the building of a person-centred support plan. Data are presented by financial year of diagnosis 2016/17 to `r latest_fy`, on people diagnosed with dementia who were referred for dementia post diagnosis support and of these how many people received up to 12 months 
-support.
-
-Part of the LDP standard calculation requires the number of referrals for PDS to be compared against an estimated number of newly diagnosed dementia cases each year. Health Board level estimates of people newly diagnosed with dementia (incidence) used for this calculation are from the paper [‘Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020’](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) published by the Scottish Government in 2016. For financial year 2021/22 and 2022/23 the rates referenced in 
+Part of the LDP standard calculation requires the number of referrals for PDS to be compared against the estimated number of people newly diagnosed with dementia each year. Health Board level estimates of people newly diagnosed with dementia (incidence) used for this calculation, for financial years 2016/17 to 2020/21, are from the paper [‘Estimated and Projected Diagnosis Rates for Dementia in Scotland 2014-2020’](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/) published by the Scottish Government in 2016. For financial years 2021/22, 2022/23 and 2023/24 the rates referenced in 
 this paper were used to create national, age specific rates of dementia incidence per 1,000 
-population which were then applied to the National Records of Scotland (NRS) Mid-2021 and Mid-2022
-Population Estimates to obtain the incidence estimates.
+population which were then applied to the National Records of Scotland (NRS) Mid-2021, Mid-2022 and Mid-2023 Population Estimates to obtain the dementia incidence estimates.
+
+For the rate of referral per 10,000 population, the population aged 65 and over is used, as we know approximately `r perc_65_plus`% of people referred for PDS between 2016/17 and `r next_fy`  were aged 65 and over at the time of diagnosis. 
+
+The data presented in the publication for the years 2022/23 to 2024/25 is from the PHS quarterly dementia post-diagnostic support dataset submitted by NHS Boards as at 31 December 2025.
 
 <!-- NHS Boards provide quarterly data submissions to PHS, in line with data definitions effective 1 April 2019, on individuals diagnosed with dementia and referred for post-diagnostic support within their local areas. This dataset forms the basis of the LDP standard calculation. For this report, the Scotland level error rate `r glue_collapse(err$text, sep = ", ", last = " and ")`. -->
 
@@ -121,18 +253,20 @@ Population Estimates to obtain the incidence estimates.
 
 <!-- Information presented in this publication is not comparable to information published for time periods prior to 2016/17.  -->
 
-
-
 # Contact
 
 Zeg Ashraf | Principal Information Analyst | [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
-Lee Truesdale | Senior Information Analyst | [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
+Kaumudi Hetti Arachchige | Senior Information Analyst | [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
-For all media enquires, please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 0131 275 6105.
+For all media enquiries, please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 0131 275 6105.
 
 # Further Information
 Data from this publication, along with the full report, are available from the [publication page](`r pub_date_url`) on our website.
+
+The [Dementia Strategy: Initial Two-Year Delivery Plan](https://www.gov.scot/publications/new-dementia-strategy-scotland-initial-2-year-delivery-plan-2024-2026/pages/2/) was published in February 2024. As part of this strategy, PHS was commissioned to develop a dementia index. The aim of the dementia index is to get as complete a picture as possible of the number of people living in Scotland with dementia. The PHS publication, [Dementia index - Identified Dementia Population](https://publichealthscotland.scot/publications/dementia-index-identified-dementia-population/dementia-index-identified-dementia-population-24-march-2026/), was released in March 2026. This publication provides information on the data collections that have been used to create the dementia index, details the methodology and comments on the limitations. The dementia index contains details of every individual aged 18 and over identified with a dementia diagnosis within the data collections available.
+
+Information for people diagnosed with dementia and their carers is available on the [NHS Informs website](https://www.nhsinform.scot).
 
 Our statistical practice is regulated by the Office for Statistics Regulation (OSR).
 
@@ -145,3 +279,4 @@ Other formats of this publication are available on request by calling 0131 314 5
 <!-- # NHS Performs -->
 <!-- A selection of information from this publication is included in [NHS Performs](http://www.nhsperforms.scot). NHS Performs is a website that brings together a range of information on how hospitals and NHS Boards within NHSScotland are performing. -->
 
+ 

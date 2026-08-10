@@ -9,30 +9,30 @@
 # Written/run on - R Posit
 # Version of R - 4.1.2
 #
-# Description - 
-#   Sets up environment required for running quarterly management reports. 
-#   This is the only file to be updated every time the process is run.
+# Description - Sets up environment required for running quarterly 
+#               management reports. This is the only file 
+#               to be updated every time the process is run.
 ################################################################################.
 
 ################################################################################.
 ### 0 - Manual Variable(s) - TO UPDATE 
 ################################################################################.
 
-# UPDATE - Financial Year (YYYY) and Quarter (Q) of the submission data
-# Each submission contains data for the previous 3 full financial years and the current financial year up to the current quarter.
-# Sep-MI-release: Q1 data (1 Apr - 30 June)
-# Dec-MI-release: Q2 data (1 Jul - 30 Sept)
-# Mar-MI-release: Q3 data (1 Oct - 31 Dec)
-# Jun-MI-release: Q4 data (1 Jan - 31 March)
-fy <- 2026
-qt <- 1
+# UPDATE - TRUE/FALSE for defining a test file path for saving test copies of 
+#           outputs. This is useful for when the DM give us a test run when boards
+#           are still submitting the data or when making changes to the code.
+#
+#           test_output = TRUE - returns the test file path for data and report
+#           test_output = FALSE - returns the finalised data and report for distribution
+test_output <- FALSE
 
-# UPDATE - Used to define a test file path for saving test outputs (TRUE/FALSE)
-# TRUE:  Use this when the Data Management Team provide a test version of the 
-#        collated file and boards are still submitting or correcting data.
-# FALSE: Use this when the Data Management Team provide a finalised version of  
-#        the collated file and no more changes will be made.
-test_output <- TRUE
+# UPDATE - Last day in reporting period (ddmmyyyy)
+end_date <- lubridate::dmy(31122025)
+previous_end_date <- lubridate::dmy(30092025)
+
+# UPDATE - Most recent Date of publication (ddmmyyyy)
+# Need this for set up of some folder structure
+pub_date <- lubridate::dmy(16122025)
 
 ################################################################################.
 ### 1 - Load packages ----
@@ -73,6 +73,13 @@ source(here::here("functions/setup_directories.R"))
 
 # Use write file function for writing files to disk and setting correct permissions
 source(here::here("functions/write_file.R"))
+
+# Use render_check function for rendering rmarkdown files
+source(here::here("functions/render_check.R"))
+
+################################################################################.
+### 3 - Define file paths dependent on whether running on server or desktop ----
+################################################################################.
 
 # Use render_check function for rendering rmarkdown files
 source(here::here("functions/render_check.R"))
@@ -123,18 +130,8 @@ finalised_years <- fy_range(
   as.numeric(substr(get_fy(end_date, 4), 1, 4))
 )
 
-if (qt == 4){
-  finalised_years <- c(finalised_years, revised_year)
-}
-
 ################################################################################.
-### 4 - Define exempt termination reason codes ----
-################################################################################.
-
-exempt_reasons <- c("03", "04", "05", "06")
-
-################################################################################.
-### 5 - SIMD lookup ----
+### 4 - SIMD Lookup ----
 ################################################################################.
 
 simd <- function(){
@@ -153,13 +150,12 @@ simd <- function(){
 }
 
 ################################################################################.
-### 6 - Define file paths dependent on whether running on server or desktop ----
+### 5 - Derive dates ----
 ################################################################################.
 
-stats <- case_when(
-  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ "/conf",
-  TRUE ~ "//stats"
-)
+# Latest FY and Quarter
+fy <- extract_fin_year(end_date) %>% substr(1, 4)
+qt <- quarter(end_date, fiscal_start = 4)
 
 cl_out <- case_when(
   sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ 
@@ -167,8 +163,20 @@ cl_out <- case_when(
   TRUE ~ "//stats/cl-out"
 )
 
+# First date in reporting period 
+start_date <- dmy(01042016)
+  
+# Define years in which data has been made final
+finalised_years <- 
+  list.files(get_finalised_data_dir()) %>% 
+  str_sub(1, 7) %>%
+  str_replace("-", "/")
+
+finalised_years_referrals <- finalised_years [-c((length(finalised_years)-1), length(finalised_years))]
+finalised_years_demographics <- finalised_years [-c((length(finalised_years)-2), (length(finalised_years)-1), length(finalised_years))]
+
 ################################################################################.
-### 7 - Set output/knitr options for Markdown ----
+### 6 - Set output/knitr options ----
 ################################################################################.
 
 # Disable scientific notation
@@ -178,8 +186,14 @@ options(scipen = 999)
 options(knitr.duplicate.label = "allow")
 
 # Knitr hook to add thousands separator
-knit_hooks$set(inline = function(x){
-  if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
+knit_hooks$set(inline = function(x) {
+  if(!is.character(x)) {prettyNum(x, big.mark=",")} else {x}
 })
+
+################################################################################.
+### 7 - Define exempt termination reason codes ----
+################################################################################.
+
+exempt_reasons <- c("03", "04", "05", "06")
 
 ################################ END OF SCRIPT #################################.

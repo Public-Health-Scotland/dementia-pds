@@ -9,66 +9,36 @@
 # Written/run on - R Posit
 # Version of R - 4.4.2
 #
-# Description - Create population lookup files. Only needs to be run when updates are available.
+# Description - Create population lookup files.
 ################################################################################.
 
-### 0 - Load environment file ----
+################################################################################.
+### 1 - Load environment file ----
+################################################################################.
 
 source(here::here("code", "00_setup-environment.R"))
 
-### 1 - Read latest files ----
-
-# List all files in the folder
-pop_filepath <- glue("{cl_out}/lookups/Unicode/Populations/Estimates/")
-pop_files <- list.files(pop_filepath)
-
-# Get list of files corresponding to IAA, Health Board and SIMD estimates
-ijb_files <- pop_files[grepl("^HSCP\\d+_pop_est_\\d+_\\d+\\.rds$", pop_files)]
-hb_files <- pop_files[grepl("^HB\\d+_pop_est_\\d+_\\d+\\.rds$", pop_files)]
-simd_files <- pop_files[grepl("^DataZone\\d+_pop_est_\\d+_\\d+\\.rds$", pop_files)]
-
-# Function which takes a list of strings containing dates and returns the most recent
-get_latest <- function(list, name, type){
-  latest <- as_tibble(do.call(rbind, str_extract_all(list, "\\d+")), .name_repair = "unique") %>% # Extract numbers from each string as separate columns of a tibble
-    mutate(across(everything(), as.numeric), string = list) %>% # Convert to numeric and add new column containing original string in 
-    arrange(across(everything(), desc)) %>% # Sort by numbers, highest at the top (first number is most important, then second etc.)
-    slice(1) %>% # Get the first row
-    pull(string) # Get tje original string
-  message(paste0("The following ", name, " population ", type, "s are available:\n", paste(list, collapse = "\n"), 
-                 "\n\nSelected ", type, ":\n", latest)) # Print a message showing the choices available and the selection that has been made so the analyst can check
-  return (latest) # Return latest
+# Helper function to get the geography year e.g. HSCP2019, HB2019
+# Enables dynamic column selection
+get_pop_est_year <- function(path) {
+  stringr::str_match(
+    fs::path_file(path),
+    "^[^0-9]+([0-9]{4})_"
+  )[, 2]
 }
 
-# Select latest files corresponding to IAA, Health Board and SIMD estimates
-ijb_file <- get_latest(ijb_files, "IAA", "file")
-hb_file <- get_latest(hb_files, "Health Board", "file")
-simd_file <- get_latest(simd_files, "SIMD", "file")
-
-# Read IAA file and remove rows before 2016 or younger than 18
-la_pop <- read_rds(glue(pop_filepath, ijb_file))%>% 
-  filter(year >= 2016, age >= 18)
-
-# Read Health Board file and remove rows before 2016 or younger than 18
-hb_pop <- read_rds(glue(pop_filepath, hb_file)) %>%
-  filter(year >= 2016, age >= 18)
-
-# Read SIMD file, remove rows before 2016
-simd_pop <- read_rds(glue(pop_filepath, simd_file)) %>% 
-  filter(year >= 2016) 
-
-# Define columns which will be renamed to `geog` or `simd`
-geog_cols_ijb <- grep("hscp[0-9].*name", colnames(la_pop), value = TRUE)
-geog_cols_hb <- grep("hb[0-9].*name", colnames(hb_pop), value = TRUE)
-simd_cols <- sort(grep("simd[0-9].*_sc_quintile", colnames(simd_pop), value = TRUE))
-
-# Select columns
-geog_col_ijb <- get_latest(geog_cols_ijb, "IAA", "column")
-geog_col_hb <- get_latest(geog_cols_hb, "Health Board", "column")
-simd_col <- get_latest(simd_cols, "SIMD", "column")
-
+################################################################################.
 ### 2 - Create population file from mid-year estimates ----
+################################################################################.
 
-# Creating population for IAA ----
+## Creating population for IJB ----
+
+la_pop_path <- get_pop_path(type = "HSCP", selection_method = "modification_date")
+
+la_pop <- read_rds(la_pop_path) %>% 
+  filter(year >= 2016, age >= 18)
+
+geog_col_ijb <- paste0("hscp", get_pop_est_year(la_pop_path), "name")
 
 # Create a new column with age in 8 groups
 la_pop %<>%
@@ -81,20 +51,20 @@ la_pop %<>%
     age %in% 80:84 ~ "80 to 84",
     age %in% 85:89 ~ "85 to 89",
     age >= 90      ~ "90+"
-    )) %>% 
+  )) %>%
   
   # Create a new column with age in 3 groups
    mutate(age_grp_2 = case_when(
      age %in% 65:79 ~ "79 and Under", # This is used for calculating rates where denominator is only 65 and over population
      age %in% 80:84 ~ "80 to 84",
      age >= 85     ~ "85+"
-     )) %>%
+   )) %>%
   
   # Convert sex column from integer to string
    mutate(sex = case_when(
      sex == 1 ~ "01 Male",
      sex == 2 ~ "02 Female"
-     ))
+   ))
 
 # Aggregate by year, LA, age group and gender
 la_pop_data <- bind_rows(
@@ -154,9 +124,16 @@ la_pop_data %<>%
     str_detect(geog, "Edinburgh") ~ "Edinburgh City",
     str_detect(geog, "Na h-Eileanan Siar") ~ "Western Isles",
     TRUE ~ geog
-    ))
+))
 
-# Creating population for HB ----
+## Creating population for HB ----
+
+hb_pop_path <- get_pop_path(type = "HB", selection_method = "modification_date")
+
+hb_pop <- read_rds(hb_pop_path) %>%
+  filter(year >= 2016, age >= 18)
+
+geog_col_hb <- paste0("hb", get_pop_est_year(hb_pop_path), "name")
 
 # Create a new column with age in 8 groups
 hb_pop %<>%
@@ -169,20 +146,20 @@ hb_pop %<>%
     age %in% 80:84 ~ "80 to 84",
     age %in% 85:89 ~ "85 to 89",
     age >= 90      ~ "90+"
-    )) %>% 
+  )) %>%
   
   # Create a new column with age in 3 groups
   mutate(age_grp_2 = case_when(
     age %in% 65:79 ~ "79 and Under", # This is used for calculating rates where denominator is only 65 and over population
     age %in% 80:84 ~ "80 to 84",
     age >= 85     ~ "85+"
-    )) %>%
+  )) %>%
   
   # Convert sex column from integer to string
   mutate(sex = case_when(
     sex == 1 ~ "01 Male",
     sex == 2 ~ "02 Female"
-    ))
+  ))
 
 # Aggregate by year, hb, age group and gender
 hb_pop_data <- bind_rows(
@@ -219,9 +196,9 @@ hb_pop_data %<>%
     str_detect(geog, "NHS Dumfries and Galloway") ~ "NHS Dumfries & Galloway",
     str_detect(geog, "NHS Greater Glasgow and Clyde") ~ "NHS Greater Glasgow & Clyde",
     TRUE ~ geog
-    ))
+  ))
 
-# Merge and save population for IAA and population for HB ----
+## Merge and save population for IAA and population for HB ----
 
 # Merge LA and HB pops
 pop_data <-bind_rows(la_pop_data, hb_pop_data)
@@ -236,39 +213,45 @@ tabyl(pop_data$geog)
 
 # Save file
 pop_data %>% 
-  write_file(path = "//conf/dementia/A&I/Outputs/management-report/lookups/pop_data.rds")
-0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+  write_file(
+    path = get_pop_lookup_path(
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-### 3 - Create SIMD population file ---- 
+################################################################################.
+### 3 - Read in SIMD population file ---- 
+################################################################################.
 
-# Create IAA SIMD populations
-simd_pop_la <- simd_pop %>% 
-  select(geog = !!sym(geog_col_ijb), year, simd = !!sym(simd_col), sex, matches("^age[0-9]+"))
+simd_pop_path <- get_pop_path(type = "DataZone", selection_method = "modification_date")
 
-# Create HB SIMD populations
-simd_pop_hb <- simd_pop %>% 
-  select(geog = !!sym(geog_col_hb), year, simd = !!sym(simd_col), sex, matches("^age[0-9]+"))
+simd_pop <- read_rds(simd_pop_path) %>% 
+  filter(year >= 2016)
+  
+simd_pop_la <- simd_pop %>%
+  select(geog = !!sym(geog_col_ijb), year, simd = simd2020v2_sc_quintile, sex, 5:95) 
 
-# Merge IAA and HB SIMD populations
-simd_pop_16_22 <- bind_rows(simd_pop_la, simd_pop_hb)
+simd_pop_hb <- simd_pop %>%
+  select(geog = !!sym(geog_col_hb), year, simd = simd2020v2_sc_quintile, sex, 5:95)
 
-# Pivot to long, convert age to numeric and remove rows younger than 18
-simd_pop_16_22 %<>% 
-  pivot_longer(cols = matches("^age[0-9]+"), names_to = "age", values_to = "pop") %>% 
-  mutate(age = as.numeric(gsub("\\D", "", age))) %>% 
+simd_pop_16_22 <- bind_rows(simd_pop_la,simd_pop_hb)
+
+simd_pop_16_22 %<>% pivot_longer(
+  cols = 5:95,
+  names_to = "age",
+  values_to = "pop"
+) %>% 
+  mutate(age = as.numeric(substring(age,4,5))) %>% 
   filter(age >= 18)
 
-# Convert simd column from integer to string
-simd_pop_16_22 %<>% 
-  mutate(simd = case_when(
-    simd == 1 ~ "1 - Most Deprived",
-    simd == 2 ~ "2",
-    simd == 3 ~ "3",
-    simd == 4 ~ "4",
-    simd == 5 ~ "5 - Least Deprived"
-    ))
+simd_pop_16_22 %<>% mutate(simd = case_when(
+  simd == 1 ~ "1 - Most Deprived",
+  simd == 2 ~ "2",
+  simd == 3 ~ "3",
+  simd == 4 ~ "4",
+  simd == 5 ~ "5 - Least Deprived"
+))
 
-# Aggregate by year, HB/IAA, SIMD, age and gender
 simd_pop_data <- bind_rows(
   
   simd_pop_16_22 %>% 
@@ -300,21 +283,21 @@ simd_pop_data %<>%
     age %in% 80:84 ~ "80 to 84",
     age %in% 85:89 ~ "85 to 89",
     age >= 90      ~ "90+"
-    )) %>% 
+  )) %>% 
   
   # Create a new column with age in 3 groups
   mutate(age_grp_2 = case_when(
     age %in% 65:79 ~ "79 and Under", # This is used for calculating rates where denominator is only 65 and over population
     age %in% 80:84 ~ "80 to 84",
     age >= 85     ~ "85+"
-    )) %>%
+  )) %>%
 
   # Convert sex column from integer to string
   mutate(sex = case_when(
     sex == "M" ~ "01 Male",
     sex == "F" ~ "02 Female",
     sex == "All" ~ "All"
-    ))
+  ))
 
 # Aggregate by year, HB/IAA, SIMD, age and gender
 simd_pop_data %<>% 
@@ -348,20 +331,22 @@ simd_pop_summary %<>%
     str_detect(geog, "Edinburgh") ~ "Edinburgh City",
     str_detect(geog, "Na h-Eileanan Siar") ~ "Western Isles",
     TRUE ~ geog
-    ))
+  ))
 
 # Add missing years until the current year by duplicating the latest year in simd_pop_summary
 while(max(simd_pop_summary$year) < fy){
   simd_pop_summary %<>% rbind((simd_pop_summary %>% filter(year == max(year)) %>% mutate(year = max(year) + 1)))
 }
 
-# Fill missing SIMD with population 0
-simd_pop_data_final <- simd_pop_summary %>% 
+simd_pop_data_final <- simd_pop_summary %>%
   complete(nesting(year, geog, age_grp, age_grp_2, sex), simd, fill = list(pop = 0)) 
- 
-# Save file
-simd_pop_data_final %>% 
-  write_file(path = "//conf/dementia/A&I/Outputs/management-report/lookups/simd_pop_data.rds")
-0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
-### END OF SCRIPT
+simd_pop_data_final %>% 
+  write_file(
+    path = get_pop_lookup_path(
+      simd = TRUE,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+################################ END OF SCRIPT #################################.

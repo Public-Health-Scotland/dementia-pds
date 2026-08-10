@@ -1,5 +1,5 @@
 ################################################################################.
-# Name of file - 03_add-ldp-age-simd.R
+# Name of file - 02_calculate-measures.R
 # Data release - Quarterly Dementia PDS Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019
@@ -10,54 +10,68 @@
 # Written/run on - R Posit
 # Version of R - 4.1.2
 #
-# Description - 
-#   Add LDP Standard classification, age groups and SIMD to PDS data
-#   Create a minimal, grouped data set
+# Description - Add LDP Standard classification and other measures to be
+# included in reports.
 ################################################################################.
 
 ################################################################################.
-### 1 - Load data ----
+### 1 - Load environment file ----
 ################################################################################.
 
-# Environment file
 source(here::here("code", "00_setup-environment.R"))
 
-# Cleaned PDS data (output from 01_data-preparation.R)
-pds <- read_rds(get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
-
-# SIMD data
-simd <- simd()
-
-# Aberdeen City data for 2019/20 and 2020/21
-Ab_19_20 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2019-20_individuals-with-ldp_aberdeen-city.rds")
-Ab_20_21 <- readRDS("/conf/dementia/A&I/Outputs/management-report/data/Aberdeen City ldp files/2020-21_individuals-with-ldp_aberdeen-city.rds")
-  
 ################################################################################.
-### 2 - Add columns ----
+### 2 - Load data ----
 ################################################################################.
 
-pds <- pds %>% mutate(
+pds <- read_rds(get_mi_data_path(
+  type = "clean_data", 
+  ext = "rds", 
+  fy = fy,
+  qt = qt,
+  test_output = test_output))
   
-  # Dates ----
-  # Financial year
+################################################################################.
+### 3 - Add FY and months labels ----
+################################################################################.
+
+pds %<>% mutate(
   fy = extract_fin_year(dementia_diagnosis_confirmed_date),
-  
-  # Month
-  month = month(dementia_diagnosis_confirmed_date),
-  
-  # Date 12 months after diagnosis date
-  diag_12 = add_with_rollback(dementia_diagnosis_confirmed_date, months(12), roll_to_first = TRUE),
+  month = month(dementia_diagnosis_confirmed_date)
+)
+
+################################################################################.
+### 4 - Add key dates for calculations ----
+################################################################################.
+
+pds %<>%
+  mutate(
     
-  # Date 11 months after date of first PDS contact     
-  pds_11 = add_with_rollback(date_of_initial_first_contact, months(11), roll_to_first = TRUE),
+    # Date 12 months after diagnosis date
+    diag_12 = add_with_rollback(dementia_diagnosis_confirmed_date, 
+                                months(12),
+                                roll_to_first = TRUE),
     
-  # Date 12 months after date of first PDS contact
-  pds_12 = add_with_rollback(date_of_initial_first_contact, months(12), roll_to_first = TRUE),
-  
-  # Flag if contact date is before diagnosis date
-  contact_before_diag = case_when(
-    date_of_initial_first_contact < dementia_diagnosis_confirmed_date ~1,
-    TRUE ~0),
+    # Date 11 months after date of first PDS contact     
+    pds_11 = add_with_rollback(date_of_initial_first_contact, 
+                               months(11),
+                               roll_to_first = TRUE),
+    
+    # Date 12 months after date of first PDS contact
+    pds_12 = add_with_rollback(date_of_initial_first_contact, 
+                               months(12),
+                               roll_to_first = TRUE),
+    
+    contact_before_diag = case_when(
+      date_of_initial_first_contact < dementia_diagnosis_confirmed_date ~1,
+      TRUE ~0)
+  ) 
+
+################################################################################.
+### 5 - Add LDP standard classification ----
+################################################################################.
+
+pds %<>%
   
   # LDP Classification ----
   ldp = case_when(
@@ -128,71 +142,105 @@ pds <- pds %>% mutate(
     date_of_initial_first_contact < diag_12 &
       end_date < pds_12 &
       is.na(termination_or_transition_date)
-    ~ "ongoing - Still receiving PDS and less than 12 months since first contact"),
-  
-  # Age ----
-  age = floor(time_length(
-    interval(date_of_birth, dementia_diagnosis_confirmed_date), 
-    "years")),
-  
-  # Age groups
-  age_grp = case_when(
-    age <= 0 | is.na(age) ~ "Unknown",
-    age %in% 1:59 ~ "59 and Under",
-    age %in% 60:64 ~ "60 to 64",
-    age %in% 65:69 ~ "65 to 69",
-    age %in% 70:74 ~ "70 to 74",
-    age %in% 75:79 ~ "75 to 79",
-    age %in% 80:84 ~ "80 to 84",
-    age %in% 85:89 ~ "85 to 89",
-    age >= 90      ~ "90+"),
-  
-  # Broad age groups
+    ~ "ongoing - Still receiving PDS and less than 12 months since first contact"
+    
+  ))
+
+################################################################################.
+### 6 - Add Age Group and Deprivation ----
+################################################################################.
+
+pds %<>%
+  # Add age
+  mutate(
+    age = floor(time_length(interval(
+      date_of_birth,
+      dementia_diagnosis_confirmed_date),
+      "years"
+    ))) %>%
+  # Add age group
+  mutate(
+    age_grp = case_when(
+      age <= 0 | is.na(age) ~ "Unknown",
+      age %in% 1:59 ~ "59 and Under",
+      age %in% 60:64 ~ "60 to 64",
+      age %in% 65:69 ~ "65 to 69",
+      age %in% 70:74 ~ "70 to 74",
+      age %in% 75:79 ~ "75 to 79",
+      age %in% 80:84 ~ "80 to 84",
+      age %in% 85:89 ~ "85 to 89",
+      age >= 90      ~ "90+"
+    )) %>%
+  # Add postcode
+  mutate(postcode = format_postcode(postcode)) %>%
+  # Add SIMD
+  left_join(simd(), by = c("postcode" = "pc7")) %>%
+  mutate(simd = replace_na(simd, "Unknown")) 
+
+# Get Aberdeen City data for 2019/20 and 2020/21
+Ab_19_20 <- readRDS(get_ac_data_path(fy = "2019", ext = "rds")) %>%
+  select(-simd) %>% 
+  mutate(postcode = format_postcode(postcode)) %>%
+  left_join(simd(), by = c("postcode" = "pc7")) %>%
+  mutate(simd = replace_na(simd, "Unknown")) 
+
+Ab_20_21 <- readRDS(get_ac_data_path(fy = "2020", ext = "rds")) %>%
+  select(-simd) %>% 
+  mutate(postcode = format_postcode(postcode)) %>%
+  left_join(simd(), by = c("postcode" = "pc7")) %>%
+  mutate(simd = replace_na(simd, "Unknown")) 
+
+# Add Aberdeen City data and update SIMD
+pds_Ab <- bind_rows(pds, Ab_19_20, Ab_20_21) 
+pds_Ab_dupe_flag <- pds_Ab %>%
+  group_by(chi_number) %>%
+  mutate(dupe = if_else(!is.na(chi_number) & n() > 1, 1, 0)) %>%
+  ungroup()
+
+# Records from Ab_19_20 and Ab_20_21 are marked as "Aberdeen City Exemption" in ldp column. 
+# This line removes those records if they are duplicated in the most up to date ldp file.
+pds <- pds_Ab_dupe_flag %>% filter(dupe == 1 & ldp != "Aberdeen City Exemption" | dupe != 1)
+
+# Add broad age groups
+pds %<>% mutate(
   age_grp_2 = case_when(
     age <= 0 | is.na(age) ~ "Unknown",
     age %in% 1:79 ~ "79 and Under",
     age %in% 80:84 ~ "80 to 84",
-    age >= 85     ~ "85+"),
-  
-  # Postcode ----
-  postcode = format_postcode(postcode)
+    age >= 85     ~ "85+"
+  ), .after = age_grp
 )
-  
-################################################################################.
-### 3 - Add SIMD Data ----
-################################################################################.
-
-pds <- bind_rows(
-  
-  # Add SIMD data
-  pds %>%
-  left_join(simd, by = c("postcode" = "pc7")) %>%
-  mutate(simd = replace_na(simd, "Unknown")), 
-  
-  # Update SIMD for Aberdeen City 2019/20
-  Ab_19_20 %>%
-    select(-simd) %>% 
-    mutate(postcode = format_postcode(postcode)) %>%
-    left_join(simd, by = c("postcode" = "pc7")) %>%
-    mutate(simd = replace_na(simd, "Unknown")),
-  
-  # Update SIMD for Aberdeen City 2020/21
-  Ab_20_21 %>%
-    select(-simd) %>% 
-    mutate(postcode = format_postcode(postcode)) %>%
-    left_join(simd, by = c("postcode" = "pc7")) %>%
-    mutate(simd = replace_na(simd, "Unknown")) 
-  
-  ) %>%
-  
-  # Remove 2019/20 and 2020/21 Aberdeen City records (marked as "Aberdeen City Exemption" in ldp column) if they are duplicated in the latest submission
-  group_by(chi_number) %>%
-  mutate(dupe = if_else(!is.na(chi_number) & n() > 1, 1, 0)) %>%
-  ungroup() %>%
-  filter(dupe == 1 & ldp != "Aberdeen City Exemption" | dupe != 1)
 
 ################################################################################.
-### 4 - Create final output file ----
+### 7 - Save individual level file for checking ----
+################################################################################.
+
+pds %>% 
+  write_file(
+    path = get_mi_data_path(
+      type = "ldp_data", 
+      ext = "rds", 
+      fy = fy, 
+      qt = qt, 
+      test_output = test_output,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+             
+pds %>% 
+  write_file(
+    path = get_mi_data_path(
+      type = "ldp_data", 
+      ext = "csv", 
+      fy = fy, 
+      qt = qt, 
+      test_output = test_output,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+################################################################################.
+### 8 - Create final output file ----
 ################################################################################.
 
 inc_months <-
@@ -204,13 +252,13 @@ inc_months <-
     }
   }
 
-pds_grouped <- pds %>%
-  
-  # Aggregate to create minimal tidy data set
-  group_by(health_board, ijb, fy, month, age_grp_2, age_grp, simd, sex, ldp) %>%
+pds %<>%
+  # Aggregate to create minimal tidy dataset
+  group_by(health_board, ijb, fy, month, age_grp_2, age_grp, simd, sex, ldp) %>% # Updated to include age groups, gender and simd
   summarise(referrals = n(), .groups = "drop") %>%
   
-  # Add rows where no referrals were made (ensure zeros are still shown in reports)
+  # Add rows where no referrals were made
+  # Doing this will make sure zeros are still shown in reports
   complete(
     nesting(health_board, ijb), fy, month, ldp,
     fill = list(
@@ -218,7 +266,9 @@ pds_grouped <- pds %>%
       age_grp = "Unknown",
       simd = "Unknown",
       age_grp_2 = "Unknown",
-      sex = "Unknown")) %>%
+      sex = "Unknown"
+    )
+  ) %>%
   
   # Remove LDP reason detail
   rename(ldp_full = ldp) %>% 
@@ -229,23 +279,17 @@ pds_grouped <- pds %>%
            (substr(fy, 1, 4) == year(end_date) & 
               month %in% inc_months))
   
-################################################################################.
-### 5 - Save data ----
-################################################################################.
-
-if (exists("save_output") && isTRUE(save_output)){
-  
-  # Save individual PDS data
-  write_file(pds, path = get_mi_data_path("ldp_data", ext = "rds", test_output = test_output))
-  0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
-  write_file(pds, path = get_mi_data_path("ldp_data", ext = "csv", test_output = test_output))
-  0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
-  # Save grouped PDS data
-  write_file(pds_grouped, path = get_mi_data_path("final_data", ext = "rds", test_output = test_output))
-  0 # this zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
-}
+# Write final data
+pds %>% 
+  write_file(
+    path = get_mi_data_path(
+      type = "final_data", 
+      ext = "rds", 
+      fy = fy, 
+      qt = qt, 
+      test_output = test_output,
+      check_mode = "write",
+      create_dir = TRUE))
+#0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
 
 ################################ END OF SCRIPT #################################.

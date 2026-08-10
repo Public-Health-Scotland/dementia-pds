@@ -69,9 +69,12 @@ est_date1 <- dmy(01042021)
 est_date2 <- dmy(01042022)
 est_date3 <- dmy(01042023)
 est_date4 <- dmy(01042024)
+est_date5 <- dmy(01042025)
 
   est_text <-  
-    case_when(sel_fy == extract_fin_year(est_date1) | sel_fy == extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == extract_fin_year(est_date4) ~
+    case_when(sel_fy ==
+extract_fin_year(est_date1) | sel_fy ==
+extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == extract_fin_year(est_date4) | sel_fy == extract_fin_year(est_date5) ~
       paste0("",
              "**Please note:** ",
              "In December 2016, the Scottish Government published a report: ",
@@ -125,7 +128,8 @@ est_date4 <- dmy(01042024)
               "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ", 
               "2024/25 and 2025/26, which has resulted in some records showing as incorrectly having met the standard. ",
               "NHS Tayside has informed PHS that these data issues will be rectified once they have completed the ", 
-              "migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data for 2025/26 Q3.*"), 
+              "migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from ",
+              "all areas for 2025/26 Q3 and Q4.*"),
     TRUE ~ paste0(""))
   
   
@@ -159,6 +163,24 @@ est_date4 <- dmy(01042024)
               "recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 ",
               "and the PDS service in Shetland has resumed.*"), 
       TRUE ~ paste0(""))
+  
+  
+  
+  # Data quality notes - Grampian
+  gramp_date1 <- dmy(01042023)
+  gramp_date2 <- dmy(01042024)
+  gramp_date3 <- dmy(01042025)
+  
+  gramp_text <- case_when(
+    hb == "NHS Grampian" & sel_fy == extract_fin_year(gramp_date1) |
+      hb == "NHS Grampian" & sel_fy == extract_fin_year(gramp_date2) |
+      hb == "NHS Grampian" & sel_fy == extract_fin_year(gramp_date3) ~
+      paste0(" ", 
+             "**Please note:** ",
+             "*In 2025/26 Q4 submission the numbers reported for  2023/24, 2024/25 and 2025/26 by ", 
+             "NHS Grampian are lower than those reported than in previous quarters. ", 
+             "PHS are working with the Board to investigate and resolve this.*"), 
+    TRUE ~ paste0(""))
 
 ```
 
@@ -238,6 +260,8 @@ Row
 `r shetland_text`
 
 `r orkney_text`
+
+`r gramp_text`
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
 ----------------------------------------------------------------------

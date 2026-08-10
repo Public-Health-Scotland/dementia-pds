@@ -197,7 +197,7 @@ complete(nesting(geog, fy), simd, fill = list(total_referrals = 0))
 
 
 #prepare population rate data for simd
-simd_pop_data <- read_rds("//conf/dementia/A&I/Outputs/management-report/lookups/simd_pop_data.rds")
+simd_pop_data <- read_rds(get_pop_lookup_path(simd = TRUE))
 
 pop_data_simd <- simd_pop_data %>% filter(age_grp != "All", age_grp != "59 and Under", age_grp != "60 to 64", age_grp_2 == "All", sex != "All") %>% select(-age_grp_2, -sex) %>% 
   group_by(geog, year, simd) %>% summarise(pop = sum(pop)) %>% ungroup()
