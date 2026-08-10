@@ -18,19 +18,21 @@
 ### 0 - Manual Variable(s) - TO UPDATE 
 ################################################################################.
 
+# UPDATE - Financial Year (YYYY) and Quarter (Q) of the submission data
+# Each submission contains data for the previous 3 full financial years and the current financial year up to the current quarter.
+# Sep-MI-release: Q1 data (1 Apr - 30 June)
+# Dec-MI-release: Q2 data (1 Jul - 30 Sept)
+# Mar-MI-release: Q3 data (1 Oct - 31 Dec)
+# Jun-MI-release: Q4 data (1 Jan - 31 March)
+fy <- 2026
+qt <- 1
+
 # UPDATE - Used to define a test file path for saving test outputs (TRUE/FALSE)
 # TRUE:  Use this when the Data Management Team provide a test version of the 
 #        collated file and boards are still submitting or correcting data.
 # FALSE: Use this when the Data Management Team provide a finalised version of  
 #        the collated file and no more changes will be made.
 test_output <- TRUE
-
-# UPDATE - Last day in the current reporting period (ddmmyyyy)
-# Sep-MI-release (Q1 data): 300620XX
-# Dec-MI-release (Q2 data): 300920XX
-# Mar-MI-release (Q3 data): 311220XX
-# Jun-MI-release (Q4 data): 310320XX
-end_date <- lubridate::dmy(31032026)
 
 ################################################################################.
 ### 1 - Load packages ----
@@ -79,17 +81,17 @@ source(here::here("functions/render_check.R"))
 ### 3 - Derive dates ----
 ################################################################################.
 
-# FY and Quarter for current reporting period
-fy <- phsmethods::extract_fin_year(end_date) %>% substr(1, 4)
-qt <- lubridate::quarter(end_date, fiscal_start = 4)
-
-# FY and Quarter for previous reporting period
-previous_end_date <- ceiling_date(end_date %m-% months(3), "month") - days(1)
-previous_fy <- phsmethods::extract_fin_year(previous_end_date) %>% substr(1, 4)
-previous_qt <- lubridate::quarter(previous_end_date, fiscal_start = 4)
-
-# First date in reporting period (ddmmyyyy)
+# First date in the reporting period (1 Apr 2016)
 start_date <- dmy(01042016)
+
+# End date for the current submission
+end_date <- case_when(
+  qt == 1 ~ "3006",
+  qt == 2 ~ "3009",
+  qt == 3 ~ "3112",
+  qt == 4 ~ "3103"
+)
+end_date <- lubridate::dmy(paste0(end_date, fy))
 
 # Helper function to return current, provisional and revised years
 get_fy <- function(date, modifier = 0){
@@ -101,6 +103,8 @@ get_fy <- function(date, modifier = 0){
   )
   return(fy)
 }
+
+# Current, provisional and revised years
 current_year <- get_fy(end_date)
 extra_referrals_year <- get_fy(end_date, 1)
 provisional_year <- get_fy(end_date, 2)
