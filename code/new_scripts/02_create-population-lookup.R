@@ -21,44 +21,25 @@
 # Source the setup script
 source(here::here("code", "00_setup-environment.R"))
 
+# Helper function to get the geography year e.g. HSCP2019, HB2019
+# Enables dynamic column selection
+get_pop_est_year <- function(path) {
+  stringr::str_match(
+    fs::path_file(path),
+    "^[^0-9]+([0-9]{4})_"
+  )[, 2]
+}
+
 ################################################################################.
 ### 2. Read latest SIMD population file ----
 ################################################################################.
 
-# Function which takes a list of strings containing dates and returns the most recent
-get_latest <- function(file_list, name, type){
-  latest <- as_tibble(do.call(rbind, str_extract_all(file_list, "\\d+")), .name_repair = "unique") %>% # Extract numbers from each string as separate columns of a tibble
-    mutate(across(everything(), as.numeric), string = file_list) %>% # Convert to numeric and add new column containing original string in 
-    arrange(across(everything(), desc)) %>% # Sort by numbers, highest at the top (first number is most important, then second etc.)
-    slice(1) %>% # Get the first row
-    pull(string) # Get tje original string
-  message(paste0("The following ", name, " population ", type, "s are available:\n", paste(file_list, collapse = "\n"), 
-                 "\n\nSelected ", type, ":\n", latest)) # Print a message showing the choices available and the selection that has been made so the analyst can check
-  return (latest) # Return latest
-}
-
-# List all files in the population lookup folder
-pop_filepath <- glue("{cl_out}/lookups/Unicode/Populations/Estimates/")
-pop_files <- list.files(pop_filepath)
-
-# List files corresponding to SIMD estimates
-simd_files <- pop_files[grepl("^DataZone\\d+_pop_est_\\d+_\\d+\\.rds$", pop_files)]
-
-# Select latest file corresponding to SIMD estimates
-simd_file <- get_latest(simd_files, "SIMD", "file")
-
-# Read latest file corresponding to SIMD estimates
-simd_pop <- read_rds(glue(pop_filepath, simd_file))
-
-# List all ijb, health_board and simd columns
-geog_cols_ijb <- grep("hscp[0-9].*name", colnames(simd_pop), value = TRUE)
-geog_cols_hb <- grep("hb[0-9].*name", colnames(simd_pop), value = TRUE)
-simd_cols <- sort(grep("simd[0-9].*_sc_quintile", colnames(simd_pop), value = TRUE))
-
-# Select latest ijb, health_board and simd columns
-geog_col_ijb <- get_latest(geog_cols_ijb, "IAA", "column")
-geog_col_hb <- get_latest(geog_cols_hb, "Health Board", "column")
-simd_col <- get_latest(simd_cols, "SIMD", "column")
+simd_pop <- read_rds(
+  get_pop_path(
+    type = "DataZone", 
+    selection_method = "modification_date"
+  )
+)
 
 ################################################################################.
 ### 3. Process SIMD population file ----
