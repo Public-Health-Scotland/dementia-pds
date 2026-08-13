@@ -28,171 +28,62 @@ walk(dir(here::here("functions"), full.names = TRUE), source)
 # Load data ----
 ################################################################################.
 
+# PDS data (output from 03_process_data.R)
+pds <- read_rds(
+  get_mi_data_path(
+    type = "final_data", 
+    ext = "rds", 
+    fy = fy, 
+    qt = qt,
+    test_output = test_output)) 
+
 # Errors and queries (output from 01_clean-pds-data.R)
-q_err <- read_rds(get_mi_data_path("q_error_data", ext = "rds", test_output = test_output)) %>% 
+q_err <- read_rds(
+  get_mi_data_path(
+    type = "qeury_error_data", 
+    ext = "rds", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output)) %>% 
   mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
 
 # Queries (2021/22 onward) (output from 01_clean-pds-data.R)
-query <- read_rds(get_mi_data_path("query_data", ext = "rds", test_output = test_output)) %>% 
+query <- read_rds(
+  get_mi_data_path(
+    type = "query_data", 
+    ext = "rds", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output)) %>% 
   mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
 
 # Errors (2021/22 onward) (output from 01_clean-pds-data.R)
-err <- read_rds(get_mi_data_path("error_data", ext = "rds", test_output = test_output)) %>% 
+err <- read_rds(
+  get_mi_data_path(
+    type = "error_data", 
+    ext = "rds", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output)) %>% 
   mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
 
-# Populations (output from 02_create-population-lookup)
-population_df <- read_rds("//conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/population_data.rds")
-
-# PDS (output from 03_add-ldp-age-simd.R)
-pds <- read_rds(get_mi_data_path("ldp_data", ext = "rds", test_output = test_output)) 
-
 # Expected Diagnoses 
-exp_df <- read_csv(get_exp_diagnoses_path())
+exp_df <- read_rds(get_lookup_path(type = "exp"))
 
-# European Standard Population
-ESP13_df <- read_csv("/conf/dementia/A&I/Analysts/Lucy/Age_Standardisation/european_standard_population_by_sex.csv")
+# European Standard Population lookup (output from 01_update-lookups.R)
+ESP13_df <- read_rds(get_lookup_path(type = "esp"))
+
+# Population lookup (output from 01_update-lookups)
+population_df <- read_rds(get_lookup_path(type = "pop"))
+
+# Population lookup (output from 01_update-lookups)
+population_simd_df <- read_rds(get_lookup_path(type = "pop_simd"))
 
 ```
 
 ---
 date: "`r paste('Data as at', format(end_date, '%d %B %Y'))`"
 ---
-
-```{r setup, include=FALSE}
-
-################################################################################.
-# Prepare Data ----
-################################################################################.
-
-# European Standard Population data
-ESP13_df <- ESP13_df %>%
-  # Convert column names to snake case
-  clean_names() %>%
-  # Remove code
-  mutate(
-    sex = case_when(
-      sex == "Male" ~ "01 Male",
-      sex == "Female" ~ "02 Female"))
-
-# Age groups (created from ESP data)
-age_groups <- ESP13_df %>%
-  # Extract ages in each group and calculate minimum and maximum
-  mutate(
-    nums = str_extract_all(age_group, "\\d+"),
-    min = as.numeric(sapply(nums, `[`, 1)),
-    max = as.numeric(sapply(nums, `[`, 2)),
-    max = ifelse(is.na(max), Inf, max)) %>%
-  # Select columns
-  select(age_group, min, max) %>%
-  # Keep only unique rows
-  distinct()
-
-# LDP data
-pds <- pds %>%
-  mutate(
-    # Remove health board and ijb codes
-    ijb = str_sub(ijb, 11, -1),
-    health_board = str_sub(health_board, 3, -1), 
-    # Create a new column called scot (used for calculating Scotland totals)
-    scot = "Scotland",
-    # Create a new column called board (used for keeping track of which health board each ijb belongs to)
-    board = health_board) %>%
-  # Put scot, ijb and health board in the same column named geog
-  pivot_longer(c(scot, ijb, health_board), values_to = "geog") %>%
-  mutate(board = ifelse(name == "scot", "Scotland", board)) %>%
-  # Add age groups from ESP13
-  left_join(age_groups, by = join_by(age >= min, age <= max)) %>% 
-  select(-min, -max)
-
-# Population data
-population_df <- population_df %>%
-  # Add age groups from ESP13
-  left_join(age_groups, by = join_by(age >= min, age <= max)) %>% 
-  select(-min, -max)
-
-# Expected Diagnoses data
-exp_df <- exp_df %>%
-  # Rename health board column to geog to match PDS and population data
-  rename(geog = health_board_label) %>% 
-  # Remove health board code column
-  select(-health_board) 
-
-################################################################################.
-# Year Lists
-################################################################################.
-
-# fy, qt and finalised_years are defined in 00_setup-environment
-provisional_year <- paste0(as.numeric(substr(last(finalised_years),1,4)) + 1,
-                           "/", as.numeric(substr(last(finalised_years),6,7)) + 1)
-
-current_fy <- paste0(
-  substr(fy,1,4),
-  "/", 
-  as.numeric(substr(fy,3,4)) + 1
-)
-
-last_full_year <- if_else(
-  qt == 4, 
-  current_fy, 
-  paste0(
-    as.numeric(substr(fy,1,4)) - 1, 
-    "/", 
-    as.numeric(substr(fy,3,4))
-  )
-)
-
-all_years <- unique(standardised_rates$fy)
-
-full_years <- ifelse(qt == 4, all_years, all_years[-length(all_years)])
-
-
-
-
-if (qt == 4) {
-  full_years <- all_years
-} else {
-  full_years <- all_years[-length(all_years)]
-}
-
-# Load completion data
-comp_data <- read_rds(get_mi_data_path(
-  type = "comp_data", 
-  ext = "rds", 
-  fy = fy,
-  qt = qt,
-  test_output = test_output
-))
-
-# Glossary calculations
-over_65_and_total <- left_join(
-  scot_65_plus_total <- pds_scot %>% 
-    filter(age_grp != "59 and Under", age_grp != "60 to 64") %>% 
-    group_by(geog) %>% 
-    summarise(over_65_referrals = sum(referrals)),
-  scot_overall_total <- pds_scot %>% 
-    group_by(geog) %>% 
-    summarise(total_referrals = sum(referrals))
-)
-
-perc_65_plus <- round(over_65_and_total[2]/over_65_and_total[3]*100,1)
-
-age_unknown_all_years <- pds_scot %>% 
-  filter(age_grp == "Unknown")
-
-age_unknown <- sum(age_unknown_all_years$referrals)
-
-sex_unknown_all_years <- pds_scot %>% 
-  filter(sex != "01 Male", sex != "02 Female")
-
-sex_unknown <- sum(sex_unknown_all_years$referrals)
-
-simd_unknown_all_years <- pds_scot %>% 
-  filter(simd == "Unknown")
-
-simd_unknown <- sum(simd_unknown_all_years$referrals)
-
-```
-
 
 Home
 =================================================
@@ -564,10 +455,10 @@ Row {data-height=730}
 ### <!-- No Title -->
 
 ```{r}
-#load navigation guide screenshot
+# Load navigation guide screenshot
 bscols(widths = 12, 
        div(style = css(width="97%", marginLeft="20px"),
-       img(style = css(width="100%"), src="navigation-guide.png"))) #make sure this PNG file is in same folder as this script
+       img(style = css(width="100%"), src="navigation-guide.png"))) # Make sure this PNG file is in same folder as this script
 
 ```
 
@@ -690,19 +581,14 @@ query %>%
               values_from = query_rate,
               values_fill = list(query_rate = "\\-")) %>%
   rename(`Health Board` = health_board) %>%
-  # right justify numeric columns
-     kable(align = c("l", rep("r", length(unique(query$fy)) + 1))) %>%
+  kable(align = c("l", rep("r", length(unique(query$fy)) + 1))) %>%
   kable_styling(full_width = FALSE) %>%
-  # make Scotland row bold
-     row_spec(15, bold = TRUE) %>%
- # Add header above table 
+  row_spec(15, bold = TRUE) %>%
   add_header_above(
         c(" " = 1,
           "Financial Year of Diagnosis" = length(unique(query$fy)),
           " " = 1)) %>%
-  #add footnote
-  add_footnote(label = paste("A dash (\\-) indicates no records were submitted",
-                             "for diagnoses in this year."),
+  add_footnote(label = paste("A dash (\\-) indicates no records were submitted for diagnoses in this year."),
                notation = "none") 
 ```
 
@@ -713,7 +599,7 @@ The table below shows the percentage of records which contain one or more errors
 An error is flagged by PHS when data is inaccurate or missing. Examples of an error are 'E13: First Contact Date is before Diagnosis Date. Please check both dates.' and 'E18: Termination Date is missing but Termination Reason is provided.'
 
 ```{r error summary}
-#create error summary table
+# Create error summary table
 err %>% 
   group_by(fy, health_board) %>% 
   summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1),
@@ -728,19 +614,14 @@ err %>%
               values_from = err_rate,
               values_fill = list(err_rate = "\\-")) %>%
   rename(`Health Board` = health_board) %>%
-  # right justify numeric columns
-     kable(align = c("l", rep("r", length(unique(err$fy)) + 1))) %>%
+  kable(align = c("l", rep("r", length(unique(err$fy)) + 1))) %>%
   kable_styling(full_width = FALSE) %>%
-  # make Scotland row bold
-     row_spec(15, bold = TRUE) %>%
- # Add header above table 
+  row_spec(15, bold = TRUE) %>%
   add_header_above(
         c(" " = 1,
           "Financial Year of Diagnosis" = length(unique(err$fy)),
           " " = 1)) %>%
-  #add footnote
-  add_footnote(label = paste("A dash (\\-) indicates no records were submitted",
-                             "for diagnoses in this year."),
+  add_footnote(label = paste("A dash (\\-) indicates no records were submitted for diagnoses in this year."),
                notation = "none") 
 ```
 
@@ -749,7 +630,8 @@ err %>%
 The table below shows the percentage of records which contain one or more queries/errors. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
 
 ```{r queries/error summary}
-#create error summary table
+
+# Create error summary table
 q_err %>% 
   filter(!fy%in% unique(err$fy)) %>% 
   group_by(fy, health_board) %>% 
@@ -765,19 +647,14 @@ q_err %>%
               values_from = q_err_rate,
               values_fill = list(q_err_rate = "\\-")) %>%
   rename(`Health Board` = health_board) %>%
-  # right justify numeric columns
-     kable(align = c("l", rep("r", length(unique(q_err$fy)) - length(unique(err$fy)) + 1))) %>%
+  kable(align = c("l", rep("r", length(unique(q_err$fy)) - length(unique(err$fy)) + 1))) %>%
   kable_styling(full_width = FALSE) %>%
-  # make Scotland row bold
-     row_spec(15, bold = TRUE) %>%
- # Add header above table 
+  row_spec(15, bold = TRUE) %>%
   add_header_above(
-        c(" " = 1,
-          "Financial Year of Diagnosis" = length(unique(q_err$fy)) - length(unique(err$fy)),
-          " " = 1)) %>%
-  #add footnote
-  add_footnote(label = paste("A dash (\\-) indicates no records were submitted",
-                             "for diagnoses in this year."),
+    c(" " = 1,
+      "Financial Year of Diagnosis" = length(unique(q_err$fy)) - length(unique(err$fy)),
+      " " = 1)) %>%
+  add_footnote(label = paste("A dash (\\-) indicates no records were submitted for diagnoses in this year."),
                notation = "none") 
 ```
 
@@ -844,7 +721,7 @@ Row {.tabset data-height=700}
 <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals with NA or code 98/99 entry (Unknown) for Accommodation Type</h2>
 <h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Accommodation Type is a mandatory field</h4>
 ```{r accommodation-table}
-accom_comp_data<-comp_data %>%
+accom_comp_data <- comp_data %>%
   filter(field_name == "accommodation_type") %>% 
   select(geog, fy, number_of_records, perc_of_records_missing_not_known) %>% 
   mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
@@ -897,112 +774,13 @@ bscols(widths = 12,
 
 ```
 
-<!-- ### **Carer's Support** -->
-
-<!-- <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals with NA or code 98/99 entry (Unknown) for Carer's Support</h2> -->
-<!-- <h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Carer's Support is an optional field</h4> -->
-```{r carer-table}
-# carer_comp_data<-comp_data %>%
-#   filter(field_name == "carers_support") %>% 
-#   select(geog, fy, number_of_records, perc_of_records_missing_not_known) %>% 
-#   mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
-#    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-#   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known),
-#               names_vary = "slowest") 
-# 
-# 
-# bscols(widths = 12,
-#        div(style = css(width="98%", height="550px", margin="15px"),
-#           DT::datatable(carer_comp_data,
-#                         container = headers,
-#                         rownames = TRUE,
-#                       #  caption = htmltools::tags$caption(
-#                       # style = 'caption-side: bottom; text-align: left;',
-#                       # "Note that Carer's Support is an optional field"),
-#                         extensions = "FixedColumns",
-#               options = list(pageLength = 46,
-#                              scrollX = TRUE,
-#                              fixedColumns = list(leftColumns = 1),
-#                              scrollY = TRUE,
-#                              dom = "t",
-#                              ordering = FALSE,
-#                              columnDefs = list(list(visible = F, targets = 0),
-#                                                 list(className = 'dt-right',
-#                                                      targets = 2:(2*length(all_years)+3)))
-#                              )) %>% 
-#             DT::formatStyle(0, target = "row",
-#               fontWeight = DT::styleEqual(dim(carer_comp_data)[1],"bold")) %>% 
-#                DT::formatStyle(c(1,3,5,7,9,11,13,15,17,19), `border-right` = "solid 1px")
-#             )
-#        )
-# 
-
-```
-
-<!-- ### **Subtype of Dementia** -->
-
-<!-- <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of records with NA or code 98/99 entry (Unknown) and Percentage of records Yet to be determined (YTBD) for Subtype of Dementia</h2> -->
-<!-- <h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Subtype of Dementia is an optional field</h4> -->
-```{r subtype-table}
-# subtype_comp_data <- comp_data %>%
-#   filter(field_name == "subtype_of_dementia") %>% 
-#   select(geog, fy, number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
-#   mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
-#   mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
-#    mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-#   pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd),
-#               names_vary = "slowest")
-#   
-# headers_ytbd <- htmltools::withTags(table(
-#   class = 'display',
-#   thead(
-#     tr(
-#       th(colspan = 1, ' '),
-#       th(rowspan = 2, "Integration Authority Area/Health Board"),
-#       lapply(all_years, th, colspan = 3, style = css(textAlign="center")),
-#       th(colspan = 3, 'All', style = css(textAlign="center"))
-#     ),
-#     tr(
-#       lapply(c(" ",rep(c("Number of referrals", "% Unknown", "% YTBD"), 10)), th)
-#     )
-#   )
-# ))
-# 
-# 
-# bscols(widths = 12,
-#        div(style = css(width="98%", height="540px", margin="15px"),
-#           DT::datatable(subtype_comp_data,
-#                         container = headers_ytbd,
-#                         rownames = TRUE,
-#                        # caption = htmltools::tags$caption(
-#                      #  style = 'caption-side: bottom; text-align: left;',
-#                       # "Note that Subtype of Dementia is an optional field"),
-#                         extensions = "FixedColumns",
-#               options = list(pageLength = 46,
-#                              scrollX = TRUE,
-#                              fixedColumns = list(leftColumns = 1),
-#                              scrollY = TRUE,
-#                              dom = "t",
-#                              ordering = FALSE,
-#                              columnDefs = list(list(visible = F, targets = 0),
-#                                                 list(className = 'dt-right',
-#                                                      targets = 2:(3*length(all_years)+4)))
-#                              )) %>% 
-#             DT::formatStyle(0, target = "row",
-#               fontWeight = DT::styleEqual(dim(subtype_comp_data)[1],"bold")) %>% 
-#                DT::formatStyle(c(1,4,7,10,13,16,19,22,25,28), `border-right` = "solid 1px")
-#             )
-#        )
-# 
-
-
-```
-
 ### **Clinical Impression of Stage of Illness**
 
 <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of records with NA or code 98/99 entry (Unknown) and Percentage of records Yet to be determined (YTBD) for Clinical Impression of Stage of Illness</h2>
 <h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Clinical Impression of Stage of Illness is a mandatory field</h4>
+
 ```{r stage-table}
+
 stage_comp_data <- comp_data %>%
   filter(field_name == "clinical_impression_of_stage_of_illness") %>% 
   select(geog, fy, number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
@@ -1060,7 +838,9 @@ bscols(widths = 12,
 
 <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals with NA or code 98/99 entry (Unknown) and Percentage of records Yet to be determined (YTBD) for Model of Care</h2>
 <h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Model of Care is a mandatory field</h4>
+
 ```{r model-table}
+
 model_comp_data <- comp_data %>%
   filter(field_name == "model_of_care") %>% 
   select(geog, fy, number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
@@ -1159,7 +939,7 @@ Row {data-height=700}
 The table below shows the number of records submitted by each Health Board. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
 
 ```{r record-summary}
-# add table showing number of records submitted by each health board
+# Add table showing number of records submitted by each health board
 q_err %>%
   filter(str_sub(fy, 1, 4) >= year(start_date)) %>%
   group_by(fy, health_board, ijb) %>% 
@@ -1186,6 +966,7 @@ q_err %>%
   scroll_box(height = "580px")
 ```
 
+
 ```{css }
 /* forces number of records table to fit in window */
 #number-of-records-submitted-2{
@@ -1193,11 +974,13 @@ q_err %>%
 }
 ```
 
+
 <!-- converts R environment objects for use with js script below -->
 ```{r results="asis"}
 cat(sprintf('<script>var pds_year = "%s"; var ldp_year = "%s";</script>', 
             current_fy, last_full_year))
 ```
+
 
 ```{js }
 

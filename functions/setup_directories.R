@@ -19,6 +19,17 @@
 
 source(here::here("functions/setup_general.R"))
 
+stats <- case_when(
+  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ "/conf",
+  TRUE ~ "//stats"
+)
+
+cl_out <- case_when(
+  sessionInfo()$platform == "x86_64-pc-linux-gnu" ~ 
+    "/conf/linkage/output",
+  TRUE ~ "//stats/cl-out"
+)
+
 ################################################################################.
 # Root file path ----
 ################################################################################.
@@ -37,8 +48,8 @@ source(here::here("functions/setup_general.R"))
 #' @export
 
 get_root_dir <- function() {
-  root_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs")
-
+  # root_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs")
+  root_dir <- fs::path("/", "conf", "dementia", "A&I", "Analysts", "Lucy", "test")
   return(root_dir)
 }
 
@@ -224,7 +235,7 @@ get_mi_data_path <- function(type = c("clean_data",
     "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data"),
     "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"),
     "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
-    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data.rds"),
+    "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data"),
     "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
     "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data"),
     "query_error_data" ~ stringr::str_glue("{fy}-{qt}_query-error-summary"),
@@ -315,44 +326,57 @@ get_mi_output_path <- function(fy,
 }
 
 
-#' Get the processed population file paths
+#' Get the processed lookup file paths
 #'
 #' @description
-#' Constructs and validates the path to the processed population files used
+#' Constructs and validates the path to the processed lookup files used
 #' within the management report process.
 #'
-#' @param simd Logical. If `TRUE`, returns the DataZone population with SIMD information.
 #' @param check_mode Access mode required for the file. Passed to
 #' [check_file_path()]. One of `"read"` or `"write"`.
 #' @param create Logical. If `TRUE`, create the directory if it does not
 #' already exist.
 #'
 #' @return
-#' A validated [fs::path()] object containing the path to the population
+#' A validated [fs::path()] object containing the path to the
 #' lookup file.
 #'
 #' @family management report file paths
 #' @export
 
-get_pop_lookup_path <- function(simd = FALSE,
-                                check_mode = "read",
-                                create_dir = FALSE) {
+get_lookup_path <- function(type = c("esp",
+                                     "exp",
+                                     "pop",
+                                     "pop_simd",
+                                     "simd"),
+                            check_mode = "read",
+                            create_dir = FALSE) {
+  
+  # Validate arguments
+  type <- match.arg(type)
   
   # Construct the directory path
   lookup_dir <- fs::path(get_mi_dir(), "lookups")
   
   # Get the file name
-  file_name <- ifelse(simd, "simd_pop_data.rds", "pop_data.rds")
+  file_name <- dplyr::case_match(
+    type,
+    "esp" ~ "esp_lookup.rds",
+    "exp" ~ "expected_diagnoses_lookup.rds",
+    "pop" ~ "population_lookup.rds",
+    "pop_simd" ~ "simd_population_lookup.rds",
+    "simd" ~ "simd_lookup.rds"
+  )
   
   # Check the file path
-  pop_lookup_path <- check_file_path(
+  lookup_path <- check_file_path(
     directory = lookup_dir,
     file_name = file_name,
     check_mode = check_mode,
     create_dir = create_dir
   )
   
-  return(pop_lookup_path)
+  return(lookup_path)
 }
 
 
@@ -1122,46 +1146,6 @@ get_exp_diagnoses_path <- function(check_mode = "read",
   
   return(exp_diagnoses_path)
 }
-
-
-#' Get the European Standard Population file path
-#'
-#' @description
-#' Constructs and validates the path to the European Standard Population
-#' lookup dataset used when calculating age-standardised rates.
-#'
-#' @param check_mode Access mode required for the file. Passed to
-#' [check_file_path()]. One of `"read"` or `"write"`.
-#' @param create Logical. If `TRUE`, create the directory if it does not
-#' already exist.
-#'
-#' @return
-#' A validated [fs::path()] object containing the path to the European
-#' Standard Population lookup file.
-#'
-#' @family reference file paths
-#' @export
-
-get_esp_path <- function(check_mode = "read",
-                         create_dir = FALSE) {
-  
-  # Construct the directory path
-  ref_files_dir <- get_ref_files_dir()
-  
-  # Get the file name
-  file_name <- "european_standard_population_by_sex.csv"
-
-  # Check the file path
-  esp_path <- check_file_path(
-    directory = ref_files_dir,
-    file_name = file_name,
-    check_mode = check_mode,
-    create_dir = create_dir
-  )
-  
-  return(esp_path)
-}
-
 
 ################################################################################.
 # Linkage file path functions ----

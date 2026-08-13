@@ -1,24 +1,27 @@
 ################################################################################.
-# Name of file - 01_clean-pds-data.R
+# Name of file - 02_clean_data.R
 # Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019
 # Updated by - Jennifer Thom
 # Date - November 2023
+# Updated by - Lucy Binsted
+# Date - August 2026
 #
 # Written/run on - R Posit
-# Version of R - 4.1.2
+# Version of R - 4.4.2
 #
 # Description - 
-#   Clean collated file provided by Data Management team 
+#   Clean collated file provided by Data Management team (latest submission)
+#   Save newly finalised data
 #   Add data from finalised years
 #   Create query and error reports
+#   Re-code NHS Lanarkshire
 #   Remove duplicates
-#   NOTE: save_output must be set to TRUE for the output to be saved.
 ################################################################################.
 
 ################################################################################.
-### 1 - Load data ----
+### 1 - Setup ----
 ################################################################################.
 
 # Environment file
@@ -29,7 +32,7 @@ source(here::here("code", "00_setup-environment.R"))
 ################################################################################.
 
 # Collated file for latest submission (output from Data Management)
-pds <- readr::read_csv(get_national_data_path(), col_types = cols(.default = "c")) %>%
+pds <- readr::read_csv(get_national_data_path(fy, qt), col_types = cols(.default = "c")) %>%
   
   # Convert column names to snake case
   janitor::clean_names() %>%
@@ -44,10 +47,17 @@ pds <- readr::read_csv(get_national_data_path(), col_types = cols(.default = "c"
   dplyr::mutate(health_board = stringr::str_replace(health_board, " and ", " & ")) %>%
   
   # Remove records with missing diagnosis date or outwith reporting period
-  dplyr::filter(dplyr::between(dementia_diagnosis_confirmed_date, start_date, end_date))
+  dplyr::filter(dplyr::between(dementia_diagnosis_confirmed_date, start_date, end_date)) %>%
+
+  # Remove rows with unknown IAA
+  filter(!is.na(ijb))
+
+# Remove chi number where health board did not match IAA
+chi_to_remove <- (pds %>% filter(health_board == "V NHS Forth Valley", ijb == "S37000033 Perth and Kinross"))$chi_number
+pds <- pds %>% filter(!chi_number %in% chi_to_remove)
 
 ################################################################################.
-### 2 - Save newly finalised data (Q4 non-test output only) ----
+### 3 - Save newly finalised data (Q4 non-test output only) ----
 ################################################################################.
 
 if (qt == 4 && test_output == FALSE){
@@ -75,13 +85,13 @@ if (qt == 4 && test_output == FALSE){
 }
 
 ################################################################################.
-### 3 - Add saved finalised data ----
+### 4 - Add saved finalised data ----
 ################################################################################.
 
 # Read in and bind together data for finalised years if available
 finalised_data <- data.frame()
 for (year in finalised_years){
-  final_file <- paste0(get_final_data_dir(), "/", str_replace(year, '/', '-'), "_final-data.rds")
+  final_file <- paste0(get_finalised_data_dir(), "/", str_replace(year, '/', '-'), "_final-data.rds")
   if (file.exists(final_file)){
     finalised_data <- bind_rows(finalised_data, read_rds(final_file))
   } else {
@@ -100,7 +110,7 @@ pds <- pds %>%
 pds <- bind_rows(finalised_data, pds)
 
 ################################################################################.
-### 4 - Create error and query summaries ----
+### 5 - Create error and query summaries ----
 ################################################################################.
 
 # Queries and errors for all years
@@ -140,7 +150,7 @@ q_err <- pds %>%
   arrange(fy, health_board, ijb)
 
 ################################################################################.
-### 5 - Apply any ad hoc changes as discussed ----
+### 6 - Re-code NHS Lanarkshire ----
 ################################################################################.
 
 pds <- pds %>%
@@ -148,17 +158,10 @@ pds <- pds %>%
   # Change health board for North/South Lanarkshire to "L NHS Lanarkshire" (from "G NHS Greater Glasgow & Clyde")
   mutate(health_board = case_when(
     str_detect(ijb, "S37000035|S37000028") ~ "L NHS Lanarkshire",
-    TRUE ~ health_board)) %>%
-  
-  # Remove rows with unknown IAA
-  filter(!is.na(ijb))
-
-# Remove chi numbers where health board does not match IAA
-chi_to_remove <- (pds %>% filter(health_board == "V NHS Forth Valley", ijb == "S37000033 Perth and Kinross"))$chi_number
-pds <- pds %>% filter(!chi_number %in% chi_to_remove)
+    TRUE ~ health_board))
 
 ################################################################################.
-### 6 - Flag duplicate records ----
+### 7 - Flag duplicate records ----
 ################################################################################.
 
 pds <- pds %>%
@@ -236,8 +239,12 @@ if(nrow(remaining_duplicates > 0)){
   message("All duplicates removed successfully.")
 }
 
+# Create data frame of duplicates to save
+duplicates <- pds %>%
+  filter(dupe == 1)
+
 ################################################################################.
-### 7 - Remove duplicate records ----
+### 8 - Remove duplicate records ----
 ################################################################################.
 
 pds <- pds %>%
@@ -254,43 +261,67 @@ pds <- pds %>%
   select(-contains("dupe"))
 
 ################################################################################.
-### 8 - Save data ----
+### 9 - Save data ----
 ################################################################################.
 
-if (exists("save_output") && isTRUE(save_output)){
-  
-  # Save queries + errors for all years
-  q_err %>% 
-    select(-total_queries, -total_errors) %>%
-    write_file(path = get_mi_data_path("q_error_data", ext = "rds", test_output = test_output))
-  0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
-  # Save queries for 2021/22 onward
-  q_err %>% 
-    filter(as.integer(substr(fy, 1, 4)) >= 2021) %>% 
-    select(-total_q_errors, -total_errors) %>%
-    write_file(path = get_mi_data_path("query_data", ext = "rds", test_output = test_output))
-  0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
-  # Save errors for 2021/22 onward
-  q_err %>% 
-    filter(as.integer(substr(fy, 1, 4)) >= 2021) %>% 
-    select(-total_q_errors, -total_queries) %>%
-    write_file(path = get_mi_data_path("error_data", ext = "rds", test_output = test_output))
-  0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
-  # Save duplicate records
-  dupes <- 
-    pds %>% 
-    filter(dupe == 1) %T>%
-    write_file(path = get_mi_data_path("dupe_data", ext = "csv", test_output = test_output))
-  0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
-  # Save cleaned PDS data
-  pds %>% 
-    write_file(path = get_mi_data_path("clean_data", ext = "rds", test_output = test_output))
-  0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
-  
-}
+# Save queries + errors for all years
+q_err %>% 
+  select(-total_queries, -total_errors) %>%
+  write_file(path = get_mi_data_path(
+    type = "query_error_data", 
+    ext = "rds", 
+    fy = fy, 
+    qt = qt, 
+    test_output = test_output,
+    check_mode = "write",
+    create_dir = TRUE))
 
+# Save queries for 2021/22 onward
+q_err %>% 
+  filter(as.integer(substr(fy, 1, 4)) >= 2021) %>% 
+  select(-total_q_errors, -total_errors) %>%
+  write_file(path = get_mi_data_path(
+    type = "query_data", 
+    ext = "rds", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output, 
+    check_mode = "write",
+    create_dir = TRUE))
+
+# Save errors for 2021/22 onward
+q_err %>% 
+  filter(as.integer(substr(fy, 1, 4)) >= 2021) %>% 
+  select(-total_q_errors, -total_queries) %>%
+  write_file(path = get_mi_data_path(
+    type = "error_data", 
+    ext = "rds", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output,
+    check_mode = "write",
+    create_dir = TRUE))
+
+# Save duplicate records
+duplicates %>%
+  write_file(path = get_mi_data_path(
+    type = "dupe_data", 
+    ext = "csv", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output,
+    check_mode = "write",
+    create_dir = TRUE))
+
+# Save cleaned PDS data
+pds %>% 
+  write_file(path = get_mi_data_path(
+    type = "clean_data", 
+    ext = "rds", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output,
+    check_mode = "write",
+    create_dir = TRUE))
+  
 ################################ END OF SCRIPT #################################.

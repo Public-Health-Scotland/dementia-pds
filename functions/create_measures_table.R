@@ -1,5 +1,5 @@
-create_measures_table <- function(ldp_df, exp_df, demographic = c()){
-  measures_df <- ldp_df %>%
+create_measures_table <- function(pds, exp_df, demographic = c()){
+  measures_df <- pds %>%
     { if ("age_grp_2" %in% demographic) filter(., age_grp_2 != "Unknown") else . } %>%
     { if ("sex" %in% demographic) filter(., !sex %in% c("98 Not Specified", "99 Not Known")) else . } %>%
     { if ("simd" %in% demographic) filter(., simd != "Unknown") else . } %>%
