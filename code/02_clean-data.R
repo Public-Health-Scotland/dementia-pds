@@ -1,5 +1,5 @@
 ################################################################################.
-# Name of file - 02_clean_data.R
+# Name of file - 02_clean-data.R
 # Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019

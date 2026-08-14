@@ -1,5 +1,5 @@
 ################################################################################.
-# Name of file - 01_update_lookups.R
+# Name of file - 01_update-lookups.R
 # Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Abram McCormick
 # Original Date - December 2024
@@ -228,8 +228,10 @@ simd_lookup %>%
     create_dir = TRUE))
 
 # Save HB/HSCP population lookup
-bind_rows(pop_lookup_hb, pop_lookup_hscp) %>% 
-  distinct() %>%
+pop_lookup <- bind_rows(pop_lookup_hb, pop_lookup_hscp) %>% 
+  distinct() 
+
+pop_lookup %>%
   write_file(path = get_lookup_path(
     type = "pop", 
     check_mode = "write",

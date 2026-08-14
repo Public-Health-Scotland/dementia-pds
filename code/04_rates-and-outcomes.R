@@ -1,5 +1,5 @@
 ################################################################################.
-# Name of file - 04_create_rates_measures_table.R
+# Name of file - 04_rates-and-outcomes.R
 # Data release - Quarterly Dementia PDS Management Reports
 # Original Authors - Lucy Binsted
 # Original Date - August 2026
@@ -8,7 +8,7 @@
 # Version of R - 4.4.2
 #
 # Description - 
-#   Join data to create a table of rates and measures
+#   Join data to create a table of rates and outcomes
 ################################################################################.
 
 ################################################################################.
@@ -18,7 +18,7 @@
 # Source the setup script
 source(here::here("code", "00_setup-environment.R"))
 source(here::here("functions/create_rates_table.R"))
-source(here::here("functions/create_measures_table.R"))
+source(here::here("functions/create_outcomes_table.R"))
 
 ################################################################################.
 ### 2 - Read data ----
@@ -40,10 +40,10 @@ ESP13_df <- read_rds(get_lookup_path(type = "esp"))
 exp_df <- read_rds(get_lookup_path(type = "exp"))
 
 # Population lookup (output from 01_update-lookups)
-population_df <- read_rds(get_lookup_path(type = "pop"))
+pop_lookup <- read_rds(get_lookup_path(type = "pop"))
 
 # Population lookup (output from 01_update-lookups)
-population_simd_df <- read_rds(get_lookup_path(type = "pop_simd"))
+pop_lookup_simd <- read_rds(get_lookup_path(type = "pop_simd"))
 
 ################################################################################.
 ### 3 - Create rates and measures table ----
@@ -52,20 +52,20 @@ population_simd_df <- read_rds(get_lookup_path(type = "pop_simd"))
 # Rates
 output <- bind_rows(
   full_join(
-    create_rates_table(pds, population_df, ESP13_df),
-    create_measures_table(pds, exp_df)) %>%
+    create_rates_table(pds, pop_lookup, ESP13_df),
+    create_outcomes_table(pds, exp_df)) %>%
     mutate(demog = "none"),
   full_join(
-    create_rates_table(pds, population_df, ESP13_df, "age_grp_2"),
-    create_measures_table(pds, exp_df, "age_grp_2")) %>%
+    create_rates_table(pds, pop_lookup, ESP13_df, "age_grp_2"),
+    create_outcomes_table(pds, exp_df, "age_grp_2")) %>%
     mutate(demog = "age"),
   full_join(
-    create_rates_table(pds, population_df, ESP13_df, "sex"),
-    create_measures_table(pds, exp_df, "sex")) %>%
+    create_rates_table(pds, pop_lookup, ESP13_df, "sex"),
+    create_outcomes_table(pds, exp_df, "sex")) %>%
     mutate(demog = "sex"),
   full_join(
-    create_rates_table(pds, population_simd_df, ESP13_df, "simd"),
-    create_measures_table(pds, exp_df, "simd")) %>%
+    create_rates_table(pds, pop_lookup_simd, ESP13_df, "simd"),
+    create_outcomes_table(pds, exp_df, "simd")) %>%
     mutate(demog = "simd"),
 )
 

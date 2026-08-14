@@ -1,5 +1,5 @@
 ################################################################################.
-# Name of file - 03_process_data.R
+# Name of file - 03_process-data.R
 # Data release - Quarterly Dementia PDS Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019
@@ -39,7 +39,7 @@ pds <- read_rds(
     test_output = test_output))
 
 # SIMD data (output from 01_update-lookups.R)
-simd <- read_rds(
+simd_lookup <- read_rds(
   get_lookup_path(type = "simd"))
 
 # Aberdeen City data for 2019/20 and 2020/21
@@ -133,14 +133,14 @@ pds <- bind_rows(
   # Add SIMD data
   pds %>%
     mutate(postcode = format_postcode(postcode)) %>%
-    left_join(simd, by = c("postcode" = "pc7")) %>%
+    left_join(simd_lookup, by = c("postcode" = "pc7")) %>%
     mutate(simd = replace_na(simd, "Unknown")), 
   
   # Update SIMD for Aberdeen City 2019/20 and 2020/21
   pds_aberdeen %>%
     select(-simd) %>% 
     mutate(postcode = format_postcode(postcode)) %>%
-    left_join(simd, by = c("postcode" = "pc7")) %>%
+    left_join(simd_lookup, by = c("postcode" = "pc7")) %>%
     mutate(simd = replace_na(simd, "Unknown")),
   ) %>%
   

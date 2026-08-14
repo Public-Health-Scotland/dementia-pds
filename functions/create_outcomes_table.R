@@ -1,5 +1,5 @@
-create_measures_table <- function(pds, exp_df, demographic = c()){
-  measures_df <- pds %>%
+create_outcomes_table <- function(pds, exp_df, demographic = c()){
+  outcomes_df <- pds %>%
     { if ("age_grp_2" %in% demographic) filter(., age_grp_2 != "Unknown") else . } %>%
     { if ("sex" %in% demographic) filter(., !sex %in% c("98 Not Specified", "99 Not Known")) else . } %>%
     { if ("simd" %in% demographic) filter(., simd != "Unknown") else . } %>%
@@ -48,8 +48,5 @@ create_measures_table <- function(pds, exp_df, demographic = c()){
     left_join(exp_df, by = c("geog", "fy")) %>%
     mutate(exp_rate = round(referrals / diagnoses * 100, 1)) 
   
-  return(measures_df)
+  return(outcomes_df)
 }
-
-
-

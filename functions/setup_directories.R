@@ -196,17 +196,12 @@ get_mi_year_dir <- function(folder = c("data", "output", "tests"),
 #' @export
 
 get_mi_data_path <- function(type = c("clean_data",
-                                      "comp_data",
                                       "dupe_data",
                                       "error_data",
                                       "final_data",
                                       "ldp_data",
-                                      "ldp_wait_data",
                                       "query_error_data",
-                                      "query_data",
-                                      "uptake_data",
-                                      "wait_data"
-                                      ),
+                                      "query_data"),
                              ext = c("rds", "csv"), 
                              fy,
                              qt,
@@ -232,16 +227,12 @@ get_mi_data_path <- function(type = c("clean_data",
   file_name <- dplyr::case_match(
     type,
     "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
-    "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data"),
     "dupe_data" ~ stringr::str_glue("{fy}-{qt}_dupes"),
     "error_data" ~ stringr::str_glue("{fy}-{qt}_error-summary"),
     "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data"),
     "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
-    "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data"),
     "query_error_data" ~ stringr::str_glue("{fy}-{qt}_query-error-summary"),
-    "query_data" ~ stringr::str_glue("{fy}-{qt}_query-summary"),
-    "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data"),
-    "wait_data" ~ stringr::str_glue("{fy}-{qt}_wait-data"),
+    "query_data" ~ stringr::str_glue("{fy}-{qt}_query-summary")
     )
   
   # Check the file path
