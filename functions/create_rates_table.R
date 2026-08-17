@@ -42,7 +42,7 @@ create_rates_table <- function(pds, population_df, ESP13_df, demographic = c(), 
     mutate(filtered_esp = ifelse(as.numeric(str_extract(age_grp, "^\\d+")) >= age_cutoff, european_standard_population, 0))
   
   # 4. Join data and calculate rates
-  rates_df <- left_join(pds, population, by = c("fy", "geog", "name", "age_grp", "sex_dummy", demographic)) %>%
+  rates_df <- full_join(pds, population, by = c("fy", "geog", "name", "age_grp", "sex_dummy", demographic)) %>%
     left_join(ESP13, by = c("age_grp", "sex_dummy")) %>%
     # Group by year (fy), ijb/health_board/scotland (geog/name) and demographics (age_grp_2/sex/simd)
     group_by(fy, geog, name, across(any_of(demographic))) %>%
@@ -50,8 +50,8 @@ create_rates_table <- function(pds, population_df, ESP13_df, demographic = c(), 
       # Age-sex standardised rate using referrals and population estimates over 18 (per 100,000)
       standardised_rate = sum(filtered_referrals / filtered_population * filtered_esp, na.rm = TRUE) * 100000 / sum(filtered_esp, na.rm = TRUE),
       # Crude rate using all referrals and population estimates over 65 (per 10,000)
-      old_rate = sum(all_referrals, na.rm = TRUE) / sum(over_65_population, na.rm = TRUE) * 10000,
-      .groups = "drop") %>%
+      old_rate = (sum(all_referrals, na.rm = TRUE) / sum(over_65_population, na.rm = TRUE)) * 10000,
+      .groups = "drop")
     
     return(rates_df)
 }

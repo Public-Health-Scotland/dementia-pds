@@ -32,7 +32,7 @@ qt <- 3
 #        collated file and boards are still submitting or correcting data.
 # FALSE: Use this when the Data Management Team provide a finalised version of  
 #        the collated file and no more changes will be made.
-test_output <- TRUE
+test_output <- F
 
 ################################################################################.
 ### 1 - Load packages ----
