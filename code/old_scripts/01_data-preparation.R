@@ -29,13 +29,13 @@ pds <- read_csv(
   clean_names() %>%
   
   # Convert dates from character to date format
-  mutate(across(contains("date"), ymd)) %>%
+  dplyr::mutate(dplyr::across(tidyselect::contains("date"), lubridate::ymd)) %>%
   
   # Pad CHI Number to 10 digits
-  mutate(chi_number = chi_pad(chi_number)) %>%
+  dplyr::mutate(chi_number = phsmethods::chi_pad(chi_number)) %>%
   
   # Replace word 'and' with ampersand
-  mutate(health_board = str_replace(health_board, " and ", " & ")) %>%
+  dplyr::mutate(health_board = stringr::str_replace(health_board, " and ", " & ")) %>%
   
   # Remove records with missing diag date or outwith reporting period
   filter(between(dementia_diagnosis_confirmed_date, start_date, end_date)) %>% 

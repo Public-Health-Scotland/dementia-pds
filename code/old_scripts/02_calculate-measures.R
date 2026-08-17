@@ -73,7 +73,8 @@ pds %<>%
 
 pds %<>%
   
-  mutate(ldp = case_when(
+  # LDP Classification ----
+  ldp = case_when(
     
     #### COMPLETE ####
     
@@ -273,8 +274,7 @@ pds %<>%
   rename(ldp_full = ldp) %>% 
   mutate(ldp = word(ldp_full, 1), .after = ldp_full) %>% 
 
-  # Remove completed rows for months in incomplete financial year
-  # e.g. for Q1 reports, remove completed rows for July - March
+  # Remove completed rows for months in incomplete financial year e.g. for Q1 reports, remove completed rows for July - March
   filter(substr(fy, 1, 4) < year(end_date) |
            (substr(fy, 1, 4) == year(end_date) & 
               month %in% inc_months))
