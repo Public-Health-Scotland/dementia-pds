@@ -129,7 +129,7 @@ extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == 
               "2024/25 and 2025/26, which has resulted in some records showing as incorrectly having met the standard. ",
               "NHS Tayside has informed PHS that these data issues will be rectified once they have completed the ", 
               "migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from ",
-              "all areas for 2025/26 Q3 and Q4.*"),
+              "all areas for 2025/26 Q3 and Q4 and 2026/27 Q1.*"),
     TRUE ~ paste0(""))
   
   
