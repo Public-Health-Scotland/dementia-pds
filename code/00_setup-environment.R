@@ -24,7 +24,7 @@
 #
 #           test_output = TRUE - returns the test file path for data and report
 #           test_output = FALSE - returns the finalised data and report for distribution
-test_output <- TRUE
+test_output <- FALSE
 # UPDATE - Last day in reporting period (ddmmyyyy)
 end_date <- lubridate::dmy(30062026)
 previous_end_date <- lubridate::dmy(31032026)
