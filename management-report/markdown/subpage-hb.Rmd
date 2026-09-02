@@ -109,6 +109,8 @@ extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == 
   tay_date3 <- dmy(01042023)
   tay_date4 <- dmy(01042024)
   tay_date5 <- dmy(01042025)
+  tay_date6 <- dmy(01042026)
+  
   
   tay_text <-  
     case_when(hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date1) |
@@ -122,14 +124,15 @@ extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == 
            "allowed NHS Tayside to improve on data reporting from 2019 onwards.*"),
       hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date3)|
       hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date4)|
-      hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date5)~
+      hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date5)|
+      hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date6)~
         paste0(" ", 
             "**Please note:** ",
               "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ", 
               "2024/25 and 2025/26, which has resulted in some records showing as incorrectly having met the standard. ",
               "NHS Tayside has informed PHS that these data issues will be rectified once they have completed the ", 
               "migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from ",
-              "all areas for 2025/26 Q3 and Q4.*"),
+              "all areas for 2025/26 Q3 and Q4 and 2026/27 Q1.*"),
     TRUE ~ paste0(""))
   
   
@@ -166,21 +169,7 @@ extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == 
   
   
   
-  # Data quality notes - Grampian
-  gramp_date1 <- dmy(01042023)
-  gramp_date2 <- dmy(01042024)
-  gramp_date3 <- dmy(01042025)
   
-  gramp_text <- case_when(
-    hb == "NHS Grampian" & sel_fy == extract_fin_year(gramp_date1) |
-      hb == "NHS Grampian" & sel_fy == extract_fin_year(gramp_date2) |
-      hb == "NHS Grampian" & sel_fy == extract_fin_year(gramp_date3) ~
-      paste0(" ", 
-             "**Please note:** ",
-             "*In 2025/26 Q4 submission the numbers reported for  2023/24, 2024/25 and 2025/26 by ", 
-             "NHS Grampian are lower than those reported than in previous quarters. ", 
-             "PHS are working with the Board to investigate and resolve this.*"), 
-    TRUE ~ paste0(""))
 
 ```
 
@@ -261,7 +250,6 @@ Row
 
 `r orkney_text`
 
-`r gramp_text`
 
 Row `r if(complete_year == FALSE)"{.hidden}"` 
 ----------------------------------------------------------------------

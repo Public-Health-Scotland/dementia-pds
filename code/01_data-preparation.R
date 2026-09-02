@@ -29,7 +29,7 @@ pds <- read_csv(
   clean_names() %>%
   
   # Convert dates from character to date format
-  mutate(across(contains("date"), ymd)) %>%
+  mutate(across(contains("date"), ~ ymd(na_if(.x, "9999-09-09")))) %>%
   
   # Pad CHI Number to 10 digits
   mutate(chi_number = chi_pad(chi_number)) %>%
