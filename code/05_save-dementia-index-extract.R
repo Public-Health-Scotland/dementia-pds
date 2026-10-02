@@ -53,4 +53,4 @@ filename <- paste0("pds_dementia_index_extract-", year, "-Q", qt)
 write_rds(pds_dementia_index, paste0(filepath, filename, ".rds"))
 
 # Write as .csv
-write.csv(pds_dementia_index, paste0(filepath, filename, ".csv"))
+write.csv(pds_dementia_index, paste0(filepath, filename, ".csv"), row.names=FALSE)
