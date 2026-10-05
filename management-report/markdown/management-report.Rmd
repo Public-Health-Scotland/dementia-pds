@@ -197,11 +197,11 @@ lookup_info <- read.csv(get_mi_data_path(
 ))
 
 # Data carried forwards in the HSCP and HB population data (should be the same)
-pop_data_from <- lookup_info %>% filter(lookup == "hb_population") %>% pull(data_from)
+pop_data_from <- as.character(lookup_info %>% filter(lookup == "hb_population") %>% pull(data_from))
 pop_data_to <- lookup_info %>% filter(lookup == "hb_population") %>% pull(carried_to)
 
 # Data carried forwards in the SIMD population data 
-simd_pop_data_from <- lookup_info %>% filter(lookup == "simd_population") %>% pull(data_from)
+simd_pop_data_from <- as.character(lookup_info %>% filter(lookup == "simd_population") %>% pull(data_from))
 simd_pop_data_to <- lookup_info %>% filter(lookup == "simd_population") %>% pull(carried_to)
 
 # List years from 2021/22 to the current year for diagnosis rates text
@@ -210,8 +210,8 @@ fy_21_22_to_current <- sprintf("%d/%02d", 2021:as.integer(substr(fy, 1, 4)),
 
 # Format the list 
 fy_21_22_to_current_text <- paste0(
-  paste(sprintf("*%s*", head(fy, -1)), collapse = ", "), " and ",
-  sprintf("*%s*", tail(fy, 1)))
+  paste(sprintf("*%s*", head(fy_21_22_to_current, -1)), collapse = ", "), " and ",
+  sprintf("*%s*", tail(fy_21_22_to_current, 1)))
 
 ```
 
