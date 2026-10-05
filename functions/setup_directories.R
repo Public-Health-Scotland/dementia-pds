@@ -219,7 +219,7 @@ get_mi_data_path <- function(type = c("clean_data",
   )
     
   # Get the file name
-  file_name <- dplyr::case_match(
+  file_name <- dplyr::recode_values(
     type,
     "clean_data" ~ stringr::str_glue("{fy}-{qt}_clean-data"),
     "comp_data" ~ stringr::str_glue("{fy}-{qt}_comp-data"),
@@ -758,7 +758,7 @@ get_pub_output_path <- function(output_name = c("pub_summary",
   )
   
   # Get the file name
-  file_name <- dplyr::case_match(
+  file_name <- dplyr::recode_values(
     output_name,
     "pub_summary" ~ stringr::str_glue("{pub_date}_dementia-pds_summary.docx"),
     "pub_report" ~ stringr::str_glue("{pub_date}_dementia-pds_report.docx"),
@@ -837,7 +837,7 @@ get_pub_figures_path <- function(type = c("c1",
   )
   
   # Get the file name
-  file_name <- dplyr::case_match(
+  file_name <- dplyr::recode_values(
     type,
     "c1" ~ stringr::str_glue("{pub_date}_incidence-hb.png"),
     "c2" ~ stringr::str_glue("{pub_date}_12-months-hb.png"),
