@@ -33,6 +33,7 @@ get_pop_est_year <- function(path) {
 
 ## Creating population for IJB ----
 
+# Use get_pop_path(choose = TRUE) to select the version manually
 la_pop_path <- get_pop_path(type = "HSCP", selection_method = "modification_date")
 
 la_pop <- read_rds(la_pop_path) %>% 
@@ -54,69 +55,69 @@ la_pop %<>%
   )) %>%
   
   # Create a new column with age in 3 groups
-   mutate(age_grp_2 = case_when(
-     age %in% 65:79 ~ "79 and Under", # This is used for calculating rates where denominator is only 65 and over population
-     age %in% 80:84 ~ "80 to 84",
-     age >= 85     ~ "85+"
-   )) %>%
+  mutate(age_grp_2 = case_when(
+    age %in% 65:79 ~ "79 and Under", # This is used for calculating rates where denominator is only 65 and over population
+    age %in% 80:84 ~ "80 to 84",
+    age >= 85     ~ "85+"
+  )) %>%
   
   # Convert sex column from integer to string
-   mutate(sex = case_when(
-     sex == 1 ~ "01 Male",
-     sex == 2 ~ "02 Female"
-   ))
+  mutate(sex = case_when(
+    sex == 1 ~ "01 Male",
+    sex == 2 ~ "02 Female"
+  ))
 
 # Aggregate by year, LA, age group and gender
 la_pop_data <- bind_rows(
   
-    la_pop %>%
-      group_by(geog = !!sym(geog_col_ijb), year, age_grp_2, age_grp = "All", sex) %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    la_pop %>%
-      group_by(geog = "Scotland", year, age_grp_2, age_grp = "All", sex) %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-
-    la_pop %>%
-      group_by(geog = !!sym(geog_col_ijb), year, age_grp_2, age_grp = "All", sex = "All") %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    la_pop %>%
-      group_by(geog = "Scotland", year, age_grp_2, age_grp = "All", sex = "All") %>%
-      summarise(pop_est = sum(pop), .groups = "drop"), 
-
-    la_pop %>%
-      group_by(geog = !!sym(geog_col_ijb), year, age_grp_2 = "All", age_grp, sex) %>%
-      summarise(pop_est = sum(pop), .groups ="drop"),
-    
-    la_pop %>%
-      group_by(geog = !!sym(geog_col_ijb), year, age_grp_2 = "All", age_grp = "All", sex) %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    la_pop %>%
-      group_by(geog = "Scotland", year, age_grp_2 = "All", age_grp, sex) %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    la_pop %>%
-      group_by(geog = "Scotland", year, age_grp_2 = "All", age_grp = "All", sex) %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    la_pop %>%
-      group_by(geog = !!sym(geog_col_ijb), year, age_grp_2 = "All", age_grp, sex = "All") %>%
-      summarise(pop_est = sum(pop), .groups ="drop"),
-    
-    la_pop %>%
-      group_by(geog = !!sym(geog_col_ijb), year, age_grp_2 = "All", age_grp = "All", sex = "All") %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    la_pop %>%
-      group_by(geog = "Scotland", year, age_grp_2 = "All", age_grp, sex = "All") %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    la_pop %>%
-      group_by(geog = "Scotland", year, age_grp_2 = "All", age_grp = "All", sex = "All") %>%
-      summarise(pop_est = sum(pop), .groups = "drop")
-  )
+  la_pop %>%
+    group_by(geog = !!sym(geog_col_ijb), year, age_grp_2, age_grp = "All", sex) %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  la_pop %>%
+    group_by(geog = "Scotland", year, age_grp_2, age_grp = "All", sex) %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  la_pop %>%
+    group_by(geog = !!sym(geog_col_ijb), year, age_grp_2, age_grp = "All", sex = "All") %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  la_pop %>%
+    group_by(geog = "Scotland", year, age_grp_2, age_grp = "All", sex = "All") %>%
+    summarise(pop_est = sum(pop), .groups = "drop"), 
+  
+  la_pop %>%
+    group_by(geog = !!sym(geog_col_ijb), year, age_grp_2 = "All", age_grp, sex) %>%
+    summarise(pop_est = sum(pop), .groups ="drop"),
+  
+  la_pop %>%
+    group_by(geog = !!sym(geog_col_ijb), year, age_grp_2 = "All", age_grp = "All", sex) %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  la_pop %>%
+    group_by(geog = "Scotland", year, age_grp_2 = "All", age_grp, sex) %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  la_pop %>%
+    group_by(geog = "Scotland", year, age_grp_2 = "All", age_grp = "All", sex) %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  la_pop %>%
+    group_by(geog = !!sym(geog_col_ijb), year, age_grp_2 = "All", age_grp, sex = "All") %>%
+    summarise(pop_est = sum(pop), .groups ="drop"),
+  
+  la_pop %>%
+    group_by(geog = !!sym(geog_col_ijb), year, age_grp_2 = "All", age_grp = "All", sex = "All") %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  la_pop %>%
+    group_by(geog = "Scotland", year, age_grp_2 = "All", age_grp, sex = "All") %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  la_pop %>%
+    group_by(geog = "Scotland", year, age_grp_2 = "All", age_grp = "All", sex = "All") %>%
+    summarise(pop_est = sum(pop), .groups = "drop")
+)
 
 # Clean up geography for Edinburgh and Western Isles
 la_pop_data %<>% 
@@ -124,10 +125,21 @@ la_pop_data %<>%
     str_detect(geog, "Edinburgh") ~ "Edinburgh City",
     str_detect(geog, "Na h-Eileanan Siar") ~ "Western Isles",
     TRUE ~ geog
-))
+  ))
+
+# Add missing years until the current year by duplicating the latest year in la_pop_data
+la_pop_data$duplicated_year <- FALSE
+while(max(la_pop_data$year) < fy){
+  la_pop_data %<>% rbind((
+    la_pop_data %>% 
+      filter(year == max(year)) %>% 
+      mutate(year = max(year) + 1,
+             duplicated_year = TRUE)))
+}
 
 ## Creating population for HB ----
 
+# Use get_pop_path(choose = TRUE) to select the version manually
 hb_pop_path <- get_pop_path(type = "HB", selection_method = "modification_date")
 
 hb_pop <- read_rds(hb_pop_path) %>%
@@ -163,31 +175,31 @@ hb_pop %<>%
 
 # Aggregate by year, hb, age group and gender
 hb_pop_data <- bind_rows(
-    
-    hb_pop %>% 
-      group_by(geog = !!sym(geog_col_hb), year, age_grp_2, age_grp = "All", sex) %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    hb_pop %>% 
-      group_by(geog = !!sym(geog_col_hb), year, age_grp_2 = "All", age_grp, sex) %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    hb_pop %>% 
-      group_by(geog = !!sym(geog_col_hb), year, age_grp_2 = "All", age_grp = "All", sex) %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    hb_pop %>% 
-      group_by(geog = !!sym(geog_col_hb), year, age_grp_2, age_grp = "All", sex = "All") %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    hb_pop %>% 
-      group_by(geog = !!sym(geog_col_hb), year, age_grp_2 = "All", age_grp, sex = "All") %>%
-      summarise(pop_est = sum(pop), .groups = "drop"),
-    
-    hb_pop %>% 
-      group_by(geog = !!sym(geog_col_hb), year, age_grp_2 = "All", age_grp = "All", sex = "All") %>%
-      summarise(pop_est = sum(pop), .groups = "drop") 
-  )
+  
+  hb_pop %>% 
+    group_by(geog = !!sym(geog_col_hb), year, age_grp_2, age_grp = "All", sex) %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  hb_pop %>% 
+    group_by(geog = !!sym(geog_col_hb), year, age_grp_2 = "All", age_grp, sex) %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  hb_pop %>% 
+    group_by(geog = !!sym(geog_col_hb), year, age_grp_2 = "All", age_grp = "All", sex) %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  hb_pop %>% 
+    group_by(geog = !!sym(geog_col_hb), year, age_grp_2, age_grp = "All", sex = "All") %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  hb_pop %>% 
+    group_by(geog = !!sym(geog_col_hb), year, age_grp_2 = "All", age_grp, sex = "All") %>%
+    summarise(pop_est = sum(pop), .groups = "drop"),
+  
+  hb_pop %>% 
+    group_by(geog = !!sym(geog_col_hb), year, age_grp_2 = "All", age_grp = "All", sex = "All") %>%
+    summarise(pop_est = sum(pop), .groups = "drop") 
+)
 
 # Clean up geography for Ayrshire, D&G and Glasgow
 hb_pop_data %<>% 
@@ -198,15 +210,20 @@ hb_pop_data %<>%
     TRUE ~ geog
   ))
 
+# Add missing years until the current year by duplicating the latest year in hb_pop_data
+hb_pop_data$duplicated_year <- FALSE
+while(max(hb_pop_data$year) < fy){
+  hb_pop_data %<>% rbind((
+    hb_pop_data %>% 
+      filter(year == max(year)) %>% 
+      mutate(year = max(year) + 1,
+             duplicated_year = TRUE)))
+}
+
 ## Merge and save population for IAA and population for HB ----
 
 # Merge LA and HB pops
-pop_data <-bind_rows(la_pop_data, hb_pop_data)
-
-# Add missing years until the current year by duplicating the latest year in pop_data
-while(max(pop_data$year) < fy){
-  pop_data %<>% rbind((pop_data %>% filter(year == max(year)) %>% mutate(year = max(year) + 1)))
-}
+pop_data <- bind_rows(la_pop_data, hb_pop_data)
 
 # Check
 tabyl(pop_data$geog)
@@ -223,11 +240,17 @@ pop_data %>%
 ### 3 - Read in SIMD population file ---- 
 ################################################################################.
 
-simd_pop_path <- get_pop_path(type = "DataZone", selection_method = "modification_date")
+# Use get_pop_path(choose = TRUE) to select the version manually
+
+# TODO: This needs to be fixed - the new population files do not have SIMD columns, and the DataZone 
+# columns do not match the most up-to-date SIMD lookup (datazone2011 vs datazone2022).
+# Using DataZone2011_pop_est_2011_2024.rds (old version) to test the rest of the changes.
+simd_pop_path <- get_pop_path(type = "DataZone", selection_method = "modification_date", choose = TRUE)
+5 # Menu option for DataZone2011_pop_est_2011_2024.rds (05/10/26)
 
 simd_pop <- read_rds(simd_pop_path) %>% 
   filter(year >= 2016)
-  
+
 simd_pop_la <- simd_pop %>%
   select(geog = !!sym(geog_col_ijb), year, simd = simd2020v2_sc_quintile, sex, 5:95) 
 
@@ -291,7 +314,7 @@ simd_pop_data %<>%
     age %in% 80:84 ~ "80 to 84",
     age >= 85     ~ "85+"
   )) %>%
-
+  
   # Convert sex column from integer to string
   mutate(sex = case_when(
     sex == "M" ~ "01 Male",
@@ -320,7 +343,7 @@ simd_pop_summary <- bind_rows(
   simd_pop_data %>% 
     group_by(geog, year, age_grp_2 = "All", age_grp = "All", sex, simd) %>% 
     summarise(pop = sum(pop), .groups = "drop")
-  )
+)
 
 # Clean up geography for Ayrshire, D&G, Glasgow, Edinburgh and Western Isles
 simd_pop_summary %<>% 
@@ -334,8 +357,13 @@ simd_pop_summary %<>%
   ))
 
 # Add missing years until the current year by duplicating the latest year in simd_pop_summary
+simd_pop_summary$duplicated_year <- FALSE
 while(max(simd_pop_summary$year) < fy){
-  simd_pop_summary %<>% rbind((simd_pop_summary %>% filter(year == max(year)) %>% mutate(year = max(year) + 1)))
+  simd_pop_summary %<>% rbind((
+    simd_pop_summary %>% 
+      filter(year == max(year)) %>% 
+      mutate(year = max(year) + 1,
+             duplicated_year = TRUE)))
 }
 
 simd_pop_data_final <- simd_pop_summary %>%
@@ -348,5 +376,56 @@ simd_pop_data_final %>%
       check_mode = "write",
       create_dir = TRUE))
 #0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.
+
+################################################################################.
+### 4. Lookup Information ----
+################################################################################.
+
+# Helper function to get lookup information
+create_info_row <- function(path, lookup, type){
+  if(grepl("population", type)) {
+    actual_year_list <- unique((lookup %>% filter(duplicated_year == FALSE))$year)
+    duplicated_year_list <- unique((lookup %>% filter(duplicated_year == TRUE))$year)
+    data_from <- max(as.numeric(actual_year_list))
+    carried_to <- paste(duplicated_year_list, collapse = ", ")
+  } else {
+    data_from <- NA
+    carried_to <- NA
+  }
+  info <- fs::file_info(path) %>%
+    select(path, size, modification_time) %>%
+    mutate(
+      lookup = type,
+      data_from = data_from,
+      carried_to = carried_to
+    )
+  info
+}
+
+# Lookup information
+lookup_info <- bind_rows(
+  create_info_row(simd_path, simd(), "simd_geography"),
+  create_info_row(hb_pop_path, hb_pop_data, "hb_population"),
+  create_info_row(la_pop_path, la_pop_data, "hscp_population"),
+  create_info_row(simd_pop_path, simd_pop_data_final, "simd_population")
+)
+
+# Save lookup information to MI data path
+lookup_info %>% 
+  write_file(path = get_mi_data_path(
+    type = "lookup_info", 
+    ext = "csv", 
+    fy = fy,
+    qt = qt,
+    test_output = test_output,
+    check_mode = "write",
+    create_dir = TRUE))
+
+# Save lookup information to lookup path
+lookup_info %>% 
+  write_file(path = get_lookup_path(
+    type = "lookup_info", 
+    check_mode = "write",
+    create_dir = TRUE))
 
 ################################ END OF SCRIPT #################################.

@@ -191,6 +191,7 @@ get_mi_data_path <- function(type = c("clean_data",
                                       "final_data",
                                       "ldp_data",
                                       "ldp_wait_data",
+                                      "lookup_info",
                                       "query_error_data",
                                       "query_data",
                                       "uptake_data",
@@ -227,6 +228,7 @@ get_mi_data_path <- function(type = c("clean_data",
     "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data.rds"),
     "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
     "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data"),
+    "lookup_data" ~ stringr::str_glue("{fy}-{qt}_lookup_version_information"),
     "query_error_data" ~ stringr::str_glue("{fy}-{qt}_query-error-summary"),
     "query_data" ~ stringr::str_glue("{fy}-{qt}_query-summary"),
     "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data"),
@@ -1215,7 +1217,8 @@ get_linkage_files_dir <- function(){
 
 get_simd_path <- function(check_mode = "read",
                           selection_method = "modification_date",
-                          recurse = FALSE) {
+                          recurse = FALSE,
+                          choose = FALSE) {
   
   # Construct the directory path
   simd_dir <- fs::path(get_linkage_files_dir(), "Deprivation")
@@ -1230,7 +1233,8 @@ get_simd_path <- function(check_mode = "read",
     create_dir = FALSE,
     file_name_regexp = file_name_regexp,
     selection_method = selection_method,
-    recurse = recurse
+    recurse = recurse,
+    choose = choose
   )
   
   return(simd_path)
@@ -1282,7 +1286,8 @@ get_simd_path <- function(check_mode = "read",
 get_pop_path <- function(type = c("HB", "HSCP", "DataZone"),
                          check_mode = "read",
                          selection_method = "modification_date",
-                         recurse = FALSE){
+                         recurse = FALSE,
+                         choose = FALSE){
   
   # Validate arguments
   type <- match.arg(type)
@@ -1302,7 +1307,8 @@ get_pop_path <- function(type = c("HB", "HSCP", "DataZone"),
     create_dir = FALSE,
     file_name_regexp = file_name_regexp,
     selection_method = selection_method,
-    recurse = recurse
+    recurse = recurse,
+    choose = choose
   )
   
   return(pop_path)

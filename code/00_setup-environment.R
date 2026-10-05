@@ -95,8 +95,11 @@ cl_out <- case_when(
 ### 4 - SIMD Lookup ----
 ################################################################################.
 
+# Use get_simd_path(choose = TRUE) to select the version manually
+simd_path <- get_simd_path(selection_method = "modification_date")
+
 simd <- function(){
-  simd <- read_rds(get_simd_path()) %>% 
+  simd <- read_rds(simd_path) %>% 
     clean_names() %>%
     select(pc7, simd = simd2020v2_sc_quintile) %>%
     mutate(
