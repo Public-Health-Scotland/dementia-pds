@@ -385,9 +385,11 @@ simd_pop_data_final %>%
 create_info_row <- function(path, lookup, type){
   if(grepl("population", type)) {
     actual_year_list <- unique((lookup %>% filter(duplicated_year == FALSE))$year)
-    duplicated_year_list <- unique((lookup %>% filter(duplicated_year == TRUE))$year)
     data_from <- max(as.numeric(actual_year_list))
-    carried_to <- paste(duplicated_year_list, collapse = ", ")
+    
+    duplicated_year_list <- unique((lookup %>% filter(duplicated_year == TRUE))$year)
+    duplicated_year_list <- sprintf("%d/%02d", duplicated_year_list, (duplicated_year_list + 1) %% 100)
+    carried_to <- glue::glue_collapse(duplicated_year_list, sep = ", ", last = " and ")
   } else {
     data_from <- NA
     carried_to <- NA

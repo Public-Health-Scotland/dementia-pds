@@ -37,7 +37,8 @@ source(here::here("functions/setup_general.R"))
 #' @export
 
 get_root_dir <- function() {
-  root_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs")
+  #root_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs")
+  root_dir <- fs::path("/", "conf", "dementia", "A&I", "Analysts", "Lucy", "test")
 
   return(root_dir)
 }
@@ -228,7 +229,7 @@ get_mi_data_path <- function(type = c("clean_data",
     "final_data" ~ stringr::str_glue("{fy}-{qt}_final-data.rds"),
     "ldp_data" ~ stringr::str_glue("{fy}-{qt}_individuals-with-ldp"),
     "ldp_wait_data" ~ stringr::str_glue("{fy}-{qt}_ldp_wait-data"),
-    "lookup_data" ~ stringr::str_glue("{fy}-{qt}_lookup_version_information"),
+    "lookup_info" ~ stringr::str_glue("{fy}-{qt}_lookup_version_information"),
     "query_error_data" ~ stringr::str_glue("{fy}-{qt}_query-error-summary"),
     "query_data" ~ stringr::str_glue("{fy}-{qt}_query-summary"),
     "uptake_data" ~ stringr::str_glue("{fy}-{qt}_uptake-data"),
