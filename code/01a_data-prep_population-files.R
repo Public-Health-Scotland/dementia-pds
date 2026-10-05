@@ -421,11 +421,4 @@ lookup_info %>%
     check_mode = "write",
     create_dir = TRUE))
 
-# Save lookup information to lookup path
-lookup_info %>% 
-  write_file(path = get_lookup_path(
-    type = "lookup_info", 
-    check_mode = "write",
-    create_dir = TRUE))
-
 ################################ END OF SCRIPT #################################.
