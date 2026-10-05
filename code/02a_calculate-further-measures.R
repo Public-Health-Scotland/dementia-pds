@@ -99,7 +99,7 @@ ijb <- full_join(ytbd_ijb, totals_ijb) %>% rename(geog = ijb)
 summary_ytbd <- bind_rows(ijb,hb)  
 summary_ytbd %<>% 
   pivot_longer(
-    cols= cols,
+    cols = all_of(cols),
     names_to='field_name',
     values_to='no_of_records_ytbd') %>%
   relocate(number_of_records, .after = field_name)
@@ -145,7 +145,7 @@ missing_ijb %<>% rename(geog = ijb)
 summary_na <- bind_rows(missing_ijb, missing_hb)  
 summary_na %<>% 
   pivot_longer(
-    cols = cols,
+    cols = all_of(cols),
     names_to='field_name',
     values_to='no_of_records_missing_not_known'
   )
