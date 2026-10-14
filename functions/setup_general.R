@@ -35,6 +35,8 @@
 #' }
 #' @param recurse Logical. Should files in nested directories also be searched?
 #' Defaults to `FALSE`.
+#' @param choose Logical. Does the user want to choose the file from the matches?
+#' Can only be used in an interactive session. Defaults to `FALSE`.
 #'
 #' @return An [fs::path()] object containing the selected file path.
 #'
@@ -52,13 +54,21 @@
 find_latest_file <- function(directory,
                              regexp,
                              selection_method = "modification_date",
-                             recurse = FALSE) {
+                             recurse = FALSE,
+                             choose = FALSE) {
   
   # Check the selection method argument
   selection_method <- match.arg(
     selection_method,
     choices = c("modification_date", "file_name")
   )
+  
+  # Check the choose argument
+  if (!is.logical(choose) || length(choose) != 1L || is.na(choose)) {
+    cli::cli_abort(
+      "{.arg choose} must be either {.code TRUE} or {.code FALSE}."
+    )
+  }
   
   # Search the directory for files matching the regular expression
   matches <- fs::dir_info(
@@ -92,39 +102,73 @@ find_latest_file <- function(directory,
   
   # If the selection method is `modification_date`, select the files with the latest modification time
   if (selection_method == "modification_date") {
-    matches <- matches %>%
+    matches_filtered <- matches %>%
       dplyr::filter(.data$modification_time == max(.data$modification_time))
-    
     # If there is one file with the latest modification date, return it's path with an info message
-    if (nrow(matches) == 1L) {
-      cli::cli_alert_info(c(
-        msg, 
-        " {.file {fs::path_file(matches$path)}} has been selected based on modification date ({.val {matches$modification_time}})."
-      ))
-      return(matches$path)
-    } 
-    
-    # If there are multiple files with the latest modification date, or the selection method is `file_name`, select the file that is last alphabetically (typically corresponding to the highest numbered file)
-    matches <- matches %>%
-      dplyr::arrange(dplyr::desc(fs::path_file(.data$path))) %>%
-      dplyr::slice(1L)
-    cli::cli_alert_info(c(
-      msg,
-      " Multiple files shared the latest modification date.",
-      " {.file {fs::path_file(matches$path)}} has been selected as it is last alphabetically."
-    ))
-    return(matches$path)
+    if (nrow(matches_filtered) == 1L) {
+      recommendation_reason <- " {.file {fs::path_file(matches_filtered$path)}} has been selected based on modification date ({.val {matches_filtered$modification_time}})."
+      recommended_path <- matches_filtered$path
+      # If there are multiple files with the latest modification date, select the file that is last alphabetically
+    } else {
+      matches_filtered <- matches_filtered %>%
+        dplyr::arrange(dplyr::desc(fs::path_file(.data$path))) %>%
+        dplyr::slice(1L)
+      recommendation_reason <- " Multiple files shared the latest modification date. {.file {fs::path_file(matches_filtered$path)}} has been selected as it is last alphabetically."
+      recommended_path <- matches_filtered$path
+    }
   }
   
-  # Select by file name (last alphabetically)
+  # If the selection method is `file_name`, select the file that is last alphabetically
+  if (selection_method == "file_name") {
+    matches_filtered <- matches %>%
+      dplyr::arrange(dplyr::desc(fs::path_file(.data$path))) %>%
+      dplyr::slice(1L)
+    recommendation_reason <- " {.file {fs::path_file(matches_filtered$path)}} has been selected as it is last alphabetically (typically corresponding to the highest numbered file)."
+    recommended_path <- matches_filtered$path
+  }
+  
+  # Return the recommendation automatically unless selection is requested
+  if (!choose) {
+    cli::cli_alert_info(c(msg, "i" = recommendation_reason))
+    return(fs::path(recommended_path))
+  }
+  
+  # Use relative paths with modification dates 
+  choice_labels <- paste0(
+    fs::path_rel(matches$path,start = directory), "  [modified: ", 
+    format(matches$modification_time,format = "%Y-%m-%d %H:%M:%S"), "]")
+  
+  # Label the recommended path
   matches <- matches %>%
-    dplyr::arrange(dplyr::desc(fs::path_file(.data$path))) %>%
-    dplyr::slice(1L)
-  cli::cli_alert_info(c(
-    msg,
-    " {.file {fs::path_file(matches$path)}} has been selected as it is last alphabetically (typically corresponding to the highest numbered file)."
-  ))
-  return(matches$path)
+    dplyr::mutate(recommended = .data$path == recommended_path)
+  
+  # Add a tag to show the recommended selection
+  choice_labels[matches$recommended] <- paste0("⭐ Recommended: ", choice_labels[matches$recommended])
+
+  # Display an information message
+  cli::cli_alert_info(c(msg, "i" = recommendation_reason, "i" = " Select the file you want to use."))
+  
+  # Show the interactive selection
+  selected_label <- utils::select.list(
+    choices = choice_labels,
+    preselect = choice_labels[[1L]],
+    multiple = FALSE,
+    title = "Select a file",
+    graphics = TRUE
+  )
+  
+  # An empty string means that the user cancelled the dialog
+  if (!nzchar(selected_label)) {cli::cli_abort("No file was selected.")}
+  
+  # Get the selected path
+  selected_index <- match(selected_label, choice_labels)
+  selected_path <- matches$path[[selected_index]]
+  
+  # Message to say which path was selected
+  cli::cli_alert_success("Using {.file {fs::path_file(selected_path)}}.")
+  
+  # Return the selected path
+  fs::path(selected_path)
 }
 
 
@@ -229,7 +273,8 @@ check_file_path <- function(directory,
                             create_dir = FALSE,
                             file_name_regexp = NULL,
                             selection_method = "modification_date",
-                            recurse = FALSE) {
+                            recurse = FALSE,
+                            choose = FALSE) {
     
     # Check the directory exists with the required permissions, and create it if requested
     directory <- check_dir_path(directory, check_mode, create_dir)
@@ -256,7 +301,8 @@ check_file_path <- function(directory,
           directory,
           regexp = file_name_regexp,
           selection_method = selection_method,
-          recurse = recurse
+          recurse = recurse, 
+          choose = choose
         )
       # 3.2. If check mode is not read, return an error message
       } else {
