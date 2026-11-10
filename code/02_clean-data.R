@@ -3,10 +3,8 @@
 # Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019
-# Updated by - Jennifer Thom
-# Date - November 2023
-# Updated by - Lucy Binsted
-# Date - August 2026
+# Updated by Jennifer Thom - Nov 2023
+# Updated by Lucy Binsted - Oct 2026
 #
 # Written/run on - R Posit
 # Version of R - 4.4.2
@@ -38,7 +36,13 @@ pds <- readr::read_csv(get_national_data_path(fy, qt), col_types = cols(.default
   janitor::clean_names() %>%
   
   # Convert dates from character to date format
-  dplyr::mutate(dplyr::across(tidyselect::contains("date"), ~ lubridate::ymd(na_if(.x, "9999-09-09")))) %>%
+  dplyr::mutate(
+    dplyr::across(
+      tidyselect::contains("date"), 
+      ~ as.Date(lubridate::parse_date_time(
+        dplyr::na_if(dplyr::na_if(.x, "9999-09-09"), "09/09/9999"), 
+        orders = c("dmy", "ymd"))
+    ))) %>%
   
   # Pad CHI Number to 10 digits
   dplyr::mutate(chi_number = phsmethods::chi_pad(chi_number)) %>%
@@ -63,7 +67,7 @@ pds <- pds %>% filter(!chi_number %in% chi_to_remove)
 if (qt == 4 && test_output == FALSE){
   
   # Name of the new final file
-  new_final_file <- paste0(get_final_data_dir(), "/", str_replace(revised_year, '/', '-'), "_final-data.rds")
+  new_final_file <- paste0(get_finalised_data_dir(), "/", str_replace(revised_year, '/', '-'), "_final-data.rds")
   
   # Stop if the file already exists
   if(file.exists(new_final_file)){

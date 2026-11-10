@@ -28,26 +28,40 @@ walk(dir(here::here("functions"), full.names = TRUE), source)
 # Load data ----
 ################################################################################.
 
-# PDS data (output from 03_process_data.R)
+# PDS data (output from 04_rates-and-outcomes.R)
 pds <- read_rds(
   get_mi_data_path(
     type = "final_data", 
     ext = "rds", 
     fy = fy, 
     qt = qt,
-    test_output = test_output)) 
+    test_output = test_output)) %>%
+  mutate(
+    geog = factor(geog, levels = c("Scotland", setdiff(unique(geog), "Scotland"))),
+    across(where(is.numeric), ~ replace(.x, is.nan(.x), NA)))
 
-# Errors and queries (output from 01_clean-pds-data.R)
+# Monthly referrals (output from 03_process-data.R)
+monthly_referrals <- read_rds(
+  get_mi_data_path(
+    type = "ldp_data", 
+    ext = "rds", 
+    fy = fy, 
+    qt = qt,
+    test_output = test_output)) %>% 
+  group_by(fy, geog, board, name, month) %>% 
+  summarise(monthly_referrals = n(), .groups = "drop")
+
+# Errors and queries (output from 02_clean-data.R)
 q_err <- read_rds(
   get_mi_data_path(
-    type = "qeury_error_data", 
+    type = "query_error_data", 
     ext = "rds", 
     fy = fy,
     qt = qt,
     test_output = test_output)) %>% 
   mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
 
-# Queries (2021/22 onward) (output from 01_clean-pds-data.R)
+# Queries (2021/22 onward) (output from 02_clean-data.R)
 query <- read_rds(
   get_mi_data_path(
     type = "query_data", 
@@ -57,7 +71,7 @@ query <- read_rds(
     test_output = test_output)) %>% 
   mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
 
-# Errors (2021/22 onward) (output from 01_clean-pds-data.R)
+# Errors (2021/22 onward) (output from 02_clean-data.R)
 err <- read_rds(
   get_mi_data_path(
     type = "error_data", 
@@ -67,17 +81,41 @@ err <- read_rds(
     test_output = test_output)) %>% 
   mutate(ijb = if_else(is.na(ijb), "Unknown", str_sub(ijb, 11, -1)))
 
-# Expected Diagnoses 
-exp_df <- read_rds(get_lookup_path(type = "exp"))
+# Lookup information (output from 01_update-lookups.R)
+lookup_info <- read.csv(get_mi_data_path(
+  type = "lookup_info",
+  ext = "csv",
+  fy = fy,
+  qt = qt,
+  test_output = test_output
+))
 
-# European Standard Population lookup (output from 01_update-lookups.R)
-ESP13_df <- read_rds(get_lookup_path(type = "esp"))
+################################################################################.
+# Derive Variables ----
+################################################################################.
 
-# Population lookup (output from 01_update-lookups)
-population_df <- read_rds(get_lookup_path(type = "pop"))
+# Percentage of referrals aged 65 or over
+perc_65_plus <- paste0(round(
+  sum(pds %>% filter(demog == "none", geog == "Scotland") %>% pull(referrals_over_65), na.rm = T) / 
+    sum(pds %>% filter(demog == "none", geog == "Scotland") %>% pull(referrals), na.rm = T) * 100, 
+  1), "%")
 
-# Population lookup (output from 01_update-lookups)
-population_simd_df <- read_rds(get_lookup_path(type = "pop_simd"))
+# Data carried forwards in the HSCP and HB population data (should be the same)
+pop_data_from <- as.character(lookup_info %>% filter(lookup == "hb_population") %>% pull(data_from))
+pop_data_to <- lookup_info %>% filter(lookup == "hb_population") %>% pull(carried_to)
+
+# Data carried forwards in the SIMD population data
+simd_pop_data_from <- as.character(lookup_info %>% filter(lookup == "simd_population") %>% pull(data_from))
+simd_pop_data_to <- lookup_info %>% filter(lookup == "simd_population") %>% pull(carried_to)
+
+# List years from 2021/22 to the current year for diagnosis rates text
+fy_21_22_to_current <- sprintf("%d/%02d", 2021:as.integer(substr(fy, 1, 4)),
+         (2022:(as.integer(substr(fy, 1, 4)) + 1)) %% 100)
+
+# Format the list
+fy_21_22_to_current_text <- paste0(
+  paste(sprintf("*%s*", head(fy_21_22_to_current, -1)), collapse = ", "), " and ",
+  sprintf("*%s*", tail(fy_21_22_to_current, 1)))
 
 ```
 
@@ -105,6 +143,7 @@ Sidebar - about this report {.sidebar}
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
+
 <span style = "font-size: 20px;">**FURTHER INFORMATION:**</span>
 
 <ul style="list-style-type:square;">
@@ -138,8 +177,6 @@ For information on how to navigate the report and use its features see the [Navi
  
 To ensure these reports are as useful as possible, we would welcome any comments or feedback you may have via the PHS Dementia PDS team mailbox at: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot).
 
-
-
 Row
 -------------------------------------------------
 
@@ -162,7 +199,6 @@ For more detail on how the above is calculated, please see the [Methodology](#me
 
 Further information regarding the Dementia PDS dataset and submission process can be found on the [Dementia PDS pages](https://publichealthscotland.scot/services/data-management/data-management-in-primary-social-and-community-care/dementia-post-diagnostic-support-pds/){target="_blank"}.
 
-
 Row
 -------------------------------------------------
 
@@ -176,11 +212,11 @@ Row
 
 **NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland for *2022/23* and *2023/24*.
 
-**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected. In *2025/26 Q4* submission the numbers reported for  *2023/24*, *2024/25* and *2025/26* are lower than those reported than in previous quarters.  PHS are working with the Board to investigate and resolve this.
+**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected.
 
-**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, *2024/25* and *2025/26*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from all areas for *2025/26 Q3 and Q4*.
+**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, *2024/25* and *2025/26*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from all areas for *2025/26 Q3 and Q4* and *2026/27 Q1*.
 
-**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25*, the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates. 
+**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years `r fy_21_22_to_current_text` the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates.
 
 METHODOLOGY {.hidden}
 =================================================
@@ -202,6 +238,7 @@ Sidebar - methodology {.sidebar}
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
+
 <span style = "font-size: 20px;">**FURTHER INFORMATION:**</span>
 
 <ul style="list-style-type:square;">
@@ -215,14 +252,12 @@ Sidebar - methodology {.sidebar}
 
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
-
 Row
 -------------------------------------------------
 
 ### <!-- No Title -->
 
 This page includes more detail regarding the methodology used to arrive at the figures in this report. It is hoped that by sharing this, the reports will be easier to understand and local reporting will be more consistent.
-
 
 Row {.tabset data-height=800}
 -------------------------------------------------
@@ -271,15 +306,13 @@ This part of the LDP standard is calculated as:
 
 Service users for whom it is not yet known if they have met the standard as their PDS is ongoing are excluded from the percentage figures.
 
-
 ### **Number of Expected Diagnoses**
 
 In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report.
- <!-- UPDATE  the below paragraph when new population estimates are available / when financial year ends-->
-For financial years *2021/22*, *2022/23*, *2023/24* and *2024/25* the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates. 
 
-Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018. *Note that For financial year 2024/25 the Mid-2023 populations are used as this is the latest available estimate.* <!-- UPDATE when new population estimates are available / when new financial year begins-->
+For financial years `r fy_21_22_to_current_text` the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates.
 
+Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018. *Note that for financial year(s) `r pop_data_to` the Mid-`r pop_data_from` populations are used as this is the latest available estimate.*
 
 ### **Removal of Duplicate Records**
 
@@ -292,7 +325,6 @@ For a relatively small number of individuals, multiple records have been submitt
 There is a Service Level Agreement between NHS Highland and NHS Greater Glasgow & Clyde health boards, where some PDS is provided to Argyll & Bute residents by West Dunbartonshire IAA. The support provided to these service users has been apportioned to NHS Highland in this report. 
 
 If you have any queries regarding the above, please contact [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot).
-
 
 GLOSSARY {.hidden}
 =================================================
@@ -314,6 +346,7 @@ Sidebar - glossary {.sidebar}
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
+
 <span style = "font-size: 20px;">**FURTHER INFORMATION:**</span>
 
 <ul style="list-style-type:square;">
@@ -347,8 +380,6 @@ Row
 NRS Mid-year population estimates can be found using the link below: 
 
 [Population, migration and households - National Records of Scotland (NRS)](https://www.nrscotland.gov.uk/statistics-and-data/population-migration-and-households){target="_blank"}
-<!-- The link below is no longer valid as it does not include the rebased figures that were releaseed 1 July 2025. Simd populations can be found at the link above via the small area poulations data-->
-<!-- [Population estimates by Scottish Index of Multiple Deprivation (SIMD) - National Records of Scotland (NRS)](https://www.nrscotland.gov.uk/publications/population-estimates-by-scottish-index-of-multiple-deprivation-simd/){target="_blank"} -->
 
 **Rates per 10,000 population:** The rate per 10,000 population is calculated using the number of referrals with a dementia diagnosis date in the given financial year and the estimated population, for the relevant cohort, of the same year for each geographical area. 
 
@@ -364,21 +395,21 @@ e.g. the rate for SIMD 1 (the most deprived quintile) for a particular area is c
 
 **Age Group:** Age is calculated as at the dementia diagnosis date. 
 
-Across the reported years there are a small number of records (`r age_unknown` in total) with an incomplete date of birth and therefore the age group is unknown. These records have been excluded from the age group analysis. 
+Across the reported years there are a small number of records (`r sum(pds %>% filter(demog == "none", geog == "Scotland") %>% pull(age_unknown))` in total) with an incomplete date of birth and therefore the age group is unknown. These records have been excluded from the age group analysis. 
 
-*For the rates calculations, for financial year 2025/26 the Mid-2024 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
+*For the rates calculations, for financial year(s) `r pop_data_to` the Mid-`r pop_data_from` populations are used as this is the latest available estimate.*
 
 **Gender:** Gender is based on the sex recorded for each referral.  
 
-Across the reported years there are `r sex_unknown` records in total where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’). These records have been excluded from the gender analysis.
+Across the reported years there are `r sum(pds %>% filter(demog == "none", geog == "Scotland") %>% pull(simd_unknown))` records in total where sex is either not specified (includes refused/not provided) or not known (i.e. indeterminate sex, includes ‘Intersex’). These records have been excluded from the gender analysis.
 
-*For the rates calculations, for financial year 2025/26 the Mid-2024 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
+*For the rates calculations, for financial year(s) `r pop_data_to` the Mid-`r pop_data_from` populations are used as this is the latest available estimate.*
 
 **Deprivation:** Deprivation is calculated by matching postcodes grouped into small geographical areas known as datazones to the Scottish Index of Multiple Deprivation (SIMD) quintiles. SIMD has seven domains (income, employment, education, housing, health, crime, and geographical access) at data zone level, which have been combined into an overall index to pick out area concentrations of multiple deprivation. Each deprivation quintile indicates the level of deprivation using a scale of 1 (most deprived quintile) to 5 (least deprived quintile). At Scotland level, approximately one fifth of the general population are within each deprivation quintile. The quintiles used in this report are from SIMD 2020v2. Further information on SIMD can be found on the [Scottish Government](https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/){target="_blank"} website.
 
-Across the reported years there are `r simd_unknown` records where it was not possible to assign a deprivation category. Possible reasons for not being able to assign a deprivation category are that no postcode was provided or the postcode provided is invalid, not in Scotland, or is a newly added postcode. These records have been excluded from the deprivation analysis.
+Across the reported years there are `r sum(pds %>% filter(demog == "none", geog == "Scotland") %>% pull(sex_unknown))` records where it was not possible to assign a deprivation category. Possible reasons for not being able to assign a deprivation category are that no postcode was provided or the postcode provided is invalid, not in Scotland, or is a newly added postcode. These records have been excluded from the deprivation analysis.
 
-*For the rates calculations, for financial years 2023/24, 2024/25 and 2025/26 the Mid-2022 populations are used as this is the latest available estimate.*  <!-- UPDATE when new population estimates are available / when new financial year begins -->
+*For the rates calculations, for financial year(s) `r simd_pop_data_to` the Mid-`r simd_pop_data_from` populations are used as this is the latest available estimate.*
 
 ***
 
@@ -408,7 +439,6 @@ Across the reported years there are `r simd_unknown` records where it was not po
 
 **Model of Care:** The model of care deemed most appropriate for the service user following their diagnosis. 
 
-
 NAVIGATION GUIDE {.hidden}
 =================================================
 Sidebar - navigation guide {.sidebar}
@@ -429,6 +459,7 @@ Sidebar - navigation guide {.sidebar}
 ##### Data as at `r paste(format(end_date, '%d %B %Y'))` 
 
 ***
+
 <span style = "font-size: 20px;">**FURTHER INFORMATION:**</span>
 
 <ul style="list-style-type:square;">
@@ -455,39 +486,44 @@ Row {data-height=730}
 ### <!-- No Title -->
 
 ```{r}
+
 # Load navigation guide screenshot
+# Make sure this PNG file is in same folder as this script
 bscols(widths = 12, 
        div(style = css(width="97%", marginLeft="20px"),
-       img(style = css(width="100%"), src="navigation-guide.png"))) # Make sure this PNG file is in same folder as this script
+       img(style = css(width="100%"), src="navigation-guide.png"))) 
 
 ```
 
 <!-- Scotland subpage-->
-
 ```{r scotland, include=FALSE}
 
-scotland <- map(.x = sort(unique(pds$fy)),
-                .f = ~ set_env(data = pds,
-                               exp  = exp,
-                               hb   = "Scotland",
-                               year = .x,
-                               quarter = qt))
+scotland <- map(
+  .x = sort(unique(pds$fy)),
+  .f = ~ set_env(
+    data = pds,
+    monthly_referrals = monthly_referrals,
+    hb = "Scotland",
+    year = .x,
+    quarter = qt))
 
 ```
 
 `r paste(knitr::knit_child(text = scotland), collapse = '')`
 
 <!-- HEALTH BOARDS subpages -->
-
 ```{r health-boards, include=FALSE}
 
-health_boards <- pmap(expand.grid(sort(unique(pds$fy)),
-                                  sort(unique(pds$health_board))), 
-                      .f = ~ set_env(data = pds,
-                                     exp  = exp,
-                                     hb   = .y,
-                                     year = .x,
-                                     quarter = qt))
+health_boards <- pmap(
+  expand.grid(
+    sort(unique(pds$fy)),
+    sort(as.character(unique(filter(pds, name == "health_board")$geog)))), 
+  .f = ~ set_env(
+    data = pds,
+    monthly_referrals = monthly_referrals,
+    hb = .y,
+    year = .x,
+    quarter = qt))
 
 ```
 
@@ -554,7 +590,7 @@ Data Completion – The tables show, for three key mandatory fields, the percent
 
 Number of Records Submitted – This table shows the number of records submitted for each area. Note these are the number of records, including duplicate records, therefore this is not the same as the number of people referred.
 
-`r if(qt != 4) {div(style = css(fontStyle="italic"),paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
+`r if(qt != 4) {div(style = css(fontStyle="italic"), paste0("For diagnoses in financial year ", current_fy, " data is available up to and including Q", qt, "."))}`
 
 Row {.tabset data-height=810}
 -------------------------------------------------
@@ -566,30 +602,9 @@ The table below shows the percentage of records which contain one or more querie
 A query is sent by PHS when the data submitted requires further checking to ensure accuracy. An example of a query is 'Q02: QUERY FOR CHECKING: First Contact Date is missing but Diagnosis Date is more than 6 months ago and there is no Termination Date'. 
 
 ```{r query summary}
-#create queries summary table
-query %>% 
-  group_by(fy, health_board) %>% 
-  summarise(query_rate = round_half_up(sum(total_queries) / sum(records) * 100, 1),
-            .groups = "drop") %>%
-  bind_rows(
-    query %>% 
-    group_by(fy = "All (2021/22 onward)", health_board) %>% 
-    summarise(query_rate = round_half_up(sum(total_queries) / sum(records) * 100, 1),
-              .groups = "drop")) %>%
-  mutate(query_rate = paste0(query_rate, "%")) %>%
-  pivot_wider(names_from = fy,
-              values_from = query_rate,
-              values_fill = list(query_rate = "\\-")) %>%
-  rename(`Health Board` = health_board) %>%
-  kable(align = c("l", rep("r", length(unique(query$fy)) + 1))) %>%
-  kable_styling(full_width = FALSE) %>%
-  row_spec(15, bold = TRUE) %>%
-  add_header_above(
-        c(" " = 1,
-          "Financial Year of Diagnosis" = length(unique(query$fy)),
-          " " = 1)) %>%
-  add_footnote(label = paste("A dash (\\-) indicates no records were submitted for diagnoses in this year."),
-               notation = "none") 
+
+create_error_table(query)
+
 ```
 
 ### **Errors**
@@ -599,30 +614,9 @@ The table below shows the percentage of records which contain one or more errors
 An error is flagged by PHS when data is inaccurate or missing. Examples of an error are 'E13: First Contact Date is before Diagnosis Date. Please check both dates.' and 'E18: Termination Date is missing but Termination Reason is provided.'
 
 ```{r error summary}
-# Create error summary table
-err %>% 
-  group_by(fy, health_board) %>% 
-  summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1),
-            .groups = "drop") %>%
-  bind_rows(
-    err %>% 
-    group_by(fy = "All (2021/22 onward)", health_board) %>% 
-    summarise(err_rate = round_half_up(sum(total_errors) / sum(records) * 100, 1),
-              .groups = "drop")) %>%
-  mutate(err_rate = paste0(err_rate, "%")) %>%
-  pivot_wider(names_from = fy,
-              values_from = err_rate,
-              values_fill = list(err_rate = "\\-")) %>%
-  rename(`Health Board` = health_board) %>%
-  kable(align = c("l", rep("r", length(unique(err$fy)) + 1))) %>%
-  kable_styling(full_width = FALSE) %>%
-  row_spec(15, bold = TRUE) %>%
-  add_header_above(
-        c(" " = 1,
-          "Financial Year of Diagnosis" = length(unique(err$fy)),
-          " " = 1)) %>%
-  add_footnote(label = paste("A dash (\\-) indicates no records were submitted for diagnoses in this year."),
-               notation = "none") 
+
+create_error_table(err) 
+
 ```
 
 ### **Queries/Errors**
@@ -631,31 +625,8 @@ The table below shows the percentage of records which contain one or more querie
 
 ```{r queries/error summary}
 
-# Create error summary table
-q_err %>% 
-  filter(!fy%in% unique(err$fy)) %>% 
-  group_by(fy, health_board) %>% 
-  summarise(q_err_rate = round_half_up(sum(total_q_errors) / sum(records) * 100, 1),
-            .groups = "drop") %>%
-  bind_rows(
-    q_err %>% 
-    group_by(fy = "All (2016/17 - 2020/21)", health_board) %>% 
-    summarise(q_err_rate = round_half_up(sum(total_q_errors) / sum(records) * 100, 1),
-              .groups = "drop")) %>%
-  mutate(q_err_rate = paste0(q_err_rate, "%")) %>%
-  pivot_wider(names_from = fy,
-              values_from = q_err_rate,
-              values_fill = list(q_err_rate = "\\-")) %>%
-  rename(`Health Board` = health_board) %>%
-  kable(align = c("l", rep("r", length(unique(q_err$fy)) - length(unique(err$fy)) + 1))) %>%
-  kable_styling(full_width = FALSE) %>%
-  row_spec(15, bold = TRUE) %>%
-  add_header_above(
-    c(" " = 1,
-      "Financial Year of Diagnosis" = length(unique(q_err$fy)) - length(unique(err$fy)),
-      " " = 1)) %>%
-  add_footnote(label = paste("A dash (\\-) indicates no records were submitted for diagnoses in this year."),
-               notation = "none") 
+create_error_table(q_err) 
+
 ```
 
 Completion {.hidden}
@@ -695,7 +666,6 @@ Sidebar-completion {.sidebar}
 
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
 
-
 Row
 -------------------------------------------------
 
@@ -705,7 +675,7 @@ Row
 
 This page includes information about data quality. 
 
-Queries/Errors - Any queries or errors outstanding following the resubmission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be. For submissions prior to 2021/22 it has not been possible to differentiate between the queries and errors reported back to the Health Boards. Therefore data from 2016/17 to 2020/21 is provided in a combined table. Query and error figures for 2021/22 onwards are reported in separate tables.
+Queries/Errors - Any queries or errors outstanding following the re-submission deadline will be included in analytical outputs such as these management reports and annual publication. Therefore, the better quality of data submitted, the more accurate these figures will be. For submissions prior to 2021/22 it has not been possible to differentiate between the queries and errors reported back to the Health Boards. Therefore data from 2016/17 to 2020/21 is provided in a combined table. Query and error figures for 2021/22 onwards are reported in separate tables.
 
 Data Completion – The tables show, for three key mandatory fields, the percentage of records which are reported as NA/code 98/99 (Unknown)/Yet to be determined (YTBD). As these are fields of interest we would like to see a reduction in the number of records with these codes so that meaningful information can be produced from these data. The tables are designed to help areas monitor the number of cases they report as NA/98/99/YTBD.
 
@@ -719,161 +689,42 @@ Row {.tabset data-height=700}
 ### **Accommodation Type**
 
 <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals with NA or code 98/99 entry (Unknown) for Accommodation Type</h2>
+
 <h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Accommodation Type is a mandatory field</h4>
+
 ```{r accommodation-table}
-accom_comp_data <- comp_data %>%
-  filter(field_name == "accommodation_type") %>% 
-  select(geog, fy, number_of_records, perc_of_records_missing_not_known) %>% 
-  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>% 
-   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-  pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known),
-              names_vary = "slowest") %>% 
-  mutate(across(starts_with("number"), ~if_else(is.na(.), "    0", .))) %>% 
-  mutate(across(starts_with("perc"), ~if_else(is.na(.), "-", .)))
-  
 
-
-headers <- htmltools::withTags(table(
-  class = 'display',
-  thead(
-    tr(
-     th(colspan = 1, ' '),
-      th(rowspan = 2, "Integration Authority Area/Health Board"),
-      lapply(all_years, th, colspan = 2, style = css(textAlign="center")),
-      th(colspan = 2, 'All', style = css(textAlign="center"))
-    ),
-    tr(
-      lapply(c(" ",rep(c("Number of referrals", "% Unknown"), length(all_years)+1)), th)
-    )
-  )
-))
-
-bscols(widths = 12,
-       div(style = css(width="98%", height="550px", margin="15px"),
-          DT::datatable(accom_comp_data,
-                        container = headers,
-                        rownames = TRUE,
-                        extensions = "FixedColumns",
-              options = list(pageLength = 46,
-                             scrollX = TRUE,
-                             fixedColumns = list(leftColumns = 1),
-                             scrollY = TRUE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = F, targets = 0),
-                                                list(className = 'dt-right',
-                                                     targets = 2:(2*length(all_years)+3)))
-                             )) %>% 
-            DT::formatStyle(0, target = "row",
-              fontWeight = DT::styleEqual(dim(accom_comp_data)[1],"bold")) %>% 
-               DT::formatStyle(c(seq(1,by=2, len=length(all_years)+1)), `border-right` = "solid 1px")
-            )
-       )
-
-
+create_completeness_table(
+  data = pds %>% filter(demog == "none"),
+  measure = "accom")
 
 ```
 
 ### **Clinical Impression of Stage of Illness**
 
 <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of records with NA or code 98/99 entry (Unknown) and Percentage of records Yet to be determined (YTBD) for Clinical Impression of Stage of Illness</h2>
+
 <h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Clinical Impression of Stage of Illness is a mandatory field</h4>
 
 ```{r stage-table}
 
-stage_comp_data <- comp_data %>%
-  filter(field_name == "clinical_impression_of_stage_of_illness") %>% 
-  select(geog, fy, number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
-  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
-  mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
-   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-  pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd),
-              names_vary = "slowest") %>% 
-  mutate(across(starts_with("number"), ~if_else(is.na(.), "    0", .))) %>% 
-  mutate(across(starts_with("perc"), ~if_else(is.na(.), "-", .)))
-
-headers_ytbd <- htmltools::withTags(table(
-  class = 'display',
-  thead(
-    tr(
-      th(colspan = 1, ' '),
-      th(rowspan = 2, "Integration Authority Area/Health Board"),
-      lapply(all_years, th, colspan = 3, style = css(textAlign="center")),
-      th(colspan = 3, 'All', style = css(textAlign="center"))
-    ),
-    tr(
-      lapply(c(" ",rep(c("Number of referrals", "% Unknown", "% YTBD"), length(all_years)+1)), th)
-    )
-  )
-))
-
-bscols(widths = 12,
-       div(style = css(width="98%", height="540px", margin="15px"),
-          DT::datatable(stage_comp_data,
-                        container = headers_ytbd,
-                        rownames = TRUE,
-                       # caption = htmltools::tags$caption(
-                      # style = 'caption-side: bottom; text-align: left;',
-                      # "Note that Subtype of Dementia is an optional field"),
-                        extensions = "FixedColumns",
-              options = list(pageLength = 46,
-                             scrollX = TRUE,
-                             fixedColumns = list(leftColumns = 1),
-                             scrollY = TRUE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = F, targets = 0),
-                                                list(className = 'dt-right',
-                                                     targets = 2:(3*length(all_years)+4)))
-                             )) %>% 
-            DT::formatStyle(0, target = "row",
-              fontWeight = DT::styleEqual(dim(stage_comp_data)[1],"bold")) %>% 
-               DT::formatStyle(c(seq(1,by=3, len=length(all_years)+1)), `border-right` = "solid 1px")
-            )
-       )
+create_completeness_table(
+  data = pds %>% filter(demog == "none"),
+  measure = "stage")
 
 ```
 
 ### **Model of Care**
 
 <h2 style="margin-left: 10px; margin-top: 0px; margin-bottom: 0px">Percentage of referrals with NA or code 98/99 entry (Unknown) and Percentage of records Yet to be determined (YTBD) for Model of Care</h2>
+
 <h4 style="margin-left: 30px; margin-top: 0px; margin-bottom: 0px; font-style: italic">Please note that Model of Care is a mandatory field</h4>
 
 ```{r model-table}
 
-model_comp_data <- comp_data %>%
-  filter(field_name == "model_of_care") %>% 
-  select(geog, fy, number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd) %>%
-  mutate(perc_of_records_missing_not_known = paste0(perc_of_records_missing_not_known, "%")) %>%
-  mutate(perc_of_records_ytbd = paste0(perc_of_records_ytbd, "%")) %>%
-   mutate(across(where(is.numeric), ~format(., big.mark = ","))) %>% 
-  pivot_wider(names_from = fy, values_from = c(number_of_records, perc_of_records_missing_not_known, perc_of_records_ytbd),
-              names_vary = "slowest") %>% 
-  mutate(across(starts_with("number"), ~if_else(is.na(.), "    0", .))) %>% 
-  mutate(across(starts_with("perc"), ~if_else(is.na(.), "-", .)))
-  
-
-bscols(widths = 12,
-       div(style = css(width="98%", height="540px", margin="15px"),
-          DT::datatable(model_comp_data,
-                        container = headers_ytbd,
-                        rownames = TRUE,
-                        extensions = "FixedColumns",
-              options = list(pageLength = 46,
-                             scrollX = TRUE,
-                             fixedColumns = list(leftColumns = 1),
-                             scrollY = TRUE,
-                             dom = "t",
-                             ordering = FALSE,
-                             columnDefs = list(list(visible = F, targets = 0),
-                                                list(className = 'dt-right',
-                                                     targets = 2:(3*length(all_years)+4)))
-                             )) %>% 
-            DT::formatStyle(0, target = "row",
-              fontWeight = DT::styleEqual(dim(model_comp_data)[1],"bold")) %>% 
-               DT::formatStyle(c(seq(1,by=3, len=length(all_years)+1)), `border-right` = "solid 1px")
-            )
-       )
+create_completeness_table(
+  data = pds %>% filter(demog == "none"),
+  measure = "model")
 
 ```
 
@@ -939,48 +790,27 @@ Row {data-height=700}
 The table below shows the number of records submitted by each Health Board. Records with a missing diagnosis date or diagnosis date outwith the reporting period are not included in the below counts. Duplicate records are included.
 
 ```{r record-summary}
-# Add table showing number of records submitted by each health board
-q_err %>%
-  filter(str_sub(fy, 1, 4) >= year(start_date)) %>%
-  group_by(fy, health_board, ijb) %>% 
-  summarise(records = sum(records),
-            .groups = "drop") %>%
-  bind_rows(
-    q_err %>%
-    group_by(fy = "All", health_board, ijb) %>% 
-    summarise(records = sum(records),
-              .groups = "drop")) %>%
-  mutate(records = format(records, big.mark = ",")) %>%
-  pivot_wider(names_from = fy, 
-              values_from = records,
-              values_fill = list(records = "0")) %>%
-  arrange(health_board, ijb) %>%
-  rename(`Health Board` = health_board,
-         `Integration Authority Area` = ijb) %>%
-# right justify numeric columns
-     kable(align = c("l", "l", rep("r", length(unique(q_err$fy)) + 1))) %>%
-  kable_styling(full_width = TRUE) %>%
-# make Scotland row bold
-    row_spec(length(unique(paste(q_err$health_board, q_err$ijb))), bold = TRUE) %>%
-  collapse_rows(columns = 1, valign = "top") %>%
-  scroll_box(height = "580px")
+
+create_records_summary_table(q_err) 
+
 ```
 
-
 ```{css }
-/* forces number of records table to fit in window */
+
+/* Forces number of records table to fit in window */
 #number-of-records-submitted-2{
   width: -webkit-fill-available;
 }
+
 ```
 
-
-<!-- converts R environment objects for use with js script below -->
+<!-- Converts R environment objects for use with js script below -->
 ```{r results="asis"}
+
 cat(sprintf('<script>var pds_year = "%s"; var ldp_year = "%s";</script>', 
             current_fy, last_full_year))
-```
 
+```
 
 ```{js }
 
@@ -998,55 +828,61 @@ function filter_default() {
   }
 
   // all referrals - trends and rates
-  setFilter("trend_filter_hb", "NHS Ayrshire & Arran");
-  setFilter("trend_filter_ijb", "Aberdeen City");
-  setFilter("trend_filter_pop", "Scotland");
-  setFilter("trend_filter_year_hb", pds_year);
-  setFilter("trend_filter_rate_hb", "old_rate");
-  setFilter("trend_filter_year_ijb", pds_year);
-  setFilter("trend_filter_rate_ijb", "old_rate");
-  setFilter("trend_filter_geog_trend", "Scotland");
-  setFilter("trend_filter_rate_trend", "old_rate");
-  setFilter("trend_filter_outcomes_exp", "Scotland");
-  setFilter("trend_filter_outcomes_met", "Scotland");
-
-  // demographics
-  setFilter("filter_ijb_age_pop", pds_year);
-  setFilter("filter_ijb_age_pop_geog", null);
-  setFilter("filter_hb_age_pop", pds_year);
-  setFilter("filter_ijb_age_ldp_geog", null);
-  setFilter("filter_trend_age_pop", "Scotland");
-  setFilter("filter_ijb_age_ldp", ldp_year);
-  setFilter("filter_hb_age_ldp", ldp_year);
-  setFilter("filter_ldp_age", "Scotland");
-  setFilter("filter_trend_sex_pop", "Scotland");
-  setFilter("filter_hb_sex_pop", pds_year);
-  setFilter("filter_ijb_sex_pop", pds_year);
-  setFilter("filter_ijb_sex_ldp", ldp_year);
-  setFilter("filter_hb_sex_ldp", ldp_year);
-  setFilter("filter_ldp_sex", "Scotland");
-  setFilter("filter_trend_simd_pop", "Scotland");
-  setFilter("filter_hb_simd_pop", pds_year);
-  setFilter("filter_ijb_simd_pop", pds_year);
-  setFilter("filter_ijb_simd_pop_geog", null);
-  setFilter("filter_ijb_simd_ldp_geog", null);
-  setFilter("filter_ldp_simd", "Scotland");
-  setFilter("filter_hb_simd_ldp", ldp_year);
-  setFilter("filter_ijb_simd_ldp", ldp_year);
-  setFilter("filter_ldp_simd_bar", "Scotland");
+  setFilter("filter_ref_ijb_geog", "Aberdeen City");
+  setFilter("filter_ref_hb_geog", "NHS Ayrshire & Arran");
+  setFilter("filter_rate_ijb_fy", pds_year);
+  setFilter("filter_rate_hb_fy", pds_year);
+  setFilter("filter_rate_trend_geog", "Scotland");
+  setFilter("filter_exp_trend_geog", "Scotland");
+  setFilter("filter_outcome_trend_geog", "Scotland");
+  
+  // demographics - age
+  setFilter("filter_age_rate_ijb_fy", pds_year);
+  setFilter("filter_age_rate_ijb_geog", null);
+  setFilter("filter_age_rate_hb_fy", pds_year);
+  setFilter("filter_age_rate_hb_geog", null);
+  setFilter("filter_age_rate_trend_geog", "Scotland");
+  setFilter("filter_age_outcome_ijb_fy", pds_year);
+  setFilter("filter_age_outcome_ijb_geog", null);
+  setFilter("filter_age_outcome_hb_fy", full_years[length(full_years)]);
+  setFilter("filter_age_outcome_hb_geog", null);
+  setFilter("filter_age_outcome_trend_geog", "Scotland");
+  // demographics - sex
+  setFilter("filter_sex_rate_ijb_fy", pds_year);
+  setFilter("filter_sex_rate_ijb_geog", null);
+  setFilter("filter_sex_rate_hb_fy", pds_year);
+  setFilter("filter_sex_rate_hb_geog", null);
+  setFilter("filter_sex_rate_trend_geog", "Scotland");
+  setFilter("filter_sex_outcome_ijb_fy", pds_year);
+  setFilter("filter_sex_outcome_ijb_geog", null);
+  setFilter("filter_sex_outcome_hb_fy", full_years[length(full_years)]);
+  setFilter("filter_sex_outcome_hb_geog", null);
+  setFilter("filter_sex_outcome_trend_geog", "Scotland");
+  // demographics - simd
+  setFilter("filter_simd_rate_ijb_fy", pds_year);
+  setFilter("filter_simd_rate_ijb_geog", null);
+  setFilter("filter_simd_rate_hb_fy", pds_year);
+  setFilter("filter_simd_rate_hb_geog", null);
+  setFilter("filter_simd_rate_trend_geog", "Scotland");
+  setFilter("filter_simd_outcome_ijb_fy", pds_year);
+  setFilter("filter_simd_outcome_ijb_geog", null);
+  setFilter("filter_simd_outcome_hb_fy", full_years[length(full_years)]);
+  setFilter("filter_simd_outcome_hb_geog", null);
+  setFilter("filter_simd_outcome_trend_geog_1", "Scotland");
+  setFilter("filter_simd_outcome_trend_geog_2", "Scotland");
 
   // pathways
-  setFilter("not_met_filter_year", pds_year);
-  setFilter("ongoing_filter_year", pds_year);
-  setFilter("exempt_filter_year", pds_year);
-  setFilter("wait_filter_all_year", pds_year);
-  setFilter("filter_median", pds_year);
-  setFilter("filter_median_hb", pds_year);
-  setFilter("trend_filter_wait", "Scotland");
-  setFilter("filter_uptake_hb_year", pds_year);
-  setFilter("filter_uptake_ijb_year", pds_year);
-  setFilter("no_contact_filter_year_hb", pds_year);
-  setFilter("no_contact_filter_year_ijb", pds_year);
+  setFilter("filter_wait_ijb_fy", pds_year);
+  setFilter("filter_wait_hb_fy", pds_year);
+  setFilter("filter_wait_trend_geog", "Scotland");
+  setFilter("filter_wait_breakdown_fy", pds_year);
+  setFilter("filter_not_met_fy", pds_year);
+  setFilter("filter_ongoing_fy", pds_year);
+  setFilter("filter_exempt_fy", pds_year);
+  setFilter("filter_uptake_ijb_fy", pds_year);
+  setFilter("filter_uptake_hb_fy", pds_year);
+  setFilter("filter_contact_ijb_fy", pds_year);
+  setFilter("filter_contact_hb_fy", pds_year);
 
 }
 

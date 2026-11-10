@@ -3,185 +3,97 @@
 
 ```{r summary figures, include=FALSE}
 
-# Expected vs Referrals
-ref <- sum(subpage_data$referrals)
-exp_rate <- (ref / exp) * 100
+################################################################################.
+# Set Values ----
+################################################################################.
 
-# 12 Months Complete
-num <- subpage_data %>% filter(ldp %in% c("complete", "exempt")) %>% {sum(.$referrals)}
-den <- subpage_data %>% filter(ldp %in% c("complete", "exempt", "fail")) %>% {sum(.$referrals)}
-pds_rate <- (num / den) * 100
+# Referrals, diagnoses and LDP
+hb_data <- subpage_data %>% filter(name == "health_board")
 
-# Format figures with thousands separator
-ref_format <- format(ref, big.mark = ",")
-exp_format <- format(exp, big.mark = ",")
-num_format <- format(num, big.mark = ",")
-den_format <- format(den, big.mark = ",")
+ref_format <- format(hb_data$referrals, big.mark = ",")
+diag_format <- format(hb_data$diagnoses, big.mark = ",") 
+perc_referred <- paste0(round_half_up(hb_data$exp_rate, 1), "%")
+
+num_format <- format(hb_data$met + hb_data$exempt, big.mark = ",")
+den_format <- format(hb_data$met + hb_data$exempt + hb_data$not_met, big.mark = ",")
+perc_ldp_met <- if_else(!is.na(hb_data$perc_met), paste0(format(round_half_up(hb_data$perc_met, 1)), "%"), "-")
 
 # Is there data for all four quarters of the selected year?
 complete_year <- if_else(max_fy == sel_fy & qt != 4, FALSE, TRUE)
 
 # If incomplete year, list quarters included
 qt_text <-
-  if(complete_year){""}else{
-    if(qt == 1){"- Q1"}else{
-      if(qt %in% 2:3){paste0("- Q1-", qt)}
+  if (complete_year) {""} else {
+    if (qt == 1) {"- Q1"} else {
+      if (qt %in% 2:3) {paste0("- Q1-", qt)}
     }
   }
 
 # Title for LDP table
-table_title <-
-  ifelse(complete_year == TRUE,
-          "",
-          paste0(" - up to Q", qt))
+table_title <- ifelse(complete_year == TRUE, "", paste0(" - up to Q", qt))
 
+################################################################################.
+# General Notes ----
+################################################################################.
 
-# text to state impact of Covid 19
-covid_text <-
-  case_when(
-    str_sub(sel_fy, 1, 4) == "2020" ~
-    "**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**",
-    TRUE ~ ""
-  )
+# Text to state impact of Covid 19
+covid_text <- case_when(
+  sel_fy == "2020/21" ~ 
+    "**Please note that both the Dementia Post Diagnostic Support service provision and data submission to PHS have been affected by the COVID-19 pandemic.**", 
+  TRUE ~ "")
 
 # Text to explain incomplete years / referrals still ongoing
-latest_final_year <- dmy(paste0("0104",substr(finalised_years[length(finalised_years)],1,4)))
-
-completeness_text <-
-  case_when(
-    str_sub(sel_fy, 1, 4) <= year(latest_final_year) ~
-      paste0("Data for ", sel_fy, " are now final and will not change in ",
-             "future versions of this report."),
-      complete_year == FALSE ~ 
-      paste0("The figures shown for ", sel_fy, " are currently provisional and subject to ",
-             "change in future versions of this report. ",
-             "LDP Standard performance figures are not provided ",
-             "until data is available for the full financial year."),
-    TRUE ~ 
-      paste0("The figures shown for ", sel_fy, " are currently provisional and subject to ",
-             "change in future versions of this report."
-              )
-  )
-
+completeness_text <- case_when(
+  str_sub(sel_fy, 1, 4) <= substr(finalised_years[length(finalised_years)], 1, 4) ~
+    paste0("Data for ", sel_fy, " are now final and will not change in future versions of this report."),
+  complete_year == FALSE ~ 
+    paste0("The figures shown for ", sel_fy, " are currently provisional and subject to change in future versions of this report. LDP Standard performance figures are not provided until data is available for the full financial year."),
+  TRUE ~ 
+    paste0("The figures shown for ", sel_fy, " are currently provisional and subject to change in future versions of this report.")
+)
 
 # Estimated dementia diagnosis dates note
-est_date1 <- dmy(01042021)
-est_date2 <- dmy(01042022)
-est_date3 <- dmy(01042023)
-est_date4 <- dmy(01042024)
-est_date5 <- dmy(01042025)
-
-  est_text <-  
-    case_when(sel_fy ==
-extract_fin_year(est_date1) | sel_fy ==
-extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == extract_fin_year(est_date4) | sel_fy == extract_fin_year(est_date5) ~
-      paste0("",
-             "**Please note:** ",
-             "In December 2016, the Scottish Government published a report: ",
-             "[Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target='_blank'}. ", 
-             "For financial years *2021/22*, *2022/23*, *2023/24*, and *2024/25* the rates referenced in ", 
-             "the report were used to create national, age specific rates of dementia incidence ",
-             "per 1,000 population which were then applied to the National Records of ",
-             "Scotland (NRS) Mid-2021  (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates."),
-      TRUE ~ paste0(""))
+est_text <- case_when(
+  !sel_fy %in% paste0(2016:2020, "/", (2017:2021) %% 100) ~
+    paste0("**Please note:** In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target='_blank'}. For financial years ", fy_21_22_to_current_text, " the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates."),
+  TRUE ~ paste0("")
+)
   
+################################################################################.
+# Data Quality Notes ----
+################################################################################.
 
 # Data quality notes - Aberdeen City
-  ac_date1 <- dmy(01042019)
-  ac_date2 <- dmy(01042020)
+ac_text <- case_when(
+  hb == "NHS Grampian" & sel_fy %in% c("2019/20", "2020/21") ~
+    paste0(" **Please note:** *Aberdeen City Health & Social Care Partnership changed to provide PDS in 2019 to an inhouse hybrid model. This change in model, and process of receiving referrals and recording, resulted in data quality issues for financial years 2019/20 and 2020/21. This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*"),
+  TRUE ~ paste0(""))
 
-    ac_text <-  
-    case_when(hb == "NHS Grampian" & sel_fy == extract_fin_year(ac_date1) |
-              hb == "NHS Grampian" &sel_fy == extract_fin_year(ac_date2) ~
-                paste0(" ",
-                "**Please note:** ",
-                "*Aberdeen City Health & Social Care Partnership changed ",
-                "to provide PDS in 2019 to an inhouse hybrid model. ",
-                "This change in model, and process of receiving referrals and recording, ",
-                "resulted in data quality issues for financial years 2019/20 and 2020/21. ",
-                "This should be taken into account when interpreting figures for Aberdeen City and NHS Grampian.*"),
-              TRUE ~ paste0(""))
+# Data quality notes - Perth & Kinross
+tay_text <- case_when(
+  hb == "NHS Tayside" & sel_fy %in% c("2018/19", "2019/20") ~
+    paste0(" **Please note:** *NHS Tayside experienced challenges in capturing and reporting on electronic system data within Perth & Kinross over the period 2018/19 to 2019/20. Despite local work undertaken to uncover the missing data, it has not been possible to fill this gap. Subsequent measures put in place have successfully allowed NHS Tayside to improve on data reporting from 2019 onwards.*"),
+  hb == "NHS Tayside" & sel_fy %in% c("2023/24", "2024/25", "2025/26") ~
+    paste0(" **Please note:** *PHS have identified issues with the data submitted by NHS Tayside for 2023/24, 2024/25 and 2025/26, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from all areas for 2025/26 Q3 and Q4.*"), 
+  TRUE ~ paste0(""))
   
+# Data quality notes - Orkney
+ork_text <- case_when(
+  hb == "NHS Orkney" & sel_fy %in% c("2022/23", "2023/24") ~
+    paste0(" **Please note:** *NHS Orkney had no referrals in 2022/23 (Q3 and Q4) and 2023/24 (Q1 and Q2) as they were unable to access a consultant psychiatrist.*"),
+  TRUE ~ paste0(""))
   
-  # Data quality notes - Perth & Kinross
-  tay_date1 <- dmy(01042018)
-  tay_date2 <- dmy(01042019)
-  tay_date3 <- dmy(01042023)
-  tay_date4 <- dmy(01042024)
-  tay_date5 <- dmy(01042025)
-  
-  tay_text <-  
-    case_when(hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date1) |
-              hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date2) ~
-        paste0(" ", 
-           "**Please note:** ",
-           "*NHS Tayside experienced challenges in capturing and reporting on electronic ", 
-           "system data within Perth & Kinross over the period 2018/19 to 2019/20. ", 
-           "Despite local work undertaken to uncover the missing data, it has not been ",
-           "possible to fill this gap. Subsequent measures put in place have successfully ", 
-           "allowed NHS Tayside to improve on data reporting from 2019 onwards.*"),
-      hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date3)|
-      hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date4)|
-      hb == "NHS Tayside" & sel_fy == extract_fin_year(tay_date5)~
-        paste0(" ", 
-            "**Please note:** ",
-              "*PHS have identified issues with the data submitted by NHS Tayside for 2023/24, ", 
-              "2024/25 and 2025/26, which has resulted in some records showing as incorrectly having met the standard. ",
-              "NHS Tayside has informed PHS that these data issues will be rectified once they have completed the ", 
-              "migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from ",
-              "all areas for 2025/26 Q3 and Q4.*"),
-    TRUE ~ paste0(""))
-  
-  
-    # Data Quality notes -  Orkney
-    date22_23 <- dmy(01042022)
-    date23_24 <- dmy(01042023)
-  
-  orkney_text <- 
-    case_when(hb == "NHS Orkney" & sel_fy == extract_fin_year(date22_23) | 
-              hb == "NHS Orkney" & sel_fy == extract_fin_year(date23_24) ~ 
-              paste0(" ",
-             "**Please note:** ",
-             "*NHS Orkney had no referrals in 2022/23 (Q3 and Q4) and 2023/24 ",
-             "(Q1 and Q2) as they were unable to access a consultant psychiatrist.*"),
-    TRUE ~ paste0(""))
+# Data quality notes - Shetland
+shet_text <- case_when(
+  hb == "NHS Shetland" & sel_fy %in% c("2022/23", "2023/24") ~
+    paste0(" **Please note:** *NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through 2023/24 Q3. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 and the PDS service in Shetland has resumed.*"), 
+  TRUE ~ paste0(""))
     
-    
-  # Data Quality notes - Shetland
-  
-  date22_23 <- dmy(01042022)
-  date23_24 <- dmy(01042023)
-
-  shetland_text <-  
-    case_when(hb == "NHS Shetland" & sel_fy == extract_fin_year(date22_23) | 
-              hb == "NHS Shetland" & sel_fy == extract_fin_year(date23_24) ~
-               paste0(" ",
-             "**Please note:** ",
-              "*NHS Shetland did not have a PDS worker in post from 2022/23 Q1 through ", 
-              "2023/24 Q3. As a result not all people referred to PDS could be allocated or ", 
-              "contacted by a PDS worker within 12 months of diagnosis, hence they have been ", 
-              "recorded as not having met the standard. A PDS worker was assigned in 2023/24 Q4 ",
-              "and the PDS service in Shetland has resumed.*"), 
-      TRUE ~ paste0(""))
-  
-  
-  
-  # Data quality notes - Grampian
-  gramp_date1 <- dmy(01042023)
-  gramp_date2 <- dmy(01042024)
-  gramp_date3 <- dmy(01042025)
-  
-  gramp_text <- case_when(
-    hb == "NHS Grampian" & sel_fy == extract_fin_year(gramp_date1) |
-      hb == "NHS Grampian" & sel_fy == extract_fin_year(gramp_date2) |
-      hb == "NHS Grampian" & sel_fy == extract_fin_year(gramp_date3) ~
-      paste0(" ", 
-             "**Please note:** ",
-             "*In 2025/26 Q4 submission the numbers reported for  2023/24, 2024/25 and 2025/26 by ", 
-             "NHS Grampian are lower than those reported than in previous quarters. ", 
-             "PHS are working with the Board to investigate and resolve this.*"), 
-    TRUE ~ paste0(""))
-
+# Data quality notes - Grampian
+gramp_text <- case_when(
+  hb == "NHS Grampian" & sel_fy %in% c("2023/24", "2024/25", "2025/26") ~
+    paste0(" **Please note:** *In 2025/26 Q4 submission the numbers reported for  2023/24, 2024/25 and 2025/26 by NHS Grampian are lower than those reported than in previous quarters. PHS are working with the Board to investigate and resolve this.*"), 
+  TRUE ~ paste0(""))
 ```
 
 Sidebar {.sidebar}
@@ -202,14 +114,15 @@ Sidebar {.sidebar}
 Select Financial Year
 
 ```{r fy-page-links, results='asis'}
-fy_text <- case_when(
-  all_fy == sel_fy ~ md_bold(all_fy),
-  TRUE ~ all_fy
-)
+
+fy_text <- case_when(all_fy == sel_fy ~ md_bold(all_fy), TRUE ~ all_fy)
 
 fy_url <- paste0(
   "#",
-  hb %>% tolower() %>% str_replace_all(" &", "") %>% str_replace_all(" ", "-"),
+  hb %>% 
+    tolower() %>% 
+    str_replace_all(" &", "") %>% 
+    str_replace_all(" ", "-"),
   "-",
   case_when(
     all_fy == max(all_fy) ~ as.character(length(all_fy) - 1),
@@ -217,11 +130,8 @@ fy_url <- paste0(
   )
 )
 
-md_link(
-  text = fy_text,
-  url = fy_url
-) %>%
-  md_list()
+md_link(text = fy_text, url = fy_url) %>% md_list()
+
 ```
 
 ***
@@ -238,7 +148,6 @@ md_link(
 ***
 
 Please get in touch with any comments, suggestions and feedback: [phs.dementiapds@phs.scot](mailto:phs.dementiapds@phs.scot)
-
 
 Row
 ----------------------------------------------------------------------
@@ -257,9 +166,9 @@ Row
 
 `r tay_text`
 
-`r shetland_text`
+`r shet_text`
 
-`r orkney_text`
+`r ork_text`
 
 `r gramp_text`
 
@@ -267,30 +176,33 @@ Row `r if(complete_year == FALSE)"{.hidden}"`
 ----------------------------------------------------------------------
 
 `r ifelse(complete_year == TRUE, "### Expected Value Box", "")`
+
 ```{r Expected Value Box, include = complete_year}
-flexdashboard::valueBox(paste0(round_half_up(exp_rate, 1), "%"), 
-         caption = glue("of people estimated to be newly diagnosed with ",
-                        "dementia were referred for post-diagnostic support."))
+
+flexdashboard::valueBox(
+  perc_referred, caption = glue("of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support."))
+
 ```
 
 `r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
 
-`r ifelse(complete_year == TRUE, glue("A total of <span style='color:CornflowerBlue'>**{ref_format}**</span> referrals were made to post-diagnostic support. This is divided by <span style='color:CornflowerBlue'>**{exp_format}**</span>, the estimated number of people newly diagnosed with dementia."), "")`
+`r ifelse(complete_year == TRUE, glue("A total of <span style='color:CornflowerBlue'>**{ref_format}**</span> referrals were made to post-diagnostic support. This is divided by <span style='color:CornflowerBlue'>**{diag_format}**</span>, the estimated number of people newly diagnosed with dementia."), "")`
 
 Row `r if(complete_year == FALSE)"{.hidden}"`
 ----------------------------------------------------------------------
 
 `r ifelse(complete_year == TRUE, "### 12 Months Value Box", "")`
+
 ```{r 12 Months Value Box, include = complete_year}
-flexdashboard::valueBox(if_else(!is.na(pds_rate),paste0(format(round_half_up(pds_rate, 1)), "%"), "-"), 
-         caption = glue("of those referred for post-diagnostic support ",
-                        "received a minimum of 12 months of support."))
+
+flexdashboard::valueBox(
+  perc_ldp_met, caption = glue("of those referred for post-diagnostic support received a minimum of 12 months of support."))
+
 ```
 
 `r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
 
 `r ifelse(complete_year == TRUE, glue("<span style='color:CornflowerBlue'>**{num_format}**</span> referrals either met or were exempt from the LDP standard. This is divided by <span style='color:CornflowerBlue'>**{den_format}**</span>, the total number of referrals (excluding those whose support is ongoing)."), "")`
-
 
 Row
 ----------------------------------------------------------------------
@@ -299,11 +211,11 @@ Row
 
 ```{r ldp-table}
 
-ldp_table(subpage_data,
-          include_pc = complete_year)
+create_outcomes_table_static(
+  data = subpage_data, 
+  type = "wide")
 
 ```
-
 
 Row {.data-height=1000}
 ----------------------------------------------------------------------
@@ -312,9 +224,7 @@ Row {.data-height=1000}
 
 ```{r referrals-plot}
 
-plot_referrals(subpage_data, 
-               scotland = FALSE,
-               quarter = ifelse(max_fy == sel_fy, qt, NA))
+plot_monthly_referrals(subpage_monthly_referrals)
 
 ```
 

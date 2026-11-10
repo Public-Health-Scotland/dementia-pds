@@ -3,8 +3,7 @@
 # Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Abram McCormick
 # Original Date - December 2024
-# Updated by - Lucy Binsted
-# Date - June 2026
+# Updated by Lucy Binsted - June 2026
 #
 # Written/run on - R Posit
 # Version of R - 4.4.2

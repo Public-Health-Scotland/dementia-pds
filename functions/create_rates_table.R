@@ -14,6 +14,7 @@ create_rates_table <- function(pds, population_df, ESP13_df, demographic = c(), 
     summarise(
       # Number of referrals
       all_referrals = n(), 
+      over_65_referrals = sum(age >= 65, na.rm = T),
       # Number of referrals above the age cutoff (age standardised) or above the age cutoff with known sex (age-sex standardised)
       filtered_referrals = sum(age >= age_cutoff & !(sex_dummy %in% c("98 Not Specified", "99 Not Known")), na.rm = TRUE),
       .groups = "drop")
@@ -59,7 +60,7 @@ create_rates_table <- function(pds, population_df, ESP13_df, demographic = c(), 
       # Age-sex standardised rate using referrals and population estimates over 18 (per 100,000)
       standardised_rate = sum(filtered_referrals / filtered_population * filtered_esp, na.rm = TRUE) * 100000 / sum(filtered_esp, na.rm = TRUE),
       # Crude rate using all referrals and population estimates over 65 (per 10,000)
-      old_rate = (sum(all_referrals, na.rm = TRUE) / sum(over_65_population, na.rm = TRUE)) * 10000,
+      rate = (sum(all_referrals, na.rm = TRUE) / sum(over_65_population, na.rm = TRUE)) * 10000,
       .groups = "drop")
   
   return(rates_df)

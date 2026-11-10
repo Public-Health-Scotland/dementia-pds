@@ -51,34 +51,6 @@ plot_ldp_bar <- function(data, measure, measure_text, ncol = 10, nrow = NULL, co
 }
 
 
-plot_ldp_bar_legend <- function(data, measure, measure_text, colours = phs_colours_core) {
-  
-  legend <- data %>% ggplot(aes(x = {{measure}}, y = 0, group = {{measure}}, fill = {{measure}})
-  ) +
-    geom_col() +
-    
-    labs(fill = measure_text) +
-    
-    scale_fill_manual(values = colours) +
-    
-    theme(axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.ticks = element_blank(),
-          legend.position.inside = c(0.5, 0.5), # move the legend to the center
-          panel.grid = element_blank(),
-          panel.border = element_rect(colour = "white", fill='white', linewidth =0)
-    )
-  
-  legend_plotly<-ggplotly(legend, tooltip = NULL)
-  
-  config(legend_plotly, staticPlot = TRUE) %>%
-    layout(legend = list(orientation = "h",
-                         x = 0.5, y = 0.5, xanchor = "center", yanchor = "right" )#,
-           # margin = list(r = -500, l = -500, b = -500, t = 40)
-    )  
-}
-
-
 plot_ldp_bar_labels <- function(data, measure, ncol = 10, nrow = NULL){
   
   label <-  ggplot(data) +

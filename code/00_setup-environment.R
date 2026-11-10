@@ -3,9 +3,9 @@
 # Data release - Dementia PDS Quarterly Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019
-# Updated by - Jennifer Thom
-# Date - November 2023
-#
+# Updated by Jennifer Thom - Nov 2023
+# Updated by Lucy Binsted - Oct 2026
+
 # Written/run on - R Posit
 # Version of R - 4.1.2
 #
@@ -25,7 +25,7 @@
 # Mar-MI-release: Q3 data (1 Oct - 31 Dec)
 # Jun-MI-release: Q4 data (1 Jan - 31 March)
 fy <- 2026
-qt <- 1
+qt <- 2
 
 # UPDATE - Used to define a test file path for saving test outputs (TRUE/FALSE)
 # TRUE:  Use this when the Data Management Team provide a test version of the 

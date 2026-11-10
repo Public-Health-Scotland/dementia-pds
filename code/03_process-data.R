@@ -3,18 +3,17 @@
 # Data release - Quarterly Dementia PDS Management Reports
 # Original Authors - Alice Byers
 # Original Date - July 2019
-# Updated by - Jennifer Thom
-# Date - November 2023
-# Updated by Abram McCormick - January 2025
-# Updated by - Lucy Binsted
-# Date - August 2026
+# Updated by Jennifer Thom - Nov 2023
+# Updated by Abram McCormick - Jan 2025
+# Updated by Lucy Binsted - Oct 2026
 #
 # Written/run on - R Posit
 # Version of R - 4.4.2
 #
 # Description - 
 #   Add LDP Standard classification, age groups and SIMD to PDS data
-#   Pivot data long to create a geography column (rather than seperate Health Board and IJB columns)
+#   Pivot data long to create a geography column 
+#   (rather than separate Health Board and IJB columns)
 #   Select columns
 ################################################################################.
 
@@ -180,7 +179,7 @@ pds <- pds %>%
   mutate(
     # Flag if contact date is before diagnosis date
     contact_before_diag = case_when(
-      date_of_initial_first_contact < dementia_diagnosis_confirmed_date ~1,
+      date_of_initial_first_contact < dementia_diagnosis_confirmed_date ~ 1,
       TRUE ~0),
     # Remove health board and ijb codes
     ijb = str_sub(ijb, 11, -1),
@@ -203,13 +202,18 @@ pds <- pds %>%
          "age_grp_2",
          "simd",
          "ldp",
+         "month",
          "dementia_diagnosis_confirmed_date",
          "date_pds_referral_received",
          "initial_pds_practitioner_allocation_date",
          "date_of_initial_first_contact",
          "termination_or_transition_date",
          "termination_or_transition_reason",
-         "pds_uptake_decision"
+         "pds_uptake_decision",
+         "contact_before_diag",
+         "accommodation_type",
+         "clinical_impression_of_stage_of_illness",
+         "model_of_care"
   )
 
 ################################################################################.

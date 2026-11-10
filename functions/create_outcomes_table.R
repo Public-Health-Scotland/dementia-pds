@@ -43,6 +43,17 @@ create_outcomes_table <- function(pds, exp_df, demographic = c()){
       perc_no_contact_12              = round(no_contact_12/referrals * 100, 1),
       termination_before_contact      = sum(ldp == "fail - PDS terminated before first contact", na.rm = TRUE),
       perc_termination_before_contact = round(termination_before_contact/referrals * 100, 1),
+      # Completeness
+      accom_unknown = sum(is.na(accommodation_type) | tolower(accommodation_type) %in% c("98 not known", "99 not known", "98 unknown", "99 unknown", "98 not specified", "99 not specified"), na.rm = T),
+      stage_unknown = sum(is.na(clinical_impression_of_stage_of_illness) | tolower(clinical_impression_of_stage_of_illness) %in% c("98 not known", "99 not known", "98 unknown", "99 unknown", "98 not specified", "99 not specified"), na.rm = T),
+      stage_ytbd = sum(tolower(clinical_impression_of_stage_of_illness) == "04 yet to be determined", na.rm = T),
+      model_unknown = sum(is.na(model_of_care)  | tolower(model_of_care) %in% c("98 not known", "99 not known", "98 unknown", "99 unknown", "98 not specified", "99 not specified"), na.rm = T),
+      model_ytbd = sum(tolower(model_of_care) == "05 yet to be determined", na.rm = T),
+      age_unknown = sum(age_grp_2 == "Unknown", na.rm = T),
+      sex_unknown = sum(tolower(sex) %in% c("98 not known", "99 not known", "98 unknown", "99 unknown", "98 not specified", "99 not specified"), na.rm = T),
+      simd_unknown = sum(simd == "Unknown", na.rm = T),
+      referrals_over_65 = sum(age >= 65, na.rm = T),
+      
       .groups = "drop") %>%
     # Add expected diagnoses data
     left_join(exp_df, by = c("geog", "fy")) %>%
