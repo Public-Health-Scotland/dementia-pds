@@ -22,13 +22,14 @@
 ################################################################################.
 
 # Environment file
+rm(list = ls())
 source(here::here("code", "00_setup-environment.R"))
 
 ################################################################################.
 ### 2 - Read data ----
 ################################################################################.
 
-# Cleaned PDS data (output from 02_data-preparation.R)
+# Cleaned PDS data (output from 02_clean_data.R)
 pds <- read_rds(
   get_mi_data_path(
     type = "clean_data", 
@@ -180,22 +181,14 @@ pds <- pds %>%
     # Flag if contact date is before diagnosis date
     contact_before_diag = case_when(
       date_of_initial_first_contact < dementia_diagnosis_confirmed_date ~ 1,
-      TRUE ~0),
+      TRUE ~ 0),
     # Remove health board and ijb codes
     ijb = str_sub(ijb, 11, -1),
-    health_board = str_sub(health_board, 3, -1), 
-    # Create a new column called scot (used for calculating Scotland totals)
-    scot = "Scotland",
-    # Create a new column called board (used for keeping track of which health board each ijb belongs to)
-    board = health_board) %>%
-  # Put scot, ijb and health board in the same column named geog
-  pivot_longer(c(scot, ijb, health_board), values_to = "geog") %>%
-  mutate(board = ifelse(name == "scot", "Scotland", board)) %>%
+    health_board = str_sub(health_board, 3, -1)) %>%
   # Select columns to keep
   select("fy",
-         "geog",
-         "name",
-         "board",
+         "health_board",
+         "ijb",
          "sex",
          "age",
          "age_grp",

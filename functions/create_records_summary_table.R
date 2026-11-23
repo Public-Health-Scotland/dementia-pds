@@ -17,10 +17,5 @@ create_records_summary_table <- function(data){
     arrange(health_board, ijb) %>%
     rename(
       `Health Board` = health_board,
-      `Integration Authority Area` = ijb) %>%
-    kable(align = c("l", "l", rep("r", length(unique(data$fy)) + 1))) %>%
-    kable_styling(full_width = TRUE) %>%
-    row_spec(length(unique(paste(data$health_board, data$ijb))), bold = TRUE) %>%
-    collapse_rows(columns = 1, valign = "top") %>%
-    scroll_box(height = "580px")
+      `Integration Authority Area` = ijb)
 }

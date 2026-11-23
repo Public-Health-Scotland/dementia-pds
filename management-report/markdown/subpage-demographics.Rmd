@@ -1,70 +1,10 @@
 Age Groups {data-navmenu="Demographics"}
 =================================================
 
-```{r data-setup-demo, include=FALSE}
+```{r age-data}
 
-################################################################################.
-# AGE
-################################################################################.
-
-# Rates per 10,000 population
-referral_rates_age <- pds %>%
-  filter(demog == "age", age_grp_2 != "Unknown") %>%
-  select(fy, geog, name, age_grp_2, rate)
-
-# Outcomes
-outcomes_age <- pds %>%
-  filter(demog == "age", age_grp_2 != "Unknown", fy %in% full_years) %>%
-  mutate(
-    refs = ifelse(fy %in% finalised_years, referrals, met + not_met + exempt),
-    perc_met = ifelse(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), NA, perc_met)) %>%
-  select(fy, geog, name, age_grp_2, refs, perc_met)
-
-################################################################################.
-# SEX
-################################################################################.
-
-# Rates per 10,000 population
-referral_rates_sex <- pds %>%
-  filter(demog == "sex", sex != "Unknown") %>%
-  mutate(sex = ifelse(sex == "01 Male", "Male", "Female")) %>%
-  select(fy, geog, name, sex, rate)
-
-# Outcomes
-outcomes_sex <- pds %>%
-  filter(demog == "sex", sex != "Unknown", fy %in% full_years) %>%
-  mutate(
-    refs = ifelse(fy %in% finalised_years, referrals, met + not_met + exempt),
-    perc_met = ifelse(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), NA, perc_met),
-    sex = ifelse(sex == "01 Male", "Male", "Female")) %>%
-  select(fy, geog, name, sex, refs, perc_met)
-
-################################################################################.
-# SIMD
-################################################################################.
-
-# Rates per 10,000 population
-referral_rates_simd <- pds %>%
-  filter(demog == "simd", simd != "Unknown") %>%
-  select(fy, geog, name, simd, rate)
-
-# Outcomes
-outcomes_simd <- pds %>%
-  filter(demog == "simd", simd != "Unknown", fy %in% full_years) %>%
-  mutate(
-    refs = ifelse(fy %in% finalised_years, referrals, met + not_met + exempt),
-    perc_met = ifelse(geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), NA, perc_met)) %>%
-  select(fy, geog, name, simd, refs, perc_met)
-
-################################################################################.
-# Legend Data
-################################################################################.
-
-geogs <- unique(pds$geog)
-legend_data <- bind_rows(
-  tibble(geog = geogs, legend = geogs),
-  tibble(geog = geogs[geogs != "Scotland"], legend = "Scotland")) %>%
-  mutate(x = 1, y = 0, legend = factor(legend, levels = c(setdiff(geogs, "Scotland"), "Scotland")))
+pds_age <- pds %>% filter(demog == "age")
+pds_age_ldp <- pds_age %>% filter(fy %in% full_years)
 
 ```
 
@@ -126,7 +66,7 @@ Row {.tabset data-height=1180}
 
 # Dynamic Plot Data (Age-Stratified Referral Rates by IAA)
 rates_df_age_ijb <- SharedData$new(
-  referral_rates_age %>%
+  pds_age %>%
     filter(name %in% c("scot", "ijb")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -170,12 +110,7 @@ plot_bar_demog(
 ```{r table-ijb-age-pop}
   
 # Dynamic Table (Age-Stratified Referral Rates by IAA)
-create_outcomes_table_demog(
-  data = referral_rates_age, 
-  measure = "rate",  
-  demog = "age_grp_2", 
-  geog_filter= c("scot", "ijb"), 
-  dropdown_grp = "ratesageijb") 
+mi_table(pds, table = "demog", measure = "rate", geog_filter = c("scot", "ijb"), demog = "age", dropdown_grp = "ratesageijb", height = 560)
 
 ```
 
@@ -185,7 +120,7 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (Age-Stratified Referral Rates by Health Board)
 rates_df_age_hb <- SharedData$new(
-  referral_rates_age %>%
+  pds_age %>%
     filter(name %in% c("scot", "health_board")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -229,12 +164,7 @@ plot_bar_demog(
 ```{r table-hb-age-pop}
 
 # Dynamic Table (Age-Stratified Referral Rates by Health Board)
-create_outcomes_table_demog(
-  data = referral_rates_age, 
-  measure = "rate",  
-  demog = "age_grp_2", 
-  geog_filter= c("scot", "health_board"), 
-  dropdown_grp = "ratesagehb") 
+mi_table(pds, table = "demog", measure = "rate", geog_filter = c("scot", "health_board"), demog = "age", dropdown_grp = "ratesagehb", height = 620)
 
 ```
 
@@ -244,12 +174,8 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (Age-Stratified Referral Rates Trend)
 rates_df_age_trend <- SharedData$new(
-  referral_rates_age %>%
-    arrange(desc(name)) %>%
-    bind_rows(
-      referral_rates_age %>%
-        filter(geog == "Scotland")) %>%
-    distinct(),
+  pds_age %>%
+    bind_rows(pds_age %>% filter(name =="scot")),
   key = ~geog, 
   group = "ratesagetrend")
 
@@ -262,7 +188,7 @@ rates_filter_age_trend <- filter_select(
   multiple = FALSE)
 
 # Layout
-bscols(widths = c(1, 5, NA), NULL, rates_filter_age_trend, NULL)
+bscols(widths = c(1, 10, NA), NULL, rates_filter_age_trend, NULL)
 
 ```
 
@@ -299,12 +225,7 @@ bscols(widths = 12, div(style = css(width="98%", height="330px"), age_trend_plot
 ```{r table-trend-age-pop}
 
 # Dynamic Table (Age-Stratified Referral Rates Trend)
-create_trend_table_demog(
-  data = referral_rates_age,
-  measure = "rate",
-  demog = "age_grp_2",
-  group = "ratesagetrend"
-  )
+mi_table(pds, table = "demog_trend", measure = "rate", demog = "age", dropdown_grp = "ratesagetrend", height = 165)
 
 ```
 
@@ -376,7 +297,7 @@ Row {.tabset data-height=1180}
 
 # Dynamic Plot Data (Age-Stratified Outcomes by IAA)
 outcomes_df_age_ijb <- SharedData$new(
-  outcomes_age %>%
+  pds_age_ldp %>%
     filter(name %in% c("scot", "ijb")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -420,12 +341,7 @@ plot_bar_demog(
 ```{r table-ijb-age-ldp}
 
 # Dynamic Table (Age-Stratified Outcomes by IAA)
-create_outcomes_table_demog(
-  data = outcomes_age,
-  measure = "outcome",  
-  demog = "age_grp_2", 
-  geog_filter= c("scot", "ijb"), 
-  dropdown_grp = "outcomesageijb")
+mi_table(pds, table = "demog", measure = "perc_met", geog_filter = c("scot", "ijb"), years = full_years, demog = "age", dropdown_grp = "outcomesageijb", height = 545)
 
 ```
 
@@ -435,7 +351,7 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (Age-Stratified Outcomes by Health Board)
 outcomes_df_age_hb <- SharedData$new(
-  outcomes_age %>%
+  pds_age_ldp %>%
     filter(name %in% c("scot", "health_board")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -479,12 +395,7 @@ plot_bar_demog(
 ```{r table-hb-age-ldp}
 
 # Dynamic Table (Age-Stratified Outcomes by Health Board)
-create_outcomes_table_demog(
-  data = outcomes_age,
-  measure = "outcome",  
-  demog = "age_grp_2", 
-  geog_filter = c("scot", "health_board"), 
-  dropdown_grp = "outcomesagehb")
+mi_table(pds, table = "demog", measure = "perc_met", geog_filter = c("scot", "health_board"), years = full_years, demog = "age", dropdown_grp = "outcomesagehb", height = 600)
 
 ```
 
@@ -494,11 +405,8 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (Age-Stratified Outcomes Trend)
 outcomes_df_age_trend <- SharedData$new(
-  outcomes_age %>% 
-    arrange(desc(name)) %>%
-    bind_rows(
-      outcomes_age %>%
-        filter(geog == "Scotland")) %>%
+  pds_age_ldp %>% 
+    bind_rows(pds_age_ldp %>% filter(geog == "Scotland")) %>%
     distinct(),
   key = ~geog, 
   group = "outcomesagetrend")
@@ -548,16 +456,19 @@ bscols(widths = 12, div(style = css(width="98%", height="330px"), age_trend_plot
 ```{r table-trend-age-ldp}
 
 # Dynamic Table (Age-Stratified Outcomes Trend)
-create_trend_table_demog(
-  data = outcomes_age,
-  measure = "outcome",
-  demog = "age_grp_2",
-  group = "outcomesagetrend")
+mi_table(pds, table = "demog_trend", measure = "perc_met", years = full_years, demog = "age", dropdown_grp = "outcomesagetrend", height = 360)
 
 ```
 
 Gender {data-navmenu="Demographics"}
 =================================================
+
+```{r sex-data}
+
+pds_sex <- pds %>% filter(demog == "sex")
+pds_sex_ldp <- pds_sex %>% filter(fy %in% full_years)
+
+```
 
 Sidebar - gender rates {.sidebar}
 -----------------------------------------------------------------------
@@ -613,11 +524,12 @@ Row {.tabset data-height=1180}
 
 ### **Integration Authority Areas**
 
+
 ```{r dropdown-ijb-sex-pop}
 
 # Dynamic Plot Data (Sex-Stratified Referral Rates by IAA)
 rates_df_sex_ijb <- SharedData$new(
-  referral_rates_sex %>%
+  pds_sex %>%
     filter(name %in% c("scot", "ijb")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -661,12 +573,7 @@ plot_bar_demog(
 ```{r table-ijb-sex-pop}
 
 # Dynamic Table (Sex-Stratified Referral Rates by IAA)
-create_outcomes_table_demog(
-  data = referral_rates_sex, 
-  measure = "rate",  
-  demog = "sex", 
-  geog_filter= c("scot", "ijb"), 
-  dropdown_grp = "ratessexijb") 
+mi_table(pds, table = "demog", measure = "rate", geog_filter = c("scot", "ijb"), demog = "sex", dropdown_grp = "ratessexijb", height = 560)
 
 ```
 
@@ -676,7 +583,7 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (Se-Stratified Referral Rates by Health Board)
 rates_df_sex_hb <- SharedData$new(
-  referral_rates_sex %>%
+  pds_sex %>%
     filter(name %in% c("scot", "health_board")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -720,12 +627,7 @@ plot_bar_demog(
 ```{r table-hb-sex-pop}
 
 # Dynamic Table (Sex-Stratified Referral Rates by Health Board)
-create_outcomes_table_demog(
-  data = referral_rates_sex, 
-  measure = "rate",  
-  demog = "sex", 
-  geog_filter = c("scot", "health_board"), 
-  dropdown_grp = "ratessexhb") 
+mi_table(pds, table = "demog", measure = "rate", geog_filter = c("scot", "health_board"), demog = "sex", dropdown_grp = "ratessexhb", height = 620)
 
 ```
 
@@ -735,11 +637,8 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (Sex-Stratified Referral Rates Trend)
 rates_df_sex_trend <- SharedData$new(
-  referral_rates_sex %>%
-    arrange(desc(name)) %>%
-    bind_rows(
-      referral_rates_sex %>%
-        filter(geog == "Scotland")) %>%
+  pds_sex %>%
+    bind_rows(pds_sex %>% filter(geog == "Scotland")) %>%
     distinct(),
   key = ~geog, 
   group = "ratessextrend")
@@ -753,7 +652,7 @@ rates_filter_sex_trend <- filter_select(
   multiple = FALSE)
 
 # Layout
-bscols(widths = c(1, 5, NA), NULL, rates_filter_sex_trend, NULL)
+bscols(widths = c(1, 10, NA), NULL, rates_filter_sex_trend, NULL)
 
 ```
 
@@ -788,12 +687,7 @@ bscols(widths = 12, div(style = css(width="98%", height="330px"), sex_trend_plot
 ```{r table-trend-sex-pop}
 
 # Dynamic Table (Sex-Stratified Referral Rates Trend)
-create_trend_table_demog(
-  data = referral_rates_sex,
-  measure = "rate",
-  demog = "sex",
-  group = "ratessextrend"
-  )
+mi_table(pds, table = "demog_trend", measure = "rate", demog = "sex", dropdown_grp = "ratessextrend", height = 120)
 
 ```
 
@@ -863,7 +757,7 @@ Row {.tabset data-height=1180}
 
 # Dynamic Plot Data (Sex-Stratified Outcomes by IAA)
 outcomes_df_sex_ijb <- SharedData$new(
-  outcomes_sex %>%
+  pds_sex_ldp %>%
     filter(name %in% c("scot", "ijb")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -907,12 +801,7 @@ plot_bar_demog(
 ```{r table-ijb-sex-ldp}
 
 # Dynamic Table (Sex-Stratified Outcomes by IAA)
-create_outcomes_table_demog(
-  data = outcomes_sex,
-  measure = "outcome",  
-  demog = "sex", 
-  geog_filter= c("scot", "ijb"), 
-  dropdown_grp = "outcomessexijb")
+mi_table(pds, table = "demog", measure = "perc_met", geog_filter = c("scot", "ijb"), years = full_years, demog = "sex", dropdown_grp = "outcomessexijb", height = 545)
 
 ```
 
@@ -922,7 +811,7 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (Sex-Stratified Outcomes by Health Board)
 outcomes_df_sex_hb <- SharedData$new(
-  outcomes_sex %>%
+  pds_sex_ldp %>%
     filter(name %in% c("scot", "health_board")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -966,12 +855,7 @@ plot_bar_demog(
 ```{r table-hb-sex-ldp}
 
 # Dynamic Table (Sex-Stratified Outcomes by Health Board)
-create_outcomes_table_demog(
-  data = outcomes_sex,
-  measure = "outcome",  
-  demog = "sex", 
-  geog_filter = c("scot", "health_board"), 
-  dropdown_grp = "outcomesexhb")
+mi_table(pds, table = "demog", measure = "perc_met", geog_filter = c("scot", "health_board"), years = full_years, demog = "sex", dropdown_grp = "outcomessexhb", height = 600)
 
 ```
 
@@ -981,11 +865,8 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (Sex-Stratified Outcomes Trend)
 outcomes_df_sex_trend <- SharedData$new(
-  outcomes_sex %>% 
-    arrange(desc(name)) %>%
-    bind_rows(
-      outcomes_sex %>%
-        filter(geog == "Scotland")) %>%
+  pds_sex_ldp %>% 
+    bind_rows(pds_sex_ldp %>% filter(geog == "Scotland")) %>%
     distinct(),
   key = ~geog, 
   group = "outcomessextrend")
@@ -1034,16 +915,19 @@ bscols(widths = 12, div(style = css(width="98%", height="330px"), sex_trend_plot
 ```{r table-trend-sex-ldp}
 
 # Dynamic Table (Sex-Stratified Outcomes Trend)
-create_trend_table_demog(
-  data = outcomes_sex,
-  measure = "outcome",
-  demog = "sex",
-  group = "outcomessextrend")
+mi_table(pds, table = "demog_trend", measure = "perc_met", years = full_years, demog = "sex", dropdown_grp = "outcomessextrend", height = 240)
 
 ```
 
 Deprivation (SIMD) {data-navmenu="Demographics"}
 =====================================
+
+```{r simd-data}
+
+pds_simd <- pds %>% filter(demog == "simd")
+pds_simd_ldp <- pds_simd %>% filter(fy %in% full_years)
+
+```
 
 Sidebar -simd rates{.sidebar}
 -----------------------------------------------------------------------
@@ -1103,7 +987,7 @@ Row {.tabset data-height=1180}
 
 # Dynamic Plot Data (SIMD-Stratified Referral Rates by IAA)
 rates_df_simd_ijb <- SharedData$new(
-  referral_rates_simd %>%
+  pds_simd %>%
     filter(name %in% c("scot", "ijb")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -1147,12 +1031,7 @@ plot_bar_demog(
 ```{r table-ijb-simd-pop}
 
 # Dynamic Table (SIMD-Stratified Referral Rates by IAA)
-create_outcomes_table_demog(
-  data = referral_rates_simd, 
-  measure = "rate",  
-  demog = "simd", 
-  geog_filter= c("scot", "ijb"), 
-  dropdown_grp = "ratessimdijb")
+mi_table(pds, table = "demog", measure = "rate", geog_filter = c("scot", "ijb"), demog = "simd", dropdown_grp = "ratessimdijb", height = 555)
 
 ```
 
@@ -1162,7 +1041,7 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (SIMD-Stratified Referral Rates by Health Board)
 rates_df_simd_hb <- SharedData$new(
-  referral_rates_simd %>%
+  pds_simd %>%
     filter(name %in% c("scot", "health_board")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -1206,12 +1085,7 @@ plot_bar_demog(
 ```{r table-hb-simd-pop}
 
 # Dynamic Table (SIMD-Stratified Referral Rates by Health Board)
-create_outcomes_table_demog(
-  data = referral_rates_simd, 
-  measure = "rate",  
-  demog = "simd", 
-  geog_filter= c("scot", "health_board"), 
-  dropdown_grp = "ratessimdhb") 
+mi_table(pds, table = "demog", measure = "rate", geog_filter = c("scot", "health_board"), demog = "simd", dropdown_grp = "ratessimdhb", height = 620)
 
 ```
 
@@ -1221,11 +1095,8 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (SIMD-Stratified Referral Rates Trend)
 rates_df_simd_trend <- SharedData$new(
-  referral_rates_simd %>%
-    arrange(desc(name)) %>%
-    bind_rows(
-      referral_rates_simd %>%
-        filter(geog == "Scotland")) %>%
+  pds_simd %>%
+    bind_rows(pds_simd %>% filter(geog == "Scotland")) %>%
     distinct(),
   key = ~geog, 
   group = "ratessimdtrend")
@@ -1274,11 +1145,7 @@ bscols(widths = 12, div(style = css(width="98%", height="330px"), simd_trend_plo
 ```{r table-trend-simd-pop}
 
 # Dynamic Table (SIMD-Stratified Referral Rates Trend)
-create_trend_table_demog(
-  data = referral_rates_simd,
-  measure = "rate",
-  demog = "simd",
-  group = "ratessimdtrend")
+mi_table(pds, table = "demog_trend", measure = "rate", demog = "simd", dropdown_grp = "ratessimdtrend", height = 235)
 
 ```
 
@@ -1348,7 +1215,7 @@ Row {.tabset data-height=1180}
 
 # Dynamic Plot Data (SIMD-Stratified Outcomes by IAA)
 outcomes_df_simd_ijb <- SharedData$new(
-  outcomes_simd %>%
+  pds_simd_ldp %>%
     filter(name %in% c("scot", "ijb")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -1392,12 +1259,7 @@ plot_bar_demog(
 ```{r table-ijb-simd-ldp}
 
 # Dynamic Table (SIMD-Stratified Outcomes by IAA)
-create_outcomes_table_demog(
-  data = outcomes_simd,
-  measure = "outcome",  
-  demog = "simd", 
-  geog_filter= c("scot", "ijb"), 
-  dropdown_grp = "outcomessimdijb")
+mi_table(pds, table = "demog", measure = "perc_met", geog_filter = c("scot", "ijb"), years = full_years, demog = "simd", dropdown_grp = "outcomessimdijb", height = 545)
 
 ```
 
@@ -1407,7 +1269,7 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (SIMD-Stratified Outcomes by Health Board)
 outcomes_df_simd_hb <- SharedData$new(
-  outcomes_simd %>%
+  pds_simd_ldp %>%
     filter(name %in% c("scot", "health_board")) %>%
     mutate(key = paste0(fy, geog)), 
   key = ~key, 
@@ -1451,12 +1313,7 @@ plot_bar_demog(
 ```{r table-hb-simd-ldp}
 
 # Dynamic Table (SIMD-Stratified Outcomes by Health Board)
-create_outcomes_table_demog(
-  data = outcomes_simd,
-  measure = "outcome",  
-  demog = "simd", 
-  geog_filter = c("scot", "health_board"), 
-  dropdown_grp = "outcomessimdhb")
+mi_table(pds, table = "demog", measure = "perc_met", geog_filter = c("scot", "health_board"), years = full_years, demog = "simd", dropdown_grp = "outcomessimdhb", height = 600)
 
 ```
 
@@ -1466,11 +1323,9 @@ create_outcomes_table_demog(
 
 # Dynamic Plot Data (SIMD-Stratified Outcomes Trend)
 outcomes_df_simd_trend_1 <- SharedData$new(
-  outcomes_simd %>% 
+  pds_simd_ldp %>% 
     arrange(desc(name)) %>%
-    bind_rows(
-      outcomes_simd %>%
-        filter(geog == "Scotland")) %>%
+    bind_rows(pds_simd_ldp %>% filter(geog == "Scotland")) %>%
     distinct(),
   key = ~geog, 
   group = "outcomessimdtrend1")
@@ -1519,11 +1374,7 @@ bscols(widths = 12, div(style = css(width="98%", height="330px"), simd_trend_plo
 ```{r table-trend-simd-ldp-1}
 
 # Dynamic Table (SIMD-Stratified Outcomes Trend)
-create_trend_table_demog(
-  data = outcomes_simd,
-  measure = "outcome",
-  demog = "simd",
-  group = "outcomessimdtrend1")
+mi_table(pds, table = "demog_trend", measure = "perc_met", years = full_years, demog = "simd", dropdown_grp = "outcomessimdtrend1", height = 430)
 
 ```
 
@@ -1533,8 +1384,7 @@ create_trend_table_demog(
 
 # Dynamic Plot Data (SIMD-Stratified Outcomes Trend)
 outcomes_df_simd_trend_2 <- SharedData$new(
-  outcomes_simd %>% 
-    arrange(desc(name)),
+  pds_simd_ldp,
   key = ~geog, 
   group = "outcomessimdtrend2")
 
@@ -1571,11 +1421,7 @@ bscols(widths = 12, div(style = css(width="98%", height="290px"), simd_trend_plo
 ```{r table-trend-simd-ldp-2}
 
 # Dynamic Table (SIMD-Stratified Outcomes Trend)
-create_trend_table_demog(
-  data = outcomes_simd,
-  measure = "outcome",
-  demog = "simd",
-  group = "ratessimdoutcomes2")
+mi_table(pds, table = "demog_trend", measure = "perc_met", years = full_years, demog = "simd", dropdown_grp = "outcomessimdtrend2", height = 430)
 
 ```
 

@@ -20,6 +20,7 @@
 ################################################################################.
 
 # Source the setup script
+rm(list = ls())
 source(here::here("code", "00_setup-environment.R"))
 
 ################################################################################.
@@ -132,8 +133,8 @@ clean_pop_lookup <- function(pop_lookup){
       ),
       # Create broad age groups
       age_grp_2 = case_when(
-        age <= 0 | is.na(age) ~ "Unknown",
-        age %in% 1:79 ~ "79 and Under",
+        age < 0 | is.na(age) ~ "Unknown",
+        age %in% 0:79 ~ "79 and Under",
         age %in% 80:84 ~ "80 to 84",
         age >= 85     ~ "85+"
       ),
@@ -242,33 +243,6 @@ ESP13_df <- ESP13_df %>%
 ################################################################################.
 ### 8. Lookup Information (SIMD and populations) ----
 ################################################################################.
-
-# # Helper function to get lookup information
-# create_info_row <- function(path, lookup, type, fy){
-#   if("actual_year" %in% names(lookup)) {
-#     data_from <- max(lookup$actual_year, na.rm = TRUE)
-#     carried_to <- paste((data_from + 1):as.numeric(fy), collapse = ", ")
-#   } else {
-#     data_from <- NA
-#     carried_to <- NA
-#   }
-#   info <- fs::file_info(path) %>%
-#     select(path, size, modification_time) %>%
-#     mutate(
-#       lookup = type,
-#       data_from = data_from,
-#       carried_to = carried_to
-#     )
-#   info
-# }
-# 
-# # Lookup information
-# lookup_info <- bind_rows(
-#   create_info_row(simd_path, simd_lookup, "simd_geography", fy),
-#   create_info_row(pop_path_hb, pop_lookup_hb, "hb_population", fy),
-#   create_info_row(pop_path_hscp, pop_lookup_hscp, "hscp_population", fy),
-#   create_info_row(pop_path_simd, pop_lookup_simd, "simd_population", fy)
-# )
 
 # Helper function to get lookup information
 create_info_row <- function(path, lookup, type){

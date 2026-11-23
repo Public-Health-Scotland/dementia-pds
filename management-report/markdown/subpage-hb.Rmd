@@ -7,30 +7,19 @@
 # Set Values ----
 ################################################################################.
 
-# Referrals, diagnoses and LDP
-hb_data <- subpage_data %>% filter(name == "health_board")
+# Single row for obtaining summary values
+hb_data <- subpage_data %>% 
+  filter(name == "health_board")
 
-ref_format <- format(hb_data$referrals, big.mark = ",")
-diag_format <- format(hb_data$diagnoses, big.mark = ",") 
-perc_referred <- paste0(round_half_up(hb_data$exp_rate, 1), "%")
+# Determine if year is complete
+complete_year <- if_else(sel_fy == max_fy & qt != 4, FALSE, TRUE)
 
-num_format <- format(hb_data$met + hb_data$exempt, big.mark = ",")
-den_format <- format(hb_data$met + hb_data$exempt + hb_data$not_met, big.mark = ",")
-perc_ldp_met <- if_else(!is.na(hb_data$perc_met), paste0(format(round_half_up(hb_data$perc_met, 1)), "%"), "-")
-
-# Is there data for all four quarters of the selected year?
-complete_year <- if_else(max_fy == sel_fy & qt != 4, FALSE, TRUE)
-
-# If incomplete year, list quarters included
-qt_text <-
-  if (complete_year) {""} else {
-    if (qt == 1) {"- Q1"} else {
-      if (qt %in% 2:3) {paste0("- Q1-", qt)}
-    }
-  }
-
-# Title for LDP table
-table_title <- ifelse(complete_year == TRUE, "", paste0(" - up to Q", qt))
+# Quarters included for incomplete years
+qt_text <- case_when(
+  isTRUE(complete_year) ~ "",
+  qt == 1 ~ "- Q1",
+  TRUE ~ paste0("- Q1-", qt)
+)
 
 ################################################################################.
 # General Notes ----
@@ -50,13 +39,6 @@ completeness_text <- case_when(
     paste0("The figures shown for ", sel_fy, " are currently provisional and subject to change in future versions of this report. LDP Standard performance figures are not provided until data is available for the full financial year."),
   TRUE ~ 
     paste0("The figures shown for ", sel_fy, " are currently provisional and subject to change in future versions of this report.")
-)
-
-# Estimated dementia diagnosis dates note
-est_text <- case_when(
-  !sel_fy %in% paste0(2016:2020, "/", (2017:2021) %% 100) ~
-    paste0("**Please note:** In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target='_blank'}. For financial years ", fy_21_22_to_current_text, " the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates."),
-  TRUE ~ paste0("")
 )
   
 ################################################################################.
@@ -115,7 +97,10 @@ Select Financial Year
 
 ```{r fy-page-links, results='asis'}
 
-fy_text <- case_when(all_fy == sel_fy ~ md_bold(all_fy), TRUE ~ all_fy)
+fy_text <- case_when(
+  all_fy == sel_fy ~ md_bold(all_fy), 
+  TRUE ~ all_fy
+)
 
 fy_url <- paste0(
   "#",
@@ -160,8 +145,6 @@ Row
 
 `r completeness_text`
 
-`r est_text`
-
 `r ac_text`
 
 `r tay_text`
@@ -180,13 +163,14 @@ Row `r if(complete_year == FALSE)"{.hidden}"`
 ```{r Expected Value Box, include = complete_year}
 
 flexdashboard::valueBox(
-  perc_referred, caption = glue("of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support."))
+  glue("{round_half_up(hb_data$exp_rate, 1)}%"), 
+  caption = glue("of people estimated to be newly diagnosed with dementia were referred for post-diagnostic support."))
 
 ```
 
 `r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
 
-`r ifelse(complete_year == TRUE, glue("A total of <span style='color:CornflowerBlue'>**{ref_format}**</span> referrals were made to post-diagnostic support. This is divided by <span style='color:CornflowerBlue'>**{diag_format}**</span>, the estimated number of people newly diagnosed with dementia."), "")`
+`r ifelse(complete_year == TRUE, glue("A total of <span style='color:CornflowerBlue'>**{format(hb_data$referrals, big.mark = ",")}**</span> referrals were made to post-diagnostic support. This is divided by <span style='color:CornflowerBlue'>**{format(hb_data$diagnoses, big.mark = ",")}**</span>, the estimated number of people newly diagnosed with dementia."), "")`
 
 Row `r if(complete_year == FALSE)"{.hidden}"`
 ----------------------------------------------------------------------
@@ -196,24 +180,23 @@ Row `r if(complete_year == FALSE)"{.hidden}"`
 ```{r 12 Months Value Box, include = complete_year}
 
 flexdashboard::valueBox(
-  perc_ldp_met, caption = glue("of those referred for post-diagnostic support received a minimum of 12 months of support."))
+  if_else(!is.na(hb_data$perc_met), glue("{format(round_half_up(hb_data$perc_met, 1))}%"), "-"), 
+  caption = glue("of those referred for post-diagnostic support received a minimum of 12 months of support."))
 
 ```
 
 `r ifelse(complete_year == TRUE, "### <span style='color:CornflowerBlue'>**How is this figure calculated?**</span>", "")`
 
-`r ifelse(complete_year == TRUE, glue("<span style='color:CornflowerBlue'>**{num_format}**</span> referrals either met or were exempt from the LDP standard. This is divided by <span style='color:CornflowerBlue'>**{den_format}**</span>, the total number of referrals (excluding those whose support is ongoing)."), "")`
+`r ifelse(complete_year == TRUE, glue("<span style='color:CornflowerBlue'>**{format(hb_data$met + hb_data$exempt, big.mark = ",")}**</span> referrals either met or were exempt from the LDP standard. This is divided by <span style='color:CornflowerBlue'>**{format(hb_data$met + hb_data$exempt + hb_data$not_met, big.mark = ",")}**</span>, the total number of referrals (excluding those whose support is ongoing)."), "")`
 
 Row
 ----------------------------------------------------------------------
 
-### **Number of Individuals relating to LDP Standard**: Financial Year `r paste0(sel_fy, table_title)`
+### **Number of Individuals relating to LDP Standard**: Financial Year `r paste0(sel_fy, ifelse(complete_year == TRUE, "", paste0(" - up to Q", qt)))`
 
 ```{r ldp-table}
 
-create_outcomes_table_static(
-  data = subpage_data, 
-  type = "wide")
+mi_table(subpage_data, table = "hb", is_complete_year = complete_year)
 
 ```
 

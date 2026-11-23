@@ -1,27 +1,10 @@
 PDS Pathways
 =================================================
 
-```{r data-setup-pathways, include=FALSE}
+```{r none-data}
 
-# Pathways - Waiting Times
-wait_data <- pds %>%
-  filter(demog == "none") %>%
-  select(fy, geog, name, referrals, perc_contacted, diagnosis_to_contact, diagnosis_to_referral, perc_allocated, referral_to_allocation, perc_contacted, allocation_to_contact)
-
-# Pathways - PDS Outcomes
-outcomes_data <- pds %>%
-  filter(demog == "none") %>%
-  select(fy, geog, name, referrals, not_met, perc_not_met, `PDS started more than 12 months after diagnosis`, `PDS not started and more than 12 months since diagnosis`, `PDS terminated less than 11 months after first contact`, `PDS terminated before first contact`, perc_ongoing, ongoing, `PDS not started and less than 12 months since diagnosis`, `Still receiving PDS and less than 12 months since first contact`, perc_exempt, exempt)
-  
-# Pathways - Uptake Decision
-uptake_data <- pds %>%
-  filter(demog == "none") %>%
-  select(fy, geog, name, referrals, perc_uptake_decision, perc_accepted)
-
-# Pathways - No Contact within 12 Months
-contact_data <- pds %>%
-  filter(demog == "none") %>%
-  select(fy, geog, name, referrals, perc_no_contact_12, no_contact_12, perc_termination_before_contact, termination_before_contact)
+pds_none <- pds %>% filter(demog == "none")
+pds_none_ldp <- pds_none %>% filter(fy %in% full_years)
 
 ```
 
@@ -92,14 +75,14 @@ Row {.tabset data-height=1220}
 
 # Dynamic Plot Data (Waiting Times by IAA)
 wait_df_ijb <- SharedData$new(
-  wait_data %>%  
+  pds_none %>%  
     filter(name == "ijb"),
   key = ~fy, 
   group = "waitijb")
 
 # Dynamic Plot Data (Scotland Waiting Times)
 wait_df_scot1 <- SharedData$new(
-    wait_data %>%  
+    pds_none %>%  
     filter(name == "scot"),
   key = ~fy, 
   group = "waitijb")
@@ -133,15 +116,10 @@ bscols(widths = 12, div(style = css(width="98%", height="385px", marginBottom="-
 
 ```
 
-
 ```{r table-median-ijb}
 
 # Dynamic Table (Waiting Times by IAA)
-create_pathways_table(
-  data = wait_data, 
-  measure = "wait",
-  geog_filter = c("scot", "ijb"), 
-  group = "waitijb")
+mi_table(pds, table = "pathway", measure = "wait", geog_filter = c("scot", "ijb"), dropdown_grp = "waitijb", height = 660)
 
 ```
 
@@ -151,14 +129,14 @@ create_pathways_table(
 
 # Dynamic Plot Data (Waiting Times by Health Board)
 wait_df_hb <- SharedData$new(
-  wait_data %>%  
+  pds_none %>%  
     filter(name == "health_board"),
   key = ~fy, 
   group = "waithb")
   
 # Dynamic Plot Data (Scotland Waiting Times)
 wait_df_scot2 <- SharedData$new(
-    wait_data %>%  
+    pds_none %>%  
     filter(name == "scot"),
   key = ~fy, 
   group = "waithb")
@@ -196,11 +174,7 @@ bscols(widths = 12, div(style = css(width="98%", height="385px", marginBottom="-
 ```{r table-median-hb}
 
 # Dynamic Table (Waiting Times by Health Board)
-create_pathways_table(
-  data = wait_data, 
-  measure = "wait",
-  geog_filter = c("scot", "health_board"), 
-  group = "waithb")
+mi_table(pds, table = "pathway", measure = "wait", geog_filter = c("scot", "health_board"), dropdown_grp = "waithb", height = 660)
 
 ```
 
@@ -210,7 +184,7 @@ create_pathways_table(
 
 # Dynamic Plot Data (Waiting Times Trend)
 wait_df_trend <- SharedData$new(
-  wait_data)
+  pds_none)
 
 # Dropdown (Health Board / IAA)
 filter_wait_trend_geog <- filter_select(
@@ -246,32 +220,7 @@ bscols(widths = 12, div(style = css(width="98%", height="385px"), wait_plot_tren
 ```{r table-wait-trend}
 
 # Static Table (Waiting Times Trend)
-wait_data_trend_table <- wait_data %>% 
-  arrange(desc(name)) %>%
-  select("Integration Authority Area/Health Board" = geog, fy, diagnosis_to_contact) %>% 
-  mutate(diagnosis_to_contact = ifelse(!is.na(diagnosis_to_contact), as.character(diagnosis_to_contact), "-")) %>% 
-  pivot_wider(names_from = fy, values_from = diagnosis_to_contact)
-
-bscols(
-  widths = 12,
-  div(
-    style = css(width="97%", height="615px", margin="20px"),
-    DT::datatable(
-      wait_data_trend_table, 
-      rownames = FALSE,  
-      caption = htmltools::tags$caption(
-        style = 'caption-side: bottom; text-align: left; color:black;',
-        "A dash (-) indicates that due to data quality issues, or lack of data, this measure could not be calculated."),
-      options = list(
-        pageLength = 46,
-        scrollX = FALSE,
-        scrollY = TRUE,
-        dom = "t",
-        ordering = FALSE,
-        columnDefs = list(list(
-          className = 'dt-right', 
-          targets = 2:length(all_years))))) %>%
-      DT::formatStyle(1, fontWeight = "bold")))
+mi_table(pds, table = "pathway", measure = "wait_trend", height = 615)
 
 ```
 
@@ -281,7 +230,7 @@ bscols(
 
 # Dummy Data (Waiting Times Breakdown)
 wait_df_breakdown <- SharedData$new(
-  wait_data,
+  pds_none,
   key = ~fy,
   group = "waitbreakdown")
 
@@ -304,10 +253,7 @@ bscols(widths = c(1, 4, NA), NULL, filter_wait_breakdown_fy, NULL)
 ```{r wait-table-all}
 
 # Dynamic Table (Waiting Times Breakdown)
-create_pathways_table(
-  data = wait_data, 
-  measure = "wait_breakdown", 
-  group = "waitbreakdown")
+mi_table(pds, table = "pathway", measure = "wait_breakdown", dropdown_grp = "waitbreakdown", height = 770)
 
 ```
 
@@ -381,7 +327,7 @@ Row {.tabset data-height=800}
 
 # Dummy Data (Standard Not Met)
 not_met_df <- SharedData$new(
-  outcomes_data,
+  pds_none_ldp,
   key = ~fy,
   group = "notmet")
 
@@ -403,10 +349,7 @@ bscols(widths = c(1, 4, NA), NULL, filter_not_met_fy, NULL)
 ```{r not-met-table}
 
 # Dynamic Table (Standard Not Met)
-create_pathways_table(
-  data = outcomes_data, 
-  measure = "not_met", 
-  group = "notmet")
+mi_table(pds, table = "pathway", measure = "not_met", dropdown_grp = "notmet", height = 605)
 
 ```
 
@@ -416,7 +359,7 @@ create_pathways_table(
 
 # Dummy Data (PDS Ongoing)
 ongoing_df <- SharedData$new(
-  outcomes_data %>% filter(!fy %in% finalised_years),
+  pds_none_ldp %>% filter(!fy %in% finalised_years),
   key = ~fy,
   group = "ongoing")
 
@@ -438,10 +381,7 @@ bscols(widths = c(1, 4, NA), NULL, filter_ongoing_fy, NULL)
 ```{r ongoing-table}
 
 # Dynamic Table (PDS Ongoing)
-create_pathways_table(
-  data = outcomes_data %>% filter(!fy %in% finalised_years), 
-  measure = "ongoing", 
-  group = "ongoing")
+mi_table(pds, table = "pathway", measure = "ongoing", dropdown_grp = "ongoing", height = 605)
 
 ```
 
@@ -451,7 +391,7 @@ create_pathways_table(
 
 # Dummy Data (Exempt)
 exempt_df <- SharedData$new(
-  outcomes_data,
+  pds_none_ldp,
   key = ~fy,
   group = "exempt")
 
@@ -473,10 +413,7 @@ bscols(widths = c(1, 4, NA), NULL, filter_exempt_fy, NULL)
 ```{r exempt-table}
 
 # Dynamic Table (Exempt)
-create_pathways_table(
-  data = outcomes_data, 
-  measure = "exempt", 
-  group = "exempt")
+mi_table(pds, table = "pathway", measure = "exempt", dropdown_grp = "exempt", height = 620)
 
 ```
 
@@ -541,7 +478,7 @@ Row {.tabset data-height=820}
 
 # Dummy Data (Uptake Decision by IAA)
 uptake_df_ijb <- SharedData$new(
-  uptake_data,
+  pds_none,
   key = ~fy,
   group = "uptakeijb")
 
@@ -563,11 +500,7 @@ bscols(widths = c(1, 4, NA), NULL, filter_uptake_ijb_fy, NULL)
 ```{r table-uptake-ijb}
 
 # Dynamic Table (Uptake Decision by IAA)
-create_pathways_table(
-  data = uptake_data, 
-  measure = "uptake", 
-  geog_filter = c("scot", "ijb"),
-  group = "uptakeijb")
+mi_table(pds, table = "pathway", measure = "uptake", geog_filter = c("scot", "ijb"), dropdown_grp = "uptakeijb", height = 650)
 
 ```
 
@@ -577,7 +510,7 @@ create_pathways_table(
 
 # Dummy Data (Uptake Decision by Health Board)
 uptake_df_hb <- SharedData$new(
-  uptake_data,
+  pds_none,
   key = ~fy,
   group = "uptakehb")
 
@@ -599,11 +532,7 @@ bscols(widths = c(1, 4, NA), NULL, filter_uptake_hb_fy, NULL)
 ```{r table-uptake-hb}
 
 # Dynamic Table (Uptake Decision by Health Board)
-create_pathways_table(
-  data = uptake_data, 
-  measure = "uptake", 
-  geog_filter = c("scot", "health_board"),
-  group = "uptakehb")
+mi_table(pds, table = "pathway", measure = "uptake", geog_filter = c("scot", "health_board"), dropdown_grp = "uptakehb", height = 625)
 
 ```
 
@@ -672,7 +601,7 @@ Row {.tabset data-height=930}
 
 # Dummy Data (No Contact by IAA)
 contact_df_ijb <- SharedData$new(
-  contact_data,
+  pds_none,
   key = ~fy,
   group = "contactijb")
 
@@ -694,11 +623,7 @@ bscols(widths = c(1, 4, NA), NULL, filter_contact_ijb_fy, NULL)
 ```{r no-contact-table-ijb}
 
 # Dynamic Table (No Contact by IAA)
-create_pathways_table(
-  data = contact_data, 
-  measure = "no_contact", 
-  geog_filter = c("scot", "ijb"),
-  group = "contactijb")
+mi_table(pds, table = "pathway", measure = "no_contact", geog_filter = c("scot", "ijb"), dropdown_grp = "contactijb", height = 750)
 
 ```
 
@@ -708,7 +633,7 @@ create_pathways_table(
 
 # Dummy Data (No Contact by Health Board)
 contact_df_hb <- SharedData$new(
-  contact_data,
+  pds_none,
   key = ~fy,
   group = "contacthb")
 
@@ -730,11 +655,7 @@ bscols(widths = c(1, 4, NA), NULL, filter_contact_hb_fy, NULL)
 ```{r no-contact-table-hb}
 
 # Dynamic Table (No Contact by Health Board)
-create_pathways_table(
-  data = contact_data, 
-  measure = "no_contact", 
-  geog_filter = c("scot", "health_board"),
-  group = "contacthb")
+mi_table(pds, table = "pathway", measure = "no_contact", geog_filter = c("scot", "health_board"), dropdown_grp = "contacthb", height = 750)
 
 ```
 

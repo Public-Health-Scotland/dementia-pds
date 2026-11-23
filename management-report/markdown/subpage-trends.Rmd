@@ -1,22 +1,10 @@
 All Referrals - Trends & Rates
 =================================================
 
-```{r data-trends, include=FALSE}
+```{r none-data}
 
-# All Referrals - Trend
-referrals <- pds %>%
-  filter(demog == "none") %>%
-  select(fy, geog, name, referrals)
-
-# All Referrals - Rates per 10,000 population
-referral_rates <- pds %>% 
-  filter(demog == "none") %>%
-  select(fy, geog, name, rate)
-
-# All Referrals - Outcomes by Financial Year
-outcomes <- pds %>%
-  filter(demog == "none") %>%
-  select(fy, geog, name, exp_rate, perc_met)
+pds_none <- pds %>% filter(demog == "none")
+pds_none_ldp <- pds_none %>% filter(fy %in% full_years)
 
 ```
 
@@ -85,8 +73,8 @@ Row {.tabset data-height=1210}
 
 # Static Plot Data (All Referrals)
 referrals_df_scot <- SharedData$new(
-  referrals %>%  
-  filter(name == "scot"))
+  pds_none %>%  
+    filter(name == "scot"))
 
 # Plot (All Referrals)
 referrals_plot_scot <- plot_trend_mi(
@@ -108,10 +96,7 @@ bscols(widths = 12, div(style = css(width="98%", height="360px"), referrals_plot
 ```{r trend-table}
 
 # Static Table (All Referrals)
-create_trend_table_static(
-  data = referrals,
-  measure = referrals,
-  geog_filter = c("ijb", "health_board", "scot"))
+mi_table(pds, table = "trend", measure = "referrals")
 
 ```
 
@@ -121,8 +106,8 @@ create_trend_table_static(
 
 # Dynamic Plot Data (Referrals by IAA)
 referrals_df_ijb <- SharedData$new(
-  referrals %>%  
-  filter(name == "ijb"))
+  pds_none %>%  
+    filter(name == "ijb"))
 
 # Dropdown (IAA)
 referrals_filter_ijb <- filter_select(
@@ -158,10 +143,7 @@ bscols(widths = 12, div(style = css(width="98%", height="360px"), referrals_plot
 ```{r trend-table-ijb}
 
 # Static Table (Referrals by IAA)
-create_trend_table_static(
-  data = referrals,
-  measure = referrals,
-  geog_filter = c("ijb", "scot"))
+mi_table(pds, table = "trend", measure = "referrals", geog_filter = c("ijb"))
  
 ```
 
@@ -171,8 +153,8 @@ create_trend_table_static(
 
 # Dynamic Plot Data (Referrals by Health Board)
 referrals_df_hb <- SharedData$new(
-  referrals %>%  
-  filter(name == "health_board"))
+  pds_none %>%  
+    filter(name == "health_board"))
   
 # Dropdown (Health Board)
 referrals_filter_hb <- filter_select(
@@ -208,10 +190,7 @@ bscols(widths = 12, div(style = css(width="98%", height="360px"), referrals_plot
 ```{r trend-table-hb}
 
 # Static Table (Referrals by Health Board)
-create_trend_table_static(
-  data = referrals, 
-  measure = referrals,
-  geog_filter = c("health_board", "scot"))
+mi_table(pds, table = "trend", measure = "referrals", geog_filter = c("health_board"))
 
 ```
 
@@ -280,14 +259,14 @@ Row {.tabset data-height=1260}
   
 # Dynamic Plot Data (Referral Rates by IAA)
 rates_df_ijb <- SharedData$new(
-  referral_rates %>%  
+  pds_none %>%  
     filter(name == "ijb"),
   key = ~fy, 
   group = "ratesijb")
   
 # Dynamic Plot Data (Scotland Referral Rates)
 rates_df_scot1 <- SharedData$new(
-    referral_rates %>%  
+    pds_none %>%  
     filter(name == "scot"),
   key = ~fy, 
   group = "ratesijb")
@@ -324,10 +303,7 @@ bscols(widths = 12, div(style = css(width="98%", height="410px"), rates_plot_ijb
 ```{r trend-table-ijb-pop}
 
 # Static Table (Referral Rates by IAA)
-create_trend_table_static(
-  data = referral_rates,
-  measure = rate,
-  geog_filter = c("ijb", "scot"))
+mi_table(pds, table = "trend", measure = "rate", geog_filter = c("scot", "ijb"))
 
 ```
 
@@ -337,14 +313,14 @@ create_trend_table_static(
 
 # Dynamic Plot Data (Referral Rates by Health Board)
 rates_df_hb <- SharedData$new(
-  referral_rates %>%  
+  pds_none %>%  
     filter(name == "health_board"),
   key = ~fy, 
   group = "rateshb")
   
 # Dynamic Plot Data (Scotland Referral Rates)
 rates_df_scot2 <- SharedData$new(
-    referral_rates %>%  
+    pds_none %>%  
     filter(name == "scot"),
   key = ~fy, 
   group = "rateshb")
@@ -381,10 +357,7 @@ bscols(widths = 12, div(style = css(width="98%", height="410px"), rates_plot_hb)
 ```{r trend-table-hb-pop}
 
 # Static Table (Referral Rates by Health Board)
-create_trend_table_static(
-  data = referral_rates,
-  measure = rate,
-  geog_filter = c("health_board", "scot"))
+mi_table(pds, table = "trend", measure = "rate", geog_filter = c("scot", "health_board"))
 
 ```
 
@@ -394,7 +367,7 @@ create_trend_table_static(
 
 # Dynamic Plot Data (Scotland Referral Rates)
 rates_df_all <- SharedData$new(
-  referral_rates, 
+  pds_none, 
   key = ~geog, 
   group = "ratesall")
 
@@ -432,10 +405,7 @@ bscols(widths = 12, div(style = css(width="98%", height="360px"), rates_plot_all
 ```{r trend-table-pop}
 
 # Static Table (Referral Rates by IAA)
-create_trend_table_static(
-  data = referral_rates,
-  measure = rate,
-  geog_filter = c("ijb", "health_board", "scot"))
+mi_table(pds, table = "trend", measure = "rate")
 
 ```
 
@@ -505,10 +475,8 @@ Row {.tabset data-height=1215}
 
 # Dynamic Plot Data (Expected Diagnosis Rates by Health Board)
 exp_df <- SharedData$new(
-  outcomes %>%
-    filter(
-      name %in% c("scot", "health_board"),
-      fy %in% full_years))
+  pds_none_ldp %>%
+    filter(name %in% c("scot", "health_board")))
 
 # Dropdown (Health Board)
 filter_exp <- filter_select(
@@ -542,11 +510,7 @@ bscols(widths = 12, div(style = css(width="98%", height="360px"), exp_plot))
 ```{r trend-table-exp}
 
 # Static Table (Expected Diagnosis Rates by Health Board)
-create_trend_table_static(
-  data = outcomes %>%
-    filter(fy %in% full_years), 
-  measure = exp_rate, 
-  geog_filter = c("health_board", "scot"))
+mi_table(pds, table = "trend", measure = "exp_rate", geog_filter = c("scot", "health_board"), years = full_years)
 
 ```
 
@@ -556,8 +520,7 @@ create_trend_table_static(
 
 # Dynamic Plot Data (Percentage Met)
 met_df <- SharedData$new(
-  outcomes %>% 
-    filter(fy %in% full_years))
+  pds_none_ldp)
 
 # Dropdown (Geography)
 filter_met <- filter_select(
@@ -591,11 +554,7 @@ bscols(widths = 12, div(style = css(width="98%", height="360px"), met_plot))
 ```{r trend-table-met}
 
 # Static Table (Percentage Met by Geography)
-create_trend_table_static(
-  data = outcomes %>% 
-    filter(fy %in% full_years),
-  measure = perc_met, 
-  geog_filter = c("ijb", "health_board", "scot"))
+mi_table(pds, table = "trend", measure = "perc_met", years = full_years)
 
 ```
 

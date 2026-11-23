@@ -38,8 +38,10 @@ pds <- read_rds(
     test_output = test_output)) %>%
   mutate(
     geog = factor(geog, levels = c("Scotland", setdiff(unique(geog), "Scotland"))),
-    across(where(is.numeric), ~ replace(.x, is.nan(.x), NA)))
-
+    refs = ifelse(fy %in% finalised_years, referrals, met + not_met + exempt),
+    perc_met = ifelse(
+      geog == "Aberdeen City" & fy %in% c("2019/20", "2020/21") & demog != "none", NA, perc_met))
+                  
 # Monthly referrals (output from 03_process-data.R)
 monthly_referrals <- read_rds(
   get_mi_data_path(
@@ -48,6 +50,11 @@ monthly_referrals <- read_rds(
     fy = fy, 
     qt = qt,
     test_output = test_output)) %>% 
+  mutate(
+    scot = "Scotland",
+    board = health_board) %>%
+  pivot_longer(c(scot, ijb, health_board), values_to = "geog") %>%
+  mutate(board = ifelse(name == "scot", "Scotland", board)) %>%
   group_by(fy, geog, board, name, month) %>% 
   summarise(monthly_referrals = n(), .groups = "drop")
 
@@ -95,10 +102,16 @@ lookup_info <- read.csv(get_mi_data_path(
 ################################################################################.
 
 # Percentage of referrals aged 65 or over
-perc_65_plus <- paste0(round(
-  sum(pds %>% filter(demog == "none", geog == "Scotland") %>% pull(referrals_over_65), na.rm = T) / 
-    sum(pds %>% filter(demog == "none", geog == "Scotland") %>% pull(referrals), na.rm = T) * 100, 
-  1), "%")
+total_refs <- sum(
+  pds %>% 
+    filter(demog == "none", geog == "Scotland") %>% 
+    pull(referrals_over_65), 
+  na.rm = T)
+over_65_refs <- sum(
+  pds %>% 
+    filter(demog == "none", geog == "Scotland") %>% 
+    pull(referrals), na.rm = T)
+perc_65_plus <- paste0(round(over_65_refs / total_refs* 100, 1), "%")
 
 # Data carried forwards in the HSCP and HB population data (should be the same)
 pop_data_from <- as.character(lookup_info %>% filter(lookup == "hb_population") %>% pull(data_from))
@@ -108,14 +121,21 @@ pop_data_to <- lookup_info %>% filter(lookup == "hb_population") %>% pull(carrie
 simd_pop_data_from <- as.character(lookup_info %>% filter(lookup == "simd_population") %>% pull(data_from))
 simd_pop_data_to <- lookup_info %>% filter(lookup == "simd_population") %>% pull(carried_to)
 
-# List years from 2021/22 to the current year for diagnosis rates text
-fy_21_22_to_current <- sprintf("%d/%02d", 2021:as.integer(substr(fy, 1, 4)),
-         (2022:(as.integer(substr(fy, 1, 4)) + 1)) %% 100)
+# Helper function to list years up to the current year
+list_years <- function(start_year){
+  year_list <- sprintf("%d/%02d", start_year:(as.integer(fy) - 1),
+         ((start_year + 1):(as.integer(fy))) %% 100)
+  paste0(
+    paste(sprintf("*%s*", head(year_list, -1)), collapse = ", "), " and ",
+    sprintf("*%s*", tail(year_list, 1)))
+}
 
-# Format the list
-fy_21_22_to_current_text <- paste0(
-  paste(sprintf("*%s*", head(fy_21_22_to_current, -1)), collapse = ", "), " and ",
-  sprintf("*%s*", tail(fy_21_22_to_current, 1)))
+# Legend for demographic trend plots
+geogs <- unique(pds$geog)
+legend_data <- bind_rows(
+  tibble(geog = geogs, legend = geogs),
+  tibble(geog = geogs[geogs != "Scotland"], legend = "Scotland")) %>%
+  mutate(x = 1, y = 0, legend = factor(legend, levels = c(setdiff(geogs, "Scotland"), "Scotland")))
 
 ```
 
@@ -212,11 +232,11 @@ Row
 
 **NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland for *2022/23* and *2023/24*.
 
-**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected.
+**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected. NHS Grampian have reported that they have had issues in providing all records from all areas in 2026/27 and are working to provide a full set of records for 2026/27 in future quarterly submissions.
 
 **NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, *2024/25* and *2025/26*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from all areas for *2025/26 Q3 and Q4* and *2026/27 Q1*.
 
-**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years `r fy_21_22_to_current_text` the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates.
+**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years `r list_years(2021)` the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates for 2021/22, 2022/23 and 2023/24. Population projections have been used to derive the incidence estimates for `r list_years(2024)`.
 
 METHODOLOGY {.hidden}
 =================================================
@@ -308,9 +328,9 @@ Service users for whom it is not yet known if they have met the standard as thei
 
 ### **Number of Expected Diagnoses**
 
-In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report.
+In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IAA or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report.
 
-For financial years `r fy_21_22_to_current_text` the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates.
+For financial years `r list_years(2021)` the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates. Population projections have been used to derive the incidence estimates for `r list_years(2024)`.
 
 Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018. *Note that for financial year(s) `r pop_data_to` the Mid-`r pop_data_from` populations are used as this is the latest available estimate.*
 
@@ -505,6 +525,7 @@ scotland <- map(
     monthly_referrals = monthly_referrals,
     hb = "Scotland",
     year = .x,
+    text = list_years(2021),
     quarter = qt))
 
 ```
@@ -523,6 +544,7 @@ health_boards <- pmap(
     monthly_referrals = monthly_referrals,
     hb = .y,
     year = .x,
+    text = list_years(2021),
     quarter = qt))
 
 ```
@@ -603,7 +625,7 @@ A query is sent by PHS when the data submitted requires further checking to ensu
 
 ```{r query summary}
 
-create_error_table(query)
+mi_table(query, table = "error")
 
 ```
 
@@ -615,7 +637,7 @@ An error is flagged by PHS when data is inaccurate or missing. Examples of an er
 
 ```{r error summary}
 
-create_error_table(err) 
+mi_table(err, table = "error")
 
 ```
 
@@ -625,7 +647,7 @@ The table below shows the percentage of records which contain one or more querie
 
 ```{r queries/error summary}
 
-create_error_table(q_err) 
+mi_table(q_err, table = "error")
 
 ```
 
@@ -694,9 +716,7 @@ Row {.tabset data-height=700}
 
 ```{r accommodation-table}
 
-create_completeness_table(
-  data = pds %>% filter(demog == "none"),
-  measure = "accom")
+mi_table(pds, table = "completeness" , measure = "accom", height = 550)
 
 ```
 
@@ -708,9 +728,7 @@ create_completeness_table(
 
 ```{r stage-table}
 
-create_completeness_table(
-  data = pds %>% filter(demog == "none"),
-  measure = "stage")
+mi_table(pds, table = "completeness" , measure = "stage", height = 540)
 
 ```
 
@@ -722,9 +740,7 @@ create_completeness_table(
 
 ```{r model-table}
 
-create_completeness_table(
-  data = pds %>% filter(demog == "none"),
-  measure = "model")
+mi_table(pds, table = "completeness" , measure = "model", height = 540)
 
 ```
 
@@ -791,7 +807,7 @@ The table below shows the number of records submitted by each Health Board. Reco
 
 ```{r record-summary}
 
-create_records_summary_table(q_err) 
+mi_table(q_err, table = "submission")
 
 ```
 
@@ -842,9 +858,9 @@ function filter_default() {
   setFilter("filter_age_rate_hb_fy", pds_year);
   setFilter("filter_age_rate_hb_geog", null);
   setFilter("filter_age_rate_trend_geog", "Scotland");
-  setFilter("filter_age_outcome_ijb_fy", pds_year);
+  setFilter("filter_age_outcome_ijb_fy", ldp_year);
   setFilter("filter_age_outcome_ijb_geog", null);
-  setFilter("filter_age_outcome_hb_fy", full_years[length(full_years)]);
+  setFilter("filter_age_outcome_hb_fy", ldp_year);
   setFilter("filter_age_outcome_hb_geog", null);
   setFilter("filter_age_outcome_trend_geog", "Scotland");
   // demographics - sex
@@ -853,9 +869,9 @@ function filter_default() {
   setFilter("filter_sex_rate_hb_fy", pds_year);
   setFilter("filter_sex_rate_hb_geog", null);
   setFilter("filter_sex_rate_trend_geog", "Scotland");
-  setFilter("filter_sex_outcome_ijb_fy", pds_year);
+  setFilter("filter_sex_outcome_ijb_fy", ldp_year);
   setFilter("filter_sex_outcome_ijb_geog", null);
-  setFilter("filter_sex_outcome_hb_fy", full_years[length(full_years)]);
+  setFilter("filter_sex_outcome_hb_fy", ldp_year);
   setFilter("filter_sex_outcome_hb_geog", null);
   setFilter("filter_sex_outcome_trend_geog", "Scotland");
   // demographics - simd
@@ -864,9 +880,9 @@ function filter_default() {
   setFilter("filter_simd_rate_hb_fy", pds_year);
   setFilter("filter_simd_rate_hb_geog", null);
   setFilter("filter_simd_rate_trend_geog", "Scotland");
-  setFilter("filter_simd_outcome_ijb_fy", pds_year);
+  setFilter("filter_simd_outcome_ijb_fy", ldp_year);
   setFilter("filter_simd_outcome_ijb_geog", null);
-  setFilter("filter_simd_outcome_hb_fy", full_years[length(full_years)]);
+  setFilter("filter_simd_outcome_hb_fy", ldp_year);
   setFilter("filter_simd_outcome_hb_geog", null);
   setFilter("filter_simd_outcome_trend_geog_1", "Scotland");
   setFilter("filter_simd_outcome_trend_geog_2", "Scotland");
@@ -876,9 +892,9 @@ function filter_default() {
   setFilter("filter_wait_hb_fy", pds_year);
   setFilter("filter_wait_trend_geog", "Scotland");
   setFilter("filter_wait_breakdown_fy", pds_year);
-  setFilter("filter_not_met_fy", pds_year);
-  setFilter("filter_ongoing_fy", pds_year);
-  setFilter("filter_exempt_fy", pds_year);
+  setFilter("filter_not_met_fy", ldp_year);
+  setFilter("filter_ongoing_fy", ldp_year);
+  setFilter("filter_exempt_fy", ldp_year);
   setFilter("filter_uptake_ijb_fy", pds_year);
   setFilter("filter_uptake_hb_fy", pds_year);
   setFilter("filter_contact_ijb_fy", pds_year);

@@ -16,51 +16,43 @@
 ### 0 - Load environment file ----
 ################################################################################.
 
+rm(list = ls())
 source(here::here("code", "publication", "00_setup-pub-environment.R"))
 
 ################################################################################.
-### 1 - Save finalised data file for revised FY ----
+### 1 - Read data ----
 ################################################################################.
 
-source(here("functions", "create-final-data.R"))
-
-create_final_data(
-  fy_final = nth(fy_in_pub, -2),
-  collated_file = get_national_data_path(
-    fy = fy,
-    qt = qt
-  )
-)
+# PDS data (output from 03_process-data.R)
+pds <- read_rds(
+  get_mi_data_path(
+    type = "ldp_data", 
+    ext = "rds", 
+    fy = fy, 
+    qt = qt,
+    test_output = test_output)) 
 
 ################################################################################.
 ### 2 - Restructure data file ----
 ################################################################################.
 
-basefile <- read_rds(get_mi_data_path(
-  type = "final_data", 
-  ext = "rds", 
-  fy = fy,
-  qt = qt,
-  test_output = test_output
-)) %>% 
-  
+pds <- pds %>%
   # Select only FY to be included in pub
   filter(fy %in% fy_in_pub) %>%
-  
-  # Remove code from gender
-  mutate(sex = if_else(sex == "Unknown", sex, substring(sex, 4))) %>% 
-  
+  rename(ldp_full = ldp) %>%
+  mutate(
+    # Remove code from gender
+    sex = if_else(sex == "Unknown", sex, substring(sex, 4)),
+    ldp = word(ldp_full, 1)) %>% 
   # Aggregate to year level (don't need month breakdown)
-  group_by(across(c(health_board:sex, -month))) %>%
-  summarise(referrals = sum(referrals), .groups = "drop") %>%
-  
+  group_by(health_board, ijb, fy, ldp, ldp_full, age_grp_2, simd, sex) %>%
+  summarise(referrals = n(), .groups = "drop") %>%
   # Restructure
   pivot_wider(
     names_from = ldp,
     values_from = referrals,
     values_fill = list(referrals = 0)
   ) %>%
-  
   # Add summary columns
   rowwise() %>%
   mutate(
@@ -69,46 +61,22 @@ basefile <- read_rds(get_mi_data_path(
     denominator = complete + exempt + fail
   ) %>%
   ungroup() %>%
-
-  # Remove codes from board and IJB
+  # Exclude Aberdeen City from standard calculation for 2019/20 and 2020/21, while retaining 
+  # referral counts. Remove the relevant financial year below if Aberdeen City is reinstated.
   mutate(
-    health_board = str_sub(health_board, 3, -1),
-    ijb = if_else(
-      is.na(ijb),
-      "Unknown",
-      str_sub(ijb, 11, -1)
-    )
-  ) %>%
-
-  # Exclude Aberdeen city from calculating the standard but keep the number of referrals
-  # Comment this out in the future if we want to include Aberdeen City again
-  # 2019/20
-  mutate(
-    complete = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, complete),
-    exempt = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, exempt),
-    fail = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, fail),
-    ongoing = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, ongoing),
-    numerator = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, numerator),
-    denominator = if_else(ijb == "Aberdeen City" & fy == "2019/20", 0L, denominator)) %>% 
-  # 20/21
-  mutate(
-    complete = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, complete),
-    exempt = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, exempt),
-    fail = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, fail),
-    ongoing = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, ongoing),
-    numerator = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, numerator),
-    denominator = if_else(ijb == "Aberdeen City" & fy == "2020/21", 0L, denominator)
-  )
+    across(
+      c(complete, exempt, fail, ongoing, numerator, denominator),
+      ~ if_else(
+        ijb == "Aberdeen City" & fy %in% c("2019/20", "2020/21"), 0L, .x)))
 
 ################################################################################.
 ### 3 - Save file ----
 ################################################################################.
 
-basefile %>% 
+pds %>% 
   write_file(
     path = get_pub_data_path(
       pub_date = pub_date, 
-      test_output = test_output,
       check_mode = "write",
       create_dir = TRUE))
 #0 # This zero stops script from running IF write_file is overwriting an existing file, re-run the section without this line and enter 1 in the console, when prompted, to overwrite file.

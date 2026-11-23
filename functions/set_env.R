@@ -2,7 +2,8 @@ set_env <- function(data = pds,
                     monthly_referrals = monthly_referrals,
                     hb,
                     year,
-                    quarter){
+                    text = fy_21_22_to_current_text,
+                    quarter = qt){
   
   # Set new environment
   subpage_env <- new.env()
@@ -25,6 +26,7 @@ set_env <- function(data = pds,
   assign("subpage_monthly_referrals", subpage_monthly_referrals, subpage_env)
   assign("hb", hb, subpage_env)
   assign("sel_fy", year, subpage_env)
+  assign("fy_21_22_to_current_text", text, subpage_env)
   assign("max_fy", max(sort(unique(data$fy))), subpage_env)
   assign("min_fy", min(sort(unique(data$fy))), subpage_env)
   assign("all_fy", sort(unique(data$fy)), subpage_env)

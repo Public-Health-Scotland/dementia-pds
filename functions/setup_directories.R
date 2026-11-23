@@ -694,7 +694,6 @@ get_pub_date_dir <- function(folder = c("data", "output", "figures"),
 #' @export
 
 get_pub_data_path <- function(pub_date,
-                              test_output = FALSE,
                               check_mode = "read",
                               create_dir = FALSE) {
   
@@ -702,7 +701,7 @@ get_pub_data_path <- function(pub_date,
   pub_date_dir <- get_pub_date_dir(
     folder = "data", 
     pub_date = pub_date,
-    test_output = test_output, 
+    test_output = FALSE, 
     check_mode = check_mode,
     create = create_dir
   )

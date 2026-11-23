@@ -40,7 +40,7 @@ plot_trend_demog <- function(
     geom_line() +
     labs(title = "", x = "", y = str_replace(measure_text, ": ", ""), 
          colour = NULL, linetype = NULL) +
-    scale_y_continuous(limits = c(0, NA)) +
+    scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.05))) +
     scale_x_discrete(breaks = everyother) +
     scale_colour_manual(values = colours) +
     scale_linetype_manual(values = c(

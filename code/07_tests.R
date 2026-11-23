@@ -16,6 +16,7 @@
 ### 1 - Load environment file, functions and data ----
 ################################################################################.
 
+rm(list = ls())
 source(here::here("code", "00_setup-environment.R"))
 walk(dir(here::here("functions"), full.names = TRUE), source)
 
