@@ -246,7 +246,7 @@ pop_data %>%
 # columns do not match the most up-to-date SIMD lookup (datazone2011 vs datazone2022).
 # Using DataZone2011_pop_est_2011_2024.rds (old version) to test the rest of the changes.
 simd_pop_path <- get_pop_path(type = "DataZone", selection_method = "modification_date", choose = TRUE)
-5 # Menu option for DataZone2011_pop_est_2011_2024.rds (05/10/26)
+4 # Menu option for DataZone2011_pop_est_2011_2024.rds (05/10/26)
 
 simd_pop <- read_rds(simd_pop_path) %>% 
   filter(year >= 2016)

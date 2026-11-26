@@ -77,10 +77,12 @@ extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == 
              "**Please note:** ",
              "In December 2016, the Scottish Government published a report: ",
              "[Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target='_blank'}. ", 
-             "For financial years *`r fy_21_22_to_current_text`* the rates referenced in ", 
+             "For financial years `r  fy_21_22_to_25_26_text`, the rates referenced in ", 
              "the report were used to create national, age specific rates of dementia incidence ",
              "per 1,000 population which were then applied to the National Records of ",
-             "Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates."),
+             "Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates for 2021/22, 2022/23 and 2023/24.",
+             
+             "Population projections have been used to derive the incidence estimates for 2024/25 and 2025/26."),
       TRUE ~ paste0(""))
   
 
@@ -130,7 +132,7 @@ extract_fin_year(est_date2) | sel_fy == extract_fin_year(est_date3) | sel_fy == 
               "2024/25 and 2025/26, which has resulted in some records showing as incorrectly having met the standard. ",
               "NHS Tayside has informed PHS that these data issues will be rectified once they have completed the ", 
               "migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from ",
-              "all areas for 2025/26 Q3 and Q4 and 2026/27 Q1.*"), 
+              "all areas for 2025/26 Q3 and Q4 and 2026/27 Q1 and Q2.*"), 
     TRUE ~ paste0(""))
   
   

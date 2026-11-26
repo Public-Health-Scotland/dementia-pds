@@ -49,7 +49,7 @@ plot_geog_bar <- function(data, y_value, measure, measure_text, y_value_text = N
            displaylogo = F, editable = F) %>%
     layout(clickmode = "none", margin = list(l = -5, b = 50, t = 40) # to avoid labels getting cut out
     ) 
-  
+ 
 }
 
 
@@ -76,7 +76,7 @@ plot_geog_bar_legend <- function(data, measure, colours = phs_colours_core) {
   config(legend_plotly, staticPlot = TRUE) %>%
     layout(legend = list(orientation = "h",
                          x = 0.5, y = 1, xanchor = "center", yanchor = "top" )
-    )
+    ) 
 }
 
 

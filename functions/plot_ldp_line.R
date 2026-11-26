@@ -30,9 +30,11 @@ plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL, co
          group = NULL
     ) +
     
-    scale_y_continuous(limits = c(0, NA),  labels=function(x) paste0(x,"%")
+    scale_y_continuous(
+      limits = c(0, NA),
+      labels = function(x) paste0(x, "%"),
+      expand = expansion(mult = c(0, 0.05))
     ) +
-    
     scale_x_discrete(breaks = everyother
     ) +
     
@@ -61,7 +63,6 @@ plot_ldp_line <- function(data, measure, measure_text, ncol = 5, nrow = NULL, co
                          xanchor = "center", yanchor = "top")) %>% 
     layout(margin = list(l = -5, b = 50, t = 40) # to avoid labels getting cut out
     ) 
-  
 }
 
 
