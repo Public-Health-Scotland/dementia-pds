@@ -37,8 +37,8 @@ source(here::here("functions/setup_general.R"))
 #' @export
 
 get_root_dir <- function() {
-  #root_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs")
-  root_dir <- fs::path("/", "conf", "dementia", "A&I", "Analysts", "Lucy", "test")
+  root_dir <- fs::path("/", "conf", "dementia", "A&I", "Outputs")
+  #root_dir <- fs::path("/", "conf", "dementia", "A&I", "Analysts", "Lucy", "test")
 
   return(root_dir)
 }
