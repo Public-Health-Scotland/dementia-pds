@@ -76,8 +76,7 @@ plot_referrals <- function(data,
     
     geom_line() + 
     
-    scale_y_continuous(limits = c(0, NA), breaks = integer_breaks()
-                       ) +
+    scale_y_continuous(limits = c(0, NA), breaks = integer_breaks(), expand = expansion(mult = c(0, 0.05))) +
 
     scale_colour_manual(values = phs_colours_core) +
     

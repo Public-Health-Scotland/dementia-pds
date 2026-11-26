@@ -29,7 +29,11 @@ pds <- read_csv(
   clean_names() %>%
   
   # Convert dates from character to date format
-  mutate(across(contains("date"), ~ ymd(na_if(.x, "9999-09-09")))) %>%
+  # mutate(across(contains("date"), ~ dmy(na_if(.x, "9999-09-09")))) %>%
+   
+  mutate(across(contains("date"), ~ as.Date(lubridate::parse_date_time(
+        dplyr::na_if(dplyr::na_if(.x, "9999-09-09"), "09/09/9999"), 
+        orders = c("dmy", "ymd"))))) %>%
   
   # Pad CHI Number to 10 digits
   mutate(chi_number = chi_pad(chi_number)) %>%

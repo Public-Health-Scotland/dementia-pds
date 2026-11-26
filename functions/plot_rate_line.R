@@ -30,7 +30,9 @@ plot_rate_line <- function(data, measure, measure_text, y = NULL, scales = NULL,
          group = NULL
     ) +
     
-    scale_y_continuous(limits = c(0, NA)
+    scale_y_continuous(
+      limits = c(0, NA),
+      expand = expansion(mult = c(0, 0.05))
     ) +
     
     scale_x_discrete(breaks = everyother) +

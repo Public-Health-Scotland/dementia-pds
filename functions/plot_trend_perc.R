@@ -14,8 +14,11 @@ plot_trend_perc <- function(data, measure,  x = "", y = "", colours = phs_colour
     
     geom_line() + 
     
-    scale_y_continuous(limits = c(0, 100),
-                       labels=function(x) paste0(x,"%")) + 
+    scale_y_continuous(
+      limits = c(0, 100),
+      labels = function(x) paste0(x, "%"),
+      expand = expansion(mult = c(0, 0))
+    ) + 
     
     scale_colour_manual(values = {{colours}}) +
     
@@ -38,6 +41,6 @@ plot_trend_perc <- function(data, measure,  x = "", y = "", colours = phs_colour
     layout(legend = list(orientation = "h", x = 0.5 , y = -0.5,
                          xanchor = "center", yanchor = "bottom")) %>% 
     layout(margin = list(l = -10, b = 30, t = 30) # to avoid labels getting cut out
-    )
+    ) 
   
 }

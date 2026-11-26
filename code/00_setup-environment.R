@@ -31,8 +31,8 @@ test_output <- FALSE
 # Dec-MI-release (Q2 data): 300920XX
 # Mar-MI-release (Q3 data): 311220XX
 # Jun-MI-release (Q4 data): 310320XX
-end_date <- lubridate::dmy(30062026)
-previous_end_date <- lubridate::dmy(31032026)
+end_date <- lubridate::dmy(30092026)
+previous_end_date <- lubridate::dmy(30062026)
 
 # UPDATE - Most recent Date of publication (ddmmyyyy)
 # Need this for set up of some folder structure

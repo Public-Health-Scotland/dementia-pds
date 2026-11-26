@@ -25,7 +25,7 @@ date: "`r paste('Data as at', format(end_date, '%d %B %Y'))`"
 ```{r setup, include=FALSE}
 
 # Remove tidylog
-detach("package:tidylog", unload = TRUE)
+#detach("package:tidylog", unload = TRUE)
 
 # Load functions
 walk(dir(here::here("functions"), full.names = TRUE), source)
@@ -209,9 +209,35 @@ fy_21_22_to_current <- sprintf("%d/%02d", 2021:as.integer(substr(fy, 1, 4)),
          (2022:(as.integer(substr(fy, 1, 4)) + 1)) %% 100)
 
 # Format the list 
+# fy_21_22_to_current_text <- paste0(
+#   paste(sprintf("*%s*", head(fy_21_22_to_current, -1)), collapse = ", "), " and ",
+#   sprintf("*%s*", tail(fy_21_22_to_current, 1)))
+# Format the list - years in italics
 fy_21_22_to_current_text <- paste0(
-  paste(sprintf("*%s*", head(fy_21_22_to_current, -1)), collapse = ", "), " and ",
-  sprintf("*%s*", tail(fy_21_22_to_current, 1)))
+  paste(
+    sprintf("<em>%s</em>", head(fy_21_22_to_current, -1)),
+    collapse = ", "
+  ),
+  " and ",
+  sprintf("<em>%s</em>", tail(fy_21_22_to_current, 1))
+)
+
+# Financial years from 2021/22 to 2025/26 for estimated diagnoses note
+fy_21_22_to_25_26 <- sprintf(
+  "%d/%02d",
+  2021:2025,
+  (2022:2026) %% 100
+)
+
+# Format years in italics
+fy_21_22_to_25_26_text <- paste0(
+  paste(
+    sprintf("<em>%s</em>", head(fy_21_22_to_25_26, -1)),
+    collapse = ", "
+  ),
+  " and ",
+  sprintf("<em>%s</em>", tail(fy_21_22_to_25_26, 1))
+)
 
 ```
 
@@ -306,11 +332,11 @@ Row
 
 **NHS Shetland** - NHS Shetland did not have a PDS worker in post from *2022/23 Q1* through *2023/24 Q3*. As a result not all people referred to PDS could be allocated or contacted by a PDS worker within 12 months of diagnosis, hence they have been recorded as not having met the standard. A PDS worker was assigned in *2023/24 Q4* and the PDS service in Shetland has resumed. This will also affect the pathway waiting times for NHS Shetland for *2022/23* and *2023/24*.
 
-**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected. 
+**NHS Grampian** - Due to changes in service provider the figures for Aberdeen City in *2019/20* and *2020/21* have been affected. NHS Grampian have reported that they have had issues in providing all records from all areas in 2026/27 and are working to provide a full set of records for 2026/27 in future quarterly submissions.  
 
-**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, *2024/25* and *2025/26*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from all areas for *2025/26 Q3 and Q4* and *2026/27 Q1*.
+**NHS Tayside** – Due to local IT system issues the figures for *2018/19* and *2019/20* have been affected. PHS have identified issues with the data submitted by NHS Tayside for *2023/24*, *2024/25* and *2025/26*, which has resulted in some records showing as incorrectly having met the standard. NHS Tayside has informed PHS that these data issues will be rectified once they have completed the migration to a new IT system. Due to the IT migration NHS Tayside have been unable to submit data from all areas for *2025/26 Q3 and Q4* and *2026/27 Q1 and Q2*.
 
-**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years `r fy_21_22_to_current_text` the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates. 
+**Please note:** In December 2016, the Scottish Government published a report: [2014-2020 Estimated and Projected Diagnosis Rates for Dementia in Scotland](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. For financial years `r fy_21_22_to_25_26_text` the rates referenced in the report were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates for 2021/22, 2022/23 and 2023/24. Population projections have been used to derive the incidence estimates for 2024/25 and 2025/26.
 
 METHODOLOGY {.hidden}
 =================================================
@@ -404,9 +430,10 @@ Service users for whom it is not yet known if they have met the standard as thei
 
 ### **Number of Expected Diagnoses**
 
-In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IJB or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report.
+In December 2016, the Scottish Government published a report: [Estimated and Projected Diagnosis Rates for Dementia in Scotland: 2014-2020](https://www.gov.scot/publications/estimated-projected-diagnosis-rates-dementia-scotland-2014-2020/){target="_blank"}. Estimations in this report are available per calendar year and health board therefore analysis of this part of the LDP standard is unavailable by IAA or any other breakdowns. Information on the methodology used to calculate these figures and the limitations of this are available in the report.
 
-For financial years `r fy_21_22_to_current_text` the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates. 
+For financial years `r fy_21_22_to_25_26_text` the rates referenced in the report above were used to create national, age specific rates of dementia incidence per 1,000 population which were then applied to the National Records of Scotland (NRS) Mid-2021 (rebased), Mid-2022 and Mid-2023 Population Estimates to obtain the incidence estimates.Population projections have been used to derive the incidence estimates for 2024/25 and 2025/26.
+
 
 Please note that as estimations are available by calendar year and figures in this report are by financial year, the estimation for the calendar year with the majority of months in the selected financial year is used. For example, analysis for financial year 2018/19 uses estimations for the calendar year 2018. *Note that for financial year(s) `r pop_data_to` the Mid-`r pop_data_from` populations are used as this is the latest available estimate.* 
 

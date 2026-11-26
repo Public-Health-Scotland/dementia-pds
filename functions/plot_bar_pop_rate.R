@@ -37,6 +37,6 @@ plot_bar_pop_rate <- function(data){
                          xanchor = "center", yanchor = "bottom")) %>% 
     layout(margin = list(l = -10, b = 30, t = 30)  # to avoid labels getting cut out
     ) 
-  
+   
 }
 

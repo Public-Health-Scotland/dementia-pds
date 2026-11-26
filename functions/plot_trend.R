@@ -14,7 +14,7 @@ plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_cor
     
     geom_line() + 
     
-    scale_y_continuous(limits = c(0, NA), breaks = integer_breaks()
+    scale_y_continuous(limits = c(0, NA), breaks = integer_breaks(),expand = expansion(mult = c(0, 0.05))
                          ) + 
     
     scale_colour_manual(values = {{colours}}) +
@@ -41,7 +41,6 @@ plot_trend <- function(data, measure,  x = "", y = "", colours = phs_colours_cor
            displaylogo = F, editable = F) %>%
     layout(legend = list(orientation = "h", x = 0.5 , y = -0.5,
                          xanchor = "center", yanchor = "bottom")) %>% 
-    layout(margin = list(l = -10, b = 30, t = 30) # to avoid labels getting cut out
-           )
-  
+    layout(margin = list(l = -10, b = 30, t = 30)  # to avoid labels getting cut out
+                  ) 
 }
